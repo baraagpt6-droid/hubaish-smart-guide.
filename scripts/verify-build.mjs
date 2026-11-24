@@ -169,7 +169,7 @@ if (!html.includes('27 كم في مقدمة النص') && !html.includes('42 ك�
 if (!html.includes('id="imageLightbox"') || !html.includes('data-lightbox-src') ||
     !app.includes('photo.loading') || !sw.includes('REMOTE_IMAGE_HOSTS') ||
     !sw.includes('icons/apple-touch-icon.png') || !sw.includes('icons/photo-fallback.svg') ||
-    !sw.includes('hubaish-guide-v3.8.1')) {
+    !sw.includes('hubaish-guide-v3.8.2')) {
   throw new Error('Image lazy loading, lightbox or offline image caching is incomplete.');
 }
 if (!app.includes("market: 'M3 10h18l-2-6H5l-2 6Z") ||
@@ -210,26 +210,37 @@ if (!worker.includes('/setup/status') || !worker.includes('/setup') || !worker.i
     !worker.includes('super_admin') || !worker.includes('editor') || !worker.includes('updatedBy')) {
   throw new Error('Cloudflare Worker multi-admin authentication, RBAC or audit support is incomplete.');
 }
-const canonicalWorkerUrl = 'https://hubaish-cms.baraag6.workers.dev';
+const canonicalWorkerUrl = 'https://hubaish-cms.baraagpt6.workers.dev';
 if (!githubCms.includes("const DEFAULT_WORKER_URL='" + canonicalWorkerUrl + "';") ||
-    !githubCms.includes("const LEGACY_WORKER_HOST='hubaish-cms.baraagpt6.workers.dev';") ||
+    !githubCms.includes("localStorage.removeItem('hubaish_worker_url');") ||
+    githubCms.includes("localStorage.setItem('hubaish_worker_url'") ||
+    !githubCms.includes("checkWorkerSetup(workerUrl,true);") ||
     !html.includes('value="' + canonicalWorkerUrl + '"') ||
     !workerHealth.includes("const base = '" + canonicalWorkerUrl + "';") ||
     !readme.includes(canonicalWorkerUrl) || !workerReadme.includes(canonicalWorkerUrl)) {
-  throw new Error('The Cloudflare Worker default URL must use the canonical baraag6 hostname in frontend, documentation and health checks.');
+  throw new Error('The Cloudflare Worker default URL must use the canonical baraagpt6 hostname and clear stale saved endpoints.');
 }
 
 const setupFormStart = html.indexOf('<form id="workerSetupForm"');
 const setupFormEnd = html.indexOf('</form>', setupFormStart);
 const setupForm = setupFormStart >= 0 && setupFormEnd > setupFormStart ? html.slice(setupFormStart, setupFormEnd) : '';
+const loginFormStart = html.indexOf('<form id="workerLoginForm"');
+const loginFormEnd = html.indexOf('</form>', loginFormStart);
+const loginForm = loginFormStart >= 0 && loginFormEnd > loginFormStart ? html.slice(loginFormStart, loginFormEnd) : '';
 const setupFieldIds = [...setupForm.matchAll(/id="(workerSetupEndpoint|workerBootstrapKey|workerSetupUsername|workerSetupPassword)"/g)].map(m => m[1]);
-if (setupFieldIds.join(',') !== 'workerSetupEndpoint,workerBootstrapKey,workerSetupUsername,workerSetupPassword') {
+if (setupFieldIds.join(',') !== 'workerBootstrapKey,workerSetupUsername,workerSetupPassword' || setupForm.includes('workerSetupEndpoint')) {
   throw new Error('First-admin setup must show exactly four required fields.');
 }
 if (!githubCms.includes("localStorage.setItem('hubaish_direct_github_token'") ||
     !githubCms.includes("localStorage.getItem('hubaish_direct_github_token')") ||
-    !githubCms.includes("localStorage.setItem('hubaish_worker_url'")) {
-  throw new Error('Remembered direct GitHub token or Worker URL settings are missing.');
+    !githubCms.includes("localStorage.removeItem('hubaish_worker_url');") ||
+    githubCms.includes("localStorage.setItem('hubaish_worker_url'")) {
+  throw new Error('Direct GitHub token handling or stale Worker URL cleanup is missing.');
+}
+if (loginForm.includes('workerEndpoint') || loginForm.includes('workerSetupEndpoint') ||
+    !html.includes('<summary>إعدادات متقدمة · عنوان خادم تسجيل الدخول</summary>') ||
+    !html.includes('<summary>إعدادات متقدمة · عنوان خادم التأسيس</summary>')) {
+  throw new Error('Worker URL inputs must remain inside the collapsed advanced settings, outside normal login/setup fields.');
 }
 if (!githubCms.includes('workerLoginForm') || !githubCms.includes('hubaish_worker_session') ||
     !githubCms.includes('workerToken') || !githubCms.includes('cloudCreateAdminForm') ||
@@ -301,7 +312,7 @@ if (!css.includes('--bg:#08100d') || !css.includes('--gold:#d4af37') || !css.inc
 if (!css.includes('left:16px!important') || !css.includes('width:46px!important') || !css.includes('right:auto!important')) {
   throw new Error('The assistant button must remain fixed at left:16px.');
 }
-if (!sw.includes('hubaish-guide-v3.8.1') || !sw.includes("'github-cms.js'") ||
+if (!sw.includes('hubaish-guide-v3.8.2') || !sw.includes("'github-cms.js'") ||
     !sw.includes("'data/live-content.json'") || !sw.includes("event.data?.type === 'SKIP_WAITING'") ||
     sw.includes('supabase')) throw new Error('Offline app shell does not include the GitHub CMS or live JSON file.');
 if (!workflow.includes('actions/deploy-pages@v4') || !workflow.includes('assembleDebug') ||
