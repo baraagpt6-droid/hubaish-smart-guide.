@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 560">
+ <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#0c563e"/><stop offset="1" stop-color="#071c15"/></linearGradient><linearGradient id="a"><stop stop-color="#f3d783"/><stop offset="1" stop-color="#b78328"/></linearGradient></defs>
+ <rect width="960" height="560" rx="28" fill="url(#g)"/>
+ <g fill="none" stroke="#d4af37" stroke-opacity=".18" stroke-width="3"><path d="M-20 420Q160 210 320 320T640 250 990 90"/><path d="M-20 455Q160 245 320 355T640 285 990 125"/><path d="M-20 490Q160 280 320 390T640 320 990 160"/></g>
+ <path d="m120 410 180-150 105 70 130-170 185 170 110-80 120 160v95H120Z" fill="#16824d"/>
+ <path d="m300 260 105 70 130-170-15 155-115 90-145-90Zm415 70 115-80 120 160-200-35Z" fill="#58b957"/>
+ <path d="M170 415 330 435 520 410 710 435 860 415 840 455 710 480 520 455 330 480 190 455Z" fill="url(#a)"/>
+ <path d="M475 495c-32-26-43-44-20-62 22-17 68-18 71-42 2-18-31-32-56-42" fill="none" stroke="#f1d17c" stroke-width="20" stroke-linecap="round"/>
+ <path d="M427 225V105h110v120" fill="#d9ae45" stroke="#91631d" stroke-width="7"/>
+ <path d="M416 108h132V82h-20V57h-24v25h-22V49h-21v33h-21V57h-24v25h-20Z" fill="#edcd75"/>
+ <path d="M445 155a15 15 0 0 1 30 0v25h-30Zm47 0a15 15 0 0 1 30 0v25h-30Z" fill="#0a422f"/>
+ <path d="M460 225v-26a27 27 0 0 1 54 0v26Z" fill="#0a422f"/>
+ <text x="480" y="535" fill="#ead38d" font-size="22" text-anchor="middle" font-family="sans-serif">الصورة غير متاحة · محفوظ وصف المكان</text>
+</svg>
