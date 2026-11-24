@@ -241,7 +241,7 @@
       list.replaceChildren();
       for(const user of users.users||[]){
         const row=document.createElement('div'),name=document.createElement('strong'),meta=document.createElement('span'),button=document.createElement('button');
-        row.className='cloud-list-row';name.textContent=user.displayName||user.username;
+        row.className='cloud-admin-row';name.textContent=user.displayName||user.username;
         meta.textContent='@'+user.username+' · '+user.role+' · '+(user.disabled?'معطل':'نشط');
         button.className='btn-sm';button.type='button';button.dataset.userToggle=user.username;button.dataset.disabled=String(!user.disabled);button.textContent=user.disabled?'تفعيل':'تعطيل';
         row.append(name,meta,button);list.append(row);
@@ -253,7 +253,7 @@
       log.replaceChildren();
       for(const event of audit.events||[]){
         const row=document.createElement('div'),name=document.createElement('strong'),meta=document.createElement('span');
-        row.className='cloud-list-row';name.textContent=event.actor||'';meta.textContent=(event.action||'')+' · '+(event.at||'');row.append(name,meta);log.append(row);
+        row.className='cloud-admin-row';name.textContent=event.actor||'';meta.textContent=(event.action||'')+' · '+(event.at||'');row.append(name,meta);log.append(row);
       }
       if(!audit.events?.length){const empty=document.createElement('p');empty.className='muted';empty.textContent='لا توجد تعديلات مسجلة.';log.append(empty)}
     }
