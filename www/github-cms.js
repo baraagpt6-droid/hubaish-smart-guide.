@@ -155,7 +155,7 @@
     window.HubaishRuntime?.applyCloudData?.({landmarks,history,links});
     window.HubaishFeatures?.setCloudPeople?.(people);
     const mainLink=documentData.communityLinks.find(x=>x.id==='community-main');
-    if(mainLink&&safeUrl(mainLink.url))window.HubaishFeatures?.setCommunityUrl?.(mainLink.url);
+    window.HubaishFeatures?.setCommunityUrl?.(mainLink&&safeUrl(mainLink.url)?mainLink.url:'');
   }
   function districtUpdates(name,l){
     return documentData.subDistrictUpdates.filter(x=>String(x.district_name_ar||'').trim()===String(name||'').trim()).map(x=>({
