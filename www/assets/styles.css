@@ -210,3 +210,21 @@ html[data-theme=light] .story-heritage-icon{color:#e8cc72}
 .mic-btn .ui-icon{width:18px;height:18px}
 #favOpenBtn .ui-icon{width:16px;height:16px;color:var(--gold)}
 .story-card{position:relative}
+
+.lang-wrap>.ui-icon{width:16px;height:16px;color:var(--gold)}
+.season-icon{
+  display:block;
+  width:28px;
+  height:28px;
+  padding:4px;
+  border-radius:12px;
+  color:var(--gold);
+  border:1px solid var(--strong);
+  background:var(--gold-soft);
+  stroke:currentColor;
+  stroke-width:1.5;
+  fill:none;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+}
+.fly-bookmark-icon{width:17px;height:17px;color:var(--gold)}
