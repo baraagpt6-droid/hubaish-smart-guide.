@@ -64,7 +64,8 @@ if (!css.includes('left:16px!important') || !css.includes('width:46px!important'
 if (!sw.includes('hubaish-guide-v3.0.0') || !sw.includes("event.data?.type === 'SKIP_WAITING'") || !sw.includes('fetch(request)')) throw new Error('Seamless update service worker is incomplete');
 if ((app.match(/\{\s*id:\s*['"]p\d+['"]/g) || []).length < 16) throw new Error('At least 16 landmark records are required');
 if ((app.match(/\{\s*id:\s*['"]h\d+['"]/g) || []).length < 6) throw new Error('At least 6 history milestones are required');
-if (!workflow.includes('ANDROID_KEYSTORE_BASE64') || !workflow.includes('ANDROID_KEY_ALIAS') || !workflow.includes('assembleRelease') || !workflow.includes('GITHUB_RUN_NUMBER') || !workflow.includes('softprops/action-gh-release@v2')) throw new Error('Android versioning and signed-release workflow is incomplete');
+for (const key of ['KEYSTORE_BASE64','KEYSTORE_PASSWORD','KEY_ALIAS','KEY_PASSWORD']) if (!workflow.includes('secrets.' + key)) throw new Error('Android signing secret mapping is incomplete: ' + key);
+if (!workflow.includes('assembleRelease') || !workflow.includes('GITHUB_RUN_NUMBER') || !workflow.includes('softprops/action-gh-release@v2') || !workflow.includes("needs.build-android.outputs.signed == 'true'")) throw new Error('Android versioning and signed-release workflow is incomplete');
 
 for (const [file, expected] of [['www/icons/icon-192.png', 192], ['www/icons/icon-512.png', 512]]) {
   const image = await readFile(resolve(root, file));
