@@ -45,10 +45,10 @@ const DEFAULT_PLACES = [
 const DEFAULT_SOCIALS = [{ name: 'مديرية حبيش HUBAISH DISTRICT', url: 'https://www.facebook.com/share/g/1JMCzDUsdZ/' }, { name: 'المركز الوطني للمعلومات اليمني', url: 'https://yemen-nic.info/contents/Brief/detail.php?ID=7617&phrase_id=1191776&print=Y' }];
 
 const I18N = {
-  AR: { dir: 'rtl', appName: 'دليل حبيش الذكي', appSub: 'دليل رقمي للتراث والمعالم', govBadge: 'محافظة إب • الجمهورية اليمنية', statCenter: 'مركز المديرية', heroTitle: 'دليل حبيش الذكي', heroDesc: 'موسوعة رقمية لتاريخ حبيش وعزلها وقراها وحصونها ومعالمها ومواقيت الصلاة.', statUzal: 'عزلة إدارية', statArea: 'كم² المساحة', statPop: 'نسمة (تعداد)', spotlightTitle: 'معلم مختار من حبيش', navHome: 'الرئيسية', navHistory: 'التاريخ', navPlaces: 'المعالم', navUzal: 'العزل', navMore: 'المزيد' },
-  EN: { dir: 'ltr', appName: 'Hubaish Smart Guide', appSub: 'Digital heritage and landmark guide', govBadge: 'Ibb Governorate • Yemen', statCenter: 'District center', heroTitle: 'Hubaish Smart Guide', heroDesc: 'A local guide to Hubaish history, sub-districts, villages, forts, landmarks and prayer times.', statUzal: 'Sub-districts', statArea: 'Area in km²', statPop: 'Population', spotlightTitle: 'Featured landmark', navHome: 'Home', navHistory: 'History', navPlaces: 'Landmarks', navUzal: 'Sub-districts', navMore: 'More' },
-  TR: { dir: 'ltr', appName: 'Hubaish Akıllı Rehberi', appSub: 'Dijital miras ve gezi rehberi', govBadge: 'İbb Valiliği • Yemen', statCenter: 'İlçe merkezi', heroTitle: 'Hubaish Akıllı Rehberi', heroDesc: 'Hubeyş tarihi, bucakları, köyleri, kaleleri, tarihi yerleri ve namaz vakitleri için yerel rehber.', statUzal: 'Bucak', statArea: 'Alan km²', statPop: 'Nüfus', spotlightTitle: 'Öne çıkan eser', navHome: 'Ana Sayfa', navHistory: 'Tarih', navPlaces: 'Yerler', navUzal: 'Bucaklar', navMore: 'Daha Fazla' },
-  FR: { dir: 'ltr', appName: 'Guide intelligent de Hubaish', appSub: 'Guide numérique du patrimoine', govBadge: 'Gouvernorat d’Ibb • Yémen', statCenter: 'Centre du district', heroTitle: 'Guide intelligent de Hubaish', heroDesc: 'Guide local de l’histoire, des sous-districts, villages, forts, monuments et horaires de prière de Hubaish.', statUzal: 'Sous-districts', statArea: 'Superficie km²', statPop: 'Population', spotlightTitle: 'Monument à la une', navHome: 'Accueil', navHistory: 'Histoire', navPlaces: 'Monuments', navUzal: 'Sous-districts', navMore: 'Plus' }
+  AR: { dir: 'rtl', appName: 'دليل حبيش', appSub: 'دليل رقمي للتراث والمعالم', govBadge: 'محافظة إب • الجمهورية اليمنية', statCenter: 'مركز المديرية', heroTitle: 'دليل حبيش', heroDesc: 'موسوعة رقمية لتاريخ حبيش وعزلها وقراها وحصونها ومعالمها ومواقيت الصلاة.', statUzal: 'عزلة إدارية', statArea: 'كم² المساحة', statPop: 'نسمة (تعداد)', spotlightTitle: 'معلم مختار من حبيش', navHome: 'الرئيسية', navHistory: 'التاريخ', navPlaces: 'المعالم', navUzal: 'العزل', navMore: 'المزيد' },
+  EN: { dir: 'ltr', appName: 'Hubaish Guide', appSub: 'Digital heritage and landmark guide', govBadge: 'Ibb Governorate • Yemen', statCenter: 'District center', heroTitle: 'Hubaish Guide', heroDesc: 'A local guide to Hubaish history, sub-districts, villages, forts, landmarks and prayer times.', statUzal: 'Sub-districts', statArea: 'Area in km²', statPop: 'Population', spotlightTitle: 'Featured landmark', navHome: 'Home', navHistory: 'History', navPlaces: 'Landmarks', navUzal: 'Sub-districts', navMore: 'More' },
+  TR: { dir: 'ltr', appName: 'Hubaish Rehberi', appSub: 'Dijital miras ve gezi rehberi', govBadge: 'İbb Valiliği • Yemen', statCenter: 'İlçe merkezi', heroTitle: 'Hubaish Rehberi', heroDesc: 'Hubeyş tarihi, bucakları, köyleri, kaleleri, tarihi yerleri ve namaz vakitleri için yerel rehber.', statUzal: 'Bucak', statArea: 'Alan km²', statPop: 'Nüfus', spotlightTitle: 'Öne çıkan eser', navHome: 'Ana Sayfa', navHistory: 'Tarih', navPlaces: 'Yerler', navUzal: 'Bucaklar', navMore: 'Daha Fazla' },
+  FR: { dir: 'ltr', appName: 'Guide de Hubaish', appSub: 'Guide numérique du patrimoine', govBadge: 'Gouvernorat d’Ibb • Yémen', statCenter: 'Centre du district', heroTitle: 'Guide de Hubaish', heroDesc: 'Guide local de l’histoire, des sous-districts, villages, forts, monuments et horaires de prière de Hubaish.', statUzal: 'Sous-districts', statArea: 'Superficie km²', statPop: 'Population', spotlightTitle: 'Monument à la une', navHome: 'Accueil', navHistory: 'Histoire', navPlaces: 'Monuments', navUzal: 'Sous-districts', navMore: 'Plus' }
 };
 
 let currentEra = 'all';
@@ -182,9 +182,7 @@ function syncNativeStatusBar() {
   document.querySelector('meta[name="theme-color"]')?.setAttribute('content', color);
   const statusBar = window.Capacitor?.Plugins?.StatusBar;
   if (!statusBar) return;
-  Promise.resolve(statusBar.setOverlaysWebView?.({ overlay: false })).catch(() => {});
   Promise.resolve(statusBar.setStyle?.({ style: dark ? 'LIGHT' : 'DARK' })).catch(() => {});
-  Promise.resolve(statusBar.setBackgroundColor?.({ color })).catch(() => {});
 }
 function applyTheme(theme) {
   state.theme = theme === 'light' ? 'light' : 'dark';
@@ -194,7 +192,7 @@ function applyTheme(theme) {
   if (themeGlyph) themeGlyph.setAttribute('d', state.theme === 'dark'
     ? 'M12 3v2m0 14v2M3 12h2m14 0h2M5.64 5.64l1.42 1.42m9.88 9.88 1.42 1.42m0-12.72-1.42 1.42m-9.88 9.88-1.42 1.42M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8Z'
     : 'M20.5 15.5A8.5 8.5 0 0 1 8.5 3.5 8.5 8.5 0 1 0 20.5 15.5Z');
-  if (themeToggle) themeToggle.setAttribute('aria-label', state.theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme');
+  if (themeToggle) themeToggle.setAttribute('aria-label', ({AR:state.theme==='dark'?'التبديل إلى المظهر النهاري':'التبديل إلى المظهر الليلي',EN:state.theme==='dark'?'Switch to light theme':'Switch to dark theme',TR:state.theme==='dark'?'Açık temaya geç':'Koyu temaya geç',FR:state.theme==='dark'?'Passer au thème clair':'Passer au thème sombre'})[state.lang]||'Change theme');
   syncNativeStatusBar();
   saveState();
 }
@@ -220,6 +218,7 @@ function applyLang(lang) {
   const code = document.getElementById('languageCurrentCode');
   if (code) code.textContent = state.lang;
   const trigger = document.getElementById('languagePickerButton');
+  if (trigger) trigger.setAttribute('aria-label', ({AR:'اختر اللغة',EN:'Choose language',TR:'Dil seçin',FR:'Choisir la langue'})[state.lang]);
   const menu = document.getElementById('languagePickerMenu');
   if (trigger) trigger.setAttribute('aria-expanded', 'false');
   if (menu) menu.hidden = true;
