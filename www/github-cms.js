@@ -338,7 +338,7 @@
       place:{ar:val('cloudPlaceAr'),en:val('cloudPlaceEn'),tr:val('cloudPlaceTr'),fr:val('cloudPlaceFr')},
       period:{ar:val('cloudPeriodAr'),en:val('cloudPeriodEn'),tr:val('cloudPeriodTr'),fr:val('cloudPeriodFr')},
       category:val('cloudCategory')||'fort',url:val('cloudUrl'),source:val('cloudSource'),sourceUrl:val('cloudSourceUrl'),
-      importance:val('cloudImportanceAr'),sortOrder:Number(val('cloudSortOrder')||0)
+      importance:{ar:val('cloudImportanceAr'),en:val('cloudImportanceEn'),tr:val('cloudImportanceTr'),fr:val('cloudImportanceFr')},sortOrder:Number(val('cloudSortOrder')||0)
     };
   }
   async function translate(value,target){
@@ -350,7 +350,7 @@
     return result;
   }
   async function fillTranslations(v){
-    const groups=[v.title,v.details,v.location,v.district,v.place,v.period];
+    const groups=[v.title,v.details,v.location,v.district,v.place,v.period,v.importance];
     for(const group of groups){
       if(!group?.ar)continue;
       for(const language of ['en','tr','fr'])if(!group[language])group[language]=await translate(group.ar,language);
@@ -406,8 +406,8 @@
   function fillEditor(row,type){
     if(!row)row=rowForBase(type,val('cloudRecordId'));
     const read=key=>allLocales(row,key);
-    let title=blank(),details=blank(),location=blank(),district=blank(),period=blank(),category='',url='';
-    if(type==='landmark'){title=read('title');details=read('description');location=read('location');category=row?.category||'fort'}
+    let title=blank(),details=blank(),location=blank(),district=blank(),period=blank(),importance=blank(),category='',url='';
+    if(type==='landmark'){title=read('title');details=read('description');location=read('location');importance=read('importance');category=row?.category||'fort'}
     else if(type==='history_event'){title=read('title');details=read('body');period=read('period');category=row?.era||'ancient'}
     else if(type==='sub_district_update'){district=read('district_name');title=read('place_name');details=read('description')}
     else if(type==='sub_district'){district={ar:row?.district_name_ar||'',en:row?.district_name_en||row?.district_name_ar||'',tr:row?.district_name_tr||row?.district_name_ar||'',fr:row?.district_name_fr||row?.district_name_ar||''};title=read('title');details=read('body')}
@@ -420,7 +420,7 @@
       put('cloudDistrict'+s,district[l]);put('cloudPlace'+s,'');put('cloudPeriod'+s,period[l]);
     });
     put('cloudCategory',category);put('cloudUrl',url);put('cloudSource',row?.source_text||'');put('cloudSourceUrl',row?.source_url||'');
-    put('cloudImportanceAr',row?.importance_ar||'');put('cloudSortOrder',row?.sort_order||0);
+    put('cloudImportanceAr',importance.ar);put('cloudImportanceEn',importance.en);put('cloudImportanceTr',importance.tr);put('cloudImportanceFr',importance.fr);put('cloudSortOrder',row?.sort_order||0);
     $('cloudContentEditor')?.scrollIntoView({behavior:'smooth',block:'start'});
   }
   function typeForCollection(collection){
@@ -501,7 +501,7 @@
     $('cloudContentForm')?.addEventListener('submit',saveEditor);
     $('cloudContentClearBtn')?.addEventListener('click',()=>{
       const type=val('cloudRecordType');['cloudRecordId','cloudContributionId'].forEach(id=>put(id,''));
-      ['cloudTitleAr','cloudTitleEn','cloudTitleTr','cloudTitleFr','cloudDetailsAr','cloudDetailsEn','cloudDetailsTr','cloudDetailsFr','cloudLocationAr','cloudLocationEn','cloudLocationTr','cloudLocationFr','cloudDistrictAr','cloudDistrictEn','cloudDistrictTr','cloudDistrictFr','cloudPlaceAr','cloudPlaceEn','cloudPlaceTr','cloudPlaceFr','cloudPeriodAr','cloudPeriodEn','cloudPeriodTr','cloudPeriodFr','cloudCategory','cloudUrl','cloudSource','cloudSourceUrl','cloudImportanceAr'].forEach(id=>put(id,''));
+      ['cloudTitleAr','cloudTitleEn','cloudTitleTr','cloudTitleFr','cloudDetailsAr','cloudDetailsEn','cloudDetailsTr','cloudDetailsFr','cloudLocationAr','cloudLocationEn','cloudLocationTr','cloudLocationFr','cloudDistrictAr','cloudDistrictEn','cloudDistrictTr','cloudDistrictFr','cloudPlaceAr','cloudPlaceEn','cloudPlaceTr','cloudPlaceFr','cloudPeriodAr','cloudPeriodEn','cloudPeriodTr','cloudPeriodFr','cloudCategory','cloudUrl','cloudSource','cloudSourceUrl','cloudImportanceAr','cloudImportanceEn','cloudImportanceTr','cloudImportanceFr'].forEach(id=>put(id,''));
       put('cloudRecordType',type);
     });
     $('cloudRefreshBtn')?.addEventListener('click',async()=>{
@@ -512,7 +512,7 @@
     });
     $('cloudTranslateBtn')?.addEventListener('click',async()=>{
       const v=formValues();
-      try{await fillTranslations(v);['Ar','En','Tr','Fr'].forEach(s=>{const l=s.toLowerCase();put('cloudTitle'+s,v.title[l]);put('cloudDetails'+s,v.details[l]);put('cloudLocation'+s,v.location[l]);put('cloudDistrict'+s,v.district[l]);put('cloudPlace'+s,v.place[l]);put('cloudPeriod'+s,v.period[l])});toast('اكتملت الترجمة الآلية. راجع النصوص قبل النشر.')}
+      try{await fillTranslations(v);['Ar','En','Tr','Fr'].forEach(s=>{const l=s.toLowerCase();put('cloudTitle'+s,v.title[l]);put('cloudDetails'+s,v.details[l]);put('cloudLocation'+s,v.location[l]);put('cloudDistrict'+s,v.district[l]);put('cloudPlace'+s,v.place[l]);put('cloudPeriod'+s,v.period[l]);put('cloudImportance'+s,v.importance[l])});toast('اكتملت الترجمة الآلية. راجع النصوص قبل النشر.')}
       catch(error){toast(error.message)}
     });
     $('cloudContentList')?.addEventListener('click',event=>{
