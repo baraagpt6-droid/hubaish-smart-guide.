@@ -5,7 +5,8 @@ import { fileURLToPath } from 'node:url';
 
 const root = resolve(fileURLToPath(new URL('../', import.meta.url)));
 const required = [
-  'www/index.html', 'www/styles.css', 'www/app.js', 'www/catalog.js', 'www/features.js', 'www/sw.js',
+  'www/index.html', 'www/styles.css', 'www/app.js', 'www/catalog.js', 'www/features.js', 'www/cloud.js', 'www/sw.js',
+  'supabase/schema.sql',
   'www/assets/styles.css', 'www/assets/app.js', 'www/assets/catalog.js', 'www/assets/features.js',
   'www/manifest.json', 'www/manifest.webmanifest', 'www/icons/icon.svg',
   'www/icons/icon-192.png', 'www/icons/icon-512.png', 'capacitor.config.json',
@@ -17,6 +18,8 @@ const html = await readFile(resolve(root, 'www/index.html'), 'utf8');
 const app = await readFile(resolve(root, 'www/app.js'), 'utf8');
 const catalog = await readFile(resolve(root, 'www/catalog.js'), 'utf8');
 const features = await readFile(resolve(root, 'www/features.js'), 'utf8');
+const cloud = await readFile(resolve(root, 'www/cloud.js'), 'utf8');
+const schema = await readFile(resolve(root, 'supabase/schema.sql'), 'utf8');
 const css = await readFile(resolve(root, 'www/styles.css'), 'utf8');
 const sw = await readFile(resolve(root, 'www/sw.js'), 'utf8');
 const appAsset = await readFile(resolve(root, 'www/assets/app.js'), 'utf8');
@@ -30,16 +33,36 @@ const manifestJson = JSON.parse(await readFile(resolve(root, 'www/manifest.json'
 const capacitor = JSON.parse(await readFile(resolve(root, 'capacitor.config.json'), 'utf8'));
 const workflow = await readFile(resolve(root, '.github/workflows/build-and-deploy.yml'), 'utf8');
 
-for (const file of ['www/app.js', 'www/catalog.js', 'www/features.js', 'www/sw.js']) {
+for (const file of ['www/app.js', 'www/catalog.js', 'www/features.js', 'www/cloud.js', 'www/sw.js']) {
   const result = spawnSync(process.execPath, ['--check', resolve(root, file)], { encoding: 'utf8' });
   if (result.status !== 0) throw new Error('JavaScript syntax check failed for ' + file + ': ' + (result.stderr || result.stdout));
 }
 
 
-for (const fragment of ['./styles.css', './app.js', './catalog.js', './features.js', './manifest.webmanifest']) {
+for (const fragment of ['./styles.css', './app.js', './catalog.js', './features.js', './cloud.js', './manifest.webmanifest']) {
   if (!html.includes(fragment)) throw new Error(`Missing app reference: ${fragment}`);
 }
 if (!manifest.name || manifest.start_url !== './' || manifest.scope !== './' || !manifest.icons?.length) throw new Error('PWA manifest is incomplete');
+
+const htmlIds = [...html.matchAll(/\bid="([^"]+)"/g)].map(match => match[1]);
+const duplicateHtmlIds = [...new Set(htmlIds.filter((id, index) => htmlIds.indexOf(id) !== index))];
+if (duplicateHtmlIds.length) throw new Error('Duplicate HTML id values: ' + duplicateHtmlIds.join(', '));
+for (const source of [app, features]) {
+  const directBindings = [...source.matchAll(/getElementById\(['"]([^'"]+)['"]\)\s*\.addEventListener/g)].map(match => match[1]);
+  const missingBindings = directBindings.filter(id => !html.includes('id="' + id + '"'));
+  if (missingBindings.length) throw new Error('Event bindings target missing HTML elements: ' + missingBindings.join(', '));
+}
+for (const id of ['historyList','placesList','uzalList','peopleList','referenceList','quizArea','langSelect','cloudConfigForm','cloudAdminForm','cloudContentForm','cloudInboxList']) {
+  if (!html.includes('id="' + id + '"')) throw new Error('Required UI container is missing: ' + id);
+}
+if (!html.includes('<script src="./cloud.js" defer></script>')) throw new Error('Supabase cloud module is not loaded.');
+if (!sw.includes("'cloud.js'")) throw new Error('Cloud module is missing from the offline app shell.');
+if (!cloud.includes('/rest/v1/') || !cloud.includes('/auth/v1/token?grant_type=password') || !cloud.includes('user_contributions')) throw new Error('Supabase REST/Auth integration is incomplete.');
+for (const table of ['landmarks','history_events','sub_districts_updates','historical_figures','community_links','user_contributions']) {
+  if (!schema.includes('create table if not exists public.' + table) || !schema.includes('alter table public.' + table + ' enable row level security')) throw new Error('RLS schema is incomplete for ' + table);
+}
+if (!schema.includes("role' = 'hubaish_admin") || !schema.includes("status='pending'")) throw new Error('Admin and pending-contribution RLS guards are missing.');
+if (!app.includes('Boot check passed') || !app.includes('window.HubaishRuntime.bootReport')) throw new Error('Application boot data check is missing.');
 const sectionTags = [...html.matchAll(new RegExp('<\\/?section\\b[^>]*>', 'gi'))];
 const sectionDepth = [];
 for (const match of sectionTags) {
@@ -83,7 +106,7 @@ for (const key of ['adminAuthGate','adminPinEntry','adminPinChangeForm','adminLo
 if (!features.includes('PBKDF2') || !features.includes('function verifyAdminPin') || !features.includes('function changeAdminPin') || !features.includes('function markExplored') || !features.includes('function renderSeasonGuide')) throw new Error('Admin PIN or explorer features are incomplete');
 if (!app.includes("window.HubaishIcon = heritageIcon")) throw new Error('Heritage icon helper is not exposed');
 if (!css.includes('left:16px!important') || !css.includes('width:46px!important') || !css.includes('right:auto!important')) throw new Error('The assistant button must be fixed at 46px on the left');
-if (!sw.includes('hubaish-guide-v3.2.0') || !sw.includes("event.data?.type === 'SKIP_WAITING'") || !sw.includes('fetch(request)')) throw new Error('Seamless update service worker is incomplete');
+if (!sw.includes('hubaish-guide-v3.3.0') || !sw.includes("event.data?.type === 'SKIP_WAITING'") || !sw.includes('fetch(request)')) throw new Error('Seamless update service worker is incomplete');
 if ((app.match(/\{\s*id:\s*['"]p\d+['"]/g) || []).length < 16) throw new Error('At least 16 landmark records are required');
 if ((app.match(/\{\s*id:\s*['"]h\d+['"]/g) || []).length < 6) throw new Error('At least 6 history milestones are required');
 for (const key of ['KEYSTORE_BASE64','KEYSTORE_PASSWORD','KEY_ALIAS','KEY_PASSWORD']) if (!workflow.includes('secrets.' + key)) throw new Error('Android signing secret mapping is incomplete: ' + key);

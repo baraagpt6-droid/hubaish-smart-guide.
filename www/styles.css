@@ -273,3 +273,24 @@ html[data-theme=light] .story-heritage-icon{color:#e8cc72}
   flex:none;
   overflow:visible;
 }
+
+
+/* Supabase Cloud CMS */
+.cloud-admin-card{overflow:hidden;border-color:var(--strong);background:linear-gradient(145deg,var(--surface),rgba(16,185,129,.055))}
+.cloud-card-heading{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap}
+.cloud-status-pill{display:inline-flex;align-items:center;max-width:100%;padding:6px 10px;border:1px solid var(--border);border-radius:99px;background:var(--elevated);color:var(--sub);font-size:10px;line-height:1.5}
+.cloud-status-pill.cloud-ok{border-color:rgba(16,185,129,.38);color:var(--green)}.cloud-status-pill.cloud-error{border-color:rgba(220,80,80,.45);color:#e98b8b}
+.cloud-config-grid,.cloud-login-area,.cloud-editor,.cloud-manager-section{display:grid;gap:9px;padding:12px 0;border-top:1px solid var(--border);margin-top:10px}
+.cloud-config-grid label,.cloud-editor label{display:grid;gap:4px;color:var(--sub);font-size:11px;font-weight:800}
+.cloud-config-grid textarea{direction:ltr;text-align:left;overflow-wrap:anywhere}
+.cloud-config-actions,.cloud-admin-top,.cloud-row-actions{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+.cloud-login-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.cloud-login-grid button{grid-column:1/-1;justify-self:start}
+.cloud-admin-top{justify-content:space-between;padding:9px 11px;border:1px solid var(--strong);border-radius:12px;background:var(--gold-soft)}
+.cloud-fields-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.cloud-list{display:grid;gap:8px}
+.cloud-admin-row,.cloud-inbox-item{display:grid;gap:6px;padding:11px;border:1px solid var(--border);border-radius:13px;background:var(--elevated)}
+.cloud-admin-row>strong{font-size:12px}.cloud-admin-row>span{font-size:10px}.cloud-inbox-item .item-body{margin-bottom:0}
+.cloud-district-update{margin-top:8px;padding:8px 9px;border:1px solid var(--border);border-radius:10px;background:var(--green-soft)}
+.cloud-district-update strong{font-size:11px;color:var(--green)}.cloud-district-update p{margin:3px 0 0;line-height:1.55}
+.cloud-security-note{margin:8px 0 0;color:var(--muted);font-size:10px;line-height:1.6}
+@media(max-width:520px){.cloud-card-heading{display:grid}.cloud-login-grid,.cloud-fields-grid{grid-template-columns:1fr}.cloud-login-grid button{grid-column:auto}}
