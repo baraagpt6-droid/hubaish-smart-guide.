@@ -1,6 +1,8 @@
 /* Public Supabase client configuration.
- * These values are public client credentials. Never put service_role or secrets here.
- * The Project URL and anon public key will be filled after project creation.
+ * Use the project's Publishable key (sb_publishable_...) for browser and Android clients.
+ * Legacy anon JWT keys are also accepted during migration.
+ * Never put sb_secret_ or service_role credentials in this file.
+ * These public values are intentionally blank until the owner creates a Supabase project.
  */
 window.HUBAISH_SUPABASE_CONFIG = Object.freeze({
   url: '',
