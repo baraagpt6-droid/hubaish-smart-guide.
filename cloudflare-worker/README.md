@@ -1,43 +1,106 @@
 # Cloudflare Worker — Hubaish Smart Guide CMS
 
-This Worker keeps the GitHub JSON CMS in `www/data/live-content.json`. The GitHub token stays in Cloudflare Secrets. Admin passwords are PBKDF2 hashes stored in Cloudflare KV. Sessions are signed and checked against the current enabled account on every request.
+This Worker protects the administration endpoints for the GitHub JSON CMS at `www/data/live-content.json`.
 
-## Deploy on Cloudflare
+- Worker name: `hubaish-cms`
+- Frontend default URL: `https://hubaish-cms.baraag6.workers.dev`
+- KV namespace: `hubaish-admins`
+- Worker binding: `ADMINS`
 
-1. Open https://dash.cloudflare.com/ and go to **Workers & Pages → Create → Worker**.
-2. Create a KV namespace named `hubaish-admins`.
-3. Paste `worker.js` into the Worker editor and deploy it.
-4. In **Settings → Bindings**, add a KV namespace binding named `ADMINS` and select `hubaish-admins`.
-5. In **Settings → Variables and Secrets**, add these as Secrets:
-   - `GITHUB_TOKEN`: Fine-grained GitHub token limited to `baraagpt6-droid/hubaish-smart-guide.` with Contents Read and write.
-   - `SESSION_SECRET`: a random secret of at least 32 bytes.
-   - `BOOTSTRAP_KEY`: a separate one-time random secret.
-6. Add the plain-text variable `ALLOWED_ORIGIN` with value `https://baraagpt6-droid.github.io`. The Worker also accepts `capacitor://localhost`, `http://localhost` and `https://localhost` by default. You can set `ALLOWED_ORIGIN` to `*` to allow any origin, or provide a comma-separated allowlist. Avoid `*` when you can use the known origins.
-7. Deploy again and copy the Worker URL, for example `https://hubaish-smart-guide-cms.<account>.workers.dev`.
+The Worker stores administrator records, password hashes, login throttling counters and audit events in Cloudflare KV. The GitHub token remains in Cloudflare Secrets. Published content remains in the GitHub JSON file.
 
-Generate secrets locally with a password manager or a cryptographically secure generator. Never put their values in this repository.
+## 1. Create and bind the KV namespace
 
-## Create the first super administrator
+From the repository root, open a terminal and run:
 
-Open the published app, expand the administration panel, then use **تأسيس النظام لأول مرة (Setup)**. Enter the Worker URL, one-time Bootstrap Key, username and a password of at least 12 characters. The app calls `GET /setup/status`, shows the setup form only while no admin exists, sends `POST /setup`, saves the Worker URL and signs in immediately.
+```bash
+cd cloudflare-worker
+npx wrangler login
+npx wrangler kv namespace create hubaish-admins
+```
 
-After successful setup, remove the `BOOTSTRAP_KEY` secret in Cloudflare Worker settings. The setup form then hides because the Worker reports that initial setup is complete.
+Cloudflare prints a namespace ID. Copy that exact ID into `cloudflare-worker/wrangler.toml` by replacing:
 
-## Use it in the app
+```toml
+id = "REPLACE_WITH_KV_NAMESPACE_ID"
+```
 
-Open the app's administration panel, paste the Worker URL, then sign in with the username and password. Enable **Remember me** only on a device you control. Remembered sessions are stored on that device for up to 30 days; otherwise they last for the browser session and up to 8 hours.
+Keep the binding name exactly `ADMINS`. The Worker code reads `env.ADMINS`.
 
-The `super_admin` role can add/disable accounts, view the audit log, and publish content. The `editor` role can publish CMS content but cannot manage accounts. Disabling an account invalidates its sessions on the next request.
+You can also create the namespace in the Cloudflare dashboard under Workers & Pages → KV, then copy its ID into the same Wrangler setting.
 
-The direct GitHub Personal Access Token login remains available as a fallback.
+## 2. Create the GitHub token and Worker secrets
 
-## Endpoints
+Create a Fine-grained GitHub Personal Access Token limited to `baraagpt6-droid/hubaish-smart-guide.` with:
 
-- `POST /setup` — one-time initial super admin.
+- `Contents: Read and write`
+- `Metadata: Read-only`
+
+Create the token here: https://github.com/settings/personal-access-tokens/new
+
+From the `cloudflare-worker` directory, add the secrets. Wrangler prompts for each value:
+
+```bash
+npx wrangler secret put GITHUB_TOKEN
+npx wrangler secret put SESSION_SECRET
+npx wrangler secret put BOOTSTRAP_KEY
+```
+
+Use separate random values for `SESSION_SECRET` and `BOOTSTRAP_KEY`. Use at least 32 random bytes for the session secret. Do not put secret values in this repository, in frontend JavaScript, or in GitHub Pages.
+
+## 3. Deploy the Worker
+
+After the KV ID and all three secrets are configured:
+
+```bash
+npx wrangler deploy
+```
+
+The configured Worker name is `hubaish-cms`. If the Cloudflare account's `workers.dev` subdomain is `baraag6`, the resulting URL is:
+
+```
+https://hubaish-cms.baraag6.workers.dev
+```
+
+The Wrangler variable `ALLOWED_ORIGIN` permits the GitHub Pages origin and local preview. The Worker code also permits Capacitor's `capacitor://localhost` origin and localhost origins. Avoid using `*` for production.
+
+## 4. Create the first super administrator
+
+Open the published app and open **المزيد → إدارة الموسوعة المنشورة**. The frontend fills the Worker URL above automatically and checks `GET /setup/status`.
+
+While no administrator exists in KV, use **تأسيس النظام لأول مرة (Setup)**. Enter:
+
+- The one-time `BOOTSTRAP_KEY`
+- A username
+- A password of at least 12 characters
+
+The app sends `POST /setup`, creates the first `super_admin` in KV, saves the Worker URL and signs in.
+
+Immediately after successful setup, remove the `BOOTSTRAP_KEY` secret from the Worker:
+
+```bash
+npx wrangler secret delete BOOTSTRAP_KEY
+```
+
+Do not leave the bootstrap secret active after creating the first administrator.
+
+## 5. Use the administration panel
+
+Administrators sign in using the Worker URL, username and password. Enable **Remember me** only on a device you control. Remembered sessions last up to 30 days; other sessions last up to 8 hours.
+
+- `super_admin`: publish content, create or disable administrator accounts, and view the audit log.
+- `editor`: publish CMS content but cannot manage administrator accounts.
+
+The direct GitHub Personal Access Token login remains available as an emergency fallback.
+
+## Worker endpoints
+
+- `GET /setup/status` — check whether first-admin setup is required.
+- `POST /setup` — create the first super administrator once.
 - `POST /auth/login` — username/password login.
-- `GET /auth/me` — current session.
-- `PUT /content` — publish the validated JSON CMS.
-- `GET /admin/users`, `POST /admin/users`, `PATCH /admin/users` — super-admin account management.
-- `GET /admin/audit` — latest 100 audit events.
+- `GET /auth/me` — validate the current session.
+- `PUT /content` — publish validated CMS JSON to GitHub `main`.
+- `GET /admin/users`, `POST /admin/users`, `PATCH /admin/users` — manage administrator accounts.
+- `GET /admin/audit` — read the latest audit events.
 
-The Worker requires Cloudflare KV binding `ADMINS`. No paid Cloudflare service is required for this design, but free-plan limits and availability are governed by Cloudflare.
+A Cloudflare KV binding named `ADMINS` and the secrets `GITHUB_TOKEN`, `SESSION_SECRET` and (only during first setup) `BOOTSTRAP_KEY` are required. This design uses Workers and KV; usage remains subject to Cloudflare's plan limits and current service terms.
