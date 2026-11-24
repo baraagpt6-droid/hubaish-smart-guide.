@@ -2,7 +2,7 @@ name: Cloudflare Worker Production Health
 
 on:
   workflow_run:
-    workflows: ["Deploy Cloudflare Worker"]
+    workflows: ["Verify Cloudflare Production"]
     types: [completed]
     branches: [main]
   workflow_dispatch:
