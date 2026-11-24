@@ -107,6 +107,9 @@ const expectedWorkerOrigins = 'ALLOWED_ORIGIN = "https://baraagpt6-droid.github.
 if (!workerConfig.includes(expectedWorkerOrigins)) {
   throw new Error('Cloudflare Worker CORS must allow the production GitHub Pages origin and http://localhost.');
 }
+if (!worker.includes('filter(x=>x&&x!=="*")') || worker.includes('"Access-Control-Allow-Origin":"*"')) {
+  throw new Error('Cloudflare Worker CORS must reject wildcard origins and use an explicit allowlist.');
+}
 if (!worker.includes('path==="/api/health"') || !worker.includes('githubContentsRead') ||
     !worker.includes('sessionSecret') || !worker.includes('healthKV')) {
   throw new Error('Cloudflare Worker health endpoint must check KV, GitHub contents and SESSION_SECRET.');
