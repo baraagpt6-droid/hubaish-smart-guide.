@@ -45,10 +45,10 @@ const DEFAULT_PLACES = [
 const DEFAULT_SOCIALS = [{ name: 'مديرية حبيش HUBAISH DISTRICT', url: 'https://www.facebook.com/share/g/1JMCzDUsdZ/' }, { name: 'المركز الوطني للمعلومات اليمني', url: 'https://yemen-nic.info/contents/Brief/detail.php?ID=7617&phrase_id=1191776&print=Y' }];
 
 const I18N = {
-  AR: { dir: 'rtl', appName: 'مديرية حبيش', appSub: 'موسوعة جغرافية وتاريخية', govBadge: 'محافظة إب • الجمهورية اليمنية', heroTitle: 'دليل مديرية حبيش', heroDesc: 'موسوعة رقمية لتاريخ حبيش وعزلها وقراها وحصونها ومعالمها ومواقيت الصلاة.', statUzal: 'عزلة إدارية', statArea: 'كم² المساحة', statPop: 'نسمة (تعداد)', spotlightTitle: 'معلم مختار من حبيش', navHome: 'الرئيسية', navHistory: 'التاريخ', navPlaces: 'المعالم', navUzal: 'العزل', navMore: 'المزيد' },
-  EN: { dir: 'ltr', appName: 'Hubaish District', appSub: 'Geographical and Historical Encyclopedia', govBadge: 'Ibb Governorate • Yemen', heroTitle: 'Hubaish District Guide', heroDesc: 'A local guide to Hubaish history, sub-districts, villages, forts, landmarks and prayer times.', statUzal: 'Sub-districts', statArea: 'Area in km²', statPop: 'Population', spotlightTitle: 'Featured landmark', navHome: 'Home', navHistory: 'History', navPlaces: 'Landmarks', navUzal: 'Sub-districts', navMore: 'More' },
-  TR: { dir: 'ltr', appName: 'Hubeyş İlçesi', appSub: 'Coğrafi ve Tarihî Ansiklopedi', govBadge: 'İbb Valiliği • Yemen', heroTitle: 'Hubeyş İlçe Rehberi', heroDesc: 'Hubeyş tarihi, bucakları, köyleri, kaleleri, tarihi yerleri ve namaz vakitleri için yerel rehber.', statUzal: 'Bucak', statArea: 'Alan km²', statPop: 'Nüfus', spotlightTitle: 'Öne çıkan eser', navHome: 'Ana Sayfa', navHistory: 'Tarih', navPlaces: 'Yerler', navUzal: 'Bucaklar', navMore: 'Daha Fazla' },
-  FR: { dir: 'ltr', appName: 'District de Hubaish', appSub: 'Encyclopédie géographique et historique', govBadge: 'Gouvernorat d’Ibb • Yémen', heroTitle: 'Guide du district de Hubaish', heroDesc: 'Guide local de l’histoire, des sous-districts, villages, forts, monuments et horaires de prière de Hubaish.', statUzal: 'Sous-districts', statArea: 'Superficie km²', statPop: 'Population', spotlightTitle: 'Monument à la une', navHome: 'Accueil', navHistory: 'Histoire', navPlaces: 'Monuments', navUzal: 'Sous-districts', navMore: 'Plus' }
+  AR: { dir: 'rtl', appName: 'دليل حبيش الذكي', appSub: 'دليل رقمي للتراث والمعالم', govBadge: 'محافظة إب • الجمهورية اليمنية', heroTitle: 'دليل مديرية حبيش', heroDesc: 'موسوعة رقمية لتاريخ حبيش وعزلها وقراها وحصونها ومعالمها ومواقيت الصلاة.', statUzal: 'عزلة إدارية', statArea: 'كم² المساحة', statPop: 'نسمة (تعداد)', spotlightTitle: 'معلم مختار من حبيش', navHome: 'الرئيسية', navHistory: 'التاريخ', navPlaces: 'المعالم', navUzal: 'العزل', navMore: 'المزيد' },
+  EN: { dir: 'ltr', appName: 'Hubaish Smart Guide', appSub: 'Digital heritage and landmark guide', govBadge: 'Ibb Governorate • Yemen', heroTitle: 'Hubaish District Guide', heroDesc: 'A local guide to Hubaish history, sub-districts, villages, forts, landmarks and prayer times.', statUzal: 'Sub-districts', statArea: 'Area in km²', statPop: 'Population', spotlightTitle: 'Featured landmark', navHome: 'Home', navHistory: 'History', navPlaces: 'Landmarks', navUzal: 'Sub-districts', navMore: 'More' },
+  TR: { dir: 'ltr', appName: 'Hubaish Akıllı Rehberi', appSub: 'Dijital miras ve gezi rehberi', govBadge: 'İbb Valiliği • Yemen', heroTitle: 'Hubeyş İlçe Rehberi', heroDesc: 'Hubeyş tarihi, bucakları, köyleri, kaleleri, tarihi yerleri ve namaz vakitleri için yerel rehber.', statUzal: 'Bucak', statArea: 'Alan km²', statPop: 'Nüfus', spotlightTitle: 'Öne çıkan eser', navHome: 'Ana Sayfa', navHistory: 'Tarih', navPlaces: 'Yerler', navUzal: 'Bucaklar', navMore: 'Daha Fazla' },
+  FR: { dir: 'ltr', appName: 'Guide intelligent de Hubaish', appSub: 'Guide numérique du patrimoine', govBadge: 'Gouvernorat d’Ibb • Yémen', heroTitle: 'Guide du district de Hubaish', heroDesc: 'Guide local de l’histoire, des sous-districts, villages, forts, monuments et horaires de prière de Hubaish.', statUzal: 'Sous-districts', statArea: 'Superficie km²', statPop: 'Population', spotlightTitle: 'Monument à la une', navHome: 'Accueil', navHistory: 'Histoire', navPlaces: 'Monuments', navUzal: 'Sous-districts', navMore: 'Plus' }
 };
 
 let currentEra = 'all';
@@ -176,6 +176,16 @@ function showToast(message) {
   toastTimer = window.setTimeout(() => element.classList.remove('show'), 2400);
 }
 
+function syncNativeStatusBar() {
+  const dark = document.documentElement.dataset.theme !== 'light';
+  const color = dark ? '#081812' : '#f2f5ef';
+  document.querySelector('meta[name="theme-color"]')?.setAttribute('content', color);
+  const statusBar = window.Capacitor?.Plugins?.StatusBar;
+  if (!statusBar) return;
+  Promise.resolve(statusBar.setOverlaysWebView?.({ overlay: false })).catch(() => {});
+  Promise.resolve(statusBar.setStyle?.({ style: dark ? 'LIGHT' : 'DARK' })).catch(() => {});
+  Promise.resolve(statusBar.setBackgroundColor?.({ color })).catch(() => {});
+}
 function applyTheme(theme) {
   state.theme = theme === 'light' ? 'light' : 'dark';
   document.documentElement.dataset.theme = state.theme;
@@ -185,6 +195,7 @@ function applyTheme(theme) {
     ? 'M12 3v2m0 14v2M3 12h2m14 0h2M5.64 5.64l1.42 1.42m9.88 9.88 1.42 1.42m0-12.72-1.42 1.42m-9.88 9.88-1.42 1.42M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8Z'
     : 'M20.5 15.5A8.5 8.5 0 0 1 8.5 3.5 8.5 8.5 0 1 0 20.5 15.5Z');
   if (themeToggle) themeToggle.setAttribute('aria-label', state.theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme');
+  syncNativeStatusBar();
   saveState();
 }
 
@@ -197,6 +208,13 @@ function applyLang(lang) {
   if (languageCode) languageCode.textContent = state.lang;
   const languageSelect = document.getElementById('langSelect');
   if (languageSelect) languageSelect.value = state.lang;
+  const code = document.getElementById('languageCurrentCode');
+  if (code) code.textContent = state.lang;
+  const trigger = document.getElementById('languagePickerButton');
+  const menu = document.getElementById('languagePickerMenu');
+  if (trigger) trigger.setAttribute('aria-expanded', 'false');
+  if (menu) menu.hidden = true;
+  document.querySelectorAll('[data-language]').forEach(button => button.setAttribute('aria-selected', String(button.dataset.language === state.lang)));
   document.querySelectorAll('[data-i18n]').forEach(element => {
     const key = element.dataset.i18n;
     if (dictionary[key]) element.textContent = dictionary[key];
@@ -734,6 +752,19 @@ function bindEvents() {
   document.getElementById('themeToggleBtn').addEventListener('click', () => applyTheme(state.theme === 'dark' ? 'light' : 'dark'));
   const languageSelect = document.getElementById('langSelect');
   languageSelect?.addEventListener('change', () => applyLang(languageSelect.value));
+  const languagePickerButton = document.getElementById('languagePickerButton');
+  const languagePickerMenu = document.getElementById('languagePickerMenu');
+  languagePickerButton?.addEventListener('click', () => {
+    if (!languagePickerMenu) return;
+    languagePickerMenu.hidden = !languagePickerMenu.hidden;
+    languagePickerButton.setAttribute('aria-expanded', String(!languagePickerMenu.hidden));
+  });
+  document.querySelectorAll('[data-language]').forEach(button => button.addEventListener('click', () => applyLang(button.dataset.language)));
+  document.addEventListener('click', event => {
+    if (event.target.closest('.language-picker')) return;
+    if (languagePickerMenu) languagePickerMenu.hidden = true;
+    languagePickerButton?.setAttribute('aria-expanded', 'false');
+  });
   document.getElementById('globalSearchInput').addEventListener('input', event => renderGlobalSearch(event.target.value));
   document.getElementById('histSearchInput').addEventListener('input', event => renderHistory(currentEra, event.target.value));
   document.getElementById('placeSearchInput').addEventListener('input', event => renderPlaces(currentPlaceCategory, event.target.value));
@@ -818,8 +849,11 @@ function bindEvents() {
   bindVoiceMic('uzalMicBtn', 'uzalSearchInput');
   bindVoiceMic('aiMicBtn', 'aiInput');
   // The single visible language selector drives all four interface locales.
-  window.addEventListener('online', () => showToast('عاد الاتصال بالإنترنت.'));
-  window.addEventListener('offline', () => showToast('أنت الآن دون اتصال. المحتوى المحفوظ متاح.'));
+  const offlineIndicator = document.getElementById('offlineIndicator');
+  const updateNetworkState = () => { if (offlineIndicator) offlineIndicator.hidden = navigator.onLine; };
+  updateNetworkState();
+  window.addEventListener('online', () => { updateNetworkState(); showToast('عاد الاتصال بالإنترنت.'); });
+  window.addEventListener('offline', () => { updateNetworkState(); showToast('أنت الآن دون اتصال. المحتوى المحفوظ متاح.'); });
 }
 
 function bindServiceWorkerUpdates() {
