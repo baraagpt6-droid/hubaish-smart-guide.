@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-24T11:28:47.775Z",
+  "updatedAt": "2026-11-24T11:34:43.991Z",
   "landmarks": [
     {
       "id": "khudad-fort",
@@ -266,6 +266,81 @@
       "importance_en": "A religious heritage record with attribution to the local study reporting the inscription.",
       "source_text": "إسماعيل عبدالقادر الفلاحي، «نبذة تاريخية عن مديرية حبيش»، ناقلاً عن دراسة المعالم التاريخية والعناصر السياحية للدكتور محمد علي العروسي وعن نقوش المباني.",
       "source_url": "https://kenanaonline.com/users/esmaeilalflahi/posts/280884"
+    },
+    {
+      "id": "kareef-dardaa-wuhaza",
+      "category": "valley",
+      "status": "documented",
+      "title_ar": "كريف درداع في مصنعة وحاظة",
+      "title_en": "Dardaa cistern at Wuhaza Fortress",
+      "location_ar": "شرق بوابة القلعة في مصنعة وحاظة – عزلة شباع",
+      "location_en": "East of the fortress gate at Wuhaza, Shaba' sub-district",
+      "description_ar": "ينقل المرجع وصف الهمداني لمصنعة وحاظة وفيه كريف درداع عند باب القلعة من جهتها الشرقية، ويذكر النص القديم قياساً قدره ستمائة ذراع في مثلها. وتنقل مادة محلية عن تحقيق القاضي محمد علي الأكوع أن ما بقي من القياس المذكور كان نحو ستين ذراعاً. هذه أرقام منقولة عن نص تاريخي وتحقيقه، وليست قياساً ميدانياً حديثاً.",
+      "description_en": "The source quotes al-Hamdani describing Dardaa cistern by the eastern gate of Wuhaza and gives an old measurement of 600 cubits by 600. A local note citing Muhammad al-Akwa' says about 60 cubits remained of the described measure. These are historical textual measurements, not a modern field survey.",
+      "importance_ar": "منشأة مائية تاريخية مرتبطة بمصنعة وحاظة والعمارة الدفاعية في المرتفع.",
+      "importance_en": "A historic water-storage structure associated with Wuhaza's fortified highland site.",
+      "source_text": "مادة حبيش في ثور رأين، ناقلة عن صفة جزيرة العرب للهمداني وتحقيق محمد علي الأكوع.",
+      "source_url": "https://www.thu-raein.com/index.php/ar/makhaleef-ar/hubaish-district-ar?id=17&view=category"
+    },
+    {
+      "id": "kareef-al-wufait-khudad",
+      "category": "valley",
+      "status": "documented",
+      "title_ar": "كريف الوفيت في قلعة خدد",
+      "title_en": "Al-Wufait cistern at Khudad Fort",
+      "location_ar": "جنوب قلعة خدد – عزلة العارضة بحسب مرجع محلي",
+      "location_en": "South side of Khudad Fort – Al-Aridah, according to a local source",
+      "description_ar": "يذكر النص المنقول عن الهمداني كريفاً يسمى الوفيت منقوراً في الصفا الأسود جنوب قلعة خدد، ويصفه بعمق خمسين ذراعاً وعرض عشرين وطول خمسين، مع جدار يحول دون السقوط فيه. المقادير وصف تاريخي منقول، ولم تتحقق الدراسة من أبعاد المنشأة حالياً.",
+      "description_en": "The al-Hamdani passage quoted in a local source describes al-Wufait, a cistern cut into black rock south of Khudad Fort, with historical dimensions of 50 cubits deep, 20 wide and 50 long, and a protective wall. These are quoted historical measurements, not verified current dimensions.",
+      "importance_ar": "شاهد على تقنيات جمع المياه وتخزينها داخل المواقع المحصنة.",
+      "importance_en": "Evidence of water collection and storage within fortified sites.",
+      "source_text": "مادة حبيش في ثور رأين، ناقلة عن صفة جزيرة العرب للهمداني وتحقيق محمد علي الأكوع.",
+      "source_url": "https://www.thu-raein.com/index.php/ar/makhaleef-ar/hubaish-district-ar?id=17&view=category"
+    },
+    {
+      "id": "north-cistern-khudad",
+      "category": "valley",
+      "status": "documented",
+      "title_ar": "الكريف الشمالي غير المسمى بقلعة خدد",
+      "title_en": "The unnamed northern cistern at Khudad Fort",
+      "location_ar": "شمال الحصن عند البوابة الثانية – قلعة خدد",
+      "location_en": "North side of the fort at its second gate – Khudad Fort",
+      "description_ar": "يذكر وصف الهمداني المنقول في مادة حبيش ماءً آخر شمال الحصن عند بابه الثاني، محفوراً في الصفا ومبطناً بالبلاط، مع درج ينزل إليه من رأس الحصن. لا يذكر النص اسماً خاصاً لهذا الخزان؛ لذلك لا يمنحه الدليل اسماً تاريخياً مستقلاً.",
+      "description_en": "The quoted al-Hamdani description mentions a second water store north of the fort by its second gate, cut into rock, lined with stone and reached by steps from the top of the fort. The source gives it no proper name, so the guide retains it as unnamed.",
+      "importance_ar": "منشأة مائية مرتبطة ببنية قلعة خدد الدفاعية.",
+      "importance_en": "A water structure associated with Khudad Fort's defensive layout.",
+      "source_text": "مادة حبيش في ثور رأين، ناقلة عن صفة جزيرة العرب للهمداني.",
+      "source_url": "https://www.thu-raein.com/index.php/ar/makhaleef-ar/hubaish-district-ar?id=17&view=category"
+    },
+    {
+      "id": "sahul-basin",
+      "category": "valley",
+      "status": "local",
+      "title_ar": "قاع السحول",
+      "title_en": "The Sahul Basin",
+      "location_ar": "أسفل ظُلمة ومحيط عزلة المشيرق بحسب دراسة انتفاضة حبيش",
+      "location_en": "Below Dhulmah, around Al-Mushriq according to a local historical study",
+      "description_ar": "تصف دراسة انتفاضة حبيش عزلة المشيرق بأنها تطل على قاع السحول. يرد القاع بوصفه نطاقاً طبيعياً وجغرافياً في الرواية المحلية، دون خريطة منشورة تثبت امتداده أو حدوده أو مجاري المياه المرتبطة به.",
+      "description_en": "A local study of the Hubaish uprising describes Al-Mushriq as overlooking the Sahul Basin. The basin is recorded as a geographic landscape feature, but no mapped extent, boundary or watercourse is provided in the source.",
+      "importance_ar": "معلم جغرافي مرتبط بوصف المرتفعات والسفوح الزراعية في جنوب المديرية.",
+      "importance_en": "A geographic feature associated with the district's highland and agricultural slopes.",
+      "source_text": "بلال الطيب، «حبيش.. مفتتح المجد وذروته»، 21 مايو 2022.",
+      "source_url": "https://hekmahyemanya.com/آثار/حُبيش-مُفتتح-المجد-وذروته/"
+    },
+    {
+      "id": "al-dhuhrah-historic-settlement",
+      "category": "mountain",
+      "status": "local",
+      "title_ar": "الظهرة – منطقة عمران تاريخي",
+      "title_en": "Al-Dhuhrah Historic Settlement",
+      "location_ar": "مرتفعات السحول قرب قرية ملكان شمال غرب إب؛ التبعية الإدارية الحالية غير محسومة",
+      "location_en": "Sahul highlands near Malkan, northwest of Ibb; current administrative affiliation is unconfirmed",
+      "description_ar": "تذكر مادة محلية أن الظهرة تقع شمال غرب مدينة إب قرب قرية ملكان، وتصف وجود دور سكنية بعضها مأهول وبعضها خرب، ونوبة حراسة تعرف بنوبة سند. ويربط المقال المنطقة بتاريخ السلطان سعد بن وائل الحميري، لكنه لا يقدم خريطة تثبت انتماءها الحالي لمديرية حبيش؛ لذلك تعرض بوصفها منطقة تاريخية مرتبطة بمحيط السحول دون الجزم بحدودها.",
+      "description_en": "A local account places Al-Dhuhrah northwest of Ibb near Malkan and describes occupied and ruined houses and a watchtower known as Nubbat Sind. It associates the area with Sultan Sa'd bin Wa'il al-Himyari, but provides no map confirming its current inclusion in Hubaish District.",
+      "importance_ar": "موضع عمران تاريخي يحتاج إلى مسح أثري وحدود إدارية موثقة.",
+      "importance_en": "A historic settlement area requiring archaeological survey and verified administrative boundaries.",
+      "source_text": "مادة حبيش في ثور رأين، ناقلة عن وصف محلي لمنطقة الظهرة ومخلاف الشوافي وبني وائل.",
+      "source_url": "https://www.thu-raein.com/index.php/ar/makhaleef-ar/hubaish-district-ar?id=17&view=category"
     }
   ],
   "historyEvents": [
