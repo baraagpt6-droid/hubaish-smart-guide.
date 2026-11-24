@@ -29,7 +29,7 @@
 ### إعداد رمز المشرف
 
 1. افتح [GitHub Fine-grained Personal Access Tokens](https://github.com/settings/personal-access-tokens/new).
-2. اختر الوصول إلى المستودع `baraag6-droid/hubaish-smart-guide.` فقط.
+2. اختر الوصول إلى المستودع `baraagpt6-droid/hubaish-smart-guide.` فقط.
 3. امنح `Contents: Read and write` و`Metadata: Read`.
 4. اختر مدة صلاحية تناسب سياسة حسابك، ثم أنشئ الرمز.
 5. من التطبيق افتح «المزيد» ثم «لوحة إدارة الموسوعة المنشورة»، وأدخل الرمز للتحقق.
