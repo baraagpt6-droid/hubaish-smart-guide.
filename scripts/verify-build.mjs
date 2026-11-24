@@ -216,7 +216,7 @@ if ([...personBlock.matchAll(/^\s*\{n:/gm)].length !== 4) throw new Error('The f
 const refsStart = catalog.indexOf('const REFS=[');
 const refsEnd = catalog.indexOf('const QUIZ=', refsStart);
 const refsBlock = refsStart >= 0 && refsEnd > refsStart ? catalog.slice(refsStart, refsEnd) : '';
-if ([...refsBlock.matchAll(/^\s*\{t:/gm)].length !== 4) throw new Error('The four baseline references are incomplete.');
+if ([...refsBlock.matchAll(/^\s*\{t:/gm)].length < 9) throw new Error('The expanded reference library is incomplete.');
 const quizStart = catalog.indexOf('const QUIZ=[');
 const quizEnd = catalog.indexOf('  ];', quizStart);
 const quizBlock = quizStart >= 0 && quizEnd > quizStart ? catalog.slice(quizStart, quizEnd) : '';
