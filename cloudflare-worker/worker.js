@@ -21,13 +21,12 @@ const getUser=(env,name)=>env.ADMINS.get(UP+name,"json");
 async function log(env,event){const a=await env.ADMINS.get(AUDIT,"json")||[];a.unshift({at:new Date().toISOString(),...event});await env.ADMINS.put(AUDIT,JSON.stringify(a.slice(0,200)))}
 function cors(req,env){
  const origin=req.headers.get("Origin")||"";
- const configured=String(env.ALLOWED_ORIGIN||"").split(",").map(x=>x.trim()).filter(Boolean);
- const wildcard=configured.includes("*");
+ const configured=String(env.ALLOWED_ORIGIN||"").split(",").map(x=>x.trim()).filter(x=>x&&x!=="*");
  const defaults=["https://baraagpt6-droid.github.io","capacitor://localhost","http://localhost","https://localhost"];
  const allowed=new Set([...defaults,...configured]);
- const permitted=!origin||wildcard||allowed.has(origin);
+ const permitted=!origin||allowed.has(origin);
  return {
-  ...(wildcard?{"Access-Control-Allow-Origin":"*"}:origin&&permitted?{"Access-Control-Allow-Origin":origin}:{}),
+  ...(origin&&permitted?{"Access-Control-Allow-Origin":origin}:{}),
   "Access-Control-Allow-Methods":"GET,POST,PUT,PATCH,OPTIONS",
   "Access-Control-Allow-Headers":"Content-Type,Authorization",
   "Access-Control-Max-Age":"86400",
