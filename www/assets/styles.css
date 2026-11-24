@@ -400,3 +400,9 @@ body{padding-bottom:calc(88px + env(safe-area-inset-bottom,0px))}
 .cloud-setup-area .cloud-login-grid .btn-primary{width:100%}
 .cloud-setup-area #workerSetupNotice{margin:10px 0 0}
 .cloud-setup-warning{padding:10px 12px;border:1px solid var(--gold);border-radius:12px;background:var(--gold-soft);color:var(--text)}
+
+
+/* Android 15/16 edge-to-edge safe areas for Capacitor WebView. */
+.topbar{padding-top:max(9px,env(safe-area-inset-top,0px),var(--status-bar-height,0px))}
+.bottom-nav{padding-bottom:max(6px,env(safe-area-inset-bottom,0px))}
+body{padding-bottom:calc(88px + env(safe-area-inset-bottom,0px))}
