@@ -44,7 +44,7 @@ for (const file of ['www/app.js', 'www/catalog.js', 'www/features.js', 'www/gith
 for (const fragment of ['./styles.css', './app.js', './catalog.js', './features.js', './github-cms.js', './manifest.webmanifest']) {
   if (!html.includes(fragment)) throw new Error('Missing app reference: ' + fragment);
 }
-if (!html.includes('https://api.github.com') || !html.includes('https://raw.githubusercontent.com') ||
+if (!html.includes('https://*.workers.dev') || !html.includes('https://api.github.com') || !html.includes('https://raw.githubusercontent.com') ||
     !html.includes('https://api.mymemory.translated.net')) throw new Error('CSP does not allow GitHub JSON CMS or translation requests.');
 if (html.includes('supabase') || app.includes('supabase') || features.includes('supabase') ||
     catalog.includes('supabase') || githubCms.includes('supabase') || sw.includes('supabase')) {
