@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-24T10:42:27.755Z",
+  "updatedAt": "2026-11-24T10:43:30.495Z",
   "landmarks": [
     {
       "id": "khudad-fort",
@@ -15,12 +15,7 @@
       "title_en": "Khudad Archaeological Fort",
       "location_en": "Al-Aridah area; another account places it between Sa'ir and Al-Sadr",
       "description_en": "Local historical accounts describe Khudad as an old fort on Mount Hubaish and associate it with rock-cut cisterns. The sources differ on its administrative location, so this record preserves the discrepancy and does not assign unverified coordinates.",
-      "importance_en": "A heritage site in local accounts of historical Yemeni geography; archaeological survey and field identification are still needed.",
-      "image_url": "https://al-jandprovince.com/UploadControl/UploadImages_News/picture/2024/05/A5T_29_05_2024_12_50_54_ymfr.webp",
-      "image_alt_ar": "مدرجات زراعية ومرتفع في مديرية حبيش؛ لا تحدد الصورة قلعة خدد نفسها.",
-      "image_credit": "مبادرة إقليم الجند، صفحة مديرية حبيش، 29 مايو 2024",
-      "image_source_url": "https://al-jandprovince.com/p-61",
-      "image_license": "لم يظهر ترخيص إعادة استخدام للصورة؛ يعرضها التطبيق من المصدر الأصلي فقط."
+      "importance_en": "A heritage site in local accounts of historical Yemeni geography; archaeological survey and field identification are still needed."
     },
     {
       "id": "wuhaza-fortress",
@@ -50,12 +45,7 @@
       "title_en": "Jabal Khadra and its terraces",
       "location_en": "Jabal Khadra sub-district and the Dhulmah centre area",
       "description_en": "A local account describes Jabal Khadra as a prominent green highland with cultivated terraces and settlements on its slopes. No verified summit elevation is supplied.",
-      "importance_en": "A notable mountain and agricultural landscape; elevation and coordinates need field measurement.",
-      "image_url": "https://hekmahyemanya.com/wp-content/uploads/2022/05/%D9%82%D8%B1%D9%8A%D8%A9_%D8%A7%D9%84%D9%81%D8%B1%D8%A7%D8%B9%D9%8A_-_%D9%85%D8%AF%D9%8A%D8%B1%D9%8A%D8%A9_%D8%AD%D8%A8%D9%8A%D8%B4_-_panoramio-780x470.webp",
-      "image_alt_ar": "المدرجات والقرية في صورة معرّفة بمصدرها على أنها قرية الفراعي في مديرية حبيش، وليست صورة مثبتة لقمة جبل خضراء.",
-      "image_credit": "حكمة يمانية، صورة قرية الفراعي – مديرية حبيش",
-      "image_source_url": "https://hekmahyemanya.com/آثار/حُبيش-مُفتتح-المجد-وذروته/",
-      "image_license": "الصورة مستضافة في المصدر الأصلي؛ لم نتحقق من ترخيص إعادة الاستخدام."
+      "importance_en": "A notable mountain and agricultural landscape; elevation and coordinates need field measurement."
     },
     {
       "id": "farai-village-landscape",
@@ -76,6 +66,26 @@
       "image_credit": "حكمة يمانية، صورة قرية الفراعي – مديرية حبيش",
       "image_source_url": "https://hekmahyemanya.com/آثار/حُبيش-مُفتتح-المجد-وذروته/",
       "image_license": "الصورة مستضافة في المصدر الأصلي؛ لم نتحقق من ترخيص إعادة الاستخدام."
+    },
+    {
+      "id": "hubaish-terraced-highlands",
+      "category": "mountain",
+      "status": "local",
+      "title_ar": "المدرجات والمرتفعات الخضراء في حبيش",
+      "title_en": "Hubaish green highlands and terraces",
+      "location_ar": "منظر عام من مديرية حبيش",
+      "location_en": "General view in Hubaish District",
+      "description_ar": "صورة منشورة في صفحة تعريفية بمديرية حبيش وتعرض مدرجات زراعية ومرتفعاً أخضر. لا تستخدم الصورة لتعيين حصن أو قرية بعينها؛ يلزم التحقق الميداني من الموقع الدقيق.",
+      "description_en": "A photograph published on a Hubaish District information page showing green agricultural terraces and a highland. It is not used to identify a specific fort or village.",
+      "importance_ar": "صورة مرجعية للمشهد الطبيعي والزراعي في المديرية.",
+      "importance_en": "A reference image of the district's natural and agricultural landscape.",
+      "source_text": "مبادرة إقليم الجند، صفحة مديرية حبيش.",
+      "source_url": "https://al-jandprovince.com/p-61",
+      "image_url": "https://al-jandprovince.com/UploadControl/UploadImages_News/picture/2024/05/A5T_29_05_2024_12_50_54_ymfr.webp",
+      "image_alt_ar": "مدرجات زراعية ومرتفع أخضر في مديرية حبيش؛ الموقع التفصيلي غير محدد في الوصف المنشور.",
+      "image_credit": "مبادرة إقليم الجند، صفحة مديرية حبيش، 29 مايو 2024",
+      "image_source_url": "https://al-jandprovince.com/p-61",
+      "image_license": "لم يظهر ترخيص إعادة استخدام للصورة؛ تعرض من المصدر الأصلي فقط."
     }
   ],
   "historyEvents": [
