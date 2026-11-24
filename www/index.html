@@ -22,6 +22,7 @@
   <script src="./features.js" defer></script>
   <script src="./github-cms.js" defer></script>
   <script src="./gallery.js" defer></script>
+  <script src="./upgrade-400.js" defer></script>
 </head>
 <body>
   <div id="appSplash" class="app-splash" role="status" aria-label="دليل حبيش"><div class="app-splash-inner"><img src="./icons/icon.svg" alt=""><strong>دليل حبيش</strong><span>HUBAISH SMART GUIDE</span></div></div>
@@ -58,7 +59,7 @@
           <div class="stat-tile"><b class="stat-num" data-count="22">22</b><span data-i18n="statUzal">عزلة إدارية</span></div>
           <div class="stat-tile"><b class="stat-num" data-count="228">228</b><span data-i18n="statArea">كم² المساحة</span></div>
           <div class="stat-tile"><b class="stat-num" data-count="105998">105,998</b><span data-i18n="statPop">نسمة (تعداد 2004)</span></div>
-          <div class="stat-tile"><b class="stat-num stat-word">ظُلمة</b><span data-i18n="statCenter">مركز المديرية</span></div>
+          <div class="stat-tile"><b class="stat-num stat-word" data-i18n="statCenterName">ظُلمة</b><span data-i18n="statCenter">مركز المديرية</span></div>
         </div>
         <p id="dataSourceNote" class="data-source-note" data-i18n="dataSourceNote">عدد السكان وفق تعداد 2004. تُستخدم مساحة 228 كم² في بيانات OCHA/Local Governance، بينما يذكر مرجع محلي آخر 330 كم²؛ لذلك يبقى رقم المساحة بحاجة إلى حسم رسمي. بيانات الارتفاعات نطاق تقريبي وليست قياساً مساحياً.</p>
         <section class="geo-profile" aria-labelledby="geoProfileTitle">
@@ -177,6 +178,12 @@
                 <option value="all">كل الأقسام</option><option value="landmark">المعالم</option><option value="history_event">التاريخ</option><option value="sub_district">العزل</option><option value="sub_district_update">القرى والمواضع</option><option value="historical_figure">الشخصيات</option><option value="community_link">الروابط</option>
               </select>
             </div>
+          </section>
+          <section id="cloudPhotoReviewPanel" class="cloud-editor" aria-labelledby="cloudPhotoReviewTitle">
+            <h4 class="item-title" id="cloudPhotoReviewTitle" data-i18n="photoReviewTitle">مراجعة صور الزوار</h4>
+            <p class="small muted" data-i18n="photoReviewDescription">راجع الصورة والموقع قبل النشر. لن تظهر الصورة في المعرض قبل موافقة المشرف.</p>
+            <div class="card-actions"><button class="btn-secondary" id="cloudPhotoReviewRefresh" type="button" data-i18n="photoReviewRefresh">تحديث قائمة المراجعة</button><span class="small muted" id="cloudPhotoReviewStatus" aria-live="polite"></span></div>
+            <div id="cloudPhotoReviewList" class="cloud-list" aria-live="polite"></div>
           </section>
           <section id="cloudSuperAdminPanel" class="cloud-editor hidden"><h4 class="item-title">إدارة حسابات المشرفين</h4>
             <form id="cloudCreateAdminForm" class="cloud-fields-grid">

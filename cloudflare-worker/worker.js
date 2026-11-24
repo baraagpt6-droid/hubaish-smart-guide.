@@ -70,6 +70,19 @@ async function route(req,env){
  if(req.method==="OPTIONS")return new Response(null,{status:204});
  if(req.method==="GET"&&(path==="/health"||path==="/api/health"))return healthStatus(env);
  if(!env.ADMINS||!env.GITHUB_TOKEN||!env.SESSION_SECRET) return json({error:"Configure ADMINS KV, GITHUB_TOKEN and SESSION_SECRET."},500);
+ if(req.method==="POST"&&path==="/public/photo-submissions"){
+  const ip=req.headers.get("CF-Connecting-IP")||"unknown",rateKey="photo-rate:"+ip,rate=await env.ADMINS.get(rateKey,"json")||{count:0};
+  if(rate.count>=6)return json({error:"Submission limit reached. Please try again later."},429);
+  const length=Number(req.headers.get("Content-Length")||0);if(length>320000)return json({error:"Image submission is too large."},413);
+  const b=await req.json(),title=String(b.title||"").trim().slice(0,100),location=String(b.location||"").trim().slice(0,100),photographer=String(b.photographer||"").trim().slice(0,70),imageData=String(b.imageData||"");
+  if(!b.consent||!title||!location||!photographer)return json({error:"Photo title, location, photographer and consent are required."},400);
+  if(!/^data:image\/webp;base64,[A-Za-z0-9+/]+={0,2}$/.test(imageData)||imageData.length>260000)return json({error:"Only compressed WebP up to 180 KB is accepted."},400);
+  const queued=await env.ADMINS.list({prefix:"photo-submission:",limit:100});if(queued.keys.length>=80)return json({error:"The review queue is full."},429);
+  const id=crypto.randomUUID(),submission={id,title,location,placeType:String(b.placeType||"other").slice(0,24),photographer,imageData,consent:true,status:"pending",submittedAt:new Date().toISOString()};
+  await env.ADMINS.put("photo-submission:"+id,JSON.stringify(submission),{expirationTtl:60*60*24*45});
+  await env.ADMINS.put(rateKey,JSON.stringify({count:rate.count+1}),{expirationTtl:3600});
+  return json({ok:true,id,status:"pending"},201)
+ }
  if(req.method==="GET"&&path==="/setup/status"){
   const keys=await env.ADMINS.list({prefix:UP,limit:1});
   return json({setupRequired:keys.keys.length===0,configured:true,bootstrapKeyConfigured:!!env.BOOTSTRAP_KEY});
@@ -99,6 +112,32 @@ async function route(req,env){
  }
  const actor=await auth(req,env);if(!actor)return json({error:"انتهت الجلسة أو بيانات الدخول غير صالحة."},401);
  if(path.startsWith("/admin/")&&actor.role!=="super_admin")return json({error:"يتطلب هذا الإجراء صلاحية المشرف العام."},403);
+ if(req.method==="GET"&&path==="/review/photo-submissions"){
+  const keys=await env.ADMINS.list({prefix:"photo-submission:",limit:100}),submissions=[];
+  for(const key of keys.keys){const value=await env.ADMINS.get(key.name,"json");if(value&&value.status==="pending")submissions.push(value)}
+  submissions.sort((a,b)=>String(b.submittedAt).localeCompare(String(a.submittedAt)));return json({submissions})
+ }
+ if((req.method==="PATCH"||req.method==="DELETE")&&path==="/review/photo-submissions"){
+  const b=await req.json(),id=String(b.id||"").trim(),key="photo-submission:"+id;
+  if(!/^[0-9a-f-]{20,40}$/i.test(id))return json({error:"Invalid submission id."},400);
+  const submission=await env.ADMINS.get(key,"json");if(!submission||submission.status!=="pending")return json({error:"Photo submission not found."},404);
+  if(req.method==="DELETE"){await env.ADMINS.delete(key);await log(env,{actor:actor.username,action:"reject_visitor_photo",target:id});return json({ok:true})}
+  if(b.action!=="approve")return json({error:"Unsupported review action."},400);
+  const doc=(await ghRead(env)).data;if(!doc||!Array.isArray(doc.landmarks))return json({error:"Live content unavailable."},503);
+  const rowId="visitor-photo-"+id.replace(/-/g,"").slice(0,18);if(doc.landmarks.some(item=>item.id===rowId))return json({error:"Photo already published."},409);
+  const category=submission.placeType==="fort"?"forts":submission.placeType==="mountain"||submission.placeType==="valley"?"valleys":"villages";
+  doc.landmarks.push({id:rowId,category:category==="forts"?"fort":category==="valleys"?"valley":"village",title_ar:submission.title,title_en:submission.title,title_tr:submission.title,title_fr:submission.title,
+   location_ar:submission.location+" – مديرية حبيش",location_en:submission.location+" – Hubaish District",location_tr:submission.location+" – Hubaish",location_fr:submission.location+" – Hubaish",
+   description_ar:"صورة زائر راجعها واعتمدها مشرف الدليل بعد التحقق من موقعها.",description_en:"Visitor photo reviewed and approved by a Hubaish Guide moderator.",description_tr:"Hubaish Rehberi yöneticisi tarafından incelenip onaylanan ziyaretçi fotoğrafı.",description_fr:"Photo de visiteur vérifiée et approuvée par un modérateur du guide Hubaish.",
+   source_text:"Visitor-submitted photo. Contributor confirmed ownership or permission and granted CC BY 4.0 publication permission.",source_url:"https://github.com/baraagpt6-droid/hubaish-smart-guide./blob/main/www/data/live-content.json",
+   image_url:submission.imageData,image_category:category,image_photographer:submission.photographer,image_credit:"Photo: "+submission.photographer,image_license:"CC BY 4.0",
+   image_source_url:"https://github.com/baraagpt6-droid/hubaish-smart-guide./blob/main/www/data/live-content.json",image_verified:true,image_alt_ar:submission.title,image_alt_en:submission.title,image_alt_tr:submission.title,image_alt_fr:submission.title,
+   image_caption_ar:"صورة زائر معتمدة من إدارة دليل حبيش.",image_caption_en:"Visitor photo approved by Hubaish Guide.",image_caption_tr:"Hubaish Rehberi tarafından onaylanan ziyaretçi fotoğrafı.",image_caption_fr:"Photo de visiteur approuvée par le guide Hubaish.",
+   image_district_ar:submission.location,image_district_en:submission.location,image_district_tr:submission.location,image_district_fr:submission.location});
+  if(JSON.stringify(doc).length>680000)return json({error:"Photo exceeds live content storage limit."},413);
+  doc.updatedAt=new Date().toISOString();doc.updatedBy={username:actor.username,displayName:actor.displayName,role:actor.role};
+  const result=await ghWrite(env,doc,actor);await env.ADMINS.delete(key);await log(env,{actor:actor.username,action:"approve_visitor_photo",target:id,commit:result.commit?.sha||null});return json({ok:true,commit:result.commit?.sha||null})
+ }
  if(req.method==="GET"&&path==="/auth/me")return json({user:actor});
  if(req.method==="PUT"&&path==="/content"){
   const d=await req.json(),keys=["landmarks","historyEvents","subDistrictUpdates","subDistricts","historicalFigures","communityLinks"];

@@ -5,7 +5,7 @@ import { fileURLToPath } from 'node:url';
 
 const root = resolve(fileURLToPath(new URL('../', import.meta.url)));
 const required = [
-  'www/index.html','www/styles.css','www/app.js','www/catalog.js','www/features.js',
+  'www/index.html','www/styles.css','www/app.js','www/upgrade-400.js','www/catalog.js','www/features.js',
   'www/github-cms.js','www/gallery.js','www/splash.js','www/data/live-content.json','www/sw.js',
   'www/manifest.json','www/manifest.webmanifest','www/icons/icon.svg',
   'www/icons/icon-192.png','www/icons/icon-512.png','www/icons/apple-touch-icon.png',
@@ -219,4 +219,5 @@ for(const [file,expected] of [['www/icons/icon-192.png',192],['www/icons/icon-51
     throw new Error(file+' must be a valid '+expected+'x'+expected+' PNG.');
 }
 if(readme.includes('الدخول المباشر الاحتياطي باستخدام GitHub Token')||workerReadme.includes('emergency fallback')||workerReadme.includes('GitHub Personal Access Token login'))throw new Error('Documentation still advertises the removed direct-token login.');
-console.log('Build check passed: Worker-only login, first-admin bootstrap, RBAC, audit, privacy, four locales, geodata preview, offline shell, Android safe areas, APK/AAB workflow and app assets.');
+if(!html.includes('upgrade-400.js')||!css.includes('F7F5EE')||!css.includes('0D2B22')||!app.includes("['review','adminTabReview',false]")||!worker.includes('/public/photo-submissions')||!worker.includes('/review/photo-submissions')||!html.includes('cloudPhotoReviewPanel'))throw new Error('v1.0.400 theme, locale extensions or visitor photo moderation queue is incomplete.');
+console.log('Build check passed: Worker-only login, visitor photo moderation, four locales, ivory/emerald daytime theme, offline shell, Android assets and APK/AAB workflow.');

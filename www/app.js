@@ -1169,6 +1169,7 @@ function initAdminSubtabs() {
   panes.className = 'admin-subtabs-panels';
   const definitions = [
     ['edit','adminTabEdit',false],
+    ['review','adminTabReview',false],
     ['list','adminTabList',false],
     ['users','adminTabUsers',true],
     ['audit','adminTabAudit',true]
@@ -1195,6 +1196,8 @@ function initAdminSubtabs() {
   panel.append(host);
   const target = key => panes.querySelector('[data-admin-panel="'+key+'"]');
   if (editor) target('edit').append(editor);
+  const photoReview = document.getElementById('cloudPhotoReviewPanel');
+  if (photoReview) target('review').append(photoReview);
   if (overview) target('list').append(overview);
   if (note) target('list').append(note);
   if (manager) target('list').append(manager);

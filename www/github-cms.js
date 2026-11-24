@@ -511,6 +511,7 @@
       imageCaption:{ar:val('cloudImageCaptionAr'),en:val('cloudImageCaptionEn'),tr:val('cloudImageCaptionTr'),fr:val('cloudImageCaptionFr')},
       imageCategory:val('cloudImageCategory'),imagePhotographer:val('cloudImagePhotographer'),imageVerified:!!$('cloudImageVerified')?.checked,
       imageLicense:val('cloudImageLicense'),imageCredit:val('cloudImageCredit'),imageSourceUrl:val('cloudImageSourceUrl'),
+      linkPlacement:val('cloudLinkPlacement')||'more',socialPlatform:val('cloudSocialPlatform')||'website',
       elevation:val('cloudElevation'),latitude:val('cloudLatitude'),longitude:val('cloudLongitude'),
       importance:{ar:val('cloudImportanceAr'),en:val('cloudImportanceEn'),tr:val('cloudImportanceTr'),fr:val('cloudImportanceFr')},sortOrder:Number(val('cloudSortOrder')||0)
     };
@@ -569,7 +570,7 @@
       localeFields(row,'name',v.title);localeFields(row,'role',{ar:v.category||'',en:v.category||'',tr:v.category||'',fr:v.category||''});localeFields(row,'biography',v.details);return row;
     }
     if(v.type==='community_link'){
-      const row=Object.assign(common,{url:v.url,sort_order:v.sortOrder});
+      const row=Object.assign(common,{url:v.url,sort_order:v.sortOrder,display_location:['home','more','both'].includes(v.linkPlacement)?v.linkPlacement:'more',platform:String(v.socialPlatform||'website').slice(0,30)});
       localeFields(row,'label',v.title);return row;
     }
     throw new Error('نوع المحتوى غير معروف.');
@@ -595,7 +596,7 @@
     else if(type==='sub_district_update'){district=read('district_name');title=read('place_name');details=read('description')}
     else if(type==='sub_district'){district={ar:row?.district_name_ar||'',en:row?.district_name_en||row?.district_name_ar||'',tr:row?.district_name_tr||row?.district_name_ar||'',fr:row?.district_name_fr||row?.district_name_ar||''};title=read('title');details=read('body')}
     else if(type==='historical_figure'){title=read('name');details=read('biography');category=row?.role_ar||''}
-    else if(type==='community_link'){title=read('label');url=row?.url||'';category='community'}
+    else if(type==='community_link'){title=read('label');url=row?.url||'';category='community';put('cloudLinkPlacement',row?.display_location||'more');put('cloudSocialPlatform',row?.platform||'website')}
     put('cloudRecordType',type);put('cloudRecordId',row?.id||'');
     ['Ar','En','Tr','Fr'].forEach(s=>{
       const l=s.toLowerCase();
@@ -744,7 +745,7 @@
     $('cloudPreviewBtn')?.addEventListener('click',renderContentPreview);
     $('cloudContentClearBtn')?.addEventListener('click',()=>{
       const type=val('cloudRecordType');['cloudRecordId','cloudContributionId'].forEach(id=>put(id,''));
-      ['cloudTitleAr','cloudTitleEn','cloudTitleTr','cloudTitleFr','cloudDetailsAr','cloudDetailsEn','cloudDetailsTr','cloudDetailsFr','cloudLocationAr','cloudLocationEn','cloudLocationTr','cloudLocationFr','cloudDistrictAr','cloudDistrictEn','cloudDistrictTr','cloudDistrictFr','cloudPlaceAr','cloudPlaceEn','cloudPlaceTr','cloudPlaceFr','cloudPeriodAr','cloudPeriodEn','cloudPeriodTr','cloudPeriodFr','cloudCategory','cloudUrl','cloudSource','cloudSourceUrl','cloudImportanceAr','cloudImportanceEn','cloudImportanceTr','cloudImportanceFr','cloudImageUrl','cloudImageAlt','cloudImageAltEn','cloudImageAltTr','cloudImageAltFr','cloudImageCaptionAr','cloudImageCaptionEn','cloudImageCaptionTr','cloudImageCaptionFr','cloudImageCategory','cloudImagePhotographer','cloudImageCredit','cloudImageLicense','cloudImageSourceUrl','cloudElevation','cloudLatitude','cloudLongitude'].forEach(id=>put(id,''));
+      ['cloudTitleAr','cloudTitleEn','cloudTitleTr','cloudTitleFr','cloudDetailsAr','cloudDetailsEn','cloudDetailsTr','cloudDetailsFr','cloudLocationAr','cloudLocationEn','cloudLocationTr','cloudLocationFr','cloudDistrictAr','cloudDistrictEn','cloudDistrictTr','cloudDistrictFr','cloudPlaceAr','cloudPlaceEn','cloudPlaceTr','cloudPlaceFr','cloudPeriodAr','cloudPeriodEn','cloudPeriodTr','cloudPeriodFr','cloudCategory','cloudUrl','cloudSource','cloudSourceUrl','cloudImportanceAr','cloudImportanceEn','cloudImportanceTr','cloudImportanceFr','cloudImageUrl','cloudImageAlt','cloudImageAltEn','cloudImageAltTr','cloudImageAltFr','cloudImageCaptionAr','cloudImageCaptionEn','cloudImageCaptionTr','cloudImageCaptionFr','cloudImageCategory','cloudImagePhotographer','cloudImageCredit','cloudImageLicense','cloudImageSourceUrl','cloudLinkPlacement','cloudSocialPlatform','cloudElevation','cloudLatitude','cloudLongitude'].forEach(id=>put(id,''));
       put('cloudRecordType',type);if($('cloudImageVerified'))$('cloudImageVerified').checked=false;if($('cloudImageFile'))$('cloudImageFile').value='';updateImagePreview('');$('cloudImageCompressionStatus')?.replaceChildren();$('cloudPreviewContent')?.replaceChildren();$('cloudPreviewPanel')?.classList.add('hidden');
     });
     $('cloudRefreshBtn')?.addEventListener('click',async()=>{
