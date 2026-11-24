@@ -364,18 +364,8 @@
     const item={id:id('contrib'),name:clean(document.getElementById('contribName').value,70),type:document.getElementById('contribType').value,title:clean(document.getElementById('contribTitle').value,100),body:clean(document.getElementById('contribBody').value,1600),source:clean(document.getElementById('contribSource').value,350),status:'pending',createdAt:new Date().toISOString()};
     if(!item.title||!item.body){showToast('أدخل عنوان المساهمة والتفاصيل.');return;}
     if(item.source && /^javascript:/i.test(item.source)){showToast('رابط المصدر غير صالح.');return;}
-    if(window.HubaishCloud?.isConfigured?.() && navigator.onLine){
-      try {
-        await window.HubaishCloud.submitContribution(item);
-        featureState.contributions.unshift(item);saveFeatureState();renderAdminLists();event.target.reset();
-        showToast('وصلت مساهمتك إلى صندوق المراجعة السحابي. ستظهر للجميع بعد موافقة المشرف.');
-        return;
-      } catch(error) {
-        console.error('[Hubaish] Cloud contribution failed:',error);
-      }
-    }
     featureState.contributions.unshift(item);saveFeatureState();renderAdminLists();event.target.reset();
-    showToast('حُفظت المساهمة على هذا الجهاز بانتظار المراجعة.');
+    showToast('حُفظت المساهمة على هذا الجهاز. أرسلها إلى المشرف لمراجعتها ونشرها عبر لوحة GitHub.');
   }
   function handleContribution(idValue, approve) {
     const item=featureState.contributions.find(x=>x.id===idValue);if(!item)return;
@@ -442,7 +432,7 @@
     if(typeof state==='undefined')return;
     document.getElementById('communityJoinLink')?.setAttribute('href',featureState.communityUrl);
     const categorySelect=document.getElementById('langSelect');if(categorySelect){categorySelect.value=state.lang||'AR';categorySelect.addEventListener('change',()=>{applyExtendedLang();renderStories();renderQuiz();renderExplorerProgress();renderSeasonGuide();localizeAdminControls();});}
-    applyExtendedLang();renderStories();renderQuiz();renderPeople();window.HubaishCatalog?.applyUi?.();const fact=document.getElementById('didYouKnow');if(fact)fact.textContent=(FACTS_I18N[state.lang]||FACTS)[factIndex];renderAdminLists();renderCommunitySocials();renderUzalDetails();updateCounters();updateSavedAt();initAdminLock();renderExplorerProgress();renderSeasonGuide();
+    applyExtendedLang();renderStories();renderQuiz();renderPeople();window.HubaishCloud?.applyCached?.();window.HubaishCatalog?.applyUi?.();const fact=document.getElementById('didYouKnow');if(fact)fact.textContent=(FACTS_I18N[state.lang]||FACTS)[factIndex];renderAdminLists();renderCommunitySocials();renderUzalDetails();updateCounters();updateSavedAt();initAdminLock();renderExplorerProgress();renderSeasonGuide();
     document.getElementById('nextFactBtn')?.addEventListener('click',()=>{factIndex=(factIndex+1)%FACTS.length;document.getElementById('didYouKnow').textContent=(FACTS_I18N[state.lang]||FACTS)[factIndex];});
     document.querySelectorAll('[data-random-tour]').forEach(button=>button.addEventListener('click',randomTour));
     document.getElementById('nextSeasonBtn')?.addEventListener('click',()=>{seasonIndex=(seasonIndex+1)%4;renderSeasonGuide();});
@@ -470,6 +460,7 @@
   function exportFavorites(){const items=state.favs.map(id=>[...state.places,...state.history].find(x=>x.id===id)).filter(Boolean);const blob=new Blob([JSON.stringify({exportedAt:new Date().toISOString(),favorites:items},null,2)],{type:'application/json'});const url=URL.createObjectURL(blob);const a=node('a');a.href=url;a.download='hubaish-favorites.json';document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);}
   if (typeof localAssistantAnswer === 'function') { const baseAnswer=localAssistantAnswer; window.localAssistantAnswer = question => localizeAssistant(question,baseAnswer(question)); }
   window.normAr = value => normalizeArabic(value);
-  window.HubaishFeatures = { exportAllBackup, randomTour, renderAdminLists, getState:()=>featureState, isAdminUnlocked:()=>adminUnlocked, touchSaved, markExplored, renderExplorerProgress, getUzal:()=>featureState.uzal.slice(), getPeople:()=>featureState.people.slice(), setCloudPeople, showDetail, assistantAnswer:question=>localizeAssistant(question,localAssistantAnswer(question)), text:t, reset:()=>{localStorage.removeItem(FEATURE_KEY);featureState=loadFeatureState();saveFeatureState();renderAdminLists();renderExplorerProgress();} };
+  function setCommunityUrl(url){if(!validHttpUrl(url))return;featureState.communityUrl=url;const link=document.getElementById('communityJoinLink');if(link)link.href=url;saveFeatureState();renderCommunitySocials();}
+  window.HubaishFeatures = { exportAllBackup, randomTour, renderAdminLists, getState:()=>featureState, isAdminUnlocked:()=>adminUnlocked, touchSaved, markExplored, renderExplorerProgress, getUzal:()=>featureState.uzal.slice(), getPeople:()=>featureState.people.slice(), setCloudPeople, setCommunityUrl, showDetail, assistantAnswer:question=>localizeAssistant(question,localAssistantAnswer(question)), text:t, reset:()=>{localStorage.removeItem(FEATURE_KEY);featureState=loadFeatureState();saveFeatureState();renderAdminLists();renderExplorerProgress();} };
   document.addEventListener('DOMContentLoaded',init,{once:true});
 })();
