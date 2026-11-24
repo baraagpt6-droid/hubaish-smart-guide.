@@ -39,7 +39,7 @@
     </button>
     <div class="top-actions">
       <button class="icon-pill" id="favOpenBtn" aria-label="المحفوظات"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3.5h12v17l-6-4-6 4v-17Z"/></svg><span id="favCount" class="badge-count">0</span></button>
-      <label class="lang-wrap" aria-label="لغة التطبيق"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a15 15 0 0 1 0 18M12 3a15 15 0 0 0 0 18"/></svg><select id="langSelect" class="lang-select" aria-label="اختر اللغة"><option value="AR">AR</option><option value="EN">EN</option><option value="TR">TR</option><option value="FR">FR</option></select><span aria-hidden="true">▾</span><span id="langCode" class="sr-only">AR</span></label>
+      <label class="lang-wrap" aria-label="لغة التطبيق"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a15 15 0 0 1 0 18M12 3a15 15 0 0 0 0 18"/></svg><select id="langSelect" class="lang-select" aria-label="اختر اللغة"><option value="AR">AR</option><option value="EN">EN</option><option value="TR">TR</option><option value="FR">FR</option></select><span aria-hidden="true">▾</span></label>
       <button class="icon-pill" id="themeToggleBtn" aria-label="تبديل المظهر"><svg class="ui-icon theme-toggle-icon" viewBox="0 0 24 24" aria-hidden="true"><path id="themeGlyph" d="M12 3v2m0 14v2M3 12h2m14 0h2M5.64 5.64l1.42 1.42m9.88 9.88 1.42 1.42m0-12.72-1.42 1.42m-9.88 9.88-1.42 1.42M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8Z"/></svg></button>
     </div>
   </header>
@@ -94,7 +94,6 @@
       <div class="section-header"><h2 class="section-title" data-i18n="navHistory">تاريخ مديرية حبيش</h2><p class="section-sub">خط زمني للمحطات التاريخية والروايات المحلية</p></div>
       <label class="search-box"><span>⌕</span><input id="histSearchInput" class="search-input" type="search" placeholder="ابحث في المحطات التاريخية..."><button class="mic-btn" id="histMicBtn" type="button" aria-label="بحث صوتي"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="2.5" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3m-4 0h8"/></svg></button></label>
       <div id="histFilters" class="filter-row"><button class="filter-pill active" data-era="all">كل الحقب</button><button class="filter-pill" data-era="ancient">قديم وإسلامي</button><button class="filter-pill" data-era="modern">تاريخ حديث</button></div>
-      <div class="timeline-disclaimer">تُعرض الروايات غير المدعومة بمصدر مستقل على أنها روايات تحتاج إلى توثيق، لا كوقائع مؤكدة.</div>
       <div id="historyList" class="timeline-list"></div>
     </section>
 
@@ -125,7 +124,7 @@
       <article class="item-card hub-panel"><h3 class="item-title" id="contributionSectionTitle">ساهم في إثراء الموسوعة</h3><p class="item-body">اقترح معلومة أو صحح اسماً أو أرسل وصفاً. تحفظ المساهمات على هذا الجهاز للمراجعة.</p>
         <form id="contributionForm" class="admin-form"><input id="contribName" class="input-field" maxlength="70" placeholder="اسمك (اختياري)"><select id="contribType" class="input-field"><option value="place">معلم أو موقع</option><option value="history">معلومة تاريخية</option><option value="uzal">عزلة أو قرية</option><option value="correction">تصحيح معلومة</option><option value="person">شخصية أو علم</option></select><input id="contribTitle" class="input-field" maxlength="100" required placeholder="عنوان المساهمة"><textarea id="contribBody" class="input-field" rows="4" maxlength="1600" required placeholder="التفاصيل والمصدر إن وجد"></textarea><input id="contribSource" class="input-field" maxlength="350" placeholder="رابط أو مرجع يدعم المعلومة"><button class="btn-primary" type="submit">إرسال للمراجعة</button></form>
       </article>
-      <article class="item-card admin-card hub-panel"><h3 class="item-title" id="adminSectionTitle">لوحة الإشراف المحلية</h3><p class="security-note" id="localAdminDisclaimer">تُحفظ تعديلات لوحة الإشراف في هذا الجهاز ولا تُنشر تلقائياً لأجهزة الزوار لعدم وجود خادم محتوى مشترك.</p><p id="translationNotice" class="small muted"></p>
+      <article class="item-card admin-card hub-panel"><h3 class="item-title" id="adminSectionTitle">لوحة الإشراف المحلية</h3><p class="small muted" id="localAdminDisclaimer">تُحفظ تعديلات لوحة الإشراف في هذا الجهاز ولا تُنشر تلقائياً لأجهزة الزوار لعدم وجود خادم محتوى مشترك.</p><p id="translationNotice" class="small muted"></p>
         <div class="admin-actions"><button class="btn-sm" id="adminPanelToggle">فتح أدوات التحرير</button><span class="muted small">جلسة محلية</span></div>
         <form id="adminAuthGate" class="admin-gate hidden"><label for="adminPinEntry" id="adminPinPrompt">أدخل رمز الإشراف</label><input id="adminPinEntry" class="input-field" type="password" inputmode="numeric" autocomplete="current-password" maxlength="12" required><button class="btn-primary" id="adminUnlockBtn" type="submit">فتح اللوحة</button></form>
         <div id="adminPanel" class="admin-panel hidden"><div class="admin-lockbar"><span class="small muted">جلسة تحرير محلية</span><button id="adminLockBtn" class="btn-sm" type="button">قفل اللوحة</button></div>
@@ -138,16 +137,16 @@
           <hr><h4>النسخ الاحتياطي والاستعادة</h4><div class="card-actions"><button class="btn-sm" id="exportJsonBtn" type="button">تصدير JSON</button><label class="btn-sm file-label">استيراد JSON<input id="importJsonInput" type="file" accept="application/json,.json"></label></div>
         </div>
       </article>
-    </section>ion>
+    </section>
   </main>
 
   <button class="ai-fab" id="openAiBtn" aria-label="فتح مساعد دليل حبيش"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m12 2 2.4 7.6L22 12l-7.6 2.4L12 22l-2.4-7.6L2 12l7.6-2.4L12 2Z"/></svg></button>
   <nav class="bottom-nav" aria-label="التنقل الرئيسي">
-    <button class="nav-btn active" data-tab="home"><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m3 10 9-7 9 7M5 9v12h14V9M9 21v-7h6v7"/></svg><span data-i18n="navHome">الرئيسية</span></button>
-    <button class="nav-btn" data-tab="history"><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4h12v17H7a3 3 0 0 1 0-6h12M7 15V4a3 3 0 0 0-3-3"/></svg><span data-i18n="navHistory">التاريخ</span></button>
-    <button class="nav-btn" data-tab="places"><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m2 20 7-12 4 7 3-5 6 10H2ZM9 8l2-4 3 5"/></svg><span data-i18n="navPlaces">المعالم</span></button>
-    <button class="nav-btn" data-tab="uzal"><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 4h18v16H3zM8 4v16M16 4v16M3 12h18"/></svg><span data-i18n="navUzal">العزل</span></button>
-    <button class="nav-btn" data-tab="more"><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/></svg><span data-i18n="navMore">المزيد</span></button>
+    <button class="nav-btn active" data-tab="home"><svg class="nav-icon" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path d="m3 10 9-7 9 7M5 9v12h14V9M9 21v-7h6v7"/></svg><span data-i18n="navHome">الرئيسية</span></button>
+    <button class="nav-btn" data-tab="history"><svg class="nav-icon" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4h12v17H7a3 3 0 0 1 0-6h12M7 15V4a3 3 0 0 0-3-3"/></svg><span data-i18n="navHistory">التاريخ</span></button>
+    <button class="nav-btn" data-tab="places"><svg class="nav-icon" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path d="m2 20 7-12 4 7 3-5 6 10H2ZM9 8l2-4 3 5"/></svg><span data-i18n="navPlaces">المعالم</span></button>
+    <button class="nav-btn" data-tab="uzal"><svg class="nav-icon" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 4h18v16H3zM8 4v16M16 4v16M3 12h18"/></svg><span data-i18n="navUzal">العزل</span></button>
+    <button class="nav-btn" data-tab="more"><svg class="nav-icon" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/></svg><span data-i18n="navMore">المزيد</span></button>
   </nav>
 
   <div class="modal-backdrop" id="aiModal" aria-hidden="true"><section class="modal-sheet" role="dialog" aria-modal="true" aria-labelledby="aiTitle"><div class="modal-head"><strong id="aiTitle">مساعد دليل حبيش المحلي</strong><button class="btn-sm" data-close="aiModal" aria-label="إغلاق"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button></div><div id="aiSuggestions" class="quick-searches"><button class="quick-chip" data-ai-question="ما تاريخ حصن صهبان؟">ما تاريخ حصن صهبان؟</button><button class="quick-chip" data-ai-question="كم عدد عزل حبيش؟">كم عدد العزل؟</button><button class="quick-chip" data-ai-question="ما مواقيت الصلاة؟">مواقيت الصلاة</button></div><div id="aiChatLog" class="chat-log"><div class="item-card">مرحباً. أبحث في محتوى الموسوعة المحفوظ محلياً، ولا أرسل سؤالك إلى خدمة خارجية.</div></div><form id="aiForm" class="chat-form"><input id="aiInput" class="search-input" type="text" maxlength="500" placeholder="اسأل عن عزلة أو معلم..."><button class="mic-btn" id="aiMicBtn" type="button" aria-label="إملاء صوتي"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="2.5" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3m-4 0h8"/></svg></button><button class="btn-primary" type="submit">إرسال</button></form></section></div>

@@ -40,6 +40,23 @@ for (const fragment of ['./styles.css', './app.js', './catalog.js', './features.
   if (!html.includes(fragment)) throw new Error(`Missing app reference: ${fragment}`);
 }
 if (!manifest.name || manifest.start_url !== './' || manifest.scope !== './' || !manifest.icons?.length) throw new Error('PWA manifest is incomplete');
+const sectionTags = [...html.matchAll(/<\\/?section\\b[^>]*>/gi)];
+const sectionDepth = [];
+for (const match of sectionTags) {
+  if (match[0].startsWith('</')) {
+    if (!sectionDepth.pop()) throw new Error('HTML contains an unexpected closing section tag');
+  } else {
+    sectionDepth.push(match[0]);
+  }
+}
+if (sectionDepth.length) throw new Error('HTML contains an unclosed section tag');
+if (html.includes('</section>ion>') || html.includes('<ion')) throw new Error('Broken ion/section HTML fragment detected');
+if (html.includes('id=\"langCode\"') || html.includes('timeline-disclaimer')) throw new Error('Duplicate language label or obsolete timeline warning remains');
+if ((html.match(/class=\"nav-icon\" width=\"20\" height=\"20\"/g) || []).length !== 5) throw new Error('All five bottom navigation SVGs must have fixed dimensions');
+if (!css.includes('.bottom-nav .nav-btn .nav-icon') || !css.includes('width:20px!important') || !css.includes('height:20px!important')) throw new Error('Bottom navigation SVG sizing rules are missing');
+if (catalog.includes('لا تُنسب القرى إلى عزلة') || catalog.includes('Villages are not assigned without a clear local record')) throw new Error('Obsolete sub-district disclaimer remains');
+if (!app.includes('basePlaceIds') || !app.includes('baseHistoryIds') || !app.includes('contentVersion: 4')) throw new Error('Core catalog recovery for existing local storage is missing');
+if (!features.includes('const mergedUzal = [...baseUzal') || !features.includes('schemaVersion: 4')) throw new Error('Sub-district recovery for existing local storage is missing');
 if (JSON.stringify(manifest) !== JSON.stringify(manifestJson)) throw new Error('manifest.json and manifest.webmanifest must match');
 if (capacitor.webDir !== 'www' || !capacitor.appId) throw new Error('Capacitor webDir/appId configuration is incomplete');
 if (!sw.includes('addAll(APP_SHELL)') || !sw.includes("request.mode === 'navigate'") || !sw.includes("'features.js'") || !sw.includes("'catalog.js'")) throw new Error('Offline app-shell caching is incomplete');
@@ -66,7 +83,7 @@ for (const key of ['adminAuthGate','adminPinEntry','adminPinChangeForm','adminLo
 if (!features.includes('PBKDF2') || !features.includes('function verifyAdminPin') || !features.includes('function changeAdminPin') || !features.includes('function markExplored') || !features.includes('function renderSeasonGuide')) throw new Error('Admin PIN or explorer features are incomplete');
 if (!app.includes("window.HubaishIcon = heritageIcon")) throw new Error('Heritage icon helper is not exposed');
 if (!css.includes('left:16px!important') || !css.includes('width:46px!important') || !css.includes('right:auto!important')) throw new Error('The assistant button must be fixed at 46px on the left');
-if (!sw.includes('hubaish-guide-v3.1.0') || !sw.includes("event.data?.type === 'SKIP_WAITING'") || !sw.includes('fetch(request)')) throw new Error('Seamless update service worker is incomplete');
+if (!sw.includes('hubaish-guide-v3.2.0') || !sw.includes("event.data?.type === 'SKIP_WAITING'") || !sw.includes('fetch(request)')) throw new Error('Seamless update service worker is incomplete');
 if ((app.match(/\{\s*id:\s*['"]p\d+['"]/g) || []).length < 16) throw new Error('At least 16 landmark records are required');
 if ((app.match(/\{\s*id:\s*['"]h\d+['"]/g) || []).length < 6) throw new Error('At least 6 history milestones are required');
 for (const key of ['KEYSTORE_BASE64','KEYSTORE_PASSWORD','KEY_ALIAS','KEY_PASSWORD']) if (!workflow.includes('secrets.' + key)) throw new Error('Android signing secret mapping is incomplete: ' + key);
