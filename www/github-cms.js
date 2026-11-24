@@ -148,6 +148,8 @@
     window.HubaishFeatures?.setCloudPeople?.(people);
     const mainLink=documentData.communityLinks.find(x=>x.id==='community-main');
     window.HubaishFeatures?.setCommunityUrl?.(mainLink&&safeUrl(mainLink.url)?mainLink.url:'');
+    window.HubaishFeatures?.renderSmartItineraries?.();
+    window.HubaishFeatures?.renderSmartCompare?.();
   }
   function districtUpdates(name,l){
     return documentData.subDistrictUpdates.filter(x=>String(x.district_name_ar||'').trim()===String(name||'').trim()).map(x=>({
@@ -284,7 +286,7 @@
     const pass=event.target.closest('[data-user-password]');if(pass){await resetWorkerAdminPassword(pass.dataset.userPassword);return}
     const remove=event.target.closest('[data-user-delete]');if(remove)await deleteWorkerAdmin(remove.dataset.userDelete);
   }
-  function allLocales  function allLocales(row,key){
+  function allLocales(row,key){
     return {ar:row?.[key+'_ar']||'',en:row?.[key+'_en']||'',tr:row?.[key+'_tr']||'',fr:row?.[key+'_fr']||''};
   }
   function fromBasePlace(item){
