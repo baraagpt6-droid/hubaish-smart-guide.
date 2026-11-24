@@ -1164,6 +1164,7 @@ function initAdminSubtabs() {
   if (auditList) target('audit').append(auditList);
   if (backup) target('audit').append(backup);
   panel.dataset.smartTabsReady = 'true';
+  window.HubaishSyncAdminTabs = syncAdminSubtabsVisibility;
   switchAdminTab('edit');
   syncAdminSubtabsVisibility();
 }
@@ -1253,7 +1254,7 @@ function initCustomSelects() {
   };
   const close = () => {
     backdrop.hidden = true;
-    if (activeSelect) activeSelect.focus({preventScroll:true});
+    if (lastTrigger) lastTrigger.focus({preventScroll:true});
     activeSelect = null;
     lastTrigger = null;
   };
