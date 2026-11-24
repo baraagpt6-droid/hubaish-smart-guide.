@@ -6,3 +6,207 @@ body{font-family:'IBM Plex Sans Arabic',Tahoma,Arial,sans-serif}.hero-title,.bra
 @keyframes emblemShine{0%,70%,100%{left:-85%}82%{left:145%}}@keyframes livePulse{0%{box-shadow:0 0 0 0 rgba(52,211,153,.55)}70%{box-shadow:0 0 0 8px rgba(52,211,153,0)}100%{box-shadow:0 0 0 0 rgba(52,211,153,0)}}@keyframes terrainDrift{from{transform:translateX(0)}to{transform:translateX(2%)}}@keyframes mistFloat{from{transform:translate(0,0) scale(1)}to{transform:translate(8%,-6%) scale(1.18)}}@keyframes countPop{50%{transform:scale(1.3)}}
 @media(max-width:420px){.topbar{padding-inline:9px}.brand-emblem{width:42px;height:42px}.brand-text strong{font-size:12px}.brand-text small{font-size:9px}.top-actions{gap:3px}.icon-pill{min-width:32px;padding:5px 6px;font-size:10px}.lang-wrap{padding:0 4px}.lang-select{font-size:10px}.terrain-strip{gap:7px;padding:8px}.terrain-strip>b{font-size:9px}.hero-title{font-size:25px}.bento-stats{gap:5px}.stat-tile{min-height:62px}.stat-num{font-size:16px}.two-feature-grid{gap:7px}.fact-card,.spotlight-card{padding:10px}.stories-rail{grid-auto-columns:138px}.pulse-bar{align-items:flex-start}.pulse-bar .btn-secondary{padding:6px 8px;font-size:10px}.uzal-grid{gap:6px}.uzal-grid .item-card{padding:10px}.community-card{padding:11px;gap:9px}}
 @media(min-width:700px){.container{max-width:900px}.smart-hero{padding:28px 24px}.hero-title{font-size:35px}.stories-rail{grid-auto-columns:minmax(170px,1fr)}.two-feature-grid{gap:14px}.uzal-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.timeline-list{padding-right:30px}.timeline-list:before{right:8px}.timeline-list .item-card:before{right:-30px}}
+
+
+/* Hubaish 2026 accessibility and explorer refinements */
+.ai-fab{
+  position:fixed!important;
+  left:16px!important;
+  right:auto!important;
+  inset-inline-start:auto!important;
+  inset-inline-end:auto!important;
+  bottom:calc(86px + env(safe-area-inset-bottom))!important;
+  width:46px!important;
+  height:46px!important;
+  min-width:46px;
+  min-height:46px;
+  padding:0;
+  display:grid;
+  place-items:center;
+  border-radius:50%!important;
+  font-size:21px;
+  line-height:1;
+  z-index:35;
+}
+.lang-wrap{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:5px;
+  min-width:74px;
+  min-height:36px;
+  padding:0 9px;
+  color:var(--gold);
+}
+.lang-select{
+  appearance:none;
+  -webkit-appearance:none;
+  width:31px;
+  max-width:31px;
+  min-width:31px;
+  padding:0;
+  text-align:center;
+  text-align-last:center;
+  background:transparent;
+  border:0;
+  outline:0;
+  color:var(--text);
+  font-size:11px;
+  font-weight:900;
+}
+.lang-select option{background:var(--elevated);color:var(--text)}
+.sr-only{
+  position:absolute!important;
+  width:1px!important;
+  height:1px!important;
+  padding:0!important;
+  margin:-1px!important;
+  overflow:hidden!important;
+  clip:rect(0,0,0,0)!important;
+  white-space:nowrap!important;
+  border:0!important;
+}
+.heritage-icon{
+  display:inline-block;
+  width:21px;
+  height:21px;
+  flex:none;
+  color:var(--gold);
+  vertical-align:middle;
+}
+.item-meta .heritage-icon{margin-inline-end:2px}
+.category-fort{border-inline-start:3px solid var(--gold)}
+.category-mountain{border-inline-start:3px solid #34d399}
+.category-valley{border-inline-start:3px solid #5da9e9}
+.category-mosque{border-inline-start:3px solid #b69be8}
+.category-history{border-inline-start:3px solid var(--gold)}
+.item-card .tag{white-space:normal}
+.explorer-progress,.season-card{
+  padding:14px;
+  margin:0 0 13px;
+  border:1px solid var(--border);
+  border-radius:17px;
+  background:var(--surface);
+  box-shadow:var(--shadow);
+}
+.progress-head,.season-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+}
+.progress-head h2{margin:6px 0 0;font-size:15px}
+.progress-head>strong{
+  color:var(--gold);
+  font-size:23px;
+  font-variant-numeric:tabular-nums;
+}
+#explorerProgressMeter{
+  display:block;
+  width:100%;
+  height:10px;
+  margin:12px 0 8px;
+  overflow:hidden;
+  appearance:none;
+  border:0;
+  border-radius:99px;
+  background:var(--elevated);
+}
+#explorerProgressMeter::-webkit-progress-bar{background:var(--elevated);border-radius:99px}
+#explorerProgressMeter::-webkit-progress-value{background:linear-gradient(90deg,#34d399,#d4af37);border-radius:99px}
+#explorerProgressMeter::-moz-progress-bar{background:linear-gradient(90deg,#34d399,#d4af37);border-radius:99px}
+#explorerProgressMeta{margin:0;line-height:1.6}
+.season-card{border-color:var(--strong)}
+.season-card h3{margin:9px 0 5px;font-size:15px}
+.season-card .item-body{margin-bottom:7px}
+.season-icon{
+  display:grid;
+  place-items:center;
+  width:36px;
+  height:36px;
+  border-radius:12px;
+  color:var(--gold);
+  border:1px solid var(--strong);
+  background:var(--gold-soft);
+  font-size:20px;
+}
+.sw-update-banner{
+  position:fixed;
+  top:calc(64px + env(safe-area-inset-top));
+  left:50%;
+  z-index:105;
+  width:min(calc(100% - 24px),520px);
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  padding:9px 12px;
+  transform:translateX(-50%);
+  border:1px solid var(--strong);
+  border-radius:13px;
+  background:var(--elevated);
+  color:var(--text);
+  box-shadow:var(--shadow);
+  font-size:11px;
+  font-weight:800;
+}
+.sw-update-banner .btn-secondary{flex:none;min-height:32px;padding:5px 9px;font-size:10px}
+.admin-gate{
+  display:grid;
+  gap:7px;
+  padding:12px;
+  margin-top:12px;
+  border:1px solid var(--strong);
+  border-radius:14px;
+  background:var(--gold-soft);
+}
+.admin-gate label{font-size:12px;font-weight:800;color:var(--gold)}
+.admin-gate .input-field{margin:0}
+.admin-lockbar{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:9px;
+  padding:7px 0 12px;
+}
+.admin-pin-error{color:#ef7777;font-size:11px}
+.admin-panel .admin-form:first-of-type{padding-top:3px}
+@media(max-width:420px){
+  .ai-fab{left:16px!important;right:auto!important;width:46px!important;height:46px!important}
+  .lang-wrap{min-width:70px;padding-inline:6px;gap:4px}
+  .lang-select{width:29px;min-width:29px;max-width:29px}
+  .sw-update-banner{top:calc(60px + env(safe-area-inset-top));font-size:10px}
+  .sw-update-banner .btn-secondary{font-size:9px}
+  .explorer-progress,.season-card{padding:11px}
+}
+
+.story-heritage-icon{
+  position:absolute;
+  top:12px;
+  inset-inline-start:12px;
+  width:30px;
+  height:30px;
+  color:#d4af37;
+  filter:drop-shadow(0 2px 8px rgba(0,0,0,.25));
+}
+html[data-theme=light] .story-heritage-icon{color:#e8cc72}
+
+.ui-icon,.nav-icon{
+  display:inline-block;
+  width:18px;
+  height:18px;
+  flex:none;
+  fill:none;
+  stroke:currentColor;
+  stroke-width:1.7;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+  vertical-align:middle;
+}
+.nav-icon{width:20px;height:20px;color:currentColor}
+.theme-toggle-icon{color:var(--gold)}
+.ai-fab .ui-icon{width:21px;height:21px}
+.terrain-icon .ui-icon{width:24px;height:24px}
+.mic-btn .ui-icon{width:18px;height:18px}
+#favOpenBtn .ui-icon{width:16px;height:16px;color:var(--gold)}
+.story-card{position:relative}
