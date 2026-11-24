@@ -20,6 +20,7 @@
 </head>
 <body>
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <div id="swUpdateBanner" class="sw-update-banner hidden" role="status" aria-live="polite"><span>يتوفر تحديث جديد</span><button id="swUpdateBtn" type="button" class="btn-secondary">اضغط للتحديث الفوري</button></div>
   <header class="topbar">
     <button class="brand-btn" id="homeLogoBtn" aria-label="العودة للرئيسية">
       <span class="brand-emblem" aria-hidden="true">
@@ -37,8 +38,7 @@
     </button>
     <div class="top-actions">
       <button class="icon-pill" id="favOpenBtn" aria-label="المحفوظات">🔖 <span id="favCount" class="badge-count">0</span></button>
-      <label class="lang-wrap" aria-label="لغة التطبيق"><select id="langSelect" class="lang-select"><option value="AR">AR ▾</option><option value="EN">EN ▾</option><option value="TR">TR ▾</option><option value="FR">FR ▾</option></select></label>
-      <button class="icon-pill" id="langToggleBtn" type="button" hidden>🌐 <span id="langCode">AR</span></button>
+      <label class="lang-wrap" aria-label="لغة التطبيق"><span aria-hidden="true">🌐</span><select id="langSelect" class="lang-select" aria-label="اختر اللغة"><option value="AR">AR</option><option value="EN">EN</option><option value="TR">TR</option><option value="FR">FR</option></select><span aria-hidden="true">▾</span><span id="langCode" class="sr-only">AR</span></label>
       <button class="icon-pill" id="themeToggleBtn" aria-label="تبديل المظهر">☀️</button>
     </div>
   </header>
@@ -64,7 +64,12 @@
       </div>
 
       <section class="stories-section" aria-label="قصص استكشافية"><div class="section-heading-inline"><h2 class="section-title">استكشف حبيش في لحظات</h2><span class="tag tag-gold">قصص بصرية</span></div><div class="stories-rail" id="visualStories"></div></section>
-      <section class="pulse-bar"><div><span class="pulse-live-dot"></span><strong>نبض حبيش الاستكشافي</strong><small>اختر وجهتك التالية</small></div><button class="btn-secondary" id="randomTourBtn">جولة عشوائية ↗</button></section>
+      <section class="pulse-bar"><div><span class="pulse-live-dot"></span><strong>نبض حبيش الاستكشافي</strong><small>اختر وجهتك التالية</small></div><button class="btn-secondary" id="randomTourBtn">جولة عشوائية</button></section>
+      <section class="explorer-progress" aria-labelledby="explorerProgressTitle">
+        <div class="progress-head"><div><span class="tag tag-gold">رحلتك داخل المديرية</span><h2 id="explorerProgressTitle">تقدم المستكشف</h2></div><strong id="explorerProgressText">0%</strong></div>
+        <progress id="explorerProgressMeter" max="100" value="0">0%</progress>
+        <p id="explorerProgressMeta" class="small muted">استكشف المعالم والعزل لتسجيل تقدمك على هذا الجهاز.</p>
+      </section>
 
       <section class="prayer-card" aria-labelledby="prayerTitle">
         <div class="prayer-head"><strong id="prayerTitle">مواقيت الصلاة في حبيش</strong><span id="prayerCountdown" class="prayer-countdown">--:--</span></div>
@@ -73,7 +78,14 @@
         <p class="small muted note">حساب فلكي تقريبي لإحداثيات حبيش. قد تختلف الدقائق عن تقويم المسجد المحلي.</p>
       </section>
 
-      <section class="two-feature-grid"><article class="fact-card"><span class="tag tag-gold">هل تعلم عن حبيش؟</span><p id="didYouKnow" class="fact-copy">تضم مديرية حبيش 22 عزلة وفق قائمة الدليل.</p><button class="text-action" id="nextFactBtn">معلومة أخرى ↻</button></article><article class="spotlight-card"><span class="tag">معلم مختار اليوم</span><div id="spotlightContainer"></div></article></section>
+      <section class="two-feature-grid"><article class="fact-card"><span class="tag tag-gold" id="heritageWisdomLabel">من تراث وحكمة حبيش</span><p id="didYouKnow" class="fact-copy">تضم مديرية حبيش 22 عزلة وفق قائمة الدليل.</p><button class="text-action" id="nextFactBtn">معلومة أخرى</button></article><article class="spotlight-card"><span class="tag">معلم مختار اليوم</span><div id="spotlightContainer"></div></article></section>
+      <article class="season-card" aria-labelledby="seasonTitle">
+        <div class="season-head"><span class="tag tag-gold" id="seasonLabel">دليل المواسم الزراعية والمناخ الجبلي</span><span class="season-icon" aria-hidden="true">☼</span></div>
+        <h3 id="seasonTitle">مواسم البن والأمطار في المرتفعات</h3>
+        <p id="seasonCopy" class="item-body">دليل إقليمي استرشادي لمحافظة إب. تختلف المواعيد باختلاف الارتفاع والقرية والموسم.</p>
+        <p id="seasonSource" class="small muted">المصدر: منظمة الأغذية والزراعة للأمم المتحدة — سلسلة قيمة البن في اليمن</p>
+        <button class="text-action" id="nextSeasonBtn" type="button">موسم آخر</button>
+      </article>
       <div id="globalSearchResults" aria-live="polite"></div>
     </section>
 
@@ -88,7 +100,7 @@
     <section id="view-places" class="view-section">
       <div class="section-header"><h2 class="section-title" data-i18n="navPlaces">المعالم</h2><p class="section-sub">الحصون والجبال والأودية والمساجد</p></div>
       <label class="search-box"><span>⌕</span><input id="placeSearchInput" class="search-input" type="search" placeholder="ابحث عن حصن أو جبل أو وادٍ..."><button class="mic-btn" id="placeMicBtn" type="button" aria-label="بحث صوتي">🎙</button></label>
-      <div class="filter-row" id="placeFilters"><button class="filter-pill active" data-pcat="all">الكل</button><button class="filter-pill" data-pcat="fort">حصون وقلاع</button><button class="filter-pill" data-pcat="mountain">جبال ومرتفعات</button><button class="filter-pill" data-pcat="valley">أودية</button><button class="filter-pill" data-pcat="mosque">مساجد</button><button class="filter-pill" id="radarToggleBtn">🧭 رادار المسافات</button></div>
+      <div class="filter-row" id="placeFilters"><button class="filter-pill active" data-pcat="all">الكل</button><button class="filter-pill" data-pcat="fort">حصون وقلاع</button><button class="filter-pill" data-pcat="mountain">جبال ومرتفعات</button><button class="filter-pill" data-pcat="valley">أودية</button><button class="filter-pill" data-pcat="mosque">مساجد</button><button class="filter-pill" id="radarToggleBtn">رادار المسافات</button></div>
       <div id="radarBox" class="item-card hidden"></div><div id="placesList"></div>
     </section>
 
@@ -101,12 +113,12 @@
     <section id="view-more" class="view-section">
       <div class="section-header"><h2 class="section-title" data-i18n="navMore">المزيد</h2><p class="section-sub">المراجع والشخصيات والمجتمع وأدوات المساهمة</p></div>
       <article class="community-card"><div class="community-icon">ح</div><div class="community-copy"><span class="tag tag-gold">مجموعة عامة • +11,068 عضو (وفق بيانات المشروع)</span><h3>مديرية حبيش HUBAISH DISTRICT</h3><p>مجتمع لمشاركة أخبار المديرية وصورها ومعلوماتها.</p><div class="card-actions"><a class="btn-primary" id="communityJoinLink" href="https://www.facebook.com/share/g/1JMCzDUsdZ/" target="_blank" rel="noopener noreferrer" referrerpolicy="no-referrer">انضم إلى المجموعة</a><button class="btn-sm" id="copyCommunityBtn">نسخ الرابط</button><button class="btn-sm" id="editCommunityBtn">تعديل الرابط</button></div></div></article>
-      <article class="item-card"><h3 class="item-title">📚 مكتبة المراجع</h3><p class="item-body">المركز الوطني للمعلومات اليمني — بيانات تعداد 2004 والتقسيم الإداري.<br>OCHA / Local Governance — مساحة مديرية حبيش في جدول مديريات إب.<br>قوائم محلية لأسماء العزل — مع اختلافات في تهجئة بعض الأسماء.<br>صفة جزيرة العرب — الحسن الهمداني.<br>معجم البلدان والقبائل اليمنية — إبراهيم المقحفي.</p><div class="card-actions"><a class="btn-sm" href="https://yemen-nic.info/contents/Brief/detail.php?ID=7617&phrase_id=1191776&print=Y" target="_blank" rel="noopener noreferrer">بيانات المركز الوطني</a></div></article>
+      <article class="item-card"><h3 class="item-title">مكتبة المراجع</h3><p class="item-body">المركز الوطني للمعلومات اليمني — بيانات تعداد 2004 والتقسيم الإداري.<br>OCHA / Local Governance — مساحة مديرية حبيش في جدول مديريات إب.<br>قوائم محلية لأسماء العزل — مع اختلافات في تهجئة بعض الأسماء.<br>صفة جزيرة العرب — الحسن الهمداني.<br>معجم البلدان والقبائل اليمنية — إبراهيم المقحفي.</p><div class="card-actions"><a class="btn-sm" href="https://yemen-nic.info/contents/Brief/detail.php?ID=7617&phrase_id=1191776&print=Y" target="_blank" rel="noopener noreferrer">بيانات المركز الوطني</a></div></article>
       <article class="item-card"><h3 class="item-title">شخصيات وأعلام</h3><p class="item-body">لا تتوفر في قاعدة النسخة الحالية أسماء موثقة كفاية لإدراج سِيَر مستقلة. يمكن إرسال إضافة عبر نموذج المساهمة.</p><div id="peopleList"></div></article>
       <article class="item-card"><h3 class="item-title">اختبر معلوماتك عن حبيش</h3><div id="quizArea"></div></article>
       <article class="item-card"><h3 class="item-title">روابط المجتمع والتواصل</h3><div id="socialLinksList" class="card-actions"></div></article>
       <article class="item-card"><h3 class="item-title">أرسل مساهمة للموسوعة</h3><p class="item-body">اقترح معلومة أو صحح اسماً أو أرسل وصفاً. ستُحفظ المساهمة محلياً في هذا الجهاز لتتم مراجعتها من المشرف.</p><form id="contributionForm" class="admin-form"><input id="contribName" class="input-field" maxlength="70" placeholder="اسمك (اختياري)"><select id="contribType" class="input-field"><option value="place">معلم أو موقع</option><option value="history">معلومة تاريخية</option><option value="uzal">عزلة أو قرية</option><option value="correction">تصحيح معلومة</option><option value="person">شخصية أو علم</option></select><input id="contribTitle" class="input-field" maxlength="100" required placeholder="عنوان المساهمة"><textarea id="contribBody" class="input-field" rows="4" maxlength="1600" required placeholder="اكتب التفاصيل والمصدر إن وجد"></textarea><input id="contribSource" class="input-field" maxlength="350" placeholder="رابط أو مرجع يدعم المعلومة (اختياري)"><button class="btn-primary" type="submit">إرسال للمراجعة</button></form></article>
-      <article class="item-card admin-card"><h3 class="item-title">لوحة الإشراف المحلية</h3><p class="security-note">هذه لوحة تحرير محلية تحفظ البيانات في المتصفح فقط. لا توجد خدمة خادم أو تسجيل دخول موثوق في هذا المستودع، لذلك لا يمكن اعتبارها لوحة إدارية محمية من مستخدمي الجهاز أو أدوات المطور.</p><div class="admin-actions"><button class="btn-sm" id="adminPanelToggle">فتح أدوات التحرير</button><span class="muted small" id="lastSavedAt">لم يُسجل وقت الحفظ بعد</span></div><div id="adminPanel" class="admin-panel hidden">
+      <article class="item-card admin-card"><h3 class="item-title">لوحة الإشراف المحلية</h3><p class="security-note">تطلب اللوحة رمز مرور قبل التحرير. يُخزن تحقق الرمز محلياً بصورة مشتقة ومملحة، لكن الحماية على جهاز المستخدم فقط وليست بديلاً عن دخول خادمي وصلاحيات مركزية.</p><div class="admin-actions"><button class="btn-sm" id="adminPanelToggle" type="button">فتح أدوات التحرير</button><span class="muted small" id="lastSavedAt">لم يُسجل وقت الحفظ بعد</span></div><form id="adminAuthGate" class="admin-gate hidden"><label for="adminPinEntry" id="adminPinPrompt">أدخل رمز الإشراف</label><input id="adminPinEntry" class="input-field" type="password" inputmode="numeric" autocomplete="current-password" maxlength="12" required placeholder="رمز المرور"><button class="btn-primary" id="adminUnlockBtn" type="submit">فتح اللوحة</button></form><div id="adminPanel" class="admin-panel hidden"><div class="admin-lockbar"><span class="small muted">جلسة تحرير محلية</span><button id="adminLockBtn" class="btn-sm" type="button">قفل اللوحة</button></div><form id="adminPinChangeForm" class="admin-form"><h4>تغيير رمز المرور</h4><input id="adminCurrentPin" class="input-field" type="password" inputmode="numeric" autocomplete="current-password" maxlength="12" required placeholder="الرمز الحالي"><input id="adminNewPin" class="input-field" type="password" inputmode="numeric" autocomplete="new-password" minlength="4" maxlength="12" required placeholder="الرمز الجديد (4 إلى 12 رقماً)"><input id="adminConfirmPin" class="input-field" type="password" inputmode="numeric" autocomplete="new-password" minlength="4" maxlength="12" required placeholder="تأكيد الرمز الجديد"><button class="btn-secondary" type="submit">حفظ الرمز الجديد</button></form>
         <div class="admin-form"><h4>إضافة معلم</h4><input id="newPlaceTitle" class="input-field" maxlength="90" placeholder="اسم المعلم"><input id="newPlaceLoc" class="input-field" maxlength="90" placeholder="العزلة / الموقع"><textarea id="newPlaceDesc" class="input-field" rows="3" maxlength="700" placeholder="وصف المعلم"></textarea><select id="newPlaceCat" class="input-field"><option value="fort">حصن أو قلعة</option><option value="mountain">جبل أو مرتفع</option><option value="valley">وادٍ</option><option value="mosque">مسجد</option></select><button class="btn-primary" id="addPlaceSaveBtn" type="button">حفظ المعلم</button>
         <hr><h4>إضافة محطة تاريخية</h4><input id="newHistoryTitle" class="input-field" maxlength="100" placeholder="عنوان الحدث"><input id="newHistoryPeriod" class="input-field" maxlength="70" placeholder="الفترة"><textarea id="newHistoryBody" class="input-field" rows="3" maxlength="700" placeholder="التفاصيل والمصدر"></textarea><select id="newHistoryEra" class="input-field"><option value="ancient">قديم وإسلامي</option><option value="modern">تاريخ حديث</option></select><button id="addHistorySaveBtn" class="btn-primary" type="button">حفظ المحطة</button>
         <hr><h4>إدارة العزل</h4><input id="newUzalName" class="input-field" maxlength="70" placeholder="اسم العزلة"><button class="btn-secondary" id="addUzalBtn" type="button">إضافة عزلة</button><div id="uzalAdminList"></div>
