@@ -126,19 +126,27 @@ if(!css.includes('env(safe-area-inset-top')||!css.includes('var(--status-bar-hei
    !css.includes('env(safe-area-inset-bottom')||!css.includes('.ai-fab{display:none!important}')) {
   throw new Error('Safe-area CSS or floating assistant removal is missing.');
 }
-if(capacitor.appName!=='دليل حبيش'||capacitor.plugins?.StatusBar?.overlaysWebView!==false||
-   capacitor.plugins?.StatusBar?.backgroundColor!=='#081812'||
-   manifest.short_name!=='دليل حبيش'||manifest.name!=='دليل حبيش الذكي'||
-   manifestJson.short_name!=='دليل حبيش'||manifestJson.name!=='دليل حبيش الذكي'||
-   !pkg.dependencies?.['@capacitor/status-bar']) {
-  throw new Error('App naming and native StatusBar configuration are inconsistent.');
+if(capacitor.appName!=='دليل حبيش'||capacitor.plugins?.StatusBar?.style!=='LIGHT'||
+   'overlaysWebView' in (capacitor.plugins?.StatusBar||{})||
+   'backgroundColor' in (capacitor.plugins?.StatusBar||{})||
+   manifest.short_name!=='دليل حبيش'||manifest.name!=='دليل حبيش'||
+   manifestJson.short_name!=='دليل حبيش'||manifestJson.name!=='دليل حبيش'||
+   !pkg.dependencies?.['@capacitor/status-bar']||
+   !html.includes('<title>دليل حبيش | Hubaish Guide</title>')||
+   html.includes('دليل حبيش الذكي')||app.includes('Hubaish Smart Guide')||
+   features.includes('Hubaish Smart Guide')) {
+  throw new Error('Unified app branding or native StatusBar configuration is inconsistent.');
 }
-if(!app.includes('setOverlaysWebView?.({ overlay: false })')||
-   !app.includes('setBackgroundColor?.({ color })')||
+if(!app.includes("statusBar.setStyle?.({ style: dark ? 'LIGHT' : 'DARK' })")||
+   app.includes('setOverlaysWebView')||app.includes('setBackgroundColor?.({ color })')||
    !app.includes('setReaderScale')||!app.includes('languagePickerButton')) {
-  throw new Error('Runtime status bar, reader settings or custom language picker wiring is missing.');
+  throw new Error('Runtime status-bar style, reader settings or custom language picker wiring is missing.');
 }
-if(!sw.includes('hubaish-guide-v4.0.1')||!sw.includes("'splash.js'")||
+if(!css.includes('padding-top:max(9px,env(safe-area-inset-top')||
+   !css.includes('padding-bottom:max(6px,env(safe-area-inset-bottom')) {
+  throw new Error('Android 15/16 top and bottom safe-area padding is missing.');
+}
+if(!sw.includes('hubaish-guide-v4.0.2')||!sw.includes("'splash.js'")||
    !sw.includes("'github-cms.js'")||!sw.includes("'data/live-content.json'")) {
   throw new Error('The service-worker cache does not include the updated app shell.');
 }
@@ -148,9 +156,12 @@ if(!workflow.includes('actions/deploy-pages@v4')||!workflow.includes('assembleRe
    !workflow.includes('patch-android-config.py')||!workflow.includes('upload-artifact@v4')) {
   throw new Error('The signed APK/AAB and Pages release workflow is incomplete.');
 }
-if(!androidPatch.includes('android:windowOptOutEdgeToEdgeEnforcement')||
-   !androidPatch.includes('setDecorFitsSystemWindows')||!androidPatch.includes('دليل حبيش')) {
-  throw new Error('Android 15+ edge-to-edge and app-name patch is incomplete.');
+if(androidPatch.includes('android:windowOptOutEdgeToEdgeEnforcement')||
+   !androidPatch.includes('WindowCompat.setDecorFitsSystemWindows(getWindow(), false)')||
+   !androidPatch.includes('Color.TRANSPARENT')||
+   !androidPatch.includes('WindowInsetsControllerCompat')||
+   !androidPatch.includes('دليل حبيش')) {
+  throw new Error('Android 15/16 edge-to-edge safe-area and app-name patch is incomplete.');
 }
 const districtStart=catalog.indexOf('const D=['),districtEnd=catalog.indexOf('const PN=',districtStart);
 const districtBlock=districtStart>=0&&districtEnd>districtStart?catalog.slice(districtStart,districtEnd):'';
