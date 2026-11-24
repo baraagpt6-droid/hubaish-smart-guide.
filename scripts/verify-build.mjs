@@ -1,4 +1,5 @@
 import { access, readFile } from 'node:fs/promises';
+import { spawnSync } from 'node:child_process';
 import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -20,6 +21,12 @@ const manifest = JSON.parse(await readFile(resolve(root, 'www/manifest.webmanife
 const manifestJson = JSON.parse(await readFile(resolve(root, 'www/manifest.json'), 'utf8'));
 const capacitor = JSON.parse(await readFile(resolve(root, 'capacitor.config.json'), 'utf8'));
 const workflow = await readFile(resolve(root, '.github/workflows/build-and-deploy.yml'), 'utf8');
+
+for (const file of ['www/app.js', 'www/features.js', 'www/sw.js']) {
+  const result = spawnSync(process.execPath, ['--check', resolve(root, file)], { encoding: 'utf8' });
+  if (result.status !== 0) throw new Error('JavaScript syntax check failed for ' + file + ': ' + (result.stderr || result.stdout));
+}
+
 
 for (const fragment of ['./styles.css', './app.js', './features.js', './manifest.webmanifest']) {
   if (!html.includes(fragment)) throw new Error(`Missing app reference: ${fragment}`);
