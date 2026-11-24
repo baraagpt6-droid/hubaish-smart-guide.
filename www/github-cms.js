@@ -105,6 +105,8 @@
       loc:localized(row,'location',l)||'مديرية حبيش',
       body:localized(row,'description',l),
       elevation:row.elevation||'غير موثق ميدانياً',
+      latitude:Number.isFinite(Number(row.latitude))?Number(row.latitude):null,
+      longitude:Number.isFinite(Number(row.longitude))?Number(row.longitude):null,
       importance:localized(row,'importance',l),
       source:row.source_text||'',
       sourceUrl:row.source_url||'',
@@ -430,6 +432,7 @@
       period:{ar:val('cloudPeriodAr'),en:val('cloudPeriodEn'),tr:val('cloudPeriodTr'),fr:val('cloudPeriodFr')},
       category:val('cloudCategory')||'fort',url:val('cloudUrl'),source:val('cloudSource'),sourceUrl:val('cloudSourceUrl'),
       imageUrl:val('cloudImageUrl'),imageAlt:val('cloudImageAlt'),imageCredit:val('cloudImageCredit'),imageSourceUrl:val('cloudImageSourceUrl'),
+      elevation:val('cloudElevation'),latitude:val('cloudLatitude'),longitude:val('cloudLongitude'),
       importance:{ar:val('cloudImportanceAr'),en:val('cloudImportanceEn'),tr:val('cloudImportanceTr'),fr:val('cloudImportanceFr')},sortOrder:Number(val('cloudSortOrder')||0)
     };
   }
@@ -457,7 +460,7 @@
   function payload(v){
     const common={id:v.id||makeId(v.type),source_text:v.source||'',source_url:safeUrl(v.sourceUrl)?v.sourceUrl:'',status:'documented'};
     if(v.type==='landmark'){
-      const row=Object.assign(common,{category:v.category,elevation:'غير موثق ميدانياً',image_url:safeUrl(v.imageUrl)?v.imageUrl:'',image_alt_ar:v.imageAlt||v.title.ar,image_credit:v.imageCredit||'',image_source_url:safeUrl(v.imageSourceUrl)?v.imageSourceUrl:(safeUrl(v.sourceUrl)?v.sourceUrl:'')});
+      const row=Object.assign(common,{category:v.category,elevation:v.elevation!==''?Number(v.elevation):'غير موثق ميدانياً',latitude:v.latitude!==''?Number(v.latitude):null,longitude:v.longitude!==''?Number(v.longitude):null,image_url:safeUrl(v.imageUrl)?v.imageUrl:'',image_alt_ar:v.imageAlt||v.title.ar,image_credit:v.imageCredit||'',image_source_url:safeUrl(v.imageSourceUrl)?v.imageSourceUrl:(safeUrl(v.sourceUrl)?v.sourceUrl:'')});
       localeFields(row,'title',v.title);localeFields(row,'location',v.location);localeFields(row,'description',v.details);localeFields(row,'importance',v.importance);
       return row;
     }
@@ -498,8 +501,8 @@
   function fillEditor(row,type){
     if(!row)row=rowForBase(type,val('cloudRecordId'));
     const read=key=>allLocales(row,key);
-    let title=blank(),details=blank(),location=blank(),district=blank(),period=blank(),importance=blank(),category='',url='';
-    if(type==='landmark'){title=read('title');details=read('description');location=read('location');importance=read('importance');category=row?.category||'fort'}
+    let title=blank(),details=blank(),location=blank(),district=blank(),period=blank(),importance=blank(),category='',url='',elevation='',latitude='',longitude='';
+    if(type==='landmark'){title=read('title');details=read('description');location=read('location');importance=read('importance');category=row?.category||'fort';elevation=typeof row?.elevation==='number'?String(row.elevation):'';latitude=row?.latitude??'';longitude=row?.longitude??''}
     else if(type==='history_event'){title=read('title');details=read('body');period=read('period');category=row?.era||'ancient'}
     else if(type==='sub_district_update'){district=read('district_name');title=read('place_name');details=read('description')}
     else if(type==='sub_district'){district={ar:row?.district_name_ar||'',en:row?.district_name_en||row?.district_name_ar||'',tr:row?.district_name_tr||row?.district_name_ar||'',fr:row?.district_name_fr||row?.district_name_ar||''};title=read('title');details=read('body')}
@@ -511,7 +514,7 @@
       put('cloudTitle'+s,title[l]);put('cloudDetails'+s,details[l]);put('cloudLocation'+s,location[l]);
       put('cloudDistrict'+s,district[l]);put('cloudPlace'+s,'');put('cloudPeriod'+s,period[l]);
     });
-    put('cloudCategory',category);put('cloudUrl',url);put('cloudSource',row?.source_text||'');put('cloudSourceUrl',row?.source_url||'');
+    put('cloudCategory',category);put('cloudUrl',url);put('cloudElevation',elevation);put('cloudLatitude',latitude);put('cloudLongitude',longitude);put('cloudSource',row?.source_text||'');put('cloudSourceUrl',row?.source_url||'');
     put('cloudImageUrl',row?.image_url||'');put('cloudImageAlt',row?.image_alt_ar||'');put('cloudImageCredit',row?.image_credit||'');put('cloudImageSourceUrl',row?.image_source_url||'');
     updateImagePreview(row?.image_url||'');
     put('cloudImportanceAr',importance.ar);put('cloudImportanceEn',importance.en);put('cloudImportanceTr',importance.tr);put('cloudImportanceFr',importance.fr);put('cloudSortOrder',row?.sort_order||0);
@@ -545,6 +548,12 @@
     if(v.type==='community_link'&&!safeUrl(v.url)){toast('أدخل رابط HTTPS أو HTTP صحيحاً.');return}
     if(v.sourceUrl&&!safeUrl(v.sourceUrl)){toast('رابط المصدر غير صالح.');return}
     if(v.imageUrl&&!safeUrl(v.imageUrl)){toast('رابط الصورة يجب أن يبدأ بـ HTTP أو HTTPS.');return}
+    if(v.type==='landmark'){
+      const hasLat=v.latitude!==''&&v.latitude!==null,hasLon=v.longitude!==''&&v.longitude!==null;
+      if(hasLat!==hasLon){toast('أدخل خط العرض وخط الطول معاً أو اتركهما فارغين.');return}
+      if(hasLat&&(!Number.isFinite(Number(v.latitude))||Number(v.latitude)<-90||Number(v.latitude)>90||!Number.isFinite(Number(v.longitude))||Number(v.longitude)<-180||Number(v.longitude)>180)){toast('الإحداثيات خارج النطاق الصحيح لخط العرض أو الطول.');return}
+      if(v.elevation!==''&&(!Number.isFinite(Number(v.elevation))||Number(v.elevation)<-500||Number(v.elevation)>9000)){toast('الارتفاع يجب أن يكون بين -500 و9000 متر.');return}
+    }
     try{
       status('جارٍ استكمال ترجمات الحقول الناقصة...',false);
       await fillTranslations(v);
@@ -581,6 +590,25 @@
       status('تم تحديث GitHub بنجاح.',false);
     }catch(error){status(error.message,true);toast('تعذر تعديل ملف البيانات.')}
   }
+  function renderContentPreview(){
+    const panel=$('cloudPreviewPanel'),root=$('cloudPreviewContent');
+    if(!panel||!root)return;
+    const values=formValues(),language=lang().toLowerCase();
+    root.replaceChildren();
+    const heading=document.createElement('h3');heading.className='item-title';heading.textContent=values.title[language]||values.title.ar||'—';root.append(heading);
+    const description=document.createElement('p');description.className='item-body';description.textContent=values.details[language]||values.details.ar||'—';root.append(description);
+    const facts=[];
+    const location=values.location[language]||values.location.ar;
+    if(location)facts.push(location);
+    if(values.elevation)facts.push(String(values.elevation)+' m');
+    if(values.latitude!==''&&values.longitude!=='')facts.push(String(values.latitude)+', '+String(values.longitude));
+    const metadata=document.createElement('p');metadata.className='small muted';metadata.textContent=facts.join(' · ')||'—';root.append(metadata);
+    if(values.imageUrl&&safeUrl(values.imageUrl)){
+      const image=document.createElement('img');image.src=values.imageUrl;image.alt=values.imageAlt||values.title.ar||'';image.loading='lazy';image.className='cloud-image-preview';root.append(image);
+      if(values.imageCredit){const credit=document.createElement('p');credit.className='small muted';credit.textContent=values.imageCredit;root.append(credit)}
+    }
+    panel.classList.remove('hidden');panel.scrollIntoView({behavior:'smooth',block:'nearest'});
+  }
   function bind(){
     $('workerLoginForm')?.addEventListener('submit',workerLogin);
     $('cloudCreateAdminForm')?.addEventListener('submit',createWorkerAdmin);
@@ -592,10 +620,11 @@
     $('cloudImageAlt')?.addEventListener('input',()=>{if($('cloudImagePreview'))$('cloudImagePreview').alt=val('cloudImageAlt')||'معاينة صورة المعلم'});
     $('cloudAdminLogoutBtn')?.addEventListener('click',signOut);
     $('cloudContentForm')?.addEventListener('submit',saveEditor);
+    $('cloudPreviewBtn')?.addEventListener('click',renderContentPreview);
     $('cloudContentClearBtn')?.addEventListener('click',()=>{
       const type=val('cloudRecordType');['cloudRecordId','cloudContributionId'].forEach(id=>put(id,''));
-      ['cloudTitleAr','cloudTitleEn','cloudTitleTr','cloudTitleFr','cloudDetailsAr','cloudDetailsEn','cloudDetailsTr','cloudDetailsFr','cloudLocationAr','cloudLocationEn','cloudLocationTr','cloudLocationFr','cloudDistrictAr','cloudDistrictEn','cloudDistrictTr','cloudDistrictFr','cloudPlaceAr','cloudPlaceEn','cloudPlaceTr','cloudPlaceFr','cloudPeriodAr','cloudPeriodEn','cloudPeriodTr','cloudPeriodFr','cloudCategory','cloudUrl','cloudSource','cloudSourceUrl','cloudImportanceAr','cloudImportanceEn','cloudImportanceTr','cloudImportanceFr','cloudImageUrl','cloudImageAlt','cloudImageCredit','cloudImageSourceUrl'].forEach(id=>put(id,''));
-      put('cloudRecordType',type);updateImagePreview('');
+      ['cloudTitleAr','cloudTitleEn','cloudTitleTr','cloudTitleFr','cloudDetailsAr','cloudDetailsEn','cloudDetailsTr','cloudDetailsFr','cloudLocationAr','cloudLocationEn','cloudLocationTr','cloudLocationFr','cloudDistrictAr','cloudDistrictEn','cloudDistrictTr','cloudDistrictFr','cloudPlaceAr','cloudPlaceEn','cloudPlaceTr','cloudPlaceFr','cloudPeriodAr','cloudPeriodEn','cloudPeriodTr','cloudPeriodFr','cloudCategory','cloudUrl','cloudSource','cloudSourceUrl','cloudImportanceAr','cloudImportanceEn','cloudImportanceTr','cloudImportanceFr','cloudImageUrl','cloudImageAlt','cloudImageCredit','cloudImageSourceUrl','cloudElevation','cloudLatitude','cloudLongitude'].forEach(id=>put(id,''));
+      put('cloudRecordType',type);updateImagePreview('');$('cloudPreviewContent')?.replaceChildren();$('cloudPreviewPanel')?.classList.add('hidden');
     });
     $('cloudRefreshBtn')?.addEventListener('click',async()=>{
       if(workerToken){
