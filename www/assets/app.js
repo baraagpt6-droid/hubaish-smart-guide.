@@ -247,6 +247,7 @@ function heritageIcon(kind = 'fort', className = 'heritage-icon') {
     mountain: 'm2 20 7-12 4 7 3-5 6 10H2ZM9 8l2-4 3 5',
     valley: 'M2 7c5 0 5 10 10 10S17 7 22 7M3 21h18M7 13h10',
     mosque: 'M3 21h18M5 21V10h14v11M9 10V7a3 3 0 0 1 6 0v3M12 4V2M8 14v3M16 14v3',
+    market: 'M3 10h18l-2-6H5l-2 6ZM5 10v10h14V10M9 20v-6h6v6M3 10a2 2 0 0 0 4 0 2 2 0 0 0 4 0 2 2 0 0 0 4 0 2 2 0 0 0 4 0 2 2 0 0 0 4 0',
     scroll: 'M7 4h11a2 2 0 0 1 2 2v13H7a3 3 0 0 1 0-6h13M7 13V4a2 2 0 0 0-2-2',
     bookmark: 'M6 3h12v18l-6-4-6 4V3Z',
     compass: 'm12 2 3 8-3 12-3-12 3-8ZM12 10l8-3-8 3-8-3 8 3ZM12 10v4'
@@ -282,10 +283,10 @@ function createContentCard(item, options = {}) {
   card.dataset.exploreId = item.id;
   card.dataset.exploreKind = isHistory ? 'history' : 'place';
   const category = ({
-    AR:{fort:'حصون وقلاع',mountain:'جبال ومرتفعات',valley:'أودية ومياه',mosque:'مساجد',history:'محطة تاريخية',place:'معلم'},
-    EN:{fort:'Forts and castles',mountain:'Mountains',valley:'Valleys and water',mosque:'Mosques',history:'History stop',place:'Landmark'},
-    TR:{fort:'Kaleler',mountain:'Dağlar',valley:'Vadiler ve su',mosque:'Camiler',history:'Tarih durağı',place:'Yer'},
-    FR:{fort:'Forts et châteaux',mountain:'Montagnes',valley:'Vallées et eau',mosque:'Mosquées',history:'Étape historique',place:'Monument'}
+    AR:{fort:'حصون وقلاع',mountain:'جبال ومرتفعات',valley:'أودية ومياه',mosque:'مساجد',market:'أسواق شعبية',history:'محطة تاريخية',place:'معلم'},
+    EN:{fort:'Forts and castles',mountain:'Mountains',valley:'Valleys and water',mosque:'Mosques',market:'Local markets',history:'History stop',place:'Landmark'},
+    TR:{fort:'Kaleler',mountain:'Dağlar',valley:'Vadiler ve su',mosque:'Camiler',market:'Yerel pazarlar',history:'Tarih durağı',place:'Yer'},
+    FR:{fort:'Forts et châteaux',mountain:'Montagnes',valley:'Vallées et eau',mosque:'Mosquées',market:'Marchés locaux',history:'Étape historique',place:'Monument'}
   }[state.lang]||{})[item.cat] || (isHistory ? ({AR:'محطة تاريخية',EN:'History stop',TR:'Tarih durağı',FR:'Étape historique'}[state.lang]||'History stop') : ({AR:'معلم',EN:'Landmark',TR:'Yer',FR:'Monument'}[state.lang]||'Landmark'));
   card.classList.add(item.cat ? ('category-' + item.cat) : 'category-history');
   const meta = element('div', 'item-meta');
