@@ -55,7 +55,7 @@ for (const feature of ['normalizeArabic', 'renderGlobalSearch', 'renderFavorites
 for (const lang of ["'AR'", "'EN'", "'TR'", "'FR'"]) if (!app.includes(lang)) throw new Error(`Language support missing: ${lang}`);
 if (!features.includes('function renderQuiz') || !features.includes('function submitContribution') || !features.includes('function exportAllBackup')) throw new Error('Feature module is incomplete');
 if (!catalog.includes("p19:['وادي نخلة'") || !catalog.includes("h7:{") || !catalog.includes('Muhammad A’id al-Aqab')) throw new Error('Extended landmark and history catalogue missing');
-if (!catalog.includes("['بني معين'") || !catalog.includes("['الوطئة (الوطنة)'") || (catalog.match(/correct:\d/g)||[]).length < 0) throw new Error('District catalogue missing');
+if (!catalog.includes("['بني معين'") || !catalog.includes("['الوطئة (الوطنة)'") || (catalog.match(/\n    \[\['/g)||[]).length !== 10) throw new Error('The 22-district catalogue or ten-question quiz is incomplete');
 if (!html.includes('id="referenceList"') || !html.includes('id="communityTag"') || !html.includes('id="translationNotice"')) throw new Error('Interactive hub sections are missing');
 for (const key of ['quizArea', 'contributionForm', 'adminPanel', 'favModal', 'detailModal']) if (!html.includes(`id="${key}"`)) throw new Error(`UI section missing: ${key}`);
 

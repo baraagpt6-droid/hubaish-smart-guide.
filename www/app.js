@@ -772,6 +772,7 @@ function bindServiceWorkerUpdates() {
 }
 
 function init() {
+  window.HubaishRuntime = { get places(){ return state.places; }, get history(){ return state.history; } };
   applyTheme(state.theme);
   applyLang(state.lang);
   if(window.HubaishCatalog?.seed?.(state))saveState();
