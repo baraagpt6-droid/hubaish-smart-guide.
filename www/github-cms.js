@@ -365,7 +365,9 @@
   function payload(v){
     const common={id:v.id||makeId(v.type),source_text:v.source||'',source_url:safeUrl(v.sourceUrl)?v.sourceUrl:'',status:'documented'};
     if(v.type==='landmark'){
-      return Object.assign(common,{category:v.category,elevation:v.importance||'غير موثق ميدانياً'},Object.fromEntries(['title','location','description','importance'].flatMap(key=>Object.entries({title:v.title,location:v.location,description:v.details,importance:{ar:v.importance,en:v.importance,tr:v.importance,fr:v.importance}}[key]||{}).map(([l,val])=>[key+'_'+l,val]))));
+      const row=Object.assign(common,{category:v.category,elevation:'غير موثق ميدانياً'});
+      localeFields(row,'title',v.title);localeFields(row,'location',v.location);localeFields(row,'description',v.details);localeFields(row,'importance',v.importance);
+      return row;
     }
     if(v.type==='history_event'){
       const row=Object.assign(common,{era:v.category==='modern'?'modern':'ancient'});
