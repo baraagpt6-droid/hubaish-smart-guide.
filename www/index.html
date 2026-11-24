@@ -140,17 +140,37 @@
       <article class="item-card cloud-admin-card hub-panel" id="cloudAdminCard">
         <div class="cloud-card-heading"><div><span class="tag tag-gold">GITHUB JSON CMS</span><h3 class="item-title">إدارة الموسوعة المنشورة</h3><p class="item-body">يُحفظ المحتوى في ملف JSON داخل المستودع، ويُحمّل للزوار دون تسجيل دخول. الكتابة متاحة للمشرف فقط.</p></div><span class="cloud-status-pill" id="cloudStatus">يجري تحميل آخر نسخة من GitHub...</span></div>
         <div id="cloudAdminLoginArea" class="cloud-login-area">
-          <h4 class="item-title">دخول مشرف GitHub</h4>
-          <p class="small muted">أنشئ Fine-grained Personal Access Token لمستودع هذا المشروع فقط، مع صلاحية Contents: Read and write وMetadata: Read. لا تستخدم Token عاماً بصلاحيات جميع المستودعات.</p>
-          <form id="cloudAdminForm" class="cloud-login-grid">
-            <input id="cloudAdminPassword" class="input-field" type="password" placeholder="GitHub Personal Access Token" autocomplete="off" autocapitalize="off" spellcheck="false" required>
-            <button class="btn-primary" type="submit">التحقق وفتح لوحة الإشراف</button>
+          <h4 class="item-title">دخول المشرفين عبر الوسيط الآمن</h4>
+          <p class="small muted">أدخل رابط Cloudflare Worker ثم اسم المستخدم وكلمة المرور. لا يحتاج كل مشرف إلى GitHub Token.</p>
+          <form id="workerLoginForm" class="cloud-login-grid">
+            <input id="workerEndpoint" class="input-field" type="url" placeholder="https://your-worker.workers.dev" autocomplete="url" required>
+            <input id="workerUsername" class="input-field" type="text" placeholder="اسم المستخدم" autocomplete="username" required>
+            <input id="workerPassword" class="input-field" type="password" placeholder="كلمة المرور" autocomplete="current-password" required>
+            <label class="small"><input id="workerRemember" type="checkbox"> تذكرني على هذا الجهاز لمدة 30 يوماً</label>
+            <button class="btn-primary" type="submit">دخول آمن</button>
           </form>
-          <p class="small muted">لا يُحفظ الرمز في localStorage أو ملف عام. يبقى في ذاكرة صفحة المشرف حتى تسجيل الخروج أو إغلاق الصفحة أو إعادة تحميلها.</p>
-          <p class="small"><a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener noreferrer">إنشاء Fine-grained Token من GitHub</a></p>
+          <details class="cloud-editor"><summary>الدخول المباشر الاحتياطي باستخدام GitHub Token</summary>
+            <form id="cloudAdminForm" class="cloud-login-grid">
+              <input id="cloudAdminPassword" class="input-field" type="password" placeholder="GitHub Personal Access Token" autocomplete="off" autocapitalize="off" spellcheck="false" required>
+              <button class="btn-primary" type="submit">التحقق وفتح اللوحة مباشرة</button>
+            </form>
+            <p class="small muted">يظل الرمز في ذاكرة الصفحة فقط ولا يُحفظ على الجهاز.</p>
+            <p class="small"><a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener noreferrer">إنشاء Fine-grained Token</a></p>
+          </details>
         </div>
         <div id="cloudAdminPanel" class="hidden">
-          <div class="cloud-admin-top"><strong id="cloudAdminIdentity"></strong><div class="card-actions"><button class="btn-sm" id="cloudRefreshBtn" type="button">قراءة آخر نسخة</button><button class="btn-sm" id="cloudAdminLogoutBtn" type="button">تسجيل الخروج ومسح الرمز</button></div></div>
+          <div class="cloud-admin-top"><strong id="cloudAdminIdentity"></strong><div class="card-actions"><button class="btn-sm" id="cloudRefreshBtn" type="button">قراءة آخر نسخة</button><button class="btn-sm" id="cloudAdminLogoutBtn" type="button">تسجيل الخروج</button></div></div>
+          <section id="cloudSuperAdminPanel" class="cloud-editor hidden"><h4 class="item-title">إدارة حسابات المشرفين</h4>
+            <form id="cloudCreateAdminForm" class="cloud-fields-grid">
+              <input id="newAdminUsername" class="input-field" placeholder="اسم المستخدم" required>
+              <input id="newAdminDisplayName" class="input-field" placeholder="الاسم الظاهر">
+              <input id="newAdminPassword" class="input-field" type="password" minlength="12" placeholder="كلمة مرور 12 حرفاً على الأقل" required>
+              <select id="newAdminRole" class="input-field"><option value="editor">محرر</option><option value="super_admin">مشرف عام</option></select>
+              <button class="btn-primary" type="submit">إضافة مشرف</button>
+            </form>
+            <div id="cloudAdminUsersList" class="cloud-list"></div>
+            <h4 class="item-title">سجل التعديلات</h4><div id="cloudAuditList" class="cloud-list"></div>
+          </section>
           <p class="small muted">اختر سجلاً لتعديله. السجلات الأساسية لا تُحذف؛ حذف تعديلها يعيد النص الأصلي. الإضافات والقرى والروابط المضافة يمكن حذفها.</p>
           <section id="cloudContentEditor" class="cloud-editor"><h4 class="item-title">إضافة أو تعديل محتوى منشور</h4>
             <form id="cloudContentForm"><input id="cloudRecordId" type="hidden"><input id="cloudContributionId" type="hidden">
