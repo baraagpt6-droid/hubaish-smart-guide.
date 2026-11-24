@@ -215,7 +215,7 @@ if (!githubCms.includes("const DEFAULT_WORKER_URL='" + canonicalWorkerUrl + "';"
     !githubCms.includes("localStorage.removeItem('hubaish_worker_url');") ||
     githubCms.includes("localStorage.setItem('hubaish_worker_url'") ||
     !githubCms.includes("checkWorkerSetup(workerUrl,true);") ||
-    !html.includes('value="' + canonicalWorkerUrl + '"') ||
+    html.split(canonicalWorkerUrl).length - 1 < 2 ||
     !workerHealth.includes("const base = '" + canonicalWorkerUrl + "';") ||
     !readme.includes(canonicalWorkerUrl) || !workerReadme.includes(canonicalWorkerUrl)) {
   throw new Error('The Cloudflare Worker default URL must use the canonical baraagpt6 hostname and clear stale saved endpoints.');
@@ -227,9 +227,14 @@ const setupForm = setupFormStart >= 0 && setupFormEnd > setupFormStart ? html.sl
 const loginFormStart = html.indexOf('<form id="workerLoginForm"');
 const loginFormEnd = html.indexOf('</form>', loginFormStart);
 const loginForm = loginFormStart >= 0 && loginFormEnd > loginFormStart ? html.slice(loginFormStart, loginFormEnd) : '';
+if (!loginForm.includes('id="workerUsername"') || !loginForm.includes('id="workerPassword"') ||
+    !githubCms.includes("String($('workerEndpoint')?.value||DEFAULT_WORKER_URL)") ||
+    !githubCms.includes("String($('workerSetupEndpoint')?.value||DEFAULT_WORKER_URL)")) {
+  throw new Error('Admin login and first setup must use the canonical Worker automatically without asking for its URL.');
+}
 const setupFieldIds = [...setupForm.matchAll(/id="(workerSetupEndpoint|workerBootstrapKey|workerSetupUsername|workerSetupPassword)"/g)].map(m => m[1]);
 if (setupFieldIds.join(',') !== 'workerBootstrapKey,workerSetupUsername,workerSetupPassword' || setupForm.includes('workerSetupEndpoint')) {
-  throw new Error('First-admin setup must show exactly four required fields.');
+  throw new Error('First-admin setup must show bootstrap key, username and password while keeping the server URL advanced.');
 }
 if (!githubCms.includes("localStorage.setItem('hubaish_direct_github_token'") ||
     !githubCms.includes("localStorage.getItem('hubaish_direct_github_token')") ||
