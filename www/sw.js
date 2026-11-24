@@ -1,11 +1,12 @@
 'use strict';
 
-const CACHE_NAME = 'hubaish-guide-v3.5.0';
+const CACHE_NAME = 'hubaish-guide-v3.6.0';
 const BASE_URL = new URL('./', self.registration.scope);
 const INDEX_URL = new URL('index.html', BASE_URL).href;
+const REMOTE_IMAGE_HOSTS = new Set(['upload.wikimedia.org', 'al-jandprovince.com', 'hekmahyemanya.com']);
 const APP_SHELL = [
   '', 'index.html', 'styles.css', 'app.js', 'catalog.js', 'features.js', 'manifest.json',
-  'manifest.webmanifest', 'github-cms.js', 'data/live-content.json', 'icons/icon.svg', 'icons/icon-192.png', 'icons/icon-512.png'
+  'manifest.webmanifest', 'github-cms.js', 'data/live-content.json', 'icons/icon.svg', 'icons/icon-192.png', 'icons/icon-512.png', 'icons/apple-touch-icon.png', 'icons/favicon-32.png'
 ].map(path => new URL(path, BASE_URL).href);
 
 self.addEventListener('install', event => {
@@ -33,7 +34,23 @@ self.addEventListener('fetch', event => {
   const request = event.request;
   if (request.method !== 'GET') return;
   const url = new URL(request.url);
-  if (url.origin !== self.location.origin || !url.href.startsWith(BASE_URL.href)) return;
+  if (url.origin !== self.location.origin) {
+    if (request.destination !== 'image' || !REMOTE_IMAGE_HOSTS.has(url.hostname)) return;
+    event.respondWith(
+      caches.open(CACHE_NAME).then(async cache => {
+        try {
+          const response = await fetch(request);
+          if (response.ok || response.type === 'opaque') await cache.put(request, response.clone());
+          return response;
+        } catch {
+          const cached = await cache.match(request);
+          return cached || new Response('', { status: 503, statusText: 'Image unavailable offline' });
+        }
+      })
+    );
+    return;
+  }
+  if (!url.href.startsWith(BASE_URL.href)) return;
 
   if (request.mode === 'navigate') {
     event.respondWith(
