@@ -38,14 +38,15 @@
 
 يحتفظ Cloudflare KV بحسابات المشرفين وتجزئات كلمات المرور وسجل التدقيق. تبقى بيانات الموسوعة المنشورة في `www/data/live-content.json` داخل GitHub.
 
-### الدخول المباشر الاحتياطي باستخدام GitHub Token
+### تأسيس أول مشرف
 
-1. افتح [GitHub Fine-grained Personal Access Tokens](https://github.com/settings/personal-access-tokens/new).
-2. اختر المستودع `baraagpt6-droid/hubaish-smart-guide.` فقط.
-3. امنح `Contents: Read and write` و`Metadata: Read`.
-4. أدخل الرمز في قسم «الدخول المباشر الاحتياطي باستخدام GitHub Token» داخل لوحة الإدارة.
+1. اربط KV باسم `ADMINS` مع مساحة الأسماء `hubaish-admins` في بيئة Production داخل Cloudflare.
+2. أضف الأسرار `GITHUB_TOKEN` و`SESSION_SECRET`، وأضف `BOOTSTRAP_KEY` مؤقتاً قبل تأسيس أول مشرف.
+3. افتح **المزيد → بوابة المشرفين الذكية**. تتحقق الواجهة من `/setup/status` وتعرض نموذج التأسيس مرة واحدة فقط إذا لم يوجد مشرف وكان مفتاح التأسيس مضبوطاً.
+4. أدخل `BOOTSTRAP_KEY` واسم المستخدم وكلمة مرور من 12 حرفاً على الأقل. ينشئ Worker حساب `super_admin` في KV ثم تسجّل الواجهة الدخول.
+5. احذف `BOOTSTRAP_KEY` من أسرار Worker فور نجاح التأسيس. ستظهر رسالة داخل لوحة المشرف حتى يتم حذف المفتاح.
 
-يُحفظ الرمز في ذاكرة الصفحة فقط، إلا عند تفعيل خيار تذكره على هذا الجهاز؛ عندها يحفظه التطبيق في `localStorage`. يظل Worker هو المسار الأساسي لأنه يحتفظ برمز GitHub على الخادم ولا يطلب من كل مشرف امتلاك Token.
+لا تعرض الواجهة عنوان الخادم أو GitHub Token في نموذج الدخول. تستخدم كل عمليات المصادقة والنشر Worker فقط. لا تحفظ الواجهة مفتاح GitHub في المتصفح.
 
 ### قواعد تحرير المحتوى
 
@@ -87,7 +88,7 @@ npm run build
 npm run preview
 ```
 
-يتحقق `npm run build` من الملفات، واللغات، وكتالوج المحتوى، وGitHub CMS، ومفتاح المشرف داخل الذاكرة فقط، والـ Manifest، وService Worker، وCapacitor، وملفات Android، وأيقونات PNG. افتح المعاينة عبر `http://127.0.0.1:4173`.
+يتحقق `npm run build` من الملفات واللغات وكتالوج المحتوى وواجهة Worker-only للمشرفين وتأسيس أول مشرف وحقول المحتوى الجغرافي ومعاينة النشر والـ Manifest وService Worker وCapacitor وملفات Android وأيقونات PNG. افتح المعاينة عبر `http://127.0.0.1:4173`.
 
 ## Android والنشر
 
