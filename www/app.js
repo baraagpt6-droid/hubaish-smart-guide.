@@ -250,6 +250,8 @@ function heritageIcon(kind = 'fort', className = 'heritage-icon') {
   return svg;
 }
 
+window.HubaishIcon = heritageIcon;
+
 function localizedDirectoryItem(item) {
   const lang = state.lang || 'AR';
   return {
