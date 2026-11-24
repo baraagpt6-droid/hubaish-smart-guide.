@@ -565,11 +565,11 @@ function localAssistantAnswer(question) {
   const q = normalizeArabic(question);
   if (/مسار|جوله|سياح|route|itinerary|tour/i.test(question)) {
     const places=state.places.filter(item=>['fort','valley','mountain','mosque'].includes(item.cat)).slice(0,5);
-    if(places.length)return 'اقتراح استكشاف من العناصر المنشورة في الموسوعة، وليس مسار ملاحة ميدانياً:\\n'+places.map((item,index)=>(index+1)+'. '+item.title+' — '+item.loc).join('\\n')+'\\nتحقق من الطرق والوقت محلياً قبل الزيارة.';
+    if(places.length)return 'اقتراح استكشاف من العناصر المنشورة في الموسوعة، وليس مسار ملاحة ميدانياً:\n'+places.map((item,index)=>(index+1)+'. '+item.title+' — '+item.loc).join('\n')+'\nتحقق من الطرق والوقت محلياً قبل الزيارة.';
   }
   if (/تاريخ|history|الحضاره|الانتفاضه/i.test(question)) {
     const events=state.history.slice(0,4);
-    if(events.length)return events.map(item=>item.title+' — '+item.period+'\\n'+item.body).join('\\n\\n');
+    if(events.length)return events.map(item=>item.title+' — '+item.period+'\n'+item.body).join('\n\n');
   }
   if (/صلاه|الفجر|الظهر|العصر|المغرب|العشاء|مواقيت/.test(q)) {
     const times = computePrayerTimesForToday();
