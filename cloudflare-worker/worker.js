@@ -6,7 +6,8 @@
 const OWNER="baraagpt6-droid",REPO="hubaish-smart-guide.",BRANCH="main",FILE="www/data/live-content.json";
 const ROLES=new Set(["super_admin","editor"]),ITER=100000,UP="user:",AUDIT="audit:latest";
 function b64bytes(bytes){let binary='';for(let i=0;i<bytes.length;i+=0x8000)binary+=String.fromCharCode(...bytes.subarray(i,Math.min(i+0x8000,bytes.length)));return btoa(binary)}
-const json=(d,s=200,h={})=>new Response(JSON.stringify(d),{status:s,headers:{"Content-Type":"application/json; charset=utf-8","Cache-Control":"no-store",...h}});
+const SECURITY_HEADERS={"X-Content-Type-Options":"nosniff","X-Frame-Options":"DENY","Referrer-Policy":"strict-origin-when-cross-origin","Permissions-Policy":"microphone=(self)","Strict-Transport-Security":"max-age=31536000; includeSubDomains","Cross-Origin-Resource-Policy":"same-site","Content-Security-Policy":"default-src 'none'; frame-ancestors 'none'; base-uri 'none'"};
+const json=(d,s=200,h={})=>new Response(JSON.stringify(d),{status:s,headers:{"Content-Type":"application/json; charset=utf-8","Cache-Control":"no-store",...SECURITY_HEADERS,...h}});
 const enc=s=>new TextEncoder().encode(s),dec=b=>new TextDecoder().decode(b);
 const b64u=b=>btoa(String.fromCharCode(...new Uint8Array(b))).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,"");
 const un64=s=>Uint8Array.from(atob(s.replace(/-/g,"+").replace(/_/g,"/")+"===".slice((s.length+3)%4)),c=>c.charCodeAt(0));
@@ -15,8 +16,9 @@ const uname=s=>String(s||"").trim().toLowerCase().replace(/[^a-z0-9._-]/g,"").sl
 async function hkey(secret){return crypto.subtle.importKey("raw",enc(secret),{name:"HMAC",hash:"SHA-256"},false,["sign","verify"])}
 async function issue(payload,secret){const body=b64u(enc(JSON.stringify(payload)));return body+"."+b64u(await crypto.subtle.sign("HMAC",await hkey(secret),enc(body)))}
 async function check(token,secret){try{const [body,sig]=String(token||"").split(".");if(!body||!sig)return null;if(!await crypto.subtle.verify("HMAC",await hkey(secret),un64(sig),enc(body)))return null;const p=JSON.parse(dec(un64(body)));return p.exp>Date.now()?p:null}catch{return null}}
-async function passHash(password,salt){const m=await crypto.subtle.importKey("raw",enc(password),"PBKDF2",false,["deriveBits"]);return b64u(await crypto.subtle.deriveBits({name:"PBKDF2",salt,iterations:ITER,hash:"SHA-256"},m,256))}
-async function saveUser(env,user,password){const salt=random(16);await env.ADMINS.put(UP+user.username,JSON.stringify({...user,salt:b64u(salt),passwordHash:await passHash(password,salt),updatedAt:new Date().toISOString()}))}
+async function passHash(password,salt,iterations=ITER){if(!Number.isInteger(iterations)||iterations<10000||iterations>ITER)throw Error("Unsupported password hash parameters.");const m=await crypto.subtle.importKey("raw",enc(password),"PBKDF2",false,["deriveBits"]);return b64u(await crypto.subtle.deriveBits({name:"PBKDF2",salt,iterations,hash:"SHA-256"},m,256))}
+async function passwordMatches(password,user){const iterations=Number(user.hashIterations||ITER);if(iterations>ITER)return false;return await passHash(password,un64(user.salt),iterations)===user.passwordHash}
+async function saveUser(env,user,password){const salt=random(16);await env.ADMINS.put(UP+user.username,JSON.stringify({...user,hashIterations:ITER,salt:b64u(salt),passwordHash:await passHash(password,salt),updatedAt:new Date().toISOString()}))}
 const getUser=(env,name)=>env.ADMINS.get(UP+name,"json");
 async function log(env,event){const a=await env.ADMINS.get(AUDIT,"json")||[];a.unshift({at:new Date().toISOString(),...event});await env.ADMINS.put(AUDIT,JSON.stringify(a.slice(0,200)))}
 function cors(req,env){
@@ -27,7 +29,7 @@ function cors(req,env){
  const permitted=!origin||allowed.has(origin);
  return {
   ...(origin&&permitted?{"Access-Control-Allow-Origin":origin}:{}),
-  "Access-Control-Allow-Methods":"GET,POST,PUT,PATCH,OPTIONS",
+  "Access-Control-Allow-Methods":"GET,POST,PUT,PATCH,DELETE,OPTIONS",
   "Access-Control-Allow-Headers":"Content-Type,Authorization",
   "Access-Control-Max-Age":"86400",
   "Vary":"Origin"
@@ -83,7 +85,9 @@ async function route(req,env){
   const ip=req.headers.get("CF-Connecting-IP")||"unknown",attemptKey="login-fail:"+ip+":"+username;
   const attempts=await env.ADMINS.get(attemptKey,"json")||{count:0};
   if(attempts.count>=8)return json({error:"تم إيقاف محاولات الدخول مؤقتاً. حاول بعد 15 دقيقة."},429);
-  if(!user||user.disabled||await passHash(password,un64(user.salt))!==user.passwordHash){
+  let passwordValid=false;
+  if(user&&!user.disabled){try{passwordValid=await passwordMatches(password,user)}catch{passwordValid=false}}
+  if(!passwordValid){
    await env.ADMINS.put(attemptKey,JSON.stringify({count:attempts.count+1}),{expirationTtl:900});
    return json({error:"اسم المستخدم أو كلمة المرور غير صحيحة."},401);
   }
@@ -98,8 +102,19 @@ async function route(req,env){
   const d=await req.json(),keys=["landmarks","historyEvents","subDistrictUpdates","subDistricts","historicalFigures","communityLinks"];
   if(!keys.every(k=>Array.isArray(d?.[k]))||d.schemaVersion!==1)return json({error:"Invalid live-content schema."},400);
   if(JSON.stringify(d).length>700000)return json({error:"Content exceeds 700 KB."},413);
+  const previous=(await ghRead(env)).data,changes=[];
+  for(const key of keys){
+   const before=new Map((previous[key]||[]).map(item=>[String(item.id||""),item]));
+   const after=new Map((d[key]||[]).map(item=>[String(item.id||""),item]));
+   for(const [id,item] of after){
+    const prior=before.get(id);
+    if(!prior)changes.push({collection:key,id,action:"add",title:String(item.title_ar||item.name_ar||item.district_name_ar||id).slice(0,120)});
+    else if(JSON.stringify(prior)!==JSON.stringify(item))changes.push({collection:key,id,action:"edit",title:String(item.title_ar||item.name_ar||item.district_name_ar||id).slice(0,120)});
+   }
+   for(const [id,item] of before)if(!after.has(id))changes.push({collection:key,id,action:"delete",title:String(item.title_ar||item.name_ar||item.district_name_ar||id).slice(0,120)});
+  }
   d.updatedAt=new Date().toISOString();d.updatedBy={username:actor.username,displayName:actor.displayName,role:actor.role};
-  const result=await ghWrite(env,d,actor);await log(env,{actor:actor.username,displayName:actor.displayName,role:actor.role,action:"publish_content",commit:result.commit?.sha||null});
+  const result=await ghWrite(env,d,actor);await log(env,{actor:actor.username,displayName:actor.displayName,role:actor.role,action:"publish_content",changes:changes.slice(0,100),commit:result.commit?.sha||null});
   return json({ok:true,updatedAt:d.updatedAt,updatedBy:d.updatedBy,commit:result.commit?.sha||null})
  }
  if(path==="/admin/users"&&actor.role==="super_admin"&&req.method==="GET"){
@@ -113,7 +128,30 @@ async function route(req,env){
  }
  if(path==="/admin/users"&&actor.role==="super_admin"&&req.method==="PATCH"){
   const b=await req.json(),username=uname(b.username),user=await getUser(env,username);if(!user)return json({error:"الحساب غير موجود."},404);if(username===actor.username)return json({error:"لا يمكنك تعطيل حسابك الحالي."},400);
-  user.disabled=b.disabled===true;await env.ADMINS.put(UP+username,JSON.stringify(user));await log(env,{actor:actor.username,action:user.disabled?"disable_admin":"enable_admin",target:username});return json({ok:true})
+  user.disabled=b.disabled===true;user.updatedAt=new Date().toISOString();await env.ADMINS.put(UP+username,JSON.stringify(user));await log(env,{actor:actor.username,action:user.disabled?"disable_admin":"enable_admin",target:username});return json({ok:true})
+ }
+ if(path==="/admin/users"&&actor.role==="super_admin"&&req.method==="PUT"){
+  const b=await req.json(),username=uname(b.username),user=await getUser(env,username);
+  if(!user)return json({error:"الحساب غير موجود."},404);
+  const role=String(b.role||user.role);if(!ROLES.has(role))return json({error:"الصلاحية المطلوبة غير صالحة."},400);
+  if(username===actor.username&&(role!=="super_admin"||b.disabled===true))return json({error:"لا يمكنك تعطيل حسابك أو خفض صلاحيتك."},400);
+  user.role=role;
+  if(typeof b.displayName==="string"&&b.displayName.trim())user.displayName=b.displayName.trim().slice(0,80);
+  if(typeof b.disabled==="boolean")user.disabled=b.disabled;
+  user.updatedAt=new Date().toISOString();await env.ADMINS.put(UP+username,JSON.stringify(user));
+  await log(env,{actor:actor.username,action:"update_admin",target:username,role});return json({ok:true})
+ }
+ if(path==="/admin/users/password"&&actor.role==="super_admin"&&req.method==="POST"){
+  const b=await req.json(),username=uname(b.username),password=String(b.password||""),user=await getUser(env,username);
+  if(!user)return json({error:"الحساب غير موجود."},404);
+  if(password.length<12)return json({error:"كلمة المرور يجب أن تتكون من 12 حرفاً على الأقل."},400);
+  await saveUser(env,user,password);await log(env,{actor:actor.username,action:"reset_admin_password",target:username});return json({ok:true})
+ }
+ if(path==="/admin/users"&&actor.role==="super_admin"&&req.method==="DELETE"){
+  const b=await req.json(),username=uname(b.username);if(!username)return json({error:"اسم المستخدم غير صالح."},400);
+  if(username===actor.username)return json({error:"لا يمكنك حذف حسابك الحالي."},400);
+  if(!await getUser(env,username))return json({error:"الحساب غير موجود."},404);
+  await env.ADMINS.delete(UP+username);await log(env,{actor:actor.username,action:"delete_admin",target:username});return json({ok:true})
  }
  if(path==="/admin/audit"&&actor.role==="super_admin"&&req.method==="GET")return json({events:(await env.ADMINS.get(AUDIT,"json")||[]).slice(0,100)});
  return json({error:"Not found."},404)
