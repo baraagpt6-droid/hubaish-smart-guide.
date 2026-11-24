@@ -19,15 +19,9 @@ Generate secrets locally with a password manager or a cryptographically secure g
 
 ## Create the first super administrator
 
-Send this request once, replacing the URL and values. Use a strong bootstrap key and a password of at least 12 characters.
+Open the published app, expand the administration panel, then use **تأسيس النظام لأول مرة (Setup)**. Enter the Worker URL, one-time Bootstrap Key, username and a password of at least 12 characters. The app calls `GET /setup/status`, shows the setup form only while no admin exists, sends `POST /setup`, saves the Worker URL and signs in immediately.
 
-```bash
-curl -X POST "https://YOUR-WORKER.workers.dev/setup" \
-  -H "Content-Type: application/json" \
-  -d '{"bootstrapKey":"YOUR_BOOTSTRAP_KEY","username":"admin","displayName":"Main Admin","password":"YOUR_LONG_PASSWORD"}'
-```
-
-After the successful response, remove the `BOOTSTRAP_KEY` secret from Worker settings and deploy. The setup route cannot create another initial administrator after the first account exists.
+After successful setup, remove the `BOOTSTRAP_KEY` secret in Cloudflare Worker settings. The setup form then hides because the Worker reports that initial setup is complete.
 
 ## Use it in the app
 
