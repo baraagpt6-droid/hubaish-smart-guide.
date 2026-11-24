@@ -796,13 +796,11 @@ function init() {
         }
         return [...merged.values()];
       };
-      state.places = mergeById(state.places, incoming.landmarks || []);
-      state.history = mergeById(state.history, incoming.history || []);
-      const links = new Map((state.socials || []).map(item => [String(item.cloudId || item.id || item.url), item]));
-      for (const item of incoming.links || []) {
-        if (item?.url && item?.name) links.set(String(item.cloudId || item.id || item.url), item);
-      }
-      state.socials = [...links.values()];
+      const retainedPlaces = state.places.filter(item => !String(item.id || '').startsWith('cms-landmark-'));
+      const retainedHistory = state.history.filter(item => !String(item.id || '').startsWith('cms-history_event-'));
+      state.places = mergeById(retainedPlaces, incoming.landmarks || []);
+      state.history = mergeById(retainedHistory, incoming.history || []);
+      state.socials = state.socials.filter(item => !item.cloudId).concat((incoming.links || []).filter(item => item?.url && item?.name));
     }
   };
   applyTheme(state.theme);
