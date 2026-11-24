@@ -115,7 +115,11 @@ if(!worker.includes('ITER=100000')||!worker.includes('hashIterations:ITER')||
    !worker.includes('req.method==="DELETE"')||!worker.includes('req.method==="PUT"')||
    !worker.includes('changes:changes.slice(0,100)')||
    !worker.includes('X-Content-Type-Options')||!worker.includes('Content-Security-Policy')||
-   !worker.includes('microphone=(self)')) {
+   !worker.includes('microphone=(self)')||
+   !worker.includes('sessionVersion=()=>b64u(random(16))')||
+   !worker.includes('String(p.ver||"legacy")!==versionOf(u)')||
+   !worker.includes('ver:versionOf(user)')||
+   !worker.includes('user.sessionVersion=sessionVersion()')) {
   throw new Error('Worker authentication, RBAC, audit log or security headers are incomplete.');
 }
 if(!css.includes('env(safe-area-inset-top')||!css.includes('var(--status-bar-height')||
