@@ -191,6 +191,7 @@ function applyLang(lang) {
     const key = element.dataset.i18n;
     if (dictionary[key]) element.textContent = dictionary[key];
   });
+  window.HubaishCatalog?.applyUi?.();
   saveState();
 }
 
@@ -260,12 +261,8 @@ window.HubaishIcon = heritageIcon;
 
 function localizedDirectoryItem(item) {
   const lang = state.lang || 'AR';
-  return {
-    ...item,
-    title: item.titleI18n?.[lang] || item.title,
-    body: item.bodyI18n?.[lang] || item.body,
-    loc: item.locI18n?.[lang] || item.loc
-  };
+  const translated = window.HubaishCatalog?.localizeItem?.(item, lang) || item;
+  return { ...translated, title: item.titleI18n?.[lang] || translated.title || item.title, body: item.bodyI18n?.[lang] || translated.body || item.body, loc: item.locI18n?.[lang] || translated.loc || item.loc };
 }
 
 function createContentCard(item, options = {}) {
@@ -306,10 +303,13 @@ function renderSpotlight() {
 function renderHistory(era = currentEra, query = '') {
   const target = document.getElementById('historyList');
   const needle = normalizeArabic(query);
-  const items = state.history.filter(item => (era === 'all' || item.era === era) && (!needle || normalizeArabic(`${item.title} ${item.period} ${item.body}`).includes(needle)));
+  const items = state.history.filter(item => {
+    const view = localizedDirectoryItem(item);
+    return (era === 'all' || item.era === era) && (!needle || normalizeArabic(`${item.title} ${item.period} ${item.body} ${view.title} ${view.period} ${view.body}`).includes(needle));
+  });
   target.replaceChildren();
-  if (!items.length) return appendEmpty(target, 'لا توجد نتائج مطابقة.');
-  items.forEach(item => target.append(createContentCard(item, { meta: item.period, extraMeta: 'مادة تاريخية' })));
+  if (!items.length) return appendEmpty(target, state.lang==='EN'?'No matching history entries.':state.lang==='TR'?'Eşleşen tarih kaydı yok.':state.lang==='FR'?'Aucun événement correspondant.':'لا توجد نتائج مطابقة.');
+  items.forEach(item => { const view = localizedDirectoryItem(item); target.append(createContentCard(item,{meta:view.period||item.period,extraMeta:state.lang==='AR'?'محطة تاريخية':'History'})); });
 }
 
 function renderPlaces(category = currentPlaceCategory, query = '') {
@@ -328,6 +328,7 @@ function renderUzal(query = '') {
   const target = document.getElementById('uzalList');
   const needle = normalizeArabic(query);
   const directoryNames = window.HubaishFeatures?.getUzal?.() || UZAL_22;
+  if (window.HubaishCatalog?.renderDistricts) return window.HubaishCatalog.renderDistricts(target, directoryNames, query, state.lang);
   const labels = {
     AR:{district:'عزلة',number:'عزلة',explore:'استكشف',question:'في مديرية حبيش'},
     EN:{district:'Sub-district',number:'Sub-district',explore:'Explore',question:'in Hubaish District'},
@@ -354,7 +355,7 @@ function renderSocials() {
   if (!state.socials.length) return appendEmpty(target, 'لا توجد روابط مضافة.');
   state.socials.forEach(item => {
     if (!validHttpUrl(item.url)) return;
-    const link = element('a', 'btn-sm', `↗ ${item.name}`);
+    const link = element('a', 'btn-sm', `↗ ${window.HubaishCatalog?.localizeSocial?.(item, state.lang) || item.name}`);
     link.href = item.url;
     link.target = '_blank';
     link.rel = 'noopener noreferrer';
@@ -586,6 +587,7 @@ function updatePrayerUI() {
 
 function renderRadar() {
   const box = document.getElementById('radarBox');
+  if (window.HubaishCatalog?.renderCompass) return window.HubaishCatalog.renderCompass(box, state.places, state.lang);
   const items = state.places.filter(item => Number.isFinite(item.distKm));
   box.replaceChildren(element('h3', 'item-title', 'المسافات والاتجاهات التقديرية من مركز ظُلمة'), element('p', 'small muted', 'القيم تقديرية من بيانات النسخة وليست قياسات مسارات أو إحداثيات GPS مؤكدة.'));
   const list = element('div', 'radar-list');
@@ -606,7 +608,8 @@ function handleAddPlace() {
   const cat = document.getElementById('newPlaceCat').value;
   if (!title || !body) return showToast('أدخل اسم المعلم ووصفه.');
   if (state.places.length >= 200) return showToast('وصلت إلى الحد الأقصى للمعالم المحلية.');
-  state.places.unshift({ id: makeId('place'), cat: ['fort', 'mosque', 'valley', 'mountain'].includes(cat) ? cat : 'fort', title, loc, body });
+  const added={id:makeId('place'),cat:['fort','mosque','valley','mountain'].includes(cat)?cat:'fort',title,loc,body};
+  state.places.unshift(added);window.HubaishCatalog?.autoTranslate?.(added);
   saveState(); renderAll(); renderRadar();
   ['newPlaceTitle', 'newPlaceLoc', 'newPlaceDesc'].forEach(id => { document.getElementById(id).value = ''; });
   showToast('تم حفظ المعلم على هذا الجهاز.');
@@ -771,6 +774,7 @@ function bindServiceWorkerUpdates() {
 function init() {
   applyTheme(state.theme);
   applyLang(state.lang);
+  if(window.HubaishCatalog?.seed?.(state))saveState();
   bindEvents();
   renderAll();
   renderRadar();

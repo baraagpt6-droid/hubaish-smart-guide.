@@ -1,10 +1,10 @@
 'use strict';
 
-const CACHE_NAME = 'hubaish-guide-v3.0.0';
+const CACHE_NAME = 'hubaish-guide-v3.1.0';
 const BASE_URL = new URL('./', self.registration.scope);
 const INDEX_URL = new URL('index.html', BASE_URL).href;
 const APP_SHELL = [
-  '', 'index.html', 'styles.css', 'app.js', 'features.js', 'manifest.json',
+  '', 'index.html', 'styles.css', 'app.js', 'catalog.js', 'features.js', 'manifest.json',
   'manifest.webmanifest', 'icons/icon.svg', 'icons/icon-192.png', 'icons/icon-512.png'
 ].map(path => new URL(path, BASE_URL).href);
 

@@ -228,3 +228,35 @@ html[data-theme=light] .story-heritage-icon{color:#e8cc72}
   stroke-linejoin:round;
 }
 .fly-bookmark-icon{width:17px;height:17px;color:var(--gold)}
+
+/* Hubaish interactive encyclopedia hub */
+.uzal-card{position:relative;overflow:hidden;min-height:180px;background:linear-gradient(145deg,var(--surface),var(--elevated))}
+.uzal-original{display:block;margin:-2px 0 8px;color:var(--muted);font-size:10px}
+.uzal-card .item-body{min-height:60px}
+.hub-community{position:relative;overflow:hidden;backdrop-filter:blur(16px);background:linear-gradient(135deg,rgba(20,76,53,.86),rgba(18,34,27,.78));border-color:rgba(212,175,55,.34);box-shadow:0 18px 42px rgba(0,0,0,.22)}
+.hub-community:before{content:"";position:absolute;inset:-70% auto auto -20%;width:70%;height:150%;transform:rotate(28deg);background:linear-gradient(90deg,transparent,rgba(255,255,255,.12),transparent);animation:hubSheen 8s ease-in-out infinite;pointer-events:none}
+.hub-panel{animation:hubRise .55s both;animation-delay:calc(var(--hub-order,0)*55ms)}
+.people-grid,.reference-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+.person-card,.reference-card{padding:12px;border:1px solid var(--border);border-radius:15px;background:var(--elevated);transition:transform .2s,border-color .2s,box-shadow .2s}
+.person-card .item-title,.reference-card .item-title{font-size:13px;line-height:1.55}
+.reference-preview{padding:8px 10px;margin:7px 0;border:1px solid var(--border);border-radius:10px;background:var(--surface);font-size:11px}
+.reference-preview summary{color:var(--green);font-weight:800;cursor:pointer}
+.reference-preview blockquote{margin:9px 0 4px;padding-inline-start:10px;border-inline-start:2px solid var(--gold);line-height:1.7}
+.explorer-progress-meter,.quiz-progress{display:block;width:100%;height:9px;border:0;border-radius:99px;background:var(--green-soft);accent-color:var(--green)}
+#explorerProgressText{display:block;color:var(--gold);font-size:21px;font-variant-numeric:tabular-nums}
+.quiz-progress{margin:8px 0 13px}
+.quiz-badge{display:inline-flex;padding:8px 13px;border:1px solid var(--border);border-radius:99px;color:var(--muted);background:var(--surface);font-size:12px;font-weight:900}
+.quiz-badge.earned{border-color:var(--gold);background:var(--gold-soft);color:var(--gold);animation:badgePop .5s ease both}
+.radar-visual{display:grid;place-items:center;margin:8px auto 12px;max-width:250px;color:var(--gold);animation:radarPulse 3.8s ease-in-out infinite}
+.compass-radar{width:100%;max-width:240px;overflow:visible}
+.radar-landmark-list{display:flex;flex-wrap:wrap;gap:7px}
+.radar-chip{padding:7px 10px;border:1px solid var(--border);border-radius:99px;background:var(--elevated);color:var(--sub);font-size:10px}
+.radar-chip:hover{border-color:var(--gold);color:var(--gold)}
+#translationNotice{padding:8px 10px;margin:8px 0 12px;border-inline-start:3px solid var(--gold);background:var(--gold-soft);border-radius:8px;line-height:1.65}
+.hub-panel:hover,.person-card:hover,.reference-card:hover{border-color:var(--strong);box-shadow:0 15px 34px rgba(0,0,0,.18);transform:translateY(-2px)}
+@keyframes hubRise{from{opacity:0;transform:translateY(13px)}to{opacity:1;transform:translateY(0)}}
+@keyframes hubSheen{0%,70%,100%{transform:translateX(-110%) rotate(28deg)}85%{transform:translateX(175%) rotate(28deg)}}
+@keyframes radarPulse{0%,100%{filter:drop-shadow(0 0 2px var(--gold-soft))}50%{filter:drop-shadow(0 0 12px var(--gold-soft))}}
+@keyframes badgePop{0%{transform:scale(.82);opacity:0}75%{transform:scale(1.06)}100%{transform:scale(1);opacity:1}}
+@media(max-width:560px){.people-grid,.reference-list{grid-template-columns:1fr}.uzal-card{min-height:unset}.uzal-card .item-body{min-height:unset}}
+@media(prefers-reduced-motion:reduce){.hub-community:before,.hub-panel,.radar-visual,.quiz-badge.earned{animation:none!important}}
