@@ -59,6 +59,8 @@ for (const id of ['historyList','placesList','uzalList','peopleList','referenceL
 if (!html.includes('<script src="./supabase-config.js" defer></script>') || !html.includes('<script src="./cloud.js" defer></script>')) throw new Error('Supabase config or cloud module is not loaded.');
 if (!sw.includes("'supabase-config.js'") || !sw.includes("'cloud.js'")) throw new Error('Supabase config or cloud module is missing from the offline app shell.');
 if (!cloudConfig.includes('HUBAISH_SUPABASE_CONFIG') || !cloud.includes('embeddedConfig.url')) throw new Error('Shared public Supabase configuration is not wired to the client.');
+if (!cloud.includes('function isPublicApiKey') || !cloud.includes("'sb_publishable_'") || !cloud.includes("payload.role==='anon'") || !cloud.includes("if(!publishable||opts.admin||(!opts.anon&&!!session?.access_token))")) throw new Error('Supabase publishable-key authentication handling is incomplete.');
+if (!html.includes('Publishable key / anon public key') || !html.includes('sb_publishable_...')) throw new Error('Supabase public-key setup guidance is missing.');
 if (!cloud.includes('/rest/v1/') || !cloud.includes('/auth/v1/token?grant_type=password') || !cloud.includes('user_contributions')) throw new Error('Supabase REST/Auth integration is incomplete.');
 if (!features.includes('window.HubaishCloud.submitContribution') || !features.includes('Cloud contribution failed')) throw new Error('Community contributions are not wired to the Supabase inbox.');
 if (!catalog.includes('getDistrictUpdates') || !catalog.includes('cloud-district-update')) throw new Error('Cloud district updates are not rendered in the sub-district directory.');
