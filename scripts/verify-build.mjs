@@ -6,7 +6,7 @@ import { fileURLToPath } from 'node:url';
 const root = resolve(fileURLToPath(new URL('../', import.meta.url)));
 const required = [
   'www/index.html','www/styles.css','www/app.js','www/catalog.js','www/features.js',
-  'www/github-cms.js','www/splash.js','www/data/live-content.json','www/sw.js',
+  'www/github-cms.js','www/gallery.js','www/splash.js','www/data/live-content.json','www/sw.js',
   'www/manifest.json','www/manifest.webmanifest','www/icons/icon.svg',
   'www/icons/icon-192.png','www/icons/icon-512.png','www/icons/apple-touch-icon.png',
   'www/icons/favicon-32.png','www/icons/photo-fallback.svg','www/assets/app.js',
@@ -21,12 +21,12 @@ const required = [
 ];
 for (const file of required) await access(resolve(root,file));
 const read = file => readFile(resolve(root,file),'utf8');
-const [html,css,app,catalog,features,cms,sw,worker,wrangler,workflow,readme,workerReadme,androidPatch,cloudflareDeployWorkflow,kvSetupScript] = await Promise.all([
+const [html,css,app,catalog,features,cms,sw,worker,wrangler,workflow,readme,workerReadme,androidPatch,cloudflareDeployWorkflow,kvSetupScript,gallery] = await Promise.all([
   read('www/index.html'),read('www/styles.css'),read('www/app.js'),read('www/catalog.js'),
   read('www/features.js'),read('www/github-cms.js'),read('www/sw.js'),
   read('cloudflare-worker/worker.js'),read('cloudflare-worker/wrangler.toml'),
   read('.github/workflows/build-and-deploy.yml'),read('README.md'),
-  read('cloudflare-worker/README.md'),read('scripts/patch-android-config.py'),read('.github/workflows/deploy-cloudflare-worker.yml'),read('scripts/configure-cloudflare-kv.mjs')
+  read('cloudflare-worker/README.md'),read('scripts/patch-android-config.py'),read('.github/workflows/deploy-cloudflare-worker.yml'),read('scripts/configure-cloudflare-kv.mjs'),read('www/gallery.js')
 ]);
 const manifest=JSON.parse(await read('www/manifest.webmanifest'));
 const manifestJson=JSON.parse(await read('www/manifest.json'));
@@ -42,11 +42,11 @@ const assets = {
 if (assets.app!==app || assets.catalog!==catalog || assets.features!==features || assets.styles!==css) {
   throw new Error('Android duplicate web assets do not match the current web sources.');
 }
-for (const file of ['www/app.js','www/catalog.js','www/features.js','www/github-cms.js','www/sw.js','cloudflare-worker/worker.js']) {
+for (const file of ['www/app.js','www/catalog.js','www/features.js','www/github-cms.js','www/gallery.js','www/sw.js','cloudflare-worker/worker.js']) {
   const result=spawnSync(process.execPath,['--check',resolve(root,file)],{encoding:'utf8'});
   if(result.status!==0)throw new Error('JavaScript syntax error in '+file+': '+(result.stderr||result.stdout));
 }
-for (const fragment of ['./styles.css','./splash.js','./app.js','./catalog.js','./features.js','./github-cms.js','./manifest.webmanifest']) {
+for (const fragment of ['./styles.css','./splash.js','./app.js','./catalog.js','./features.js','./github-cms.js','./gallery.js','./manifest.webmanifest']) {
   if(!html.includes(fragment))throw new Error('Missing app reference: '+fragment);
 }
 if (!html.includes('id="appSplash"') || !html.includes('id="offlineIndicator"') ||
@@ -152,9 +152,31 @@ if(!css.includes('padding-top:max(9px,env(safe-area-inset-top')||
    !css.includes('padding-bottom:max(6px,env(safe-area-inset-bottom')) {
   throw new Error('Android 15/16 top and bottom safe-area padding is missing.');
 }
-if(!sw.includes('hubaish-guide-v4.0.3')||!sw.includes("'splash.js'")||
-   !sw.includes("'github-cms.js'")||!sw.includes("'data/live-content.json'")) {
+if(!sw.includes('hubaish-guide-v4.0.4')||!sw.includes("'splash.js'")||
+   !sw.includes("'github-cms.js'")||!sw.includes("'gallery.js'")||!sw.includes("'data/live-content.json'")) {
   throw new Error('The service-worker cache does not include the updated app shell.');
+}
+if(!html.includes('id="hubaishGallery"')||!html.includes('id="galleryFromPlaces"')||
+   !html.includes('id="galleryHomeOpen"')||!html.includes('id="cloudImageFile"')||
+   !html.includes('id="cloudImageVerified"')||!app.includes("window.HubaishGallery?.render?.()")||
+   !app.includes("move('#hubaishGallery',pane('explore'))")||
+   !gallery.includes("image_verified===true")||!gallery.includes('heritage-lightbox-thumb')||
+   !gallery.includes("pointerdown")||!gallery.includes("navigator.share")) {
+  throw new Error('Hubaish heritage gallery, lightbox interactions or admin photo provenance form is incomplete.');
+}
+const verifiedPhotoRows=data.landmarks.filter(row=>row.image_url);
+if(verifiedPhotoRows.length!==4||verifiedPhotoRows.some(row=>row.image_verified!==true||!row.image_source_url||!row.image_photographer||!row.image_license)) {
+  throw new Error('The published image catalogue must contain exactly four sourced and verified Hubaish photo records.');
+}
+const blockedImageTerms=['Ibb_1987_01.jpg','Yemen_-_Ibb_IMG_2929A1-1600.jpg','Wide-angle_view_of_Ibb_city','جبلة – محافظة إب'];
+const serializedData=JSON.stringify(data);
+if(blockedImageTerms.some(term=>html.includes(term)||serializedData.includes(term))) {
+  throw new Error('A regional photo that is not identified as Hubaish remains in the gallery or data file.');
+}
+if(!cms.includes('safeImageSource')||!cms.includes("image_verified:!!v.imageVerified")||
+   !cms.includes('cloudImageFile')||!cms.includes('180*1024')||
+   !cms.includes("localeFields(row,'image_caption',v.imageCaption)")) {
+  throw new Error('Verified image upload, compression, attribution or locale fields are incomplete.');
 }
 if(!wrangler.includes('[[kv_namespaces]]')||!wrangler.includes('binding = "ADMINS"')||
    !wrangler.includes('__HUBAISH_ADMINS_KV_NAMESPACE_ID__')||
