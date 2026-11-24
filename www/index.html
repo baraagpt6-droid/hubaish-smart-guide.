@@ -161,7 +161,7 @@
             <h4 class="item-title">تأسيس النظام لأول مرة (Setup)</h4>
             <p class="small muted">يظهر هذا النموذج فقط قبل إنشاء أول حساب مشرف في Worker. بعد التأسيس سيختفي تلقائياً.</p>
             <form id="workerSetupForm" class="cloud-login-grid">
-              <input id="workerSetupEndpoint" class="input-field" type="url" placeholder="رابط Worker URL" autocomplete="url" required>
+              <input id="workerSetupEndpoint" class="input-field" type="url" value="https://hubaish-cms.baraag6.workers.dev" placeholder="رابط Worker URL" autocomplete="url" required>
               <input id="workerBootstrapKey" class="input-field" type="password" placeholder="مفتاح التأسيس Bootstrap Key" autocomplete="off" required>
               <input id="workerSetupUsername" class="input-field" type="text" placeholder="اسم المشرف العام Username" autocomplete="username" required>
               <input id="workerSetupPassword" class="input-field" type="password" placeholder="كلمة المرور الجديدة (12 حرفاً على الأقل)" minlength="12" autocomplete="new-password" required>
@@ -172,7 +172,7 @@
           <h4 class="item-title">دخول المشرفين عبر الوسيط الآمن</h4>
           <p class="small muted">أدخل رابط Cloudflare Worker ثم اسم المستخدم وكلمة المرور. لا يحتاج كل مشرف إلى GitHub Token.</p>
           <form id="workerLoginForm" class="cloud-login-grid">
-            <input id="workerEndpoint" class="input-field" type="url" placeholder="https://your-worker.workers.dev" autocomplete="url" required>
+            <input id="workerEndpoint" class="input-field" type="url" value="https://hubaish-cms.baraag6.workers.dev" placeholder="https://hubaish-cms.baraag6.workers.dev" autocomplete="url" required>
             <input id="workerUsername" class="input-field" type="text" placeholder="اسم المستخدم" autocomplete="username" required>
             <input id="workerPassword" class="input-field" type="password" placeholder="كلمة المرور" autocomplete="current-password" required>
             <label class="small"><input id="workerRemember" type="checkbox"> تذكرني على هذا الجهاز لمدة 30 يوماً</label>
