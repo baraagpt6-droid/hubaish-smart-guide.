@@ -323,12 +323,6 @@
     const review = document.getElementById('contributionReviewList');
     if (review) { review.replaceChildren(); const pending=featureState.contributions.filter(x=>x.status==='pending'); if(!pending.length)review.append(node('p','empty-state','لا توجد مساهمات بانتظار المراجعة.')); pending.forEach(item=>{const row=node('article','item-card');row.append(node('div','item-meta',`${item.type} · ${new Date(item.createdAt).toLocaleDateString()}`),node('h4','item-title',item.title),node('p','item-body',item.body),node('small','muted',item.source||'لم يرفق مصدر'));const actions=node('div','card-actions');actions.append(button('اعتماد','contrib-approve',item.id,'btn-primary'),button('رفض','contrib-reject',item.id,'btn-sm mini-danger'));row.append(actions);review.append(row);}); }
   }
-  function addHistory() {
-    if(!window.HubaishCloud?.isAdmin?.()){showToast('سجّل الدخول إلى بوابة المشرفين أولاً.');return;}
-    const title=clean(document.getElementById('newHistoryTitle')?.value,100),period=clean(document.getElementById('newHistoryPeriod')?.value,70),body=clean(document.getElementById('newHistoryBody')?.value,700),era=document.getElementById('newHistoryEra')?.value;
-    if(!title||!body){showToast('أدخل عنوان المحطة وتفاصيلها.');return;}
-    const added={id:id('history'),era:era==='modern'?'modern':'ancient',period,title,body};state.history.unshift(added);window.HubaishCatalog?.autoTranslate?.(added);saveState();renderAll();renderAdminLists();['newHistoryTitle','newHistoryPeriod','newHistoryBody'].forEach(k=>document.getElementById(k).value='');showToast('تم حفظ المحطة على هذا الجهاز.');
-  }
   async function submitContribution(event) {
     event.preventDefault();
     const item={id:id('contrib'),name:clean(document.getElementById('contribName').value,70),type:document.getElementById('contribType').value,title:clean(document.getElementById('contribTitle').value,100),body:clean(document.getElementById('contribBody').value,1600),source:clean(document.getElementById('contribSource').value,350),status:'pending',createdAt:new Date().toISOString()};
@@ -409,10 +403,7 @@
     document.getElementById('nextFactBtn')?.addEventListener('click',()=>{factIndex=(factIndex+1)%FACTS.length;document.getElementById('didYouKnow').textContent=(FACTS_I18N[state.lang]||FACTS)[factIndex];});
     document.querySelectorAll('[data-random-tour]').forEach(button=>button.addEventListener('click',randomTour));
     document.getElementById('nextSeasonBtn')?.addEventListener('click',()=>{seasonIndex=(seasonIndex+1)%4;renderSeasonGuide();});
-    document.getElementById('addHistorySaveBtn')?.addEventListener('click',addHistory);
-    document.getElementById('addUzalBtn')?.addEventListener('click',()=>{if(!window.HubaishCloud?.isAdmin?.()){showToast('افتح لوحة الإشراف برمز المرور أولاً.');return;}const input=document.getElementById('newUzalName');const name=clean(input.value,70);if(!name){showToast('أدخل اسم العزلة.');return;}if(featureState.uzal.length>=60){showToast('وصل الحد الأقصى للأسماء.');return;}featureState.uzal.push(name);saveFeatureState();input.value='';renderUzal();renderAdminLists();showToast('تمت إضافة الاسم إلى القائمة المحلية.');});
     document.getElementById('contributionForm')?.addEventListener('submit',submitContribution);
-    document.getElementById('addSocialSaveBtn')?.addEventListener('click',addSocial);
     document.getElementById('exportJsonBtn')?.addEventListener('click',exportAllBackup);
     document.getElementById('importJsonInput')?.addEventListener('change',e=>importAllBackup(e.target.files?.[0]));
     document.getElementById('favSearch')?.addEventListener('input',filterFavorites);
