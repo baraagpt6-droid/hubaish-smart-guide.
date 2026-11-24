@@ -166,7 +166,10 @@ if (!html.includes('id="imageLightbox"') || !html.includes('data-lightbox-src') 
     !sw.includes('hubaish-guide-v3.7.0')) {
   throw new Error('Image lazy loading, lightbox or offline image caching is incomplete.');
 }
-if (!app.includes('data-share') || !app.includes('navigator.share({ title: item.title, text, url })') ||
+if (!app.includes("market: 'M3 10h18l-2-6H5l-2 6Z") ||
+    !html.includes('data-pcat="market"') || !html.includes('أسواق شعبية') ||
+    !githubCms.includes("'market'].includes(row.category)") ||
+    !app.includes('data-share') || !app.includes('navigator.share({ title: item.title, text, url })') ||
     !app.includes('const candidates = [...state.places, ...state.history]') ||
     !features.includes("timeZone:'Asia/Aden'") || !features.includes('factIndex=((dayNumber%FACTS.length)+FACTS.length)%FACTS.length')) {
   throw new Error('Daily Hubaish feature or direct content sharing is incomplete.');
@@ -250,7 +253,7 @@ if ([...personBlock.matchAll(/^\s*\{n:/gm)].length !== 4) throw new Error('The f
 const refsStart = catalog.indexOf('const REFS=[');
 const refsEnd = catalog.indexOf('const QUIZ=', refsStart);
 const refsBlock = refsStart >= 0 && refsEnd > refsStart ? catalog.slice(refsStart, refsEnd) : '';
-if ([...refsBlock.matchAll(/^\s*\{t:/gm)].length < 9) throw new Error('The expanded reference library is incomplete.');
+if ([...refsBlock.matchAll(/^\s*\{t:/gm)].length < 11) throw new Error('The expanded government and heritage reference library is incomplete.');
 const quizStart = catalog.indexOf('const QUIZ=[');
 const quizEnd = catalog.indexOf('  ];', quizStart);
 const quizBlock = quizStart >= 0 && quizEnd > quizStart ? catalog.slice(quizStart, quizEnd) : '';
