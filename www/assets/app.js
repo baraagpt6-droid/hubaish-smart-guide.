@@ -228,6 +228,7 @@ function applyLang(lang) {
     if (dictionary[key]) element.textContent = dictionary[key];
   });
   window.HubaishCatalog?.applyUi?.();
+  window.HubaishFeatures?.applyLanguage?.();
   saveState();
 }
 
