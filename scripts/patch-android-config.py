@@ -27,9 +27,8 @@ style_files = list((ROOT / "res").glob("values*/styles.xml"))
 if not style_files:
     raise SystemExit("Android styles.xml files were not generated.")
 system_items = {
-    "android:windowOptOutEdgeToEdgeEnforcement": "true",
-    "android:statusBarColor": "#081812",
-    "android:navigationBarColor": "#081812",
+    "android:statusBarColor": "@android:color/transparent",
+    "android:navigationBarColor": "@android:color/transparent",
     "android:windowLightStatusBar": "false",
     "android:windowLightNavigationBar": "false",
 }
@@ -46,7 +45,7 @@ for path in style_files:
             item.text = value
     tree.write(path, encoding="utf-8", xml_declaration=True)
 
-# Keep the system bars outside the WebView's content area.
+# Enable edge-to-edge and expose safe-area insets to the WebView.
 main_activity = next(iter((ROOT / "java").rglob("MainActivity.java")), None)
 if main_activity is None:
     raise SystemExit("Capacitor MainActivity.java was not generated.")
@@ -55,6 +54,7 @@ for import_line in (
     "import android.graphics.Color;\n",
     "import android.os.Bundle;\n",
     "import androidx.core.view.WindowCompat;\n",
+    "import androidx.core.view.WindowInsetsControllerCompat;\n",
 ):
     if import_line.strip() not in source:
         package_match = re.search(r"(?m)^package [^;]+;\s*\n", source)
@@ -70,9 +70,15 @@ if "setDecorFitsSystemWindows" not in source:
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        WindowCompat.setDecorFitsSystemWindows(getWindow(), true);
-        getWindow().setStatusBarColor(Color.parseColor("#081812"));
-        getWindow().setNavigationBarColor(Color.parseColor("#081812"));
+        // Capacitor 8 targets API 36. Keep edge-to-edge enabled and let
+        // Android WebView expose system-bar safe areas to CSS env() variables.
+        WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
+        getWindow().setStatusBarColor(Color.TRANSPARENT);
+        getWindow().setNavigationBarColor(Color.TRANSPARENT);
+        WindowInsetsControllerCompat insetsController =
+            new WindowInsetsControllerCompat(getWindow(), getWindow().getDecorView());
+        insetsController.setAppearanceLightStatusBars(false);
+        insetsController.setAppearanceLightNavigationBars(false);
     }
 """
     source = source[:class_match.end()] + method + source[class_match.end():]
@@ -84,4 +90,4 @@ application = tree.getroot().find("application")
 if application is not None:
     application.set("{" + ANDROID_NS + "}label", "@string/app_name")
 tree.write(manifest, encoding="utf-8", xml_declaration=True)
-print("Android app label, status-bar handling, safe system insets and Android 15+ edge-to-edge policy configured.")
+print("Android app label, transparent system bars and Android 16 edge-to-edge safe-area handling configured.")
