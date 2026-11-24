@@ -37,11 +37,19 @@ async function route(req,env){
  }
  if(req.method==="POST"&&path==="/auth/login"){
   const b=await req.json(),username=uname(b.username),password=String(b.password||""),user=username?await getUser(env,username):null;
-  if(!user||user.disabled||await passHash(password,un64(user.salt))!==user.passwordHash)return json({error:"اسم المستخدم أو كلمة المرور غير صحيحة."},401);
+  const ip=req.headers.get("CF-Connecting-IP")||"unknown",attemptKey="login-fail:"+ip+":"+username;
+  const attempts=await env.ADMINS.get(attemptKey,"json")||{count:0};
+  if(attempts.count>=8)return json({error:"تم إيقاف محاولات الدخول مؤقتاً. حاول بعد 15 دقيقة."},429);
+  if(!user||user.disabled||await passHash(password,un64(user.salt))!==user.passwordHash){
+   await env.ADMINS.put(attemptKey,JSON.stringify({count:attempts.count+1}),{expirationTtl:900});
+   return json({error:"اسم المستخدم أو كلمة المرور غير صحيحة."},401);
+  }
+  await env.ADMINS.delete(attemptKey);
   const ttl=b.remember===true?30*86400000:8*3600000,token=await issue({sub:user.username,role:user.role,exp:Date.now()+ttl},env.SESSION_SECRET);
   await log(env,{actor:username,action:"login"});return json({token,expiresIn:ttl,user:{username,displayName:user.displayName,role:user.role}})
  }
  const actor=await auth(req,env);if(!actor)return json({error:"انتهت الجلسة أو بيانات الدخول غير صالحة."},401);
+ if(path.startsWith("/admin/")&&actor.role!=="super_admin")return json({error:"يتطلب هذا الإجراء صلاحية المشرف العام."},403);
  if(req.method==="GET"&&path==="/auth/me")return json({user:actor});
  if(req.method==="PUT"&&path==="/content"){
   const d=await req.json(),keys=["landmarks","historyEvents","subDistrictUpdates","subDistricts","historicalFigures","communityLinks"];
