@@ -1,10 +1,195 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-24T05:58:26.676Z",
-  "landmarks": [],
-  "historyEvents": [],
+  "updatedAt": "2026-11-24T10:42:27.755Z",
+  "landmarks": [
+    {
+      "id": "khudad-fort",
+      "category": "fort",
+      "status": "documented",
+      "source_text": "مادة حبيش في موقع ثور رأين تنقل عن الهمداني وإسماعيل الأكوع، وتورد اختلاف موضع القلعة.",
+      "source_url": "https://www.thu-raein.com/index.php/ar/makhaleef-ar/hubaish-district-ar?id=17&view=category",
+      "title_ar": "قلعة خدد الأثرية",
+      "location_ar": "نطاق العارضة؛ وتذكر رواية أخرى أنها بين الصائر والصدر",
+      "description_ar": "تصف مصادر محلية قلعة خدد بأنها حصن أثري في جبل حبيش، وتربطها بصهاريج ومنشآت مائية محفورة في الصخر، مع إحالة إلى ذكر الهمداني للقلعة. تختلف المصادر في تعيين موقعها الإداري: أحدها يضعها في عزلة العارضة، وآخر يذكرها بين الصائر والصدر. لذلك تحفظ البطاقة الاختلاف ولا تعرض إحداثيات أو تفاصيل معمارية غير متحققة.",
+      "importance_ar": "موضع تراثي مهم في روايات جغرافية اليمن القديمة؛ يحتاج إلى مسح أثري ومطابقة ميدانية.",
+      "title_en": "Khudad Archaeological Fort",
+      "location_en": "Al-Aridah area; another account places it between Sa'ir and Al-Sadr",
+      "description_en": "Local historical accounts describe Khudad as an old fort on Mount Hubaish and associate it with rock-cut cisterns. The sources differ on its administrative location, so this record preserves the discrepancy and does not assign unverified coordinates.",
+      "importance_en": "A heritage site in local accounts of historical Yemeni geography; archaeological survey and field identification are still needed.",
+      "image_url": "https://al-jandprovince.com/UploadControl/UploadImages_News/picture/2024/05/A5T_29_05_2024_12_50_54_ymfr.webp",
+      "image_alt_ar": "مدرجات زراعية ومرتفع في مديرية حبيش؛ لا تحدد الصورة قلعة خدد نفسها.",
+      "image_credit": "مبادرة إقليم الجند، صفحة مديرية حبيش، 29 مايو 2024",
+      "image_source_url": "https://al-jandprovince.com/p-61",
+      "image_license": "لم يظهر ترخيص إعادة استخدام للصورة؛ يعرضها التطبيق من المصدر الأصلي فقط."
+    },
+    {
+      "id": "wuhaza-fortress",
+      "category": "fort",
+      "status": "documented",
+      "source_text": "مادة حبيش في موقع ثور رأين، مع إحالات إلى الهمداني وياقوت الحموي ومعجم البلدان.",
+      "source_url": "https://www.thu-raein.com/index.php/ar/makhaleef-ar/hubaish-district-ar?id=17&view=category",
+      "title_ar": "مصنعة وحصن وحاظة",
+      "location_ar": "أعلى منطقة شباع من جبل حبيش",
+      "description_ar": "تذكر مادة تاريخية محلية أن حصن وحاظة يقع في أعلى منطقة شباع من جبل حبيش، وأن اسم وحاظة ارتبط بمخلاف واسع وبني وائل الحميريين، وتذكر ازدهار المنطقة في القرن السادس الهجري. ويورد المصدر وصفاً لصهاريج وكريف ومبانٍ كانت قائمة ثم طمست أجزاء منها. هذه إحالات تاريخية منقولة عن كتب تراثية؛ لا تثبت وحدها تاريخ بناء الحصن أو بقاء جميع المنشآت.",
+      "importance_ar": "من أبرز مواضع مخلاف وحاظة في الروايات التاريخية المحلية.",
+      "title_en": "Wuhaza Fortress and Musanna'a",
+      "location_en": "Upper Shaba'a area, Mount Hubaish",
+      "description_en": "A local historical account places Wuhaza fortress above Shaba'a on Mount Hubaish and associates the wider Wuhaza region with Bani Wa'il and the sixth Hijri century. The account cites earlier geographical and historical works; the building date and surviving structures still require archaeological verification.",
+      "importance_en": "A prominent site in local historical accounts of the Wuhaza district."
+    },
+    {
+      "id": "jabal-khadra-terraces",
+      "category": "mountain",
+      "status": "local",
+      "source_text": "مادة حبيش في موقع ثور رأين، وفق وصف محلي لجبل الخضراء.",
+      "source_url": "https://www.thu-raein.com/index.php/ar/makhaleef-ar/hubaish-district-ar?id=17&view=category",
+      "title_ar": "جبل خضراء ومدرجاته",
+      "location_ar": "عزلة جبل خضراء ومحيط مركز ظُلمة",
+      "description_ar": "يصف مصدر محلي جبل الخضراء بأنه مرتفع بارز في نطاق ظُلمة، ويشير إلى خضرته ومدرجاته الزراعية والتجمعات السكنية على سفوحه. لا تتوفر في المصادر المفتوحة التي راجعناها قراءة ارتفاع موثقة؛ لذلك لا ينسب الدليل إليه رقماً للارتفاع أو إحداثيات قمة.",
+      "importance_ar": "مشهد جبلي وزراعي بارز؛ الارتفاع والإحداثيات بحاجة إلى قياس ميداني.",
+      "title_en": "Jabal Khadra and its terraces",
+      "location_en": "Jabal Khadra sub-district and the Dhulmah centre area",
+      "description_en": "A local account describes Jabal Khadra as a prominent green highland with cultivated terraces and settlements on its slopes. No verified summit elevation is supplied.",
+      "importance_en": "A notable mountain and agricultural landscape; elevation and coordinates need field measurement.",
+      "image_url": "https://hekmahyemanya.com/wp-content/uploads/2022/05/%D9%82%D8%B1%D9%8A%D8%A9_%D8%A7%D9%84%D9%81%D8%B1%D8%A7%D8%B9%D9%8A_-_%D9%85%D8%AF%D9%8A%D8%B1%D9%8A%D8%A9_%D8%AD%D8%A8%D9%8A%D8%B4_-_panoramio-780x470.webp",
+      "image_alt_ar": "المدرجات والقرية في صورة معرّفة بمصدرها على أنها قرية الفراعي في مديرية حبيش، وليست صورة مثبتة لقمة جبل خضراء.",
+      "image_credit": "حكمة يمانية، صورة قرية الفراعي – مديرية حبيش",
+      "image_source_url": "https://hekmahyemanya.com/آثار/حُبيش-مُفتتح-المجد-وذروته/",
+      "image_license": "الصورة مستضافة في المصدر الأصلي؛ لم نتحقق من ترخيص إعادة الاستخدام."
+    },
+    {
+      "id": "farai-village-landscape",
+      "category": "valley",
+      "status": "documented",
+      "source_text": "حكمة يمانية، مقال «حبيش.. مفتتح المجد وذروته»، صورة معنونة بقرية الفراعي – مديرية حبيش.",
+      "source_url": "https://hekmahyemanya.com/آثار/حُبيش-مُفتتح-المجد-وذروته/",
+      "title_ar": "قرية الفراعي ومدرجاتها",
+      "location_ar": "عزلة الفراعي – مديرية حبيش",
+      "description_ar": "صورة منشورة في مادة عن حبيش وتعرّفها صفحة المصدر بأنها لقرية الفراعي في مديرية حبيش. تعرض البطاقة الصورة كسجل بصري للمشهد الزراعي والقرية، ولا تستنتج منها أسماء الحقول أو مسارات المياه أو إحداثيات الموقع.",
+      "importance_ar": "توثيق بصري محلي لقرية الفراعي والمشهد الزراعي.",
+      "title_en": "Al-Fara'i village and terraces",
+      "location_en": "Al-Fara'i sub-district, Hubaish",
+      "description_en": "The source identifies this photograph as Al-Fara'i village in Hubaish District. The image documents a local settlement and agricultural landscape; it is not used to infer exact boundaries or coordinates.",
+      "importance_en": "A local visual record of Al-Fara'i village and its agricultural setting.",
+      "image_url": "https://hekmahyemanya.com/wp-content/uploads/2022/05/%D9%82%D8%B1%D9%8A%D8%A9_%D8%A7%D9%84%D9%81%D8%B1%D8%A7%D8%B9%D9%8A_-_%D9%85%D8%AF%D9%8A%D8%B1%D9%8A%D8%A9_%D8%AD%D8%A8%D9%8A%D8%B4_-_panoramio-780x470.webp",
+      "image_alt_ar": "المدرجات والقرية في صورة معرّفة بمصدرها على أنها قرية الفراعي في مديرية حبيش، وليست صورة مثبتة لقمة جبل خضراء.",
+      "image_credit": "حكمة يمانية، صورة قرية الفراعي – مديرية حبيش",
+      "image_source_url": "https://hekmahyemanya.com/آثار/حُبيش-مُفتتح-المجد-وذروته/",
+      "image_license": "الصورة مستضافة في المصدر الأصلي؛ لم نتحقق من ترخيص إعادة الاستخدام."
+    }
+  ],
+  "historyEvents": [
+    {
+      "id": "wuhaza-bani-wail-6h",
+      "era": "ancient",
+      "status": "documented",
+      "title_ar": "مخلاف وحاظة وبنو وائل في القرن السادس الهجري",
+      "title_en": "Wuhaza and Bani Wa'il in the sixth Hijri century",
+      "period_ar": "القرن السادس الهجري • رواية تاريخية محلية",
+      "period_en": "Sixth Hijri century • local historical account",
+      "body_ar": "تذكر مادة تاريخية محلية أن منطقة وحاظة اشتهرت في القرن السادس الهجري في عهد بني وائل، وأن الحصن كان مقراً لهم، وأن اسم وحاظة أطلق على مناطق أوسع شملت حبيش وحزم العدين وأجزاء من العدين وذي السفال بحسب الرواية. هذه إحالة جغرافية وتاريخية منقولة عن مراجع يمنية؛ لا ينبغي مساواة نطاق المخلاف القديم بحدود مديرية حبيش الحالية.",
+      "body_en": "A local historical account associates Wuhaza with Bani Wa'il in the sixth Hijri century and says the fortress served as their seat. It describes Wuhaza as a wider historical district covering areas beyond modern Hubaish. The historical makhlaf should not be equated with today's administrative boundary.",
+      "source_text": "مادة «حبيش» في موقع ثور رأين، مع إحالات إلى كتب الهمداني وياقوت الحموي والمقحفي.",
+      "source_url": "https://www.thu-raein.com/index.php/ar/makhaleef-ar/hubaish-district-ar?id=17&view=category"
+    },
+    {
+      "id": "hubaish-uprising-1919",
+      "era": "modern",
+      "status": "documented",
+      "title_ar": "انتفاضة حبيش ومواجهات ظُلمة وجبل حبيش",
+      "title_en": "The Hubaish uprising and fighting around Dhulmah and Mount Hubaish",
+      "period_ar": "1919م • أبرز المواجهات في مايو",
+      "period_en": "1919 • major clashes in May",
+      "body_ar": "تسرد دراسة تاريخية حديثة انتفاضة أبناء حبيش بقيادة الشيخ محمد عايض العقاب ضد قوات الإمام يحيى حميد الدين. وتذكر حصار القوة الموجودة في ظُلمة ومواجهات في محيط جبل حبيش، ثم هجوم 17 مايو 1919م وتقدم قوات الأمير علي الوزير عبر مناطق مجاورة. يورد المقال روايات مؤرخين مختلفين، وبعض التفاصيل والأرقام محل اختلاف؛ لذلك يعتمد الدليل الحدث العام ويعرض الأرقام التفصيلية بحذر.",
+      "body_en": "A historical study describes an uprising in Hubaish led by Sheikh Muhammad Ayed al-Aqab against forces of Imam Yahya Hamid al-Din. It recounts a siege around Dhulmah, clashes near Mount Hubaish and an attack on 17 May 1919. The article compares accounts by different historians, so disputed figures are not presented as settled facts.",
+      "source_text": "بلال الطيب، «حبيش.. مفتتح المجد وذروته»، 21 مايو 2022؛ ودراسة الساحل الغربي عن انتفاضات إب.",
+      "source_url": "https://hekmahyemanya.com/آثار/حُبيش-مُفتتح-المجد-وذروته/"
+    },
+    {
+      "id": "hubaish-administrative-1357",
+      "era": "modern",
+      "status": "local",
+      "title_ar": "تغيّر التبعية الإدارية لمخلاف الحبيشية",
+      "title_en": "Administrative change of the al-Hubayshiyya district",
+      "period_ar": "1357هـ • نحو 1938م",
+      "period_en": "1357 AH • approximately 1938 CE",
+      "body_ar": "تذكر مادة محلية عن مخلاف الحبيشية أن الإمام يحيى حميد الدين أجرى سنة 1357هـ تغييراً إدارياً فصل بموجبه مخلاف الحبيشية وبعض المناطق المجاورة عن قضاء رداع وربطها بلواء إب. هذا وصف تاريخي من مصدر ثانوي، ويحتاج إلى مقابلة نص القرار الإداري الأصلي قبل اعتماده كتاريخ إداري قطعي.",
+      "body_en": "A local historical account states that in 1357 AH Imam Yahya Hamid al-Din changed the administration of al-Hubayshiyya and nearby areas, linking them to Ibb instead of Rada'a. The original administrative order should be consulted before treating the date as definitive.",
+      "source_text": "مادة مخلاف حبيش في موقع ثور رأين، مع إحالة إلى مراجع تاريخية محلية.",
+      "source_url": "https://www.thu-raein.com/index.php/ar/makhaleef-ar/hubaish-district-ar?id=17&view=category"
+    },
+    {
+      "id": "al-shawafi-al-dinwa-18h",
+      "era": "modern",
+      "status": "local",
+      "title_ar": "مخلاف الشوافي وذكر حصن الدنوة",
+      "title_en": "The al-Shawafi district and al-Dinwah fort",
+      "period_ar": "القرن الثاني عشر الهجري • القرن الثامن عشر الميلادي",
+      "period_en": "Twelfth Hijri century • eighteenth century CE",
+      "body_ar": "تنقل مادة محلية عن «التاريخ العام لليمن» أن قرية الشوافي تقع إدارياً اليوم ضمن عزلة الصدر في مديرية حبيش، بينما كان مخلاف الشوافي التاريخي نطاقاً أوسع. وتذكر حصن الدنوة وارتباطه بانتفاضة الفقيه سعيد بن ياسين الهتار ضد حكم الأئمة في القرن الثاني عشر الهجري. يجب التمييز بين المخلاف التاريخي وحدود العزلة الإدارية الحالية.",
+      "body_en": "A local historical source says the village of al-Shawafi is now administratively in Al-Sadr sub-district, Hubaish, while the historical al-Shawafi district was wider. It mentions al-Dinwah fort and jurist Saeed bin Yasin al-Hattar's revolt in the twelfth Hijri century. Historical and current administrative boundaries are not the same.",
+      "source_text": "مادة حبيش في موقع ثور رأين تنقل عن «التاريخ العام لليمن» لمحمد يحيى الحداد.",
+      "source_url": "https://www.thu-raein.com/index.php/ar/makhaleef-ar/hubaish-district-ar?id=17&view=category"
+    }
+  ],
   "subDistrictUpdates": [],
-  "historicalFigures": [],
+  "historicalFigures": [
+    {
+      "id": "isa-al-rubai-wuhazi",
+      "name_ar": "عيسى بن إبراهيم الربعي الوحاظي",
+      "name_en": "Isa ibn Ibrahim al-Rub'i al-Wuhazi",
+      "role_ar": "لغوي وعالم • مؤلف «نظام الغريب»",
+      "role_en": "Linguist and scholar • author of Nizam al-Gharib",
+      "biography_ar": "تنسبه مادة تاريخية محلية إلى وحاظة، وتذكر أنه ولد سنة 458هـ وتوفي في رجب سنة 528هـ، وأنه ألّف كتاب «نظام الغريب» الذي كان مرجعاً لطلبة اللغة. ينقل المقال هذه الترجمة عن مراجع منها كتب القاضي محمد علي الأكوع وعبدالله الحبشي والجندي؛ وتبقى تفاصيل النسب والمكان بحاجة إلى الرجوع إلى التراجم الأصلية.",
+      "biography_en": "A local historical article associates him with Wuhaza and reports that he lived from 458 to 528 AH. It identifies him as the author of Nizam al-Gharib, a work used in Arabic language study. The biographical details are relayed through earlier Yemeni references and should be checked against the original biographical sources.",
+      "source_text": "مادة حبيش في موقع ثور رأين؛ تحيل إلى مصادر الفكر العربي والإسلامي في اليمن ومراجع القاضي محمد علي الأكوع.",
+      "source_url": "https://www.thu-raein.com/index.php/ar/makhaleef-ar/hubaish-district-ar?id=17&view=category"
+    },
+    {
+      "id": "ismail-al-wuhazi",
+      "name_ar": "إسماعيل بن إبراهيم الوحاظي",
+      "name_en": "Ismail ibn Ibrahim al-Wuhazi",
+      "role_ar": "عالم لغة وأدب",
+      "role_en": "Language and literature scholar",
+      "biography_ar": "تذكر المادة التاريخية المحلية أنه شقيق عيسى بن إبراهيم الوحاظي، وأنه عمل مؤدباً لأولاد الملوك الصليحيين، وتنسب إليه قصيدة لغوية بعنوان «الأوابد» وشرحها. هذه المعلومات منقولة عن مراجع أدبية وتراجم يمنية كما يسوقها المقال، ولا تضيف هذه البطاقة تفاصيل غير موجودة في تلك الإحالات.",
+      "biography_en": "The local historical account identifies him as the brother of Isa al-Wuhazi and says he taught the children of Sulayhid rulers. It attributes to him a linguistic poem titled al-Awābid and a commentary. These details are relayed from Yemeni biographical and literary references.",
+      "source_text": "مادة حبيش في موقع ثور رأين، مع إحالات إلى هجر العلم ومعاقله ومصادر الفكر العربي الإسلامي في اليمن.",
+      "source_url": "https://www.thu-raein.com/index.php/ar/makhaleef-ar/hubaish-district-ar?id=17&view=category"
+    },
+    {
+      "id": "zayd-al-faishi",
+      "name_ar": "زيد بن الحسن الفائشي الحميري",
+      "name_en": "Zayd ibn al-Hasan al-Fa'ishi al-Himyari",
+      "role_ar": "عالم وفقيه منسوب إلى وحاظة",
+      "role_en": "Scholar and jurist associated with Wuhaza",
+      "biography_ar": "تنسبه مادة حبيش المحلية إلى وحاظة، وتنقل عن كتاب «العطايا السنية» للملك الأفضل العباس الرسولي وصفه بأنه عالم بفنون متعددة وصاحب خزانة كتب فقهية كبيرة، وله كتاب بعنوان «التهذيب». هذا التعريف منقول عن المصدر الثانوي ولا يعني أن كل تفاصيل الترجمة محققة مستقلاً في هذا الدليل.",
+      "biography_en": "A local account associates him with Wuhaza and, citing al-Malik al-Afdal al-Abbas al-Rasuli's al-Ataya al-Saniyya, describes him as a learned jurist with a substantial collection of legal books and a work titled al-Tahdhib. This is a relayed biographical account rather than an independently verified profile.",
+      "source_text": "مادة حبيش في موقع ثور رأين، ناقلةً عن «العطايا السنية والمواهب الهنية في المناقب اليمنية».",
+      "source_url": "https://www.thu-raein.com/index.php/ar/makhaleef-ar/hubaish-district-ar?id=17&view=category"
+    },
+    {
+      "id": "muhammad-ayid-al-aqab",
+      "name_ar": "الشيخ محمد عايض العقاب",
+      "name_en": "Sheikh Muhammad Ayed al-Aqab",
+      "role_ar": "من قادة انتفاضة حبيش سنة 1919م",
+      "role_en": "Leader in the 1919 Hubaish uprising",
+      "biography_ar": "تذكر دراسة بلال الطيب أن الشيخ محمد عايض العقاب قاد انتفاضة حبيش ضد قوات الإمام يحيى حميد الدين سنة 1919م، وأنه كان من مشايخ المناطق الوسطى الذين رفضوا الدخول في طاعة الإمام. وينقل المقال عن حفيده أن وفاته كانت نحو 1925م في قرية الجراجز التابعة لعزلة نقيل العقاب؛ لذلك يعرض تاريخ الوفاة بوصفه رواية أسرية منقولة لا سجلاً مدنياً موثقاً.",
+      "biography_en": "A 2022 historical study identifies Sheikh Muhammad Ayed al-Aqab as a leader of the 1919 Hubaish uprising against the forces of Imam Yahya Hamid al-Din. It relays a family account that he died around 1925 in al-Jarajiz, within Naqil al-Aqab; the reported death date is therefore presented as an attributed account.",
+      "source_text": "بلال الطيب، «حبيش.. مفتتح المجد وذروته»، 21 مايو 2022.",
+      "source_url": "https://hekmahyemanya.com/آثار/حُبيش-مُفتتح-المجد-وذروته/"
+    },
+    {
+      "id": "abdulaziz-al-haddad",
+      "name_ar": "الشيخ عبدالعزيز بن عبدالكريم الحداد",
+      "name_en": "Sheikh Abdulaziz ibn Abdulkarim al-Haddad",
+      "role_ar": "من مساندي انتفاضة حبيش",
+      "role_en": "Supporter of the Hubaish uprising",
+      "biography_ar": "يذكر مقال تاريخي عن انتفاضة حبيش أن الشيخ عبدالعزيز بن عبدالكريم الحداد ساند الشيخ محمد عايض العقاب، وأنه قاد مقاومة في إطار عزلة الناحية واستشهد فيها بحسب الرواية التي ينقلها المقال. لا تتوفر في هذه البطاقة تفاصيل إضافية عن تاريخ الميلاد أو الوفاة.",
+      "biography_en": "A historical article on the Hubaish uprising names Sheikh Abdulaziz ibn Abdulkarim al-Haddad among the supporters of Muhammad Ayed al-Aqab and says he was killed during resistance in Al-Nahiyah. No birth or exact death dates are supplied here.",
+      "source_text": "بلال الطيب، «حبيش.. مفتتح المجد وذروته»، 21 مايو 2022.",
+      "source_url": "https://hekmahyemanya.com/آثار/حُبيش-مُفتتح-المجد-وذروته/"
+    }
+  ],
   "communityLinks": [],
   "subDistricts": [
     {
@@ -18,7 +203,7 @@
       "body_en": "Terraces and fields",
       "body_tr": "Teraslar ve tarlalar",
       "body_fr": "Terrasses et champs",
-      "source_text": "بيانات تعريفية استرشادية للعزلة، قابلة للمراجعة من المشرف."
+      "source_text": "وصف تضاريسي استرشادي في ملف المشروع، وليس قائمة موثقة بالقرى التابعة. يلزم التحقق من الحدود والقرى من سجل رسمي أو مسح ميداني."
     },
     {
       "id": "district-2",
@@ -31,7 +216,7 @@
       "body_en": "Rural routes",
       "body_tr": "Kırsal yollar",
       "body_fr": "Chemins ruraux",
-      "source_text": "بيانات تعريفية استرشادية للعزلة، قابلة للمراجعة من المشرف."
+      "source_text": "وصف تضاريسي استرشادي في ملف المشروع، وليس قائمة موثقة بالقرى التابعة. يلزم التحقق من الحدود والقرى من سجل رسمي أو مسح ميداني."
     },
     {
       "id": "district-3",
@@ -44,7 +229,7 @@
       "body_en": "Highlands and terraces",
       "body_tr": "Yüksek kesimler ve teraslar",
       "body_fr": "Hauts reliefs et terrasses",
-      "source_text": "بيانات تعريفية استرشادية للعزلة، قابلة للمراجعة من المشرف."
+      "source_text": "وصف تضاريسي استرشادي في ملف المشروع، وليس قائمة موثقة بالقرى التابعة. يلزم التحقق من الحدود والقرى من سجل رسمي أو مسح ميداني."
     },
     {
       "id": "district-4",
@@ -57,7 +242,7 @@
       "body_en": "Settlements and fields",
       "body_tr": "Yerleşimler ve tarlalar",
       "body_fr": "Villages et champs",
-      "source_text": "بيانات تعريفية استرشادية للعزلة، قابلة للمراجعة من المشرف."
+      "source_text": "وصف تضاريسي استرشادي في ملف المشروع، وليس قائمة موثقة بالقرى التابعة. يلزم التحقق من الحدود والقرى من سجل رسمي أو مسح ميداني."
     },
     {
       "id": "district-5",
@@ -70,7 +255,7 @@
       "body_en": "Mountain landscape",
       "body_tr": "Dağlık görünüm",
       "body_fr": "Paysage montagneux",
-      "source_text": "بيانات تعريفية استرشادية للعزلة، قابلة للمراجعة من المشرف."
+      "source_text": "وصف تضاريسي استرشادي في ملف المشروع، وليس قائمة موثقة بالقرى التابعة. يلزم التحقق من الحدود والقرى من سجل رسمي أو مسح ميداني."
     },
     {
       "id": "district-6",
@@ -79,11 +264,12 @@
       "title_en": "Jabal Khadra",
       "title_tr": "Cebel Hadra",
       "title_fr": "Jabal Khadra",
-      "body_ar": "المنحدرات الزراعية",
+      "body_ar": "يرتبط اسم العزلة بجبل خضراء، ويصف مصدر محلي الجبل بأنه مرتفع أخضر ذو مدرجات وتجمعات سكنية. الارتفاع والقرى التابعة لم تُحسم من سجل حكومي منشور.",
       "body_en": "Cultivated slopes",
       "body_tr": "Ekili yamaçlar",
       "body_fr": "Versants cultivés",
-      "source_text": "بيانات تعريفية استرشادية للعزلة، قابلة للمراجعة من المشرف."
+      "source_text": "مادة حبيش في موقع ثور رأين.",
+      "source_url": "https://www.thu-raein.com/index.php/ar/makhaleef-ar/hubaish-district-ar?id=17&view=category"
     },
     {
       "id": "district-7",
@@ -96,7 +282,7 @@
       "body_en": "Peaks and water routes",
       "body_tr": "Zirveler ve su yolları",
       "body_fr": "Sommets et voies d’eau",
-      "source_text": "بيانات تعريفية استرشادية للعزلة، قابلة للمراجعة من المشرف."
+      "source_text": "وصف تضاريسي استرشادي في ملف المشروع، وليس قائمة موثقة بالقرى التابعة. يلزم التحقق من الحدود والقرى من سجل رسمي أو مسح ميداني."
     },
     {
       "id": "district-8",
@@ -109,7 +295,7 @@
       "body_en": "Rural resources",
       "body_tr": "Kırsal kaynaklar",
       "body_fr": "Ressources rurales",
-      "source_text": "بيانات تعريفية استرشادية للعزلة، قابلة للمراجعة من المشرف."
+      "source_text": "وصف تضاريسي استرشادي في ملف المشروع، وليس قائمة موثقة بالقرى التابعة. يلزم التحقق من الحدود والقرى من سجل رسمي أو مسح ميداني."
     },
     {
       "id": "district-9",
@@ -118,11 +304,12 @@
       "title_en": "Rub' Dhulmah",
       "title_tr": "Rub' Dhulmah",
       "title_fr": "Rub' Dhulmah",
-      "body_ar": "محيط المركز الإداري",
+      "body_ar": "تتصل العزلة بمركز ظُلمة الإداري في قائمة الدليل. وتذكر دراسة تاريخية أن مركز الناحية ومقر الحكومة كان في ظُلمة أثناء أحداث 1919م. لا تتوفر في هذا السجل قائمة رسمية منشورة بالقرى التابعة.",
       "body_en": "Administrative centre area",
       "body_tr": "İdari merkez çevresi",
       "body_fr": "Environs du centre administratif",
-      "source_text": "بيانات تعريفية استرشادية للعزلة، قابلة للمراجعة من المشرف."
+      "source_text": "مقال حبيش في حكمة يمانية، وبيانات التقسيم الإداري للمركز الوطني للمعلومات.",
+      "source_url": "https://hekmahyemanya.com/آثار/حُبيش-مُفتتح-المجد-وذروته/"
     },
     {
       "id": "district-10",
@@ -135,7 +322,7 @@
       "body_en": "Fields and terraces",
       "body_tr": "Tarlalar ve teraslar",
       "body_fr": "Champs et terrasses",
-      "source_text": "بيانات تعريفية استرشادية للعزلة، قابلة للمراجعة من المشرف."
+      "source_text": "وصف تضاريسي استرشادي في ملف المشروع، وليس قائمة موثقة بالقرى التابعة. يلزم التحقق من الحدود والقرى من سجل رسمي أو مسح ميداني."
     },
     {
       "id": "district-11",
@@ -144,11 +331,12 @@
       "title_en": "Shaba'",
       "title_tr": "Şaba'",
       "title_fr": "Shaba'",
-      "body_ar": "المرتفعات الريفية",
+      "body_ar": "تذكر مادة حبيش حصن وحاظة الأثري في أعلى منطقة شباع من جبل حبيش، وتربطه بمخلاف وحاظة وبني وائل في القرن السادس الهجري. هذه إحالة تاريخية محلية وليست مسحاً أثرياً.",
       "body_en": "Rural highlands",
       "body_tr": "Kırsal yüksek kesimler",
       "body_fr": "Hauts plateaux ruraux",
-      "source_text": "بيانات تعريفية استرشادية للعزلة، قابلة للمراجعة من المشرف."
+      "source_text": "مادة حبيش في موقع ثور رأين.",
+      "source_url": "https://www.thu-raein.com/index.php/ar/makhaleef-ar/hubaish-district-ar?id=17&view=category"
     },
     {
       "id": "district-12",
@@ -161,7 +349,7 @@
       "body_en": "Routes and settlements",
       "body_tr": "Yollar ve yerleşimler",
       "body_fr": "Routes et villages",
-      "source_text": "بيانات تعريفية استرشادية للعزلة، قابلة للمراجعة من المشرف."
+      "source_text": "وصف تضاريسي استرشادي في ملف المشروع، وليس قائمة موثقة بالقرى التابعة. يلزم التحقق من الحدود والقرى من سجل رسمي أو مسح ميداني."
     },
     {
       "id": "district-13",
@@ -170,11 +358,12 @@
       "title_en": "Al-Sadr",
       "title_tr": "Es-Sadr",
       "title_fr": "Al-Sadr",
-      "body_ar": "المنحدرات والحقول",
+      "body_ar": "تذكر مادة تاريخية أن قرية الشوافي صارت إدارياً ضمن عزلة الصدر، مع التمييز بين العزلة الحالية ومخلاف الشوافي التاريخي الأوسع.",
       "body_en": "Slopes and fields",
       "body_tr": "Yamaçlar ve tarlalar",
       "body_fr": "Versants et champs",
-      "source_text": "بيانات تعريفية استرشادية للعزلة، قابلة للمراجعة من المشرف."
+      "source_text": "مادة حبيش في موقع ثور رأين ناقلة عن التاريخ العام لليمن.",
+      "source_url": "https://www.thu-raein.com/index.php/ar/makhaleef-ar/hubaish-district-ar?id=17&view=category"
     },
     {
       "id": "district-14",
@@ -183,11 +372,12 @@
       "title_en": "Al-Aridah",
       "title_tr": "El-Arida",
       "title_fr": "Al-Aridah",
-      "body_ar": "التراث والمرتفعات",
+      "body_ar": "تختلف الإحالات المحلية في تحديد موضع قلعة خدد؛ فإحداها تنسبها إلى عزلة العارضة، وأخرى تضعها بين الصائر والصدر. تُحفظ هذه الملاحظة للمراجعة الميدانية ولا تعتمد كحدود نهائية.",
       "body_en": "Heritage and highlands",
       "body_tr": "Miras ve yüksek kesimler",
       "body_fr": "Patrimoine et hauts reliefs",
-      "source_text": "بيانات تعريفية استرشادية للعزلة، قابلة للمراجعة من المشرف."
+      "source_text": "مادة حبيش في موقع ثور رأين.",
+      "source_url": "https://www.thu-raein.com/index.php/ar/makhaleef-ar/hubaish-district-ar?id=17&view=category"
     },
     {
       "id": "district-15",
@@ -196,11 +386,12 @@
       "title_en": "Al-Fara'i",
       "title_tr": "El-Ferai",
       "title_fr": "Al-Fara'i",
-      "body_ar": "الزراعة الجبلية",
+      "body_ar": "توجد صورة منشورة في مقال عن حبيش وموسومة بأنها لقرية الفراعي. لا تستنتج منها أسماء القرى الصغيرة أو حدود العزلة.",
       "body_en": "Mountain agriculture",
       "body_tr": "Dağ tarımı",
       "body_fr": "Agriculture de montagne",
-      "source_text": "بيانات تعريفية استرشادية للعزلة، قابلة للمراجعة من المشرف."
+      "source_text": "حكمة يمانية، مقال حبيش – صورة قرية الفراعي.",
+      "source_url": "https://hekmahyemanya.com/آثار/حُبيش-مُفتتح-المجد-وذروته/"
     },
     {
       "id": "district-16",
@@ -213,7 +404,7 @@
       "body_en": "Fields and rural places",
       "body_tr": "Tarlalar ve kırsal yerler",
       "body_fr": "Champs et lieux ruraux",
-      "source_text": "بيانات تعريفية استرشادية للعزلة، قابلة للمراجعة من المشرف."
+      "source_text": "وصف تضاريسي استرشادي في ملف المشروع، وليس قائمة موثقة بالقرى التابعة. يلزم التحقق من الحدود والقرى من سجل رسمي أو مسح ميداني."
     },
     {
       "id": "district-17",
@@ -226,7 +417,7 @@
       "body_en": "Rural landscape",
       "body_tr": "Kırsal görünüm",
       "body_fr": "Paysage rural",
-      "source_text": "بيانات تعريفية استرشادية للعزلة، قابلة للمراجعة من المشرف."
+      "source_text": "وصف تضاريسي استرشادي في ملف المشروع، وليس قائمة موثقة بالقرى التابعة. يلزم التحقق من الحدود والقرى من سجل رسمي أو مسح ميداني."
     },
     {
       "id": "district-18",
@@ -235,11 +426,12 @@
       "title_en": "Al-Mushriq",
       "title_tr": "El-Muşrik",
       "title_fr": "Al-Mushriq",
-      "body_ar": "القمم والممرات",
+      "body_ar": "تذكر دراسة انتفاضة 1919م أن المشيرق تقع أسفل ظُلمة وتطل على قاع السحول، وأنها شهدت مواجهات ضمن أحداث تلك السنة. هذا توصيف تاريخي للموقع ولا يحدد كامل حدود العزلة.",
       "body_en": "Peaks and passes",
       "body_tr": "Zirveler ve geçitler",
       "body_fr": "Sommets et cols",
-      "source_text": "بيانات تعريفية استرشادية للعزلة، قابلة للمراجعة من المشرف."
+      "source_text": "بلال الطيب، حبيش.. مفتتح المجد وذروته.",
+      "source_url": "https://hekmahyemanya.com/آثار/حُبيش-مُفتتح-المجد-وذروته/"
     },
     {
       "id": "district-19",
@@ -252,7 +444,7 @@
       "body_en": "Settlements and community",
       "body_tr": "Yerleşimler ve topluluk",
       "body_fr": "Villages et communauté",
-      "source_text": "بيانات تعريفية استرشادية للعزلة، قابلة للمراجعة من المشرف."
+      "source_text": "وصف تضاريسي استرشادي في ملف المشروع، وليس قائمة موثقة بالقرى التابعة. يلزم التحقق من الحدود والقرى من سجل رسمي أو مسح ميداني."
     },
     {
       "id": "district-20",
@@ -261,11 +453,12 @@
       "title_en": "Naqil al-Aqab",
       "title_tr": "Nakil el-Akab",
       "title_fr": "Naqil al-Aqab",
-      "body_ar": "الممرات الجبلية",
+      "body_ar": "يرتبط اسم نقيل العقاب في مقال تاريخي بقرية الجراجز، التي يذكر المقال أنها موضع وفاة الشيخ محمد عايض العقاب نحو 1925م وفق رواية حفيده. يحتاج الاسم والموقع إلى مطابقة ميدانية.",
       "body_en": "Mountain pass",
       "body_tr": "Dağ geçidi",
       "body_fr": "Col de montagne",
-      "source_text": "بيانات تعريفية استرشادية للعزلة، قابلة للمراجعة من المشرف."
+      "source_text": "بلال الطيب، حبيش.. مفتتح المجد وذروته.",
+      "source_url": "https://hekmahyemanya.com/آثار/حُبيش-مُفتتح-المجد-وذروته/"
     },
     {
       "id": "district-21",
@@ -278,7 +471,7 @@
       "body_en": "Valleys and watercourses",
       "body_tr": "Vadiler ve su yatakları",
       "body_fr": "Vallées et cours d’eau",
-      "source_text": "بيانات تعريفية استرشادية للعزلة، قابلة للمراجعة من المشرف."
+      "source_text": "وصف تضاريسي استرشادي في ملف المشروع، وليس قائمة موثقة بالقرى التابعة. يلزم التحقق من الحدود والقرى من سجل رسمي أو مسح ميداني."
     },
     {
       "id": "district-22",
@@ -291,7 +484,7 @@
       "body_en": "Rural settlements and fields",
       "body_tr": "Kırsal yerleşimler ve tarlalar",
       "body_fr": "Villages et terres cultivées",
-      "source_text": "بيانات تعريفية استرشادية للعزلة، قابلة للمراجعة من المشرف."
+      "source_text": "وصف تضاريسي استرشادي في ملف المشروع، وليس قائمة موثقة بالقرى التابعة. يلزم التحقق من الحدود والقرى من سجل رسمي أو مسح ميداني."
     }
   ]
 }
