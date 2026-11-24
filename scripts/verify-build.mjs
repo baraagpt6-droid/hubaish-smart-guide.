@@ -107,6 +107,18 @@ if (!worker.includes('/setup/status') || !worker.includes('/setup') || !worker.i
     !worker.includes('super_admin') || !worker.includes('editor') || !worker.includes('updatedBy')) {
   throw new Error('Cloudflare Worker multi-admin authentication, RBAC or audit support is incomplete.');
 }
+const setupFormStart = html.indexOf('<form id="workerSetupForm"');
+const setupFormEnd = html.indexOf('</form>', setupFormStart);
+const setupForm = setupFormStart >= 0 && setupFormEnd > setupFormStart ? html.slice(setupFormStart, setupFormEnd) : '';
+const setupFieldIds = [...setupForm.matchAll(/id="(workerSetupEndpoint|workerBootstrapKey|workerSetupUsername|workerSetupPassword)"/g)].map(m => m[1]);
+if (setupFieldIds.join(',') !== 'workerSetupEndpoint,workerBootstrapKey,workerSetupUsername,workerSetupPassword') {
+  throw new Error('First-admin setup must show exactly four required fields.');
+}
+if (!githubCms.includes("localStorage.setItem('hubaish_direct_github_token'") ||
+    !githubCms.includes("localStorage.getItem('hubaish_direct_github_token')") ||
+    !githubCms.includes("localStorage.setItem('hubaish_worker_url'")) {
+  throw new Error('Remembered direct GitHub token or Worker URL settings are missing.');
+}
 if (!githubCms.includes('workerLoginForm') || !githubCms.includes('hubaish_worker_session') ||
     !githubCms.includes('workerToken') || !githubCms.includes('cloudCreateAdminForm') ||
     !githubCms.includes('async function firstAdminSetup') || !githubCms.includes('/setup/status') ||
