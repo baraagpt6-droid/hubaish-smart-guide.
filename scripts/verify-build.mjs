@@ -10,7 +10,7 @@ const required = [
   'www/assets/styles.css', 'www/assets/app.js', 'www/assets/catalog.js', 'www/assets/features.js',
   'www/manifest.json', 'www/manifest.webmanifest', 'www/icons/icon.svg',
   'www/icons/icon-192.png', 'www/icons/icon-512.png', 'capacitor.config.json',
-  'scripts/serve.mjs', '.github/workflows/build-and-deploy.yml'
+  'scripts/serve.mjs', 'cloudflare-worker/worker.js', 'cloudflare-worker/wrangler.toml', '.github/workflows/build-and-deploy.yml'
 ];
 for (const file of required) await access(resolve(root, file));
 
@@ -97,6 +97,18 @@ if (!githubCms.includes('const CACHE_KEY=') || !githubCms.includes('localStorage
 if (!githubCms.includes('githubToken') || !githubCms.includes('Authorization:') || !githubCms.includes('Bearer ') ||
     !githubCms.includes('githubToken=\'\'') || /localStorage\.(?:setItem|getItem)\([^)]*githubToken/i.test(githubCms)) {
   throw new Error('GitHub token must remain in memory and be sent only as an API authorization header.');
+}
+const worker = await read('cloudflare-worker/worker.js');
+if (!worker.includes('/auth/login') || !worker.includes('/admin/users') || !worker.includes('/admin/audit') ||
+    !worker.includes('PBKDF2') || !worker.includes('GITHUB_TOKEN') || !worker.includes('SESSION_SECRET') ||
+    !worker.includes('super_admin') || !worker.includes('editor') || !worker.includes('updatedBy')) {
+  throw new Error('Cloudflare Worker multi-admin authentication, RBAC or audit support is incomplete.');
+}
+if (!githubCms.includes('workerLoginForm') || !githubCms.includes('hubaish_worker_session') ||
+    !githubCms.includes('workerToken') || !githubCms.includes('cloudCreateAdminForm') ||
+    !html.includes('id="workerRemember"') || !html.includes('id="cloudAuditList"') ||
+    !html.includes('id="cloudAdminUsersList"')) {
+  throw new Error('Cloudflare Worker login, remember-me or super-admin UI is incomplete.');
 }
 if (!githubCms.includes('function fillTranslations') || !githubCms.includes('api.mymemory.translated.net')) {
   throw new Error('Four-language translation workflow is missing.');
