@@ -45,10 +45,10 @@ const DEFAULT_PLACES = [
 const DEFAULT_SOCIALS = [{ name: 'مديرية حبيش HUBAISH DISTRICT', url: 'https://www.facebook.com/share/g/1JMCzDUsdZ/' }, { name: 'المركز الوطني للمعلومات اليمني', url: 'https://yemen-nic.info/contents/Brief/detail.php?ID=7617&phrase_id=1191776&print=Y' }];
 
 const I18N = {
-  AR: { dir: 'rtl', appName: 'دليل حبيش', appSub: 'دليل رقمي للتراث والمعالم', govBadge: 'محافظة إب • الجمهورية اليمنية', statCenter: 'مركز المديرية', heroTitle: 'دليل حبيش', heroDesc: 'موسوعة رقمية لتاريخ حبيش وعزلها وقراها وحصونها ومعالمها ومواقيت الصلاة.', statUzal: 'عزلة إدارية', statArea: 'كم² المساحة', statPop: 'نسمة (تعداد)', spotlightTitle: 'معلم مختار من حبيش', navHome: 'الرئيسية', navHistory: 'التاريخ', navPlaces: 'المعالم', navUzal: 'العزل', navMore: 'المزيد' },
-  EN: { dir: 'ltr', appName: 'Hubaish Guide', appSub: 'Digital heritage and landmark guide', govBadge: 'Ibb Governorate • Yemen', statCenter: 'District center', heroTitle: 'Hubaish Guide', heroDesc: 'A local guide to Hubaish history, sub-districts, villages, forts, landmarks and prayer times.', statUzal: 'Sub-districts', statArea: 'Area in km²', statPop: 'Population', spotlightTitle: 'Featured landmark', navHome: 'Home', navHistory: 'History', navPlaces: 'Landmarks', navUzal: 'Sub-districts', navMore: 'More' },
-  TR: { dir: 'ltr', appName: 'Hubaish Rehberi', appSub: 'Dijital miras ve gezi rehberi', govBadge: 'İbb Valiliği • Yemen', statCenter: 'İlçe merkezi', heroTitle: 'Hubaish Rehberi', heroDesc: 'Hubeyş tarihi, bucakları, köyleri, kaleleri, tarihi yerleri ve namaz vakitleri için yerel rehber.', statUzal: 'Bucak', statArea: 'Alan km²', statPop: 'Nüfus', spotlightTitle: 'Öne çıkan eser', navHome: 'Ana Sayfa', navHistory: 'Tarih', navPlaces: 'Yerler', navUzal: 'Bucaklar', navMore: 'Daha Fazla' },
-  FR: { dir: 'ltr', appName: 'Guide de Hubaish', appSub: 'Guide numérique du patrimoine', govBadge: 'Gouvernorat d’Ibb • Yémen', statCenter: 'Centre du district', heroTitle: 'Guide de Hubaish', heroDesc: 'Guide local de l’histoire, des sous-districts, villages, forts, monuments et horaires de prière de Hubaish.', statUzal: 'Sous-districts', statArea: 'Superficie km²', statPop: 'Population', spotlightTitle: 'Monument à la une', navHome: 'Accueil', navHistory: 'Histoire', navPlaces: 'Monuments', navUzal: 'Sous-districts', navMore: 'Plus' }
+  AR: { dir: 'rtl', appName: 'دليل حبيش', appSub: 'دليل رقمي للتراث والمعالم', govBadge: 'محافظة إب • الجمهورية اليمنية', statCenter: 'مركز المديرية', heroTitle: 'دليل حبيش', heroDesc: 'موسوعة رقمية لتاريخ حبيش وعزلها وقراها وحصونها ومعالمها ومواقيت الصلاة.', statUzal: 'عزلة إدارية', statArea: 'كم² المساحة', statPop: 'نسمة (تعداد)', spotlightTitle: 'معلم مختار من حبيش', navHome: 'الرئيسية', navHistory: 'التاريخ', navPlaces: 'المعالم', navUzal: 'العزل', navMore: 'المزيد', moreExplore: "الاستكشاف والاختبار", moreTools: "الأدوات والمقارنة", morePersonal: "المفضلة والإعدادات", moreAdmin: "بوابة المشرفين", moreFavorites: "فتح المفضلة", moreDistrict: "حول المديرية", adminTabEdit: "إضافة / تعديل محتوى", adminTabList: "قائمة المحتوى الحالي", adminTabUsers: "المشرفون والصلاحيات", adminTabAudit: "سجل التدقيق والنسخ الاحتياطي", cloudLocaleSummary: "إضافة ترجمات EN / TR / FR", geoProfileTag: "ملف جغرافي", geoProfileTitle: "الموقع والحدود والطبيعة", geoProfileIntro: "تقع حبيش في الجزء الشمالي الغربي من محافظة إب. ويصف المرجع المحلي حدودها شمالاً بالقفر، وشرقاً بالمخادر، وغرباً بحزم العدين، وجنوباً بإب والعدين. يذكر المرجع نفسه مسافتين مختلفتين عن مدينة إب، 42 كم في مقدمة النص و27 كم في خاتمته؛ لذلك لا نعتمد مسافة ثابتة قبل مطابقتها بخريطة رسمية. هذه حدود وصفية من مرجع ثانوي وليست بديلاً عن الخريطة الإدارية المعتمدة.", geoTerrain: "التضاريس", geoTerrainText: "مرتفعات جبلية وسفوح ومدرجات زراعية؛ ومن أشهر الأسماء المحلية جبل الخضراء وجبل حبيش.", geoAgriculture: "الزراعة", geoAgricultureText: "مدرجات وحقول ريفية. وتشير مصادر محلية إلى البن والحبوب، بينما تعد الحبوب والخضروات من محاصيل محافظة إب الرئيسة.", geoWater: "المياه", geoWaterText: "تصف المصادر صهاريج وكروفاً محفورة في الصخر عند مواقع تاريخية مثل قلعة خدد ومصنعة وحاظة. لا تتوفر خريطة منشورة كاملة للغيول والأودية في هذه النسخة.", geoClimate: "المناخ", geoClimateText: "يتغير المشهد الزراعي والغطاء النباتي مع الارتفاع وموسم المطر. لا نعرض درجات حرارة أو معدلات أمطار محلية دون محطة أرصاد موثقة.", geoSourcesLabel: "مصادر الملف:", geoDataCaveat: "يورد جدول OCHA/HNRP 2025 مساحة 228 كم² وتعداداً تقديرياً 162,023 يشمل السكان والنازحين. أما 105,998 فهو رقم تعداد 2004، فلا يُعرضان بوصفهما القياس نفسه. بيانات الارتفاعات نطاق تقريبي وليست قياساً مساحياً.", storiesTitle: "استكشف حبيش في لحظات", storiesTag: "قصص بصرية", pulseTitle: "نبض حبيش الاستكشافي", pulseSubtitle: "اختر وجهتك التالية", westIbbMountains: "جبال إب الغربية", searchPlaceholder: "ابحث عن عزلة أو قرية أو حصن أو حدث..." },
+  EN: { dir: 'ltr', appName: 'Hubaish Guide', appSub: 'Digital heritage and landmark guide', govBadge: 'Ibb Governorate • Yemen', statCenter: 'District center', heroTitle: 'Hubaish Guide', heroDesc: 'A local guide to Hubaish history, sub-districts, villages, forts, landmarks and prayer times.', statUzal: 'Sub-districts', statArea: 'Area in km²', statPop: 'Population', spotlightTitle: 'Featured landmark', navHome: 'Home', navHistory: 'History', navPlaces: 'Landmarks', navUzal: 'Sub-districts', navMore: 'More', moreExplore: "Explore and quiz", moreTools: "Tools and comparison", morePersonal: "Favorites and settings", moreAdmin: "Admin portal", moreFavorites: "Open favorites", moreDistrict: "About the district", adminTabEdit: "Add / edit content", adminTabList: "Current content", adminTabUsers: "Administrators and roles", adminTabAudit: "Audit log and backups", cloudLocaleSummary: "Add EN / TR / FR translations", geoProfileTag: "Geographic profile", geoProfileTitle: "Location, boundaries and nature", geoProfileIntro: "Hubaish lies in the northwestern part of Ibb Governorate. A local reference describes its borders as Al-Qafr to the north, Al-Makhadir to the east, Hazm Al-Udayn to the west, and Ibb and Al-Udayn to the south. The same reference gives two different distances from Ibb city, 42 km in its introduction and 27 km in its conclusion, so this guide does not adopt a fixed distance until it is checked against an official map. These are descriptive boundaries from a secondary source, not a substitute for the approved administrative map.", geoTerrain: "Terrain", geoTerrainText: "Mountain highlands, slopes and agricultural terraces. Local place names include Jabal Al-Khadra and Jabal Hubaish.", geoAgriculture: "Agriculture", geoAgricultureText: "Rural terraces and fields. Local sources mention coffee and grain, while grain and vegetables are among the main crops of Ibb Governorate.", geoWater: "Water", geoWaterText: "Sources describe cisterns and rock-cut reservoirs at historical sites such as Khudad Fort, Masna'a and Haza. This edition does not include a complete published map of springs and valleys.", geoClimate: "Climate", geoClimateText: "Agriculture and vegetation vary with elevation and the rainy season. Local temperatures and rainfall rates are not shown without a documented weather station.", geoSourcesLabel: "Profile sources:", geoDataCaveat: "The OCHA/HNRP 2025 table lists an area of 228 km² and an estimated population of 162,023 including residents and displaced people. The figure 105,998 is from the 2004 census; the two figures do not describe the same measurement. Elevation values are approximate ranges, not a land survey.", storiesTitle: "Explore Hubaish in moments", storiesTag: "Visual stories", pulseTitle: "Hubaish explorer pulse", pulseSubtitle: "Choose your next destination", westIbbMountains: "Western Ibb Mountains", searchPlaceholder: "Search a sub-district, village, fort or event..." },
+  TR: { dir: 'ltr', appName: 'Hubaish Rehberi', appSub: 'Dijital miras ve gezi rehberi', govBadge: 'İbb Valiliği • Yemen', statCenter: 'İlçe merkezi', heroTitle: 'Hubaish Rehberi', heroDesc: 'Hubeyş tarihi, bucakları, köyleri, kaleleri, tarihi yerleri ve namaz vakitleri için yerel rehber.', statUzal: 'Bucak', statArea: 'Alan km²', statPop: 'Nüfus', spotlightTitle: 'Öne çıkan eser', navHome: 'Ana Sayfa', navHistory: 'Tarih', navPlaces: 'Yerler', navUzal: 'Bucaklar', navMore: 'Daha Fazla', moreExplore: "Keşif ve bilgi testi", moreTools: "Araçlar ve karşılaştırma", morePersonal: "Favoriler ve ayarlar", moreAdmin: "Yönetici kapısı", moreFavorites: "Favorileri aç", moreDistrict: "İlçe hakkında", adminTabEdit: "İçerik ekle / düzenle", adminTabList: "Mevcut içerik listesi", adminTabUsers: "Yöneticiler ve yetkiler", adminTabAudit: "Denetim kaydı ve yedekler", cloudLocaleSummary: "EN / TR / FR çevirilerini ekle", geoProfileTag: "Coğrafi profil", geoProfileTitle: "Konum, sınırlar ve doğa", geoProfileIntro: "Hubaish, İbb Valiliği'nin kuzeybatı bölümünde yer alır. Yerel bir kaynak sınırlarını kuzeyde El-Kafr, doğuda El-Mahadir, batıda Hazm El-Udeyn, güneyde ise İbb ve El-Udeyn olarak tanımlar. Aynı kaynak İbb şehrine uzaklık için girişte 42 km, sonuç bölümünde 27 km olmak üzere iki farklı değer verir. Bu nedenle resmî haritayla doğrulanmadan sabit bir mesafe kullanılmaz. Bunlar ikincil bir kaynaktan alınan betimleyici sınırlardır ve onaylı idarî haritanın yerine geçmez.", geoTerrain: "Yer şekilleri", geoTerrainText: "Dağlık yükseltiler, yamaçlar ve tarım terasları bulunur. Yerel adlar arasında Cebel el-Hadra ve Cebel Hubaish yer alır.", geoAgriculture: "Tarım", geoAgricultureText: "Kırsal teraslar ve tarlalar vardır. Yerel kaynaklar kahve ve tahıldan söz eder; tahıl ve sebzeler İbb Valiliği'nin başlıca ürünleri arasındadır.", geoWater: "Su kaynakları", geoWaterText: "Kaynaklarda Hudud Kalesi, Masna'a ve Haza gibi tarihî alanlarda sarnıçlar ve kayaya oyulmuş su depoları anlatılır. Bu sürümde pınarları ve vadileri gösteren eksiksiz bir yayımlanmış harita bulunmaz.", geoClimate: "İklim", geoClimateText: "Tarım ve bitki örtüsü yükseltiye ve yağış mevsimine göre değişir. Belgelenmiş bir meteoroloji istasyonu olmadan yerel sıcaklık ve yağış oranları gösterilmez.", geoSourcesLabel: "Profil kaynakları:", geoDataCaveat: "OCHA/HNRP 2025 tablosu 228 km² alan ve yerleşik nüfus ile yerinden edilmiş kişileri kapsayan 162.023 tahmini nüfus bildirir. 105.998 sayısı 2004 nüfus sayımındandır; bu iki sayı aynı ölçümü ifade etmez. Yükseklikler arazi ölçümü değil, yaklaşık aralıklardır.", storiesTitle: "Hubaish'i anlar içinde keşfedin", storiesTag: "Görsel hikâyeler", pulseTitle: "Hubaish keşif akışı", pulseSubtitle: "Bir sonraki hedefinizi seçin", westIbbMountains: "Batı İbb Dağları", searchPlaceholder: "Bucak, köy, kale veya olay arayın..." },
+  FR: { dir: 'ltr', appName: 'Guide de Hubaish', appSub: 'Guide numérique du patrimoine', govBadge: 'Gouvernorat d’Ibb • Yémen', statCenter: 'Centre du district', heroTitle: 'Guide de Hubaish', heroDesc: 'Guide local de l’histoire, des sous-districts, villages, forts, monuments et horaires de prière de Hubaish.', statUzal: 'Sous-districts', statArea: 'Superficie km²', statPop: 'Population', spotlightTitle: 'Monument à la une', navHome: 'Accueil', navHistory: 'Histoire', navPlaces: 'Monuments', navUzal: 'Sous-districts', navMore: 'Plus', moreExplore: "Explorer et tester", moreTools: "Outils et comparaison", morePersonal: "Favoris et paramètres", moreAdmin: "Portail administrateur", moreFavorites: "Ouvrir les favoris", moreDistrict: "À propos du district", adminTabEdit: "Ajouter / modifier le contenu", adminTabList: "Contenu actuel", adminTabUsers: "Administrateurs et rôles", adminTabAudit: "Journal d’audit et sauvegardes", cloudLocaleSummary: "Ajouter les traductions EN / TR / FR", geoProfileTag: "Profil géographique", geoProfileTitle: "Situation, limites et nature", geoProfileIntro: "Hubaish se situe dans la partie nord-ouest du gouvernorat d’Ibb. Une source locale décrit ses limites ainsi : Al-Qafr au nord, Al-Makhadir à l’est, Hazm Al-Udayn à l’ouest, et Ibb et Al-Udayn au sud. La même source donne deux distances différentes de la ville d’Ibb, 42 km dans son introduction et 27 km dans sa conclusion. Ce guide ne retient donc pas de distance fixe avant vérification sur une carte officielle. Il s’agit de limites descriptives issues d’une source secondaire, et non d’un remplacement de la carte administrative approuvée.", geoTerrain: "Relief", geoTerrainText: "Des hautes terres montagneuses, des versants et des terrasses agricoles. Parmi les noms locaux figurent Jabal Al-Khadra et Jabal Hubaish.", geoAgriculture: "Agriculture", geoAgricultureText: "Des terrasses et des champs ruraux. Des sources locales mentionnent le café et les céréales, tandis que les céréales et les légumes comptent parmi les principales cultures du gouvernorat d’Ibb.", geoWater: "Eau", geoWaterText: "Les sources décrivent des citernes et des réservoirs creusés dans la roche sur des sites historiques comme le fort de Khudad, Masna'a et Haza. Cette édition ne comprend pas de carte publiée complète des sources et des vallées.", geoClimate: "Climat", geoClimateText: "L’agriculture et la couverture végétale varient selon l’altitude et la saison des pluies. Aucune température ni moyenne pluviométrique locale n’est affichée sans station météorologique documentée.", geoSourcesLabel: "Sources du profil :", geoDataCaveat: "Le tableau OCHA/HNRP 2025 indique une superficie de 228 km² et une population estimée à 162 023 personnes, comprenant résidents et déplacés. Le chiffre de 105 998 provient du recensement de 2004 ; ces deux chiffres ne décrivent pas la même mesure. Les altitudes sont des fourchettes approximatives, pas un relevé topographique.", storiesTitle: "Explorer Hubaish en quelques instants", storiesTag: "Récits visuels", pulseTitle: "Parcours exploratoire de Hubaish", pulseSubtitle: "Choisissez votre prochaine destination", westIbbMountains: "Montagnes de l’ouest d’Ibb", searchPlaceholder: "Rechercher un sous-district, village, fort ou événement..." }
 };
 
 let currentEra = 'all';
@@ -229,6 +229,8 @@ function applyLang(lang) {
   });
   window.HubaishCatalog?.applyUi?.();
   window.HubaishFeatures?.applyLanguage?.();
+  localizeHomeStaticContent();
+  window.dispatchEvent(new Event('hubaish:languagechange'));
   saveState();
 }
 
@@ -911,6 +913,7 @@ function bindServiceWorkerUpdates() {
 
 function init() {
   state = normalizeState(state);
+  state.tab = 'home';
   let baselinePlaces = [];
   let baselineHistory = [];
   let baselinePlaceIds = new Set();
@@ -957,14 +960,425 @@ function init() {
   if (bootReport.landmarks < 19 || bootReport.history < 7 || bootReport.subDistricts < 22 || bootReport.people < 4 || bootReport.references < 1 || bootReport.quiz < 10) console.error('[Hubaish] Core catalog incomplete at boot:', bootReport);
   else console.info('[Hubaish] Boot check passed:', bootReport);
   window.HubaishCloud?.applyCached?.();
+  initMoreSmartTabs();
+  initAdminSubtabs();
+  initCmsTranslationDisclosure();
+  initFloatingAssistant();
   bindEvents();
   renderAll();
   renderRadar();
   updatePrayerUI();
-  switchTab(state.tab || 'home');
+  initCustomSelects();
+  switchTab('home');
   window.HubaishCloud?.start?.();
   window.setInterval(updatePrayerUI, 1000);
   bindServiceWorkerUpdates();
+}
+
+
+function localizeHomeStaticContent() {
+  const t = I18N[state.lang] || I18N.AR;
+  document.querySelectorAll('[data-i18n-placeholder]').forEach(node => {
+    const key = node.dataset.i18nPlaceholder;
+    if (t[key]) node.setAttribute('placeholder', t[key]);
+  });
+  const note = document.getElementById('dataSourceNote');
+  if (note) {
+    const notes = {
+      AR: 'عدد السكان وفق تعداد 2004. تُستخدم مساحة 228 كم² في بيانات OCHA/Local Governance، بينما يذكر مرجع محلي آخر 330 كم²؛ لذلك يبقى رقم المساحة بحاجة إلى حسم رسمي. بيانات الارتفاعات نطاق تقريبي وليست قياساً مساحياً.',
+      EN: 'Population uses the 2004 census. The OCHA/Local Governance dataset lists 228 km², while another local reference lists 330 km², so the area still needs official confirmation. Elevations are approximate ranges, not survey measurements.',
+      TR: 'Nüfus için 2004 sayımı kullanılmıştır. OCHA/Yerel Yönetim verileri 228 km², başka bir yerel kaynak ise 330 km² bildirir; bu nedenle alanın resmî olarak doğrulanması gerekir. Yükseklikler ölçüm değil, yaklaşık aralıklardır.',
+      FR: 'La population indiquée provient du recensement de 2004. Les données OCHA/administration locale indiquent 228 km², tandis qu’une autre référence locale mentionne 330 km² ; la superficie doit donc être confirmée officiellement. Les altitudes sont approximatives et non issues d’un relevé.'
+    };
+    note.textContent = notes[state.lang] || notes.AR;
+  }
+  refreshMoreTabLabels();
+}
+function initMoreSmartTabs() {
+  const view = document.getElementById('view-more');
+  if (!view || view.dataset.smartTabsReady === 'true') return;
+  const header = view.querySelector(':scope > .section-header');
+  if (!header) return;
+  const tabs = document.createElement('div');
+  tabs.className = 'more-tabs-nav';
+  tabs.setAttribute('role', 'tablist');
+  tabs.setAttribute('aria-label', 'More sections');
+  const panels = document.createElement('div');
+  panels.className = 'more-tabs-panels';
+  const defs = [
+    ['explore','moreExplore'],
+    ['tools','moreTools'],
+    ['personal','morePersonal'],
+    ['admin','moreAdmin']
+  ];
+  defs.forEach((def,index) => {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'more-tab-button';
+    button.dataset.moreTab = def[0];
+    button.dataset.i18n = def[1];
+    button.setAttribute('role','tab');
+    button.setAttribute('aria-selected',String(index===0));
+    button.addEventListener('click',() => switchMoreTab(def[0]));
+    tabs.append(button);
+    const pane = document.createElement('div');
+    pane.className = 'more-tab-panel' + (index===0?' active':'');
+    pane.dataset.morePanel = def[0];
+    pane.setAttribute('role','tabpanel');
+    panels.append(pane);
+  });
+  header.after(tabs,panels);
+  const pane = key => panels.querySelector('[data-more-panel="'+key+'"]');
+  const move = (selector,target,closestSelector) => {
+    const node = view.querySelector(selector);
+    if (!node) return null;
+    const card = closestSelector ? node.closest(closestSelector) : node;
+    if (card && card.parentElement) target.append(card);
+    return card;
+  };
+  move('#explorerTitle',pane('explore'),'article');
+  move('#quizSectionTitle',pane('explore'),'article');
+  move('.smart-tool-grid',pane('tools'));
+  move('#assistantMoreTitle',pane('tools'),'article');
+  const favorites = document.createElement('article');
+  favorites.className = 'item-card hub-panel more-favorites-card';
+  const favTitle = document.createElement('h3');
+  favTitle.className = 'item-title';
+  favTitle.dataset.i18n = 'moreFavorites';
+  const favButton = document.createElement('button');
+  favButton.type = 'button';
+  favButton.className = 'btn-primary';
+  favButton.dataset.openFavorites = 'true';
+  favButton.addEventListener('click',() => document.getElementById('favOpenBtn')?.click());
+  favorites.append(favTitle,favButton);
+  pane('personal').append(favorites);
+  move('.hub-community',pane('personal'));
+  move('#peopleList',pane('personal'),'article');
+  move('#referenceList',pane('personal'),'article');
+  move('#socialLinksList',pane('personal'),'article');
+  move('#contributionForm',pane('personal'),'article');
+  move('.reading-settings',pane('personal'));
+  move('.privacy-policy',pane('personal'));
+  const about = document.createElement('article');
+  about.className = 'item-card hub-panel more-about-card';
+  const aboutTitle = document.createElement('h3');
+  aboutTitle.className = 'item-title';
+  aboutTitle.dataset.i18n = 'moreDistrict';
+  const aboutButton = document.createElement('button');
+  aboutButton.type = 'button';
+  aboutButton.className = 'btn-secondary';
+  aboutButton.textContent = 'فتح الملف الجغرافي';
+  aboutButton.addEventListener('click',() => {
+    switchTab('home');
+    document.getElementById('geoProfileTitle')?.scrollIntoView({behavior:'smooth',block:'start'});
+  });
+  about.append(aboutTitle,aboutButton);
+  pane('personal').append(about);
+  move('#cloudAdminCard',pane('admin'));
+  view.dataset.smartTabsReady = 'true';
+  refreshMoreTabLabels();
+  switchMoreTab('explore');
+}
+function switchMoreTab(key) {
+  const view = document.getElementById('view-more');
+  if (!view) return;
+  const valid = ['explore','tools','personal','admin'];
+  if (!valid.includes(key)) return;
+  view.querySelectorAll('[data-more-tab]').forEach(button => {
+    const active = button.dataset.moreTab === key;
+    button.classList.toggle('active',active);
+    button.setAttribute('aria-selected',String(active));
+  });
+  view.querySelectorAll('[data-more-panel]').forEach(panel => panel.classList.toggle('active',panel.dataset.morePanel === key));
+  view.dataset.activeMoreTab = key;
+}
+function refreshMoreTabLabels() {
+  const t = I18N[state.lang] || I18N.AR;
+  document.querySelectorAll('[data-more-tab]').forEach(button => {
+    const key = button.dataset.i18n;
+    if (t[key]) button.textContent = t[key];
+  });
+  document.querySelectorAll('[data-admin-tab]').forEach(button => {
+    const key = button.dataset.i18n;
+    if (t[key]) button.textContent = t[key];
+  });
+  document.querySelectorAll('[data-open-favorites]').forEach(button => {
+    button.textContent = t.moreFavorites || 'Favorites';
+  });
+  document.querySelectorAll('.more-about-card button').forEach(button => {
+    button.textContent = ({AR:'فتح الملف الجغرافي',EN:'Open geographic profile',TR:'Coğrafi profili aç',FR:'Ouvrir le profil géographique'})[state.lang] || 'فتح الملف الجغرافي';
+  });
+  syncAdminSubtabsVisibility();
+}
+function initAdminSubtabs() {
+  const panel = document.getElementById('cloudAdminPanel');
+  const superPanel = document.getElementById('cloudSuperAdminPanel');
+  if (!panel || !superPanel || panel.dataset.smartTabsReady === 'true') return;
+  const overview = panel.querySelector('.cloud-dashboard-overview');
+  const editor = document.getElementById('cloudContentEditor');
+  const manager = panel.querySelector('.cloud-manager-section');
+  const note = superPanel.nextElementSibling?.tagName === 'P' ? superPanel.nextElementSibling : null;
+  const auditList = document.getElementById('cloudAuditList');
+  const auditTitle = auditList?.previousElementSibling;
+  const backup = superPanel.querySelector('.cloud-backup-tools');
+  const host = document.createElement('div');
+  host.className = 'cloud-admin-tabs';
+  const nav = document.createElement('div');
+  nav.className = 'admin-subtabs-nav';
+  nav.setAttribute('role','tablist');
+  const panes = document.createElement('div');
+  panes.className = 'admin-subtabs-panels';
+  const definitions = [
+    ['edit','adminTabEdit',false],
+    ['list','adminTabList',false],
+    ['users','adminTabUsers',true],
+    ['audit','adminTabAudit',true]
+  ];
+  definitions.forEach((def,index) => {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'admin-subtab-button';
+    button.dataset.adminTab = def[0];
+    button.dataset.i18n = def[1];
+    button.setAttribute('role','tab');
+    button.setAttribute('aria-selected',String(index===0));
+    if (def[2]) button.dataset.adminRoleRequired = 'true';
+    button.addEventListener('click',() => switchAdminTab(def[0]));
+    nav.append(button);
+    const paneNode = document.createElement('div');
+    paneNode.className = 'admin-subtab-panel' + (index===0?' active':'');
+    paneNode.dataset.adminPanel = def[0];
+    paneNode.setAttribute('role','tabpanel');
+    if (def[2]) paneNode.dataset.adminRoleRequired = 'true';
+    panes.append(paneNode);
+  });
+  host.append(nav,panes);
+  panel.append(host);
+  const target = key => panes.querySelector('[data-admin-panel="'+key+'"]');
+  if (editor) target('edit').append(editor);
+  if (overview) target('list').append(overview);
+  if (note) target('list').append(note);
+  if (manager) target('list').append(manager);
+  target('users').append(superPanel);
+  if (auditTitle) target('audit').append(auditTitle);
+  if (auditList) target('audit').append(auditList);
+  if (backup) target('audit').append(backup);
+  panel.dataset.smartTabsReady = 'true';
+  switchAdminTab('edit');
+  syncAdminSubtabsVisibility();
+}
+function switchAdminTab(key) {
+  const panel = document.getElementById('cloudAdminPanel');
+  if (!panel) return;
+  panel.querySelectorAll('[data-admin-tab]').forEach(button => {
+    const active = button.dataset.adminTab === key;
+    button.classList.toggle('active',active);
+    button.setAttribute('aria-selected',String(active));
+  });
+  panel.querySelectorAll('[data-admin-panel]').forEach(pane => pane.classList.toggle('active',pane.dataset.adminPanel === key));
+  panel.dataset.activeAdminTab = key;
+}
+function syncAdminSubtabsVisibility() {
+  const superPanel = document.getElementById('cloudSuperAdminPanel');
+  const isSuper = !!superPanel && !superPanel.classList.contains('hidden');
+  const panel = document.getElementById('cloudAdminPanel');
+  if (!panel) return;
+  panel.querySelectorAll('[data-admin-role-required]').forEach(node => node.classList.toggle('hidden',!isSuper));
+  const active = panel.dataset.activeAdminTab || 'edit';
+  if (!isSuper && ['users','audit'].includes(active)) switchAdminTab('edit');
+}
+function initCmsTranslationDisclosure() {
+  const form = document.getElementById('cloudContentForm');
+  if (!form || form.dataset.localeDisclosureReady === 'true') return;
+  const grid = form.querySelector('.cloud-fields-grid');
+  if (!grid) return;
+  const labels = [...grid.querySelectorAll(':scope > label')].filter(label => {
+    const field = label.querySelector('input[id],textarea[id]');
+    return field && /(En|Tr|Fr)$/.test(field.id);
+  });
+  if (!labels.length) return;
+  const disclosure = document.createElement('details');
+  disclosure.className = 'cloud-locale-disclosure';
+  const summary = document.createElement('summary');
+  summary.dataset.i18n = 'cloudLocaleSummary';
+  disclosure.append(summary);
+  labels.forEach(label => disclosure.append(label));
+  grid.append(disclosure);
+  form.dataset.localeDisclosureReady = 'true';
+}
+function initCustomSelects() {
+  if (window.HubaishCustomSelectsReady || !document.body) return;
+  window.HubaishCustomSelectsReady = true;
+  const backdrop = document.createElement('div');
+  backdrop.className = 'custom-select-backdrop';
+  backdrop.hidden = true;
+  backdrop.innerHTML = '<section class="custom-select-sheet" role="dialog" aria-modal="true" aria-labelledby="customSelectTitle"><div class="custom-select-sheet-head"><div><span class="custom-select-eyebrow">HUBAISH</span><h3 id="customSelectTitle">اختر خياراً</h3></div><button class="custom-select-close" type="button" aria-label="إغلاق">×</button></div><div class="custom-select-options" role="listbox"></div></section>';
+  document.body.append(backdrop);
+  const sheetTitle = backdrop.querySelector('#customSelectTitle');
+  const optionsRoot = backdrop.querySelector('.custom-select-options');
+  const closeButton = backdrop.querySelector('.custom-select-close');
+  let activeSelect = null;
+  let lastTrigger = null;
+  const localizedOptions = {
+    AR:{all:'الكل',place:'معلم أو موقع',history:'معلومة تاريخية',uzal:'عزلة أو قرية',correction:'تصحيح معلومة',person:'شخصية أو علم',landmark:'معلم',history_event:'محطة تاريخية',sub_district:'تعديل إحدى العزل الـ22',sub_district_update:'قرية أو موضع داخل عزلة',historical_figure:'شخصية أو علم',community_link:'رابط مجتمع',editor:'محرر',super_admin:'مشرف عام'},
+    EN:{all:'All',place:'Landmark or place',history:'Historical information',uzal:'Sub-district or village',correction:'Correction',person:'Person or notable figure',landmark:'Landmark',history_event:'Historical event',sub_district:'Edit one of the 22 sub-districts',sub_district_update:'Village or place in a sub-district',historical_figure:'Historical figure',community_link:'Community link',editor:'Editor',super_admin:'Super administrator'},
+    TR:{all:'Tümü',place:'Yer veya mekân',history:'Tarihî bilgi',uzal:'Bucak veya köy',correction:'Düzeltme',person:'Kişi veya önemli şahsiyet',landmark:'Yer',history_event:'Tarihî olay',sub_district:'22 bucaktan birini düzenle',sub_district_update:'Bucaktaki köy veya yer',historical_figure:'Tarihî şahsiyet',community_link:'Topluluk bağlantısı',editor:'Editör',super_admin:'Süper yönetici'},
+    FR:{all:'Tous',place:'Monument ou lieu',history:'Information historique',uzal:'Sous-district ou village',correction:'Correction',person:'Personnalité',landmark:'Monument',history_event:'Événement historique',sub_district:'Modifier l’un des 22 sous-districts',sub_district_update:'Village ou lieu du sous-district',historical_figure:'Personnalité historique',community_link:'Lien communautaire',editor:'Éditeur',super_admin:'Super administrateur'}
+  };
+  const labels = {
+    comparePlaceA:{AR:'المعلم الأول',EN:'First landmark',TR:'İlk yer',FR:'Premier lieu'},
+    comparePlaceB:{AR:'المعلم الثاني',EN:'Second landmark',TR:'İkinci yer',FR:'Deuxième lieu'},
+    contribType:{AR:'نوع المساهمة',EN:'Contribution type',TR:'Katkı türü',FR:'Type de contribution'},
+    cloudContentFilter:{AR:'تصفية المحتوى',EN:'Filter content',TR:'İçeriği filtrele',FR:'Filtrer le contenu'},
+    newAdminRole:{AR:'صلاحية الحساب',EN:'Account role',TR:'Hesap rolü',FR:'Rôle du compte'},
+    cloudRecordType:{AR:'نوع المحتوى',EN:'Content type',TR:'İçerik türü',FR:'Type de contenu'},
+    favTypeFilter:{AR:'نوع المفضلة',EN:'Favorite type',TR:'Favoris',FR:'Type de favori'}
+  };
+  const translateOption = (select,option) => {
+    if (['comparePlaceA','comparePlaceB'].includes(select.id)) return option.textContent;
+    const dictionary = localizedOptions[state.lang] || localizedOptions.AR;
+    return dictionary[option.value] || option.textContent;
+  };
+  const sync = (select,host) => {
+    if (!select || !host) return;
+    const trigger = host.querySelector('.custom-select-trigger');
+    if (!trigger) return;
+    const option = select.selectedOptions?.[0];
+    const translated = option ? translateOption(select,option) : '';
+    trigger.querySelector('.custom-select-value').textContent = translated || ({AR:'اختر خياراً',EN:'Choose an option',TR:'Bir seçenek seçin',FR:'Choisir une option'})[state.lang];
+    trigger.disabled = select.disabled;
+    trigger.setAttribute('aria-label',labels[select.id]?.[state.lang] || select.getAttribute('aria-label') || labels[select.id]?.AR || 'Choose an option');
+    const chevron = trigger.querySelector('.custom-select-chevron');
+    if (chevron) chevron.textContent = '⌄';
+  };
+  const close = () => {
+    backdrop.hidden = true;
+    if (activeSelect) activeSelect.focus({preventScroll:true});
+    activeSelect = null;
+    lastTrigger = null;
+  };
+  const open = (select,trigger) => {
+    activeSelect = select;
+    lastTrigger = trigger;
+    const lang = state.lang || 'AR';
+    sheetTitle.textContent = labels[select.id]?.[lang] || select.getAttribute('aria-label') || ({AR:'اختر خياراً',EN:'Choose an option',TR:'Bir seçenek seçin',FR:'Choisir une option'})[lang];
+    optionsRoot.replaceChildren();
+    const options = [...select.options].filter(option => !option.hidden);
+    if (!options.length) {
+      const empty = document.createElement('p');
+      empty.className = 'custom-select-empty';
+      empty.textContent = ({AR:'لا توجد خيارات متاحة بعد.',EN:'No options are available yet.',TR:'Henüz seçenek yok.',FR:'Aucune option disponible pour le moment.'})[lang];
+      optionsRoot.append(empty);
+    }
+    options.forEach(option => {
+      const item = document.createElement('button');
+      item.type = 'button';
+      item.className = 'custom-select-option' + (option.value === select.value ? ' selected' : '');
+      item.setAttribute('role','option');
+      item.setAttribute('aria-selected',String(option.value === select.value));
+      item.disabled = option.disabled;
+      const text = document.createElement('span');
+      text.textContent = translateOption(select,option);
+      const icon = document.createElement('span');
+      icon.className = 'custom-select-check';
+      icon.textContent = option.value === select.value ? '✓' : '';
+      item.append(text,icon);
+      item.addEventListener('click',() => {
+        select.value = option.value;
+        select.dispatchEvent(new Event('change',{bubbles:true}));
+        sync(select,select.parentElement);
+        close();
+      });
+      optionsRoot.append(item);
+    });
+    backdrop.hidden = false;
+    backdrop.querySelector('.custom-select-sheet')?.focus?.({preventScroll:true});
+    window.requestAnimationFrame?.(() => optionsRoot.querySelector('.selected')?.scrollIntoView({block:'nearest'}));
+  };
+  const enhance = select => {
+    if (!(select instanceof HTMLSelectElement) || select.classList.contains('language-sync-select')) return;
+    if (select.dataset.customSelectReady === 'true') {
+      sync(select,select.parentElement);
+      return;
+    }
+    const host = document.createElement('span');
+    host.className = 'custom-select-host';
+    const trigger = document.createElement('button');
+    trigger.type = 'button';
+    trigger.className = 'custom-select-trigger';
+    trigger.innerHTML = '<span class="custom-select-value"></span><span class="custom-select-chevron" aria-hidden="true">⌄</span>';
+    select.dataset.customSelectReady = 'true';
+    select.classList.add('custom-select-native');
+    select.setAttribute('aria-hidden','true');
+    select.tabIndex = -1;
+    select.parentNode.insertBefore(host,select);
+    host.append(select,trigger);
+    trigger.addEventListener('click',() => open(select,trigger));
+    sync(select,host);
+  };
+  const process = root => {
+    if (root instanceof HTMLSelectElement) enhance(root);
+    root.querySelectorAll?.('select:not(.language-sync-select)').forEach(enhance);
+  };
+  process(document);
+  const observer = new MutationObserver(records => records.forEach(record => {
+    record.addedNodes.forEach(node => {
+      if (node.nodeType === 1) process(node);
+    });
+    if (record.target instanceof HTMLSelectElement) sync(record.target,record.target.parentElement);
+  }));
+  observer.observe(document.body,{childList:true,subtree:true});
+  closeButton.addEventListener('click',close);
+  backdrop.addEventListener('click',event => {if(event.target===backdrop)close()});
+  document.addEventListener('keydown',event => {if(event.key==='Escape'&&!backdrop.hidden)close()});
+  document.addEventListener('hubaish:languagechange',() => document.querySelectorAll('select:not(.language-sync-select)').forEach(select => {
+    const dictionary=localizedOptions[state.lang]||localizedOptions.AR;
+    [...select.options].forEach(option=>{if(!['comparePlaceA','comparePlaceB'].includes(select.id)&&dictionary[option.value])option.dataset.originalText=option.dataset.originalText||option.textContent;});
+    sync(select,select.parentElement);
+  }));
+  window.HubaishRefreshCustomSelects = () => document.querySelectorAll('select:not(.language-sync-select)').forEach(select=>sync(select,select.parentElement));
+}
+function initFloatingAssistant() {
+  if (document.getElementById('aiFabWrap')) return;
+  const wrap = document.createElement('div');
+  wrap.id = 'aiFabWrap';
+  wrap.className = 'ai-fab-wrap';
+  const launch = document.createElement('button');
+  launch.type = 'button';
+  launch.id = 'aiFabOpen';
+  launch.className = 'ai-fab ai-fab-launcher';
+  launch.setAttribute('aria-label','Open Hubaish assistant');
+  launch.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 2 2.4 7.6L22 12l-7.6 2.4L12 22l-2.4-7.6L2 12l7.6-2.4L12 2Z"/></svg><span class="ai-fab-label"></span>';
+  const minimize = document.createElement('button');
+  minimize.type = 'button';
+  minimize.className = 'ai-fab-minimize';
+  minimize.setAttribute('aria-label','Minimize assistant launcher');
+  minimize.textContent = '−';
+  const restore = document.createElement('button');
+  restore.type = 'button';
+  restore.className = 'ai-fab-restore';
+  restore.setAttribute('aria-label','Show assistant launcher');
+  restore.textContent = '✦';
+  wrap.append(launch,minimize,restore);
+  document.body.append(wrap);
+  const labels = {
+    AR:['مساعد حبيش','فتح مساعد دليل حبيش','تصغير المساعد','إظهار المساعد'],
+    EN:['Hubaish AI','Open Hubaish assistant','Minimize assistant','Show assistant'],
+    TR:['Hubaish Asistanı','Hubaish asistanını aç','Asistanı küçült','Asistanı göster'],
+    FR:['Assistant Hubaish','Ouvrir l’assistant Hubaish','Réduire l’assistant','Afficher l’assistant']
+  };
+  const update = () => {
+    const t = labels[state.lang] || labels.AR;
+    launch.querySelector('.ai-fab-label').textContent = t[0];
+    launch.setAttribute('aria-label',t[1]);
+    minimize.setAttribute('aria-label',t[2]);
+    restore.setAttribute('aria-label',t[3]);
+  };
+  update();
+  launch.addEventListener('click',() => openModal('aiModal'));
+  minimize.addEventListener('click',() => wrap.classList.add('is-minimized'));
+  restore.addEventListener('click',() => wrap.classList.remove('is-minimized'));
+  document.addEventListener('hubaish:languagechange',update);
 }
 
 document.addEventListener('DOMContentLoaded', init, { once: true });

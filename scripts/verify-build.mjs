@@ -76,7 +76,10 @@ if(!html.includes('id="cloudAdminPanel" class="hidden"')||!html.includes('id="cl
    !html.includes('id="importJsonInput"')) {
   throw new Error('Authenticated admin dashboard, content editor, audit or backup interface is incomplete.');
 }
-if(html.includes('class="ai-fab"')||!html.includes('id="openAiBtn"'))throw new Error('Floating AI overlay has returned or the More-tab assistant is missing.');
+if(!app.includes('function initFloatingAssistant()')||!app.includes('id = \'aiFabWrap\'')||!html.includes('id="openAiBtn"'))throw new Error('Floating AI launcher or More-tab assistant is missing.');
+if(!app.includes('function initMoreSmartTabs()')||!app.includes('function initAdminSubtabs()')||!app.includes('function switchTab(tab) {'))throw new Error('More and administrator smart tabs are missing.');
+if(!app.includes('function initCustomSelects()')||!css.includes('.custom-select-sheet')||!css.includes('.custom-select-option.selected'))throw new Error('The emerald/gold custom select sheet is missing.');
+if(!app.includes('state.tab = \'home\'')||!app.includes('function localizeHomeStaticContent()'))throw new Error('Default Home startup or static home translations are missing.');
 if(!html.includes('id="cloudLatitude"')||!html.includes('id="cloudLongitude"')||!html.includes('id="cloudElevation"')||
    !html.includes('id="cloudPreviewBtn"')||!cms.includes('function renderContentPreview()')||
    !html.includes('id="itineraryList"')||!html.includes('id="comparePlaceA"')||
@@ -126,7 +129,7 @@ if(!cms.includes('function fetchWithTimeout(')||!cms.includes("'/auth/login'")||
   throw new Error('Worker login timeouts or the public production health endpoint are missing.');
 }
 if(!css.includes('env(safe-area-inset-top')||!css.includes('var(--status-bar-height')||
-   !css.includes('env(safe-area-inset-bottom')||!css.includes('.ai-fab{display:none!important}')) {
+   !css.includes('env(safe-area-inset-bottom')||!css.includes('.ai-fab-launcher')||!css.includes('bottom:calc(84px + env(safe-area-inset-bottom,0px))')) {
   throw new Error('Safe-area CSS or floating assistant removal is missing.');
 }
 if(capacitor.appName!=='دليل حبيش'||capacitor.plugins?.StatusBar?.style!=='LIGHT'||
@@ -149,7 +152,7 @@ if(!css.includes('padding-top:max(9px,env(safe-area-inset-top')||
    !css.includes('padding-bottom:max(6px,env(safe-area-inset-bottom')) {
   throw new Error('Android 15/16 top and bottom safe-area padding is missing.');
 }
-if(!sw.includes('hubaish-guide-v4.0.2')||!sw.includes("'splash.js'")||
+if(!sw.includes('hubaish-guide-v4.0.3')||!sw.includes("'splash.js'")||
    !sw.includes("'github-cms.js'")||!sw.includes("'data/live-content.json'")) {
   throw new Error('The service-worker cache does not include the updated app shell.');
 }

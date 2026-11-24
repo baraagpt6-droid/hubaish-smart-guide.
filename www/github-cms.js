@@ -60,6 +60,7 @@
     $('cloudAdminLoginArea')?.classList.toggle('hidden',authenticated||canBootstrap);
     $('cloudAdminPanel')?.classList.toggle('hidden',!authenticated);
     $('cloudSuperAdminPanel')?.classList.toggle('hidden',!authenticated||workerUser?.role!=='super_admin');
+    window.HubaishSyncAdminTabs?.();
     $('workerBootstrapCleanupNotice')?.classList.toggle('hidden',!authenticated||setupState.setupRequired||!setupState.bootstrapKeyConfigured);
     const identity=$('cloudAdminIdentity');
     if(identity)identity.textContent=authenticated?(workerUser.displayName||workerUser.username)+' · '+(workerUser.role==='super_admin'?'مشرف عام':'محرر محتوى'):'';
