@@ -31,7 +31,9 @@ const [html,css,app,catalog,features,cms,sw,worker,wrangler,workflow,readme,work
 const manifest=JSON.parse(await read('www/manifest.webmanifest'));
 const manifestJson=JSON.parse(await read('www/manifest.json'));
 const capacitor=JSON.parse(await read('capacitor.config.json'));
-const pkg=JSON.parse(await read('package.json'));\nconst readme=await read('README.md');\nconst workerReadme=await read('cloudflare-worker/README.md');
+const pkg=JSON.parse(await read('package.json'));
+const readme=await read('README.md');
+const workerReadme=await read('cloudflare-worker/README.md');
 const data=JSON.parse(await read('www/data/live-content.json'));
 const assets = {
   app: await read('www/assets/app.js'),
@@ -77,7 +79,9 @@ if(!html.includes('id="cloudAdminPanel" class="hidden"')||!html.includes('id="cl
   throw new Error('Authenticated admin dashboard, content editor, audit or backup interface is incomplete.');
 }
 if(html.includes('class="ai-fab"')||!html.includes('id="openAiBtn"'))throw new Error('Floating AI overlay has returned or the More-tab assistant is missing.');
-if(!html.includes('id="cloudLatitude"')||!html.includes('id="cloudLongitude"')||!html.includes('id="cloudElevation"')||\n   !html.includes('id="cloudPreviewBtn"')||!cms.includes('function renderContentPreview()')||\n   !html.includes('id="itineraryList"')||!html.includes('id="comparePlaceA"')||
+if(!html.includes('id="cloudLatitude"')||!html.includes('id="cloudLongitude"')||!html.includes('id="cloudElevation"')||
+   !html.includes('id="cloudPreviewBtn"')||!cms.includes('function renderContentPreview()')||
+   !html.includes('id="itineraryList"')||!html.includes('id="comparePlaceA"')||
    !features.includes('function renderSmartItineraries')||!features.includes('function compareSelectedPlaces')||
    !features.includes('shareExplorerBadge')||!features.includes('quizBest')) {
   throw new Error('Smart routes, comparison or explorer gamification are incomplete.');
@@ -159,4 +163,5 @@ for(const [file,expected] of [['www/icons/icon-192.png',192],['www/icons/icon-51
   if(image.toString('hex',0,8)!=='89504e470d0a1a0a'||image.readUInt32BE(16)!==expected||image.readUInt32BE(20)!==expected)
     throw new Error(file+' must be a valid '+expected+'x'+expected+' PNG.');
 }
-if(readme.includes('الدخول المباشر الاحتياطي باستخدام GitHub Token')||workerReadme.includes('emergency fallback')||workerReadme.includes('GitHub Personal Access Token login'))throw new Error('Documentation still advertises the removed direct-token login.');\nconsole.log('Build check passed: Worker-only login, first-admin bootstrap, RBAC, audit, privacy, four locales, geodata preview, offline shell, Android safe areas, APK/AAB workflow and app assets.');
+if(readme.includes('الدخول المباشر الاحتياطي باستخدام GitHub Token')||workerReadme.includes('emergency fallback')||workerReadme.includes('GitHub Personal Access Token login'))throw new Error('Documentation still advertises the removed direct-token login.');
+console.log('Build check passed: Worker-only login, first-admin bootstrap, RBAC, audit, privacy, four locales, geodata preview, offline shell, Android safe areas, APK/AAB workflow and app assets.');
