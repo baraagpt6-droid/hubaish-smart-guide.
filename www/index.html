@@ -161,23 +161,31 @@
             <h4 class="item-title">تأسيس النظام لأول مرة (Setup)</h4>
             <p class="small muted">يظهر هذا النموذج فقط قبل إنشاء أول حساب مشرف في Worker. بعد التأسيس سيختفي تلقائياً.</p>
             <form id="workerSetupForm" class="cloud-login-grid">
-              <input id="workerSetupEndpoint" class="input-field" type="url" value="https://hubaish-cms.baraag6.workers.dev" placeholder="رابط Worker URL" autocomplete="url" required>
               <input id="workerBootstrapKey" class="input-field" type="password" placeholder="مفتاح التأسيس Bootstrap Key" autocomplete="off" required>
               <input id="workerSetupUsername" class="input-field" type="text" placeholder="اسم المشرف العام Username" autocomplete="username" required>
               <input id="workerSetupPassword" class="input-field" type="password" placeholder="كلمة المرور الجديدة (12 حرفاً على الأقل)" minlength="12" autocomplete="new-password" required>
               <button class="btn-primary" type="submit">إنشاء حساب المشرف العام وتفعيل الربط</button>
             </form>
-            <p id="workerSetupStatus" class="small muted">أدخل رابط Worker للتحقق من حالة التأسيس.</p>
+            <details class="cloud-editor">
+              <summary>إعدادات متقدمة · عنوان خادم التأسيس</summary>
+              <input id="workerSetupEndpoint" class="input-field" type="url" value="https://hubaish-cms.baraagpt6.workers.dev" placeholder="https://hubaish-cms.baraagpt6.workers.dev" autocomplete="url">
+              <p class="small muted">يستخدم النظام خادم Cloudflare الافتراضي تلقائياً. غيّر العنوان فقط عند نقل الخدمة.</p>
+            </details>
+            <p id="workerSetupStatus" class="small muted">يجري التحقق تلقائياً من خادم التأسيس.</p>
           </section>
           <h4 class="item-title">دخول المشرفين عبر الوسيط الآمن</h4>
-          <p class="small muted">أدخل رابط Cloudflare Worker ثم اسم المستخدم وكلمة المرور. لا يحتاج كل مشرف إلى GitHub Token.</p>
+          <p class="small muted">أدخل اسم المستخدم وكلمة المرور. يتصل التطبيق بخادم Cloudflare تلقائياً.</p>
           <form id="workerLoginForm" class="cloud-login-grid">
-            <input id="workerEndpoint" class="input-field" type="url" value="https://hubaish-cms.baraag6.workers.dev" placeholder="https://hubaish-cms.baraag6.workers.dev" autocomplete="url" required>
             <input id="workerUsername" class="input-field" type="text" placeholder="اسم المستخدم" autocomplete="username" required>
             <input id="workerPassword" class="input-field" type="password" placeholder="كلمة المرور" autocomplete="current-password" required>
             <label class="small"><input id="workerRemember" type="checkbox"> تذكرني على هذا الجهاز لمدة 30 يوماً</label>
             <button class="btn-primary" type="submit">دخول آمن</button>
           </form>
+          <details class="cloud-editor">
+            <summary>إعدادات متقدمة · عنوان خادم تسجيل الدخول</summary>
+            <input id="workerEndpoint" class="input-field" type="url" value="https://hubaish-cms.baraagpt6.workers.dev" placeholder="https://hubaish-cms.baraagpt6.workers.dev" autocomplete="url">
+            <p class="small muted">يستخدم النظام خادم Cloudflare الافتراضي تلقائياً. غيّر العنوان فقط عند نقل الخدمة.</p>
+          </details>
           <details class="cloud-editor"><summary>الدخول المباشر الاحتياطي باستخدام GitHub Token</summary>
             <form id="cloudAdminForm" class="cloud-login-grid">
               <input id="cloudAdminPassword" class="input-field" type="password" placeholder="GitHub Personal Access Token" autocomplete="off" autocapitalize="off" spellcheck="false" required>
