@@ -12,7 +12,7 @@ This Worker keeps the GitHub JSON CMS in `www/data/live-content.json`. The GitHu
    - `GITHUB_TOKEN`: Fine-grained GitHub token limited to `baraagpt6-droid/hubaish-smart-guide.` with Contents Read and write.
    - `SESSION_SECRET`: a random secret of at least 32 bytes.
    - `BOOTSTRAP_KEY`: a separate one-time random secret.
-6. Add the plain-text variable `ALLOWED_ORIGIN` with value `https://baraagpt6-droid.github.io`.
+6. Add the plain-text variable `ALLOWED_ORIGIN` with value `https://baraagpt6-droid.github.io`. The Worker also accepts `capacitor://localhost`, `http://localhost` and `https://localhost` by default. You can set `ALLOWED_ORIGIN` to `*` to allow any origin, or provide a comma-separated allowlist. Avoid `*` when you can use the known origins.
 7. Deploy again and copy the Worker URL, for example `https://hubaish-smart-guide-cms.<account>.workers.dev`.
 
 Generate secrets locally with a password manager or a cryptographically secure generator. Never put their values in this repository.
