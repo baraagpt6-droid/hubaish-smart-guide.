@@ -93,7 +93,7 @@ for (const key of ['landmarks','historyEvents','subDistrictUpdates','subDistrict
   if (!Array.isArray(data[key])) throw new Error('GitHub live-content.json is missing collection: ' + key);
 }
 if (data.subDistricts.length !== 22) throw new Error('GitHub live-content.json must include 22 translated sub-district profiles.');
-if (data.landmarks.length < 17 || data.historyEvents.length < 7 || data.historicalFigures.length < 5 || data.subDistrictUpdates.length < 15) {
+if (data.landmarks.length < 17 || data.historyEvents.length < 7 || data.historicalFigures.length < 5 || data.subDistrictUpdates.length < 19) {
   throw new Error('Sourced Hubaish landmarks, historical events, figures or village profiles are incomplete.');
 }
 if (!data.landmarks.some(x=>x.id==='khudad-fort') || !data.landmarks.some(x=>x.id==='wuhaza-fortress') ||
@@ -107,8 +107,18 @@ if (!data.subDistrictUpdates.some(x=>x.id==='villages-jabal-khadra') ||
     !data.subDistrictUpdates.some(x=>x.id==='villages-al-salaq') ||
     !data.subDistrictUpdates.some(x=>x.id==='villages-bani-muayn-study') ||
     !data.subDistrictUpdates.some(x=>x.id==='villages-al-farai-study') ||
+    !data.subDistrictUpdates.some(x=>x.id==='villages-al-sadr-areq-index') ||
+    !data.subDistrictUpdates.some(x=>x.id==='villages-bani-shabib-areq-index') ||
+    !data.subDistrictUpdates.some(x=>x.id==='villages-bani-muayn-areq-index') ||
+    !data.subDistrictUpdates.some(x=>x.id==='villages-jabal-khadra-areq-index') ||
     !data.subDistrictUpdates.some(x=>x.id==='village-al-shawafi')) {
   throw new Error('Village references are missing from the district directory.');
+}
+if (data.subDistricts.length !== 22 || data.subDistricts.some(x => !x.body_ar || x.body_ar.length < 80)) {
+  throw new Error('Each of the 22 Hubaish sub-districts must have a sourced descriptive profile.');
+}
+if (data.subDistrictUpdates.some(x => !x.source_url || !/^https?:\/\//.test(x.source_url))) {
+  throw new Error('Every published village/locality record must include a source URL.');
 }
 if (data.schemaVersion !== 1) throw new Error('Unsupported GitHub live-content.json schema version.');
 if (!githubCms.includes('raw.githubusercontent.com') || !githubCms.includes('api.github.com/repos/') ||
