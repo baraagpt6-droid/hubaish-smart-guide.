@@ -32,8 +32,7 @@ jobs:
       - name: Check Cloudflare setup script syntax
         run: node --check scripts/configure-cloudflare-kv.mjs
 
-      - name: Resolve the hubaish-admins KV namespace and write Wrangler binding
-        if: ${{ env.CLOUDFLARE_API_TOKEN != '' && env.CLOUDFLARE_ACCOUNT_ID != '' }}
+      - name: Validate the fixed hubaish-admins ADMINS binding
         run: node scripts/configure-cloudflare-kv.mjs
 
       - name: Deploy hubaish-cms with the ADMINS binding
