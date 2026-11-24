@@ -23,7 +23,7 @@ function cors(req,env){
  const origin=req.headers.get("Origin")||"";
  const configured=String(env.ALLOWED_ORIGIN||"").split(",").map(x=>x.trim()).filter(Boolean);
  const wildcard=configured.includes("*");
- const defaults=["https://baraagpt6-droid.github.io","capacitor://localhost","http://localhost"];
+ const defaults=["https://baraagpt6-droid.github.io","capacitor://localhost","http://localhost","https://localhost"];
  const allowed=new Set([...defaults,...configured]);
  const permitted=!origin||wildcard||allowed.has(origin);
  return {
@@ -75,7 +75,7 @@ async function route(req,env){
   if(JSON.stringify(d).length>700000)return json({error:"Content exceeds 700 KB."},413);
   d.updatedAt=new Date().toISOString();d.updatedBy={username:actor.username,displayName:actor.displayName,role:actor.role};
   const result=await ghWrite(env,d,actor);await log(env,{actor:actor.username,displayName:actor.displayName,role:actor.role,action:"publish_content",commit:result.commit?.sha||null});
-  return json({ok:true,updatedAt:d.updatedAt,commit:result.commit?.sha||null})
+  return json({ok:true,updatedAt:d.updatedAt,updatedBy:d.updatedBy,commit:result.commit?.sha||null})
  }
  if(path==="/admin/users"&&actor.role==="super_admin"&&req.method==="GET"){
   const keys=await env.ADMINS.list({prefix:UP,limit:100}),users=[];for(const k of keys.keys){const x=await getUser(env,k.name.slice(UP.length));if(x)users.push({username:x.username,displayName:x.displayName,role:x.role,disabled:!!x.disabled,createdAt:x.createdAt})}return json({users})
