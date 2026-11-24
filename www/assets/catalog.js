@@ -235,7 +235,7 @@
     setText('#communityJoinLink',t.join);setText('#copyCommunityBtn',t.copy);setText('#editCommunityBtn',t.edit);
     setText('#peopleSectionTitle',t.people);setText('#referencesSectionTitle',t.refs);setText('#quizSectionTitle',t.quiz);setText('#socialSectionTitle',t.social);setText('#contributionSectionTitle',t.contrib);setText('#adminSectionTitle',t.admin);setText('#translationNotice',t.translation);
     document.querySelectorAll('#placeFilters [data-pcat]').forEach((el,i)=>el.textContent=t.category[i]||t.category[0]);document.querySelectorAll('#histFilters [data-era]').forEach((el,i)=>el.textContent=t.era[i]||t.era[0]);
-    document.title=({AR:'مديرية حبيش | موسوعة جغرافية وتاريخية',EN:'Hubaish District | Geographic and Historical Guide',TR:'Hubaish | Coğrafya ve Tarih Rehberi',FR:'Hubaish | Guide géographique et historique'})[lang];
+    document.title=({AR:'دليل حبيش | دليل جغرافي وتاريخي',EN:'Hubaish Guide | Geographic and Historical Guide',TR:'Hubaish Rehberi | Coğrafya ve Tarih Rehberi',FR:'Guide de Hubaish | Guide géographique et historique'})[lang];
     renderPeople(document.getElementById('peopleList'),window.HubaishFeatures?.getPeople?.()||[],lang);renderRefs(document.getElementById('referenceList'),lang);
     setText('#explorerTitle',lang==='AR'?'تقدم استكشاف الموسوعة':lang==='EN'?'Encyclopedia exploration progress':lang==='TR'?'Ansiklopedi keşif ilerlemesi':'Progression de l’exploration');
     setText('#explorerDesc',lang==='AR'?'استكشف المعالم والعزل والمحطات التاريخية.':lang==='EN'?'Explore landmarks, sub-districts and history.':lang==='TR'?'Yerleri, bucakları ve tarihi keşfedin.':'Explorez les sites, sous-districts et l’histoire.');
