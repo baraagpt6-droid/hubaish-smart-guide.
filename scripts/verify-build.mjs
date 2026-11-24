@@ -10,7 +10,8 @@ const required = [
   'www/assets/styles.css', 'www/assets/app.js', 'www/assets/catalog.js', 'www/assets/features.js',
   'www/manifest.json', 'www/manifest.webmanifest', 'www/icons/icon.svg',
   'www/icons/icon-192.png', 'www/icons/icon-512.png', 'www/icons/apple-touch-icon.png', 'www/icons/favicon-32.png', 'www/icons/photo-fallback.svg', 'capacitor.config.json',
-  'scripts/generate-icons.py', 'scripts/apply-android-icons.py', 'scripts/serve.mjs', 'cloudflare-worker/worker.js', 'cloudflare-worker/wrangler.toml', '.github/workflows/build-and-deploy.yml'
+  'scripts/generate-icons.py', 'scripts/apply-android-icons.py', 'scripts/serve.mjs',
+  'assets/icon-only.png', 'assets/icon-foreground.png', 'assets/icon-background.png', 'assets/splash.png', 'assets/splash-dark.png', 'cloudflare-worker/worker.js', 'cloudflare-worker/wrangler.toml', '.github/workflows/build-and-deploy.yml'
 ];
 for (const file of required) await access(resolve(root, file));
 
@@ -58,6 +59,12 @@ if (!manifest.name || manifest.start_url !== './' || manifest.scope !== './' || 
 }
 if (JSON.stringify(manifest) !== JSON.stringify(manifestJson)) throw new Error('PWA manifests must match.');
 if (capacitor.webDir !== 'www' || !capacitor.appId) throw new Error('Capacitor webDir/appId configuration is incomplete.');
+if (pkg.dependencies?.['@capacitor/splash-screen'] !== '8.0.2' ||
+    pkg.devDependencies?.['@capacitor/assets'] !== '4.0.0' ||
+    capacitor.plugins?.SplashScreen?.backgroundColor !== '#052d24' ||
+    !workflow.includes('npx capacitor-assets generate --android')) {
+  throw new Error('Capacitor 8 native splash screen or branded asset generation is not configured.');
+}
 
 const htmlIds = [...html.matchAll(/\bid="([^"]+)"/g)].map(match => match[1]);
 const duplicateHtmlIds = [...new Set(htmlIds.filter((id, index) => htmlIds.indexOf(id) !== index))];
