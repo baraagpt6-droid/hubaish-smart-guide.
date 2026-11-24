@@ -152,8 +152,9 @@ if (!app.includes('data-share') || !app.includes('navigator.share({ title: item.
   throw new Error('Daily Hubaish feature or direct content sharing is incomplete.');
 }
 if (!html.includes('id="cloudAdminStats"') || !html.includes('id="cloudContentSearch"') ||
-    !githubCms.includes('function renderAdminStats') || !githubCms.includes('cloudContentFilter')) {
-  throw new Error('CMS admin dashboard counters and content search are incomplete.');
+    !githubCms.includes('function renderAdminStats') || !githubCms.includes('cloudContentFilter') ||
+    !githubCms.includes('x.cmsOverride===true')) {
+  throw new Error('CMS admin dashboard must include all cloud-backed content in counters and search.');
 }
 if (!html.includes('upload.wikimedia.org') || !html.includes('al-jandprovince.com') ||
     !html.includes('hekmahyemanya.com') || !html.toLowerCase().includes('cc by-sa') ) {
