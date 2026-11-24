@@ -169,7 +169,12 @@ function showToast(message) {
 function applyTheme(theme) {
   state.theme = theme === 'light' ? 'light' : 'dark';
   document.documentElement.dataset.theme = state.theme;
-  document.getElementById('themeToggleBtn').textContent = state.theme === 'dark' ? '☀️' : '🌙';
+  const themeToggle = document.getElementById('themeToggleBtn');
+  const themeGlyph = themeToggle?.querySelector('#themeGlyph');
+  if (themeGlyph) themeGlyph.setAttribute('d', state.theme === 'dark'
+    ? 'M12 3v2m0 14v2M3 12h2m14 0h2M5.64 5.64l1.42 1.42m9.88 9.88 1.42 1.42m0-12.72-1.42 1.42m-9.88 9.88-1.42 1.42M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8Z'
+    : 'M20.5 15.5A8.5 8.5 0 0 1 8.5 3.5 8.5 8.5 0 1 0 20.5 15.5Z');
+  if (themeToggle) themeToggle.setAttribute('aria-label', state.theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme');
   saveState();
 }
 
