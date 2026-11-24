@@ -1,6 +1,6 @@
 'use strict';
 
-const CACHE_NAME = 'hubaish-guide-v3.4.0';
+const CACHE_NAME = 'hubaish-guide-v3.5.0';
 const BASE_URL = new URL('./', self.registration.scope);
 const INDEX_URL = new URL('index.html', BASE_URL).href;
 const APP_SHELL = [
