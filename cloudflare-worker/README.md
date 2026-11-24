@@ -3,31 +3,23 @@
 This Worker protects the administration endpoints for the GitHub JSON CMS at `www/data/live-content.json`.
 
 - Worker name: `hubaish-cms`
-- Frontend default URL: `https://hubaish-cms.baraag6.workers.dev`
+- Worker URL: `https://hubaish-cms.baraagpt6.workers.dev`
 - KV namespace: `hubaish-admins`
-- Worker binding: `ADMINS`
+- KV binding name expected by the code: `ADMINS`
 
 The Worker stores administrator records, password hashes, login throttling counters and audit events in Cloudflare KV. The GitHub token remains in Cloudflare Secrets. Published content remains in the GitHub JSON file.
 
-## 1. Create and bind the KV namespace
+## 1. Confirm the KV binding in Cloudflare
 
-From the repository root, open a terminal and run:
+The KV namespace and binding are configured manually in the Cloudflare dashboard.
 
-```bash
-cd cloudflare-worker
-npx wrangler login
-npx wrangler kv namespace create hubaish-admins
-```
+1. Open https://dash.cloudflare.com/
+2. Go to **Workers & Pages** and select `hubaish-cms`.
+3. Open **Settings → Bindings**.
+4. Confirm a KV namespace binding named `ADMINS` points to the namespace `hubaish-admins`.
+5. Save the setting.
 
-Cloudflare prints a namespace ID. Copy that exact ID into `cloudflare-worker/wrangler.toml` by replacing:
-
-```toml
-id = "REPLACE_WITH_KV_NAMESPACE_ID"
-```
-
-Keep the binding name exactly `ADMINS`. The Worker code reads `env.ADMINS`.
-
-You can also create the namespace in the Cloudflare dashboard under Workers & Pages → KV, then copy its ID into the same Wrangler setting.
+The repository's `cloudflare-worker/wrangler.toml` intentionally does not declare `[[kv_namespaces]]` or a placeholder namespace ID. Keep the dashboard binding name exactly `ADMINS`; the Worker code reads `env.ADMINS`.
 
 ## 2. Create the GitHub token and Worker secrets
 
@@ -38,31 +30,30 @@ Create a Fine-grained GitHub Personal Access Token limited to `baraagpt6-droid/h
 
 Create the token here: https://github.com/settings/personal-access-tokens/new
 
-From the `cloudflare-worker` directory, add the secrets. Wrangler prompts for each value:
+In **Settings → Variables and Secrets**, add these as Secrets:
 
-```bash
-npx wrangler secret put GITHUB_TOKEN
-npx wrangler secret put SESSION_SECRET
-npx wrangler secret put BOOTSTRAP_KEY
+- `GITHUB_TOKEN`: the Fine-grained GitHub token.
+- `SESSION_SECRET`: a random secret of at least 32 bytes.
+- `BOOTSTRAP_KEY`: a separate one-time random secret.
+
+Never put secret values in this repository, in frontend JavaScript, or in GitHub Pages.
+
+## 3. Confirm the test CORS setting and deploy
+
+The current Wrangler configuration uses:
+
+```toml
+[vars]
+ALLOWED_ORIGIN = "*"
 ```
 
-Use separate random values for `SESSION_SECRET` and `BOOTSTRAP_KEY`. Use at least 32 random bytes for the session secret. Do not put secret values in this repository, in frontend JavaScript, or in GitHub Pages.
+This wildcard is temporary for testing. Before public production use, replace it with the exact allowed site origins. The Worker code also permits Capacitor's `capacitor://localhost` origin and localhost origins by default.
 
-## 3. Deploy the Worker
-
-After the KV ID and all three secrets are configured:
-
-```bash
-npx wrangler deploy
-```
-
-The configured Worker name is `hubaish-cms`. If the Cloudflare account's `workers.dev` subdomain is `baraag6`, the resulting URL is:
+Deploy using the Cloudflare dashboard or the deployment method already connected to this Worker. Confirm the deployed URL is:
 
 ```
-https://hubaish-cms.baraag6.workers.dev
+https://hubaish-cms.baraagpt6.workers.dev
 ```
-
-The Wrangler variable `ALLOWED_ORIGIN` permits the GitHub Pages origin and local preview. The Worker code also permits Capacitor's `capacitor://localhost` origin and localhost origins. Avoid using `*` for production.
 
 ## 4. Create the first super administrator
 
@@ -76,13 +67,7 @@ While no administrator exists in KV, use **تأسيس النظام لأول مر
 
 The app sends `POST /setup`, creates the first `super_admin` in KV, saves the Worker URL and signs in.
 
-Immediately after successful setup, remove the `BOOTSTRAP_KEY` secret from the Worker:
-
-```bash
-npx wrangler secret delete BOOTSTRAP_KEY
-```
-
-Do not leave the bootstrap secret active after creating the first administrator.
+Immediately after successful setup, remove the `BOOTSTRAP_KEY` secret from Worker settings.
 
 ## 5. Use the administration panel
 
