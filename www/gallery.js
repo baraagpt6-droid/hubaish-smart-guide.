@@ -61,6 +61,7 @@
     const header=el('div','heritage-gallery-head'),text=el('div','heritage-gallery-heading');
     text.append(el('span','heritage-gallery-kicker','HUBAISH • HERITAGE ARCHIVE'),el('h2','section-title',t().title),el('p','section-sub',t().sub));
     const wrap=el('div','heritage-gallery-count-wrap'),count=el('strong','heritage-gallery-count','0');count.id='heritageGalleryCount';wrap.append(count,el('small','',t().count));header.append(text,wrap);
+    ['galleryHomeOpen','galleryFromPlaces'].forEach(id=>document.getElementById(id)?.addEventListener('click',open));
     const filters=el('div','heritage-gallery-filters');filters.setAttribute('role','group');filters.setAttribute('aria-label',t().title);
     const labels={all:t().all,forts:t().forts,valleys:t().valleys,villages:t().villages,heritage:t().heritage};
     categories.forEach(key=>{const b=el('button','heritage-gallery-filter'+(key===active?' active':''),labels[key]);b.type='button';b.dataset.galleryFilter=key;b.setAttribute('aria-pressed',String(key===active));filters.append(b)});
