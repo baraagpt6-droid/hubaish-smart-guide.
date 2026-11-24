@@ -3,11 +3,11 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#08100d">
+  <meta name="theme-color" content="#081812">
   <meta name="description" content="دليل مديرية حبيش، موسوعة جغرافية وتاريخية للعزل والمعالم والتاريخ والمجتمع ومواقيت الصلاة.">
   <meta name="referrer" content="strict-origin-when-cross-origin">
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https://upload.wikimedia.org https://al-jandprovince.com https://hekmahyemanya.com; connect-src 'self' https://api.mymemory.translated.net https://api.github.com https://raw.githubusercontent.com https://*.workers.dev; worker-src 'self'; manifest-src 'self'; upgrade-insecure-requests">
-  <title>مديرية حبيش | موسوعة جغرافية وتاريخية</title>
+  <title>دليل حبيش الذكي | Hubaish Smart Guide</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Reem+Kufi:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -16,12 +16,15 @@
   <link rel="icon" href="./icons/favicon-32.png" sizes="32x32" type="image/png">
   <link rel="apple-touch-icon" href="./icons/apple-touch-icon.png">
   <link rel="stylesheet" href="./styles.css">
+  <script src="./splash.js" defer></script>
   <script src="./app.js" defer></script>
   <script src="./catalog.js" defer></script>
   <script src="./features.js" defer></script>
   <script src="./github-cms.js" defer></script>
 </head>
 <body>
+  <div id="appSplash" class="app-splash" role="status" aria-label="دليل حبيش الذكي"><div class="app-splash-inner"><img src="./icons/icon.svg" alt=""><strong>دليل حبيش الذكي</strong><span>HUBAISH SMART GUIDE</span></div></div>
+  <div id="offlineIndicator" class="offline-indicator" role="status" hidden>أنت دون اتصال. المحتوى المحفوظ متاح.</div>
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
   <div id="swUpdateBanner" class="sw-update-banner hidden" role="status" aria-live="polite"><span>يتوفر تحديث جديد</span><button id="swUpdateBtn" type="button" class="btn-secondary">اضغط للتحديث الفوري</button></div>
   <header class="topbar">
@@ -30,11 +33,11 @@
         <img class="brand-mark" src="./icons/icon.svg" alt="" aria-hidden="true">
         <i class="emblem-pulse"></i>
       </span>
-      <span class="brand-text"><strong data-i18n="appName">مديرية حبيش</strong><small data-i18n="appSub">موسوعة جغرافية وتاريخية</small></span>
+      <span class="brand-text"><strong data-i18n="appName">دليل حبيش الذكي</strong><small data-i18n="appSub">موسوعة جغرافية وتاريخية</small></span>
     </button>
     <div class="top-actions">
       <button class="icon-pill" id="favOpenBtn" aria-label="المحفوظات"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3.5h12v17l-6-4-6 4v-17Z"/></svg><span id="favCount" class="badge-count">0</span></button>
-      <label class="lang-wrap" aria-label="لغة التطبيق"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a15 15 0 0 1 0 18M12 3a15 15 0 0 0 0 18"/></svg><select id="langSelect" class="lang-select" aria-label="اختر اللغة"><option value="AR">AR</option><option value="EN">EN</option><option value="TR">TR</option><option value="FR">FR</option></select><span aria-hidden="true">▾</span></label>
+      <div class="language-picker"><button class="language-picker-trigger" id="languagePickerButton" type="button" aria-haspopup="listbox" aria-expanded="false" aria-label="اختر اللغة"><span id="languageCurrentCode">AR</span><span aria-hidden="true">▾</span></button><div id="languagePickerMenu" class="language-picker-menu" role="listbox" aria-label="لغة التطبيق" hidden><button class="language-picker-option" type="button" data-language="AR" role="option" aria-selected="true">العربية <span>AR</span></button><button class="language-picker-option" type="button" data-language="EN" role="option" aria-selected="false">English <span>EN</span></button><button class="language-picker-option" type="button" data-language="TR" role="option" aria-selected="false">Türkçe <span>TR</span></button><button class="language-picker-option" type="button" data-language="FR" role="option" aria-selected="false">Français <span>FR</span></button></div><select id="langSelect" class="language-sync-select" aria-hidden="true" tabindex="-1"><option value="AR">AR</option><option value="EN">EN</option><option value="TR">TR</option><option value="FR">FR</option></select></div>
       <button class="icon-pill" id="themeToggleBtn" aria-label="تبديل المظهر"><svg class="ui-icon theme-toggle-icon" viewBox="0 0 24 24" aria-hidden="true"><path id="themeGlyph" d="M12 3v2m0 14v2M3 12h2m14 0h2M5.64 5.64l1.42 1.42m9.88 9.88 1.42 1.42m0-12.72-1.42 1.42m-9.88 9.88-1.42 1.42M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8Z"/></svg></button>
     </div>
   </header>
@@ -45,7 +48,7 @@
         <svg class="topographic" viewBox="0 0 900 520" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="1.2"><path d="M-40 440Q130 210 270 320T570 270 950 70"/><path d="M-40 470Q130 240 270 350T570 300 950 100"/><path d="M-40 500Q130 270 270 380T570 330 950 130"/><path d="M-40 410Q130 180 270 290T570 240 950 40"/><path d="M-40 380Q130 150 270 260T570 210 950 10"/><path d="M-40 350Q130 120 270 230T570 180 950 -20"/><path d="M-40 320Q130 90 270 200T570 150 950 -50"/></g></svg>
         <div class="mist mist-one"></div><div class="mist mist-two"></div>
         <div class="hero-chips"><span class="chip"><i class="dot-live"></i><span data-i18n="govBadge">محافظة إب • الجمهورية اليمنية</span></span><span class="chip" id="greetingChip">صباح الخير</span><span class="chip" id="saveStatusChip">محفوظ على هذا الجهاز</span></div>
-        <h1 class="hero-title" data-i18n="heroTitle">دليل مديرية حبيش</h1>
+        <h1 class="hero-title" data-i18n="heroTitle">دليل حبيش الذكي</h1>
         <p class="hero-desc" data-i18n="heroDesc">موسوعة جغرافية وتاريخية لعزل حبيش وقراها ومعالمها ومجتمعها.</p>
         <div class="terrain-strip"><span class="terrain-icon"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m2 20 7-12 4 7 3-5 6 10H2ZM9 8l2-4 3 5"/></svg></span><div><strong>جبال إب الغربية</strong><small>إحداثيات تقريبية 14°07′N · 44°05′E</small></div><b>1,550–2,450 م</b></div>
         <label class="search-box"><span aria-hidden="true">⌕</span><input id="globalSearchInput" class="search-input" type="search" placeholder="ابحث عن عزلة أو قرية أو حصن أو حدث..."><button class="mic-btn" id="globalMicBtn" type="button" aria-label="بحث صوتي"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="2.5" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3m-4 0h8"/></svg></button></label>
@@ -86,7 +89,7 @@
         <p class="small muted note">حساب فلكي تقريبي لإحداثيات حبيش. قد تختلف الدقائق عن تقويم المسجد المحلي.</p>
       </section>
 
-      <section class="two-feature-grid"><article class="fact-card"><span class="tag tag-gold" id="heritageWisdomLabel">من تراث وحكمة حبيش</span><p id="didYouKnow" class="fact-copy">تضم مديرية حبيش 22 عزلة وفق قائمة الدليل.</p><button class="text-action" id="nextFactBtn">معلومة أخرى</button></article><article class="spotlight-card"><span class="tag">معلم مختار اليوم</span><div id="spotlightContainer"></div></article></section>
+      <section class="two-feature-grid"><article class="fact-card"><span class="tag tag-gold" id="heritageWisdomLabel">اكتشاف اليوم من حبيش</span><p id="didYouKnow" class="fact-copy">تضم مديرية حبيش 22 عزلة وفق قائمة الدليل.</p><button class="text-action" id="nextFactBtn">معلومة أخرى</button></article><article class="spotlight-card"><span class="tag">معلم مختار اليوم</span><div id="spotlightContainer"></div></article></section>
       <section class="image-gallery-section" aria-labelledby="imageGalleryTitle">
         <div class="section-heading-inline"><div><h2 class="section-title" id="imageGalleryTitle">صور حبيش ومحافظة إب</h2><p class="section-sub">الصور موسومة بمصدرها؛ صور إب الإقليمية لا تمثل موقعاً محدداً داخل حبيش.</p></div><span class="tag tag-gold">معرض موثق</span></div>
         <div class="photo-gallery-grid">
@@ -130,11 +133,13 @@
 
     <section id="view-more" class="view-section">
       <div class="section-header"><h2 class="section-title" data-i18n="navMore">المزيد</h2><p class="section-sub">مجتمع حبيش، الأعلام، المراجع، الاختبار والمساهمات</p></div>
+      <article class="item-card hub-panel"><h3 class="item-title">المساعد الذكي</h3><p class="item-body">اسأل عن المعالم والعزل والتاريخ والمصادر.</p>  <button class="btn-primary" id="openAiBtn" aria-label="فتح مساعد دليل حبيش"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m12 2 2.4 7.6L22 12l-7.6 2.4L12 22l-2.4-7.6L2 12l7.6-2.4L12 2Z"/></svg></button></article>
+      <div class="smart-tool-grid"><article class="smart-tool-card"><h3>مسارات حبيش المقترحة</h3><p>مسارات موضوعية من العناصر المنشورة في الموسوعة، وليست تعليمات ملاحة ميدانية.</p><div id="itineraryList" class="itinerary-list"></div></article><article class="smart-tool-card"><h3>المقارن الذكي</h3><p>قارن بين حصنين أو معلمين وفق البيانات المتاحة في الدليل.</p><div class="compare-controls"><label>المعلم الأول<select id="comparePlaceA" class="input-field"></select></label><label>المعلم الثاني<select id="comparePlaceB" class="input-field"></select></label><button id="comparePlacesBtn" type="button" class="btn-secondary">قارن المعلمين</button></div><div id="compareResult" aria-live="polite"></div></article></div>
       <article class="community-card hub-community"><div class="community-icon"><svg viewBox="0 0 24 24" role="img" aria-label="Facebook official logo" focusable="false"><title>Facebook</title><circle cx="12" cy="12" r="12" fill="#0866FF"/><path fill="#FFFFFF" d="M13.4 21v-8.2h2.8l.4-3.2h-3.2V7.5c0-.9.3-1.6 1.6-1.6h1.7V3.1c-.3 0-1.4-.1-2.6-.1-2.6 0-4.4 1.6-4.4 4.6v2H6.8v3.2h2.9V21h3.7Z"/></svg></div><div class="community-copy">
         <span class="tag tag-gold" id="communityTag">مجتمع حبيش • +11,068 عضو وفق بيانات المشروع</span><h3 id="communityTitle">مديرية حبيش HUBAISH DISTRICT</h3><p id="communityDesc">مساحة لأبناء حبيش لمشاركة الأخبار والصور والذاكرة المحلية.</p>
         <div class="card-actions"><a class="btn-primary" id="communityJoinLink" href="https://www.facebook.com/share/g/1JMCzDUsdZ/" target="_blank" rel="noopener noreferrer">انضم إلى المجتمع</a><button class="btn-sm" id="copyCommunityBtn">نسخ الرابط</button><button class="btn-sm" id="editCommunityBtn">تعديل الرابط</button></div>
       </div></article>
-      <article class="item-card hub-panel"><div class="item-meta"><span class="tag tag-gold">HUBAISH EXPLORER</span><span class="muted small" id="lastSavedAt">لم يُسجل وقت الحفظ بعد</span></div><h3 class="item-title" id="explorerTitle">تقدم استكشاف الموسوعة</h3><progress id="moreExplorerProgressMeter" data-explorer-progress-meter class="explorer-progress-meter" max="100" value="0"></progress><strong id="moreExplorerProgressText" data-explorer-progress-text>0%</strong><p id="moreExplorerProgressMeta" data-explorer-progress-meta class="item-body">استكشف المعالم والعزل والمحطات التاريخية.</p><span id="explorerDesc" hidden>استكشف المعالم والعزل والمحطات التاريخية.</span><button id="moreRandomTourBtn" data-random-tour class="btn-secondary">اقترح لي محطة استكشاف</button></article>
+      <article class="item-card hub-panel"><div class="item-meta"><span class="tag tag-gold">HUBAISH EXPLORER</span><span class="muted small" id="lastSavedAt">لم يُسجل وقت الحفظ بعد</span></div><h3 class="item-title" id="explorerTitle">تقدم استكشاف الموسوعة</h3><progress id="moreExplorerProgressMeter" data-explorer-progress-meter class="explorer-progress-meter" max="100" value="0"></progress><strong id="moreExplorerProgressText" data-explorer-progress-text>0%</strong><p id="moreExplorerProgressMeta" data-explorer-progress-meta class="item-body">استكشف المعالم والعزل والمحطات التاريخية.</p><div class="explorer-rank-row"><strong class="explorer-rank" data-explorer-rank>مستكشف مبتدئ</strong><button id="explorerBadgeShare" type="button" class="btn-sm">مشاركة الوسام</button></div><span id="explorerDesc" hidden>استكشف المعالم والعزل والمحطات التاريخية.</span><button id="moreRandomTourBtn" data-random-tour class="btn-secondary">اقترح لي محطة استكشاف</button></article>
       <article class="item-card hub-panel"><h3 class="item-title" id="peopleSectionTitle">أعلام وشخصيات مرتبطة بحبيش ومخلاف وحاظة</h3><div id="peopleList" class="people-grid"></div></article>
       <article class="item-card hub-panel"><h3 class="item-title" id="referencesSectionTitle">مكتبة المراجع والمصادر</h3><div id="referenceList" class="reference-list"></div></article>
       <article class="item-card hub-panel"><h3 class="item-title" id="quizSectionTitle">تحدي معلوماتك عن حبيش</h3><div id="quizArea"></div></article>
@@ -142,59 +147,18 @@
       <article class="item-card hub-panel"><h3 class="item-title" id="contributionSectionTitle">ساهم في إثراء الموسوعة</h3><p class="item-body">اقترح معلومة أو صحح اسماً أو أرسل وصفاً. تحفظ المساهمة على هذا الجهاز؛ يراجعها المشرف ثم ينشرها عبر GitHub CMS.</p>
         <form id="contributionForm" class="admin-form"><input id="contribName" class="input-field" maxlength="70" placeholder="اسمك (اختياري)"><select id="contribType" class="input-field"><option value="place">معلم أو موقع</option><option value="history">معلومة تاريخية</option><option value="uzal">عزلة أو قرية</option><option value="correction">تصحيح معلومة</option><option value="person">شخصية أو علم</option></select><input id="contribTitle" class="input-field" maxlength="100" required placeholder="عنوان المساهمة"><textarea id="contribBody" class="input-field" rows="4" maxlength="1600" required placeholder="التفاصيل والمصدر إن وجد"></textarea><input id="contribSource" class="input-field" maxlength="350" placeholder="رابط أو مرجع يدعم المعلومة"><button class="btn-primary" type="submit">إرسال للمراجعة</button></form>
       </article>
-      <article class="item-card admin-card hub-panel">
-        <h3 class="item-title" id="adminSectionTitle">النسخ الاحتياطي المحلي</h3>
-        <p class="small muted" id="localAdminDisclaimer">تُستخدم هذه الأدوات لتصدير واستعادة نسخة من بيانات هذا الجهاز. الإضافات والتعديلات المشتركة تُنشر من لوحة GitHub JSON CMS.</p>
-        <div class="admin-actions"><button class="btn-sm" id="adminPanelToggle">فتح أدوات النسخ الاحتياطي</button><span class="muted small">جلسة محلية</span></div>
-        <form id="adminAuthGate" class="admin-gate hidden"><label for="adminPinEntry" id="adminPinPrompt">أدخل رمز الإشراف المحلي</label><input id="adminPinEntry" class="input-field" type="password" inputmode="numeric" autocomplete="current-password" maxlength="12" required><button class="btn-primary" id="adminUnlockBtn" type="submit">فتح الأدوات</button></form>
-        <div id="adminPanel" class="admin-panel hidden">
-          <div class="admin-lockbar"><span class="small muted">النسخ الاحتياطي على هذا الجهاز</span><button id="adminLockBtn" class="btn-sm" type="button">قفل الأدوات</button></div>
-          <form id="adminPinChangeForm" class="admin-form"><h4>تغيير رمز القفل المحلي</h4><input id="adminCurrentPin" class="input-field" type="password" inputmode="numeric" required><input id="adminNewPin" class="input-field" type="password" inputmode="numeric" minlength="4" maxlength="12" required><input id="adminConfirmPin" class="input-field" type="password" inputmode="numeric" minlength="4" maxlength="12" required><button class="btn-secondary" type="submit">حفظ الرمز الجديد</button></form>
-          <section class="item-card"><h4 class="item-title">نسخة التطبيق وبيانات GitHub CMS</h4><p class="small muted">يتضمن التصدير بيانات الجهاز ونسخة JSON الحالية من GitHub CMS. استعادة بيانات CMS تحتاج تسجيل دخول صالحاً في لوحة GitHub أولاً.</p><div class="card-actions"><button class="btn-sm" id="exportJsonBtn" type="button">تصدير Backup JSON</button><label class="btn-sm file-label">استيراد Backup JSON<input id="importJsonInput" type="file" accept="application/json,.json"></label></div></section>
-        </div>
-      </article>
-
+      <article class="item-card hub-panel privacy-policy"><details><summary id="privacyPolicyTitle">سياسة الخصوصية</summary><p id="privacyPolicyText">يحفظ التطبيق المفضلة وتقدم الاستكشاف وإعدادات القراءة على جهازك. يعمل المحتوى المخزن دون اتصال. عند دخول المشرف تُحفظ جلسة المصادقة في تخزين الجلسة أو التخزين المحلي عند تفعيل «تذكرني». ترسل عمليات النشر إلى Cloudflare Worker ثم إلى GitHub. وتستخدم خدمة MyMemory الخارجية فقط عند طلب إكمال ترجمة المحتوى. وقد تُحمّل الصور من نطاقات مصادرها وتُخزن نسخ مؤقتة منها للعمل دون اتصال. لا تضع كلمات المرور أو مفاتيح الوصول في رسائل المساهمة أو محتوى الموسوعة.</p></details></article>
       <article class="item-card cloud-admin-card hub-panel" id="cloudAdminCard">
-        <div class="cloud-card-heading"><div><span class="tag tag-gold">GITHUB JSON CMS</span><h3 class="item-title">إدارة الموسوعة المنشورة</h3><p class="item-body">يُحفظ المحتوى في ملف JSON داخل المستودع، ويُحمّل للزوار دون تسجيل دخول. الكتابة متاحة للمشرف فقط.</p></div><span class="cloud-status-pill" id="cloudStatus">يجري تحميل آخر نسخة من GitHub...</span></div>
+        <div class="cloud-card-heading"><div><span class="tag tag-gold">HUBAISH SMART GUIDE</span><h3 class="item-title">بوابة المشرفين الذكية</h3><p class="item-body">إدارة المحتوى والحسابات والنسخ الاحتياطي عبر Worker بصلاحيات محددة.</p></div><span class="cloud-status-pill" id="cloudStatus">يجري تحميل آخر نسخة من GitHub...</span></div>
         <div id="cloudAdminLoginArea" class="cloud-login-area">
-          <section id="workerSetupArea" class="cloud-editor">
-            <h4 class="item-title">تأسيس النظام لأول مرة (Setup)</h4>
-            <p class="small muted">يظهر هذا النموذج فقط قبل إنشاء أول حساب مشرف في Worker. بعد التأسيس سيختفي تلقائياً.</p>
-            <form id="workerSetupForm" class="cloud-login-grid">
-              <input id="workerBootstrapKey" class="input-field" type="password" placeholder="مفتاح التأسيس Bootstrap Key" autocomplete="off" required>
-              <input id="workerSetupUsername" class="input-field" type="text" placeholder="اسم المشرف العام Username" autocomplete="username" required>
-              <input id="workerSetupPassword" class="input-field" type="password" placeholder="كلمة المرور الجديدة (12 حرفاً على الأقل)" minlength="12" autocomplete="new-password" required>
-              <button class="btn-primary" type="submit">إنشاء حساب المشرف العام وتفعيل الربط</button>
-            </form>
-            <details class="cloud-editor">
-              <summary>إعدادات متقدمة · عنوان خادم التأسيس</summary>
-              <input id="workerSetupEndpoint" class="input-field" type="url" value="https://hubaish-cms.baraagpt6.workers.dev" placeholder="https://hubaish-cms.baraagpt6.workers.dev" autocomplete="url">
-              <p class="small muted">يستخدم النظام خادم Cloudflare الافتراضي تلقائياً. غيّر العنوان فقط عند نقل الخدمة.</p>
-            </details>
-            <p id="workerSetupStatus" class="small muted">يجري التحقق تلقائياً من خادم التأسيس.</p>
-          </section>
-          <h4 class="item-title">دخول المشرفين عبر الوسيط الآمن</h4>
-          <p class="small muted">أدخل اسم المستخدم وكلمة المرور. يتصل التطبيق بخادم Cloudflare تلقائياً.</p>
+          <h4 class="item-title">بوابة المشرفين الذكية</h4>
+          <p class="small muted">دخول المشرفين المعتمدين عبر خادم Cloudflare. لا تظهر أدوات التحرير للزوار.</p>
           <form id="workerLoginForm" class="cloud-login-grid">
-            <input id="workerUsername" class="input-field" type="text" placeholder="اسم المستخدم" autocomplete="username" required>
+            <input id="workerUsername" class="input-field" type="text" placeholder="اسم المستخدم" autocomplete="username" autocapitalize="none" spellcheck="false" required>
             <input id="workerPassword" class="input-field" type="password" placeholder="كلمة المرور" autocomplete="current-password" required>
-            <label class="small"><input id="workerRemember" type="checkbox"> تذكرني على هذا الجهاز لمدة 30 يوماً</label>
+            <label class="small"><input id="workerRemember" type="checkbox"> تذكرني لمدة 30 يوماً</label>
             <button class="btn-primary" type="submit">دخول آمن</button>
           </form>
-          <details class="cloud-editor">
-            <summary>إعدادات متقدمة · عنوان خادم تسجيل الدخول</summary>
-            <input id="workerEndpoint" class="input-field" type="url" value="https://hubaish-cms.baraagpt6.workers.dev" placeholder="https://hubaish-cms.baraagpt6.workers.dev" autocomplete="url">
-            <p class="small muted">يستخدم النظام خادم Cloudflare الافتراضي تلقائياً. غيّر العنوان فقط عند نقل الخدمة.</p>
-          </details>
-          <details class="cloud-editor"><summary>الدخول المباشر الاحتياطي باستخدام GitHub Token</summary>
-            <form id="cloudAdminForm" class="cloud-login-grid">
-              <input id="cloudAdminPassword" class="input-field" type="password" placeholder="GitHub Personal Access Token" autocomplete="off" autocapitalize="off" spellcheck="false" required>
-              <label class="small"><input id="cloudTokenRemember" type="checkbox"> تذكر GitHub Token على هذا الجهاز في localStorage</label>
-              <button class="btn-primary" type="submit">التحقق وفتح اللوحة مباشرة</button>
-            </form>
-            <p class="small muted">يظل الرمز في ذاكرة الصفحة فقط ولا يُحفظ على الجهاز.</p>
-            <p class="small"><a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener noreferrer">إنشاء Fine-grained Token</a></p>
-          </details>
         </div>
         <div id="cloudAdminPanel" class="hidden">
           <div class="cloud-admin-top"><strong id="cloudAdminIdentity"></strong><div class="card-actions"><button class="btn-sm" id="cloudRefreshBtn" type="button">قراءة آخر نسخة</button><button class="btn-sm" id="cloudAdminLogoutBtn" type="button">تسجيل الخروج</button></div></div>
@@ -217,7 +181,7 @@
               <button class="btn-primary" type="submit">إضافة مشرف</button>
             </form>
             <div id="cloudAdminUsersList" class="cloud-list"></div>
-            <h4 class="item-title">سجل التعديلات</h4><div id="cloudAuditList" class="cloud-list"></div>
+            <h4 class="item-title">سجل التدقيق</h4><div id="cloudAuditList" class="cloud-list"></div><div class="cloud-backup-tools"><h4 class="item-title">النسخ الاحتياطي</h4><div class="card-actions"><button class="btn-sm" id="exportJsonBtn" type="button">تصدير نسخة كاملة</button><label class="btn-sm file-label">استعادة نسخة<input id="importJsonInput" type="file" accept="application/json,.json"></label></div></div>
           </section>
           <p class="small muted">اختر سجلاً لتعديله. السجلات الأساسية لا تُحذف؛ حذف تعديلها يعيد النص الأصلي. الإضافات والقرى والروابط المضافة يمكن حذفها.</p>
           <section id="cloudContentEditor" class="cloud-editor"><h4 class="item-title">إضافة أو تعديل محتوى منشور</h4>
@@ -242,12 +206,12 @@
           </section>
           <section class="cloud-manager-section"><h4 class="item-title">إدارة المحتوى المنشور</h4><div id="cloudContentList" class="cloud-list"><p class="empty-state">يجري تحميل القائمة...</p></div></section>
         </div>
-        <p class="cloud-security-note">يحتاج النشر إلى اتصال بالإنترنت ورمز صالح. رمز المشرف لا يُرفع داخل بيانات JSON ولا يُرسل إلا إلى GitHub API. عرض المحتوى العام لا يحتاج إلى رمز.</p>
+        <p class="cloud-security-note">جلسات المشرفين تمر عبر Cloudflare Worker. لا يُحفظ GitHub Token في التطبيق ولا تظهر أدوات الإدارة للزوار.</p>
       </article>
     </section>
   </main>
 
-  <button class="ai-fab" id="openAiBtn" aria-label="فتح مساعد دليل حبيش"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m12 2 2.4 7.6L22 12l-7.6 2.4L12 22l-2.4-7.6L2 12l7.6-2.4L12 2Z"/></svg></button>
+
   <nav class="bottom-nav" aria-label="التنقل الرئيسي">
     <button class="nav-btn active" data-tab="home"><svg class="nav-icon" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path d="m3 10 9-7 9 7M5 9v12h14V9M9 21v-7h6v7"/></svg><span data-i18n="navHome">الرئيسية</span></button>
     <button class="nav-btn" data-tab="history"><svg class="nav-icon" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4h12v17H7a3 3 0 0 1 0-6h12M7 15V4a3 3 0 0 0-3-3"/></svg><span data-i18n="navHistory">التاريخ</span></button>
