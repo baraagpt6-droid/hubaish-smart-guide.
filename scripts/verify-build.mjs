@@ -166,7 +166,7 @@ if (!html.includes('27 كم في مقدمة النص') && !html.includes('42 ك�
 if (!html.includes('id="imageLightbox"') || !html.includes('data-lightbox-src') ||
     !app.includes('photo.loading') || !sw.includes('REMOTE_IMAGE_HOSTS') ||
     !sw.includes('icons/apple-touch-icon.png') || !sw.includes('icons/photo-fallback.svg') ||
-    !sw.includes('hubaish-guide-v3.7.0')) {
+    !sw.includes('hubaish-guide-v3.8.0')) {
   throw new Error('Image lazy loading, lightbox or offline image caching is incomplete.');
 }
 if (!app.includes("market: 'M3 10h18l-2-6H5l-2 6Z") ||
@@ -277,13 +277,19 @@ const historyEnd = catalog.indexOf('const HISTORY_BODY=', historyStart);
 const historyBlock = historyStart >= 0 && historyEnd > historyStart ? catalog.slice(historyStart, historyEnd) : '';
 if ([...historyBlock.matchAll(/\bh[1-7]:\{/g)].length !== 7) throw new Error('The seven history milestones are incomplete.');
 
+if (!html.includes('aria-label="Facebook official logo"') ||
+    !html.includes('<circle cx="12" cy="12" r="12" fill="#0866FF"/>') ||
+    !html.includes('fill="#FFFFFF" d="M13.4 21v-8.2') ||
+    !css.includes('.community-icon svg{display:block;width:48px;height:48px')) {
+  throw new Error('Facebook community mark must use the blue-circle and white-f SVG treatment.');
+}
 if (!css.includes('--bg:#08100d') || !css.includes('--gold:#d4af37') || !css.includes('--green:#34d399')) {
   throw new Error('Expected theme tokens are missing.');
 }
 if (!css.includes('left:16px!important') || !css.includes('width:46px!important') || !css.includes('right:auto!important')) {
   throw new Error('The assistant button must remain fixed at left:16px.');
 }
-if (!sw.includes('hubaish-guide-v3.7.0') || !sw.includes("'github-cms.js'") ||
+if (!sw.includes('hubaish-guide-v3.8.0') || !sw.includes("'github-cms.js'") ||
     !sw.includes("'data/live-content.json'") || !sw.includes("event.data?.type === 'SKIP_WAITING'") ||
     sw.includes('supabase')) throw new Error('Offline app shell does not include the GitHub CMS or live JSON file.');
 if (!workflow.includes('actions/deploy-pages@v4') || !workflow.includes('assembleDebug') ||
