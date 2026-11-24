@@ -9,7 +9,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: hubaish-guide-deploy
+  group: hubaish-guide-deploy-worker-url-fix
   cancel-in-progress: true
 
 jobs:
