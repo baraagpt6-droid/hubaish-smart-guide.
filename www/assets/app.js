@@ -716,7 +716,7 @@ function bindEvents() {
   document.getElementById('openAiBtn').addEventListener('click', () => openModal('aiModal'));
   document.getElementById('aiForm').addEventListener('submit', event => { event.preventDefault(); sendAiMessage(); });
   document.getElementById('openAiBtn').addEventListener('keydown', event => { if (event.key === 'Enter') openModal('aiModal'); });
-  document.getElementById('addPlaceSaveBtn').addEventListener('click', handleAddPlace);
+  document.getElementById('addPlaceSaveBtn')?.addEventListener('click', handleAddPlace);
   // Social administration is handled by the extended local admin panel.
   // Full-state JSON export is handled by the extended feature layer.
   // Full-state JSON import is handled by the extended feature layer.
