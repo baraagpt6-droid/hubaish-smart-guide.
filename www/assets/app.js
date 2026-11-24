@@ -321,7 +321,12 @@ function createContentCard(item, options = {}) {
   const actions = element('div', 'card-actions');
   const favButton = createAction(isSaved(item.id) ? 'محفوظ' : 'حفظ', 'favId', item.id);
   if (isSaved(item.id)) favButton.classList.add('saved');
-  actions.append(favButton, createAction('اسأل المساعد', 'ask', view.title), createAction('التفاصيل', 'detail', item.id));
+  actions.append(
+    favButton,
+    createAction('مشاركة', 'share', item.id),
+    createAction('اسأل المساعد', 'ask', view.title),
+    createAction('التفاصيل', 'detail', item.id)
+  );
   card.append(actions);
   return card;
 }
@@ -329,9 +334,14 @@ function createContentCard(item, options = {}) {
 function renderSpotlight() {
   const target = document.getElementById('spotlightContainer');
   target.replaceChildren();
-  const place = state.places[0];
-  if (!place) return appendEmpty(target, 'لا توجد معالم مسجلة.');
-  target.append(createContentCard(place, { meta: place.loc, extraMeta: 'معلم بارز' }));
+  const candidates = [...state.places, ...state.history];
+  if (!candidates.length) return appendEmpty(target, 'لا توجد محطات مسجلة.');
+  const date = getYemenDateParts();
+  const day = dayOfYear(date.year, date.month, date.day);
+  const item = candidates[day % candidates.length];
+  const isHistory = state.history.some(entry => entry.id === item.id);
+  const meta = isHistory ? (item.period || 'محطة تاريخية') : (item.loc || 'معلم من حبيش');
+  target.append(createContentCard(item, { meta, extraMeta: 'محطة اليوم' }));
 }
 
 function renderHistory(era = currentEra, query = '') {
@@ -770,6 +780,24 @@ function bindEvents() {
     if (explored) window.HubaishFeatures?.markExplored?.(explored.dataset.exploreId, explored.dataset.exploreKind);
     const fav = event.target.closest('[data-fav-id]');
     if (fav) toggleFavorite(fav.dataset.favId);
+    const share = event.target.closest('[data-share]');
+    if (share) {
+      const item = findDirectoryItem(share.dataset.share);
+      if (item) {
+        const url = item.sourceUrl && validHttpUrl(item.sourceUrl) ? item.sourceUrl : location.href;
+        const text = [item.title, item.period || item.loc || '', item.body, item.source || ''].filter(Boolean).join('\n');
+        if (navigator.share) {
+          navigator.share({ title: item.title, text, url }).catch(() => {});
+        } else if (navigator.clipboard?.writeText) {
+          navigator.clipboard.writeText(text + '\n' + url)
+            .then(() => showToast('تم نسخ بطاقة المشاركة.'))
+            .catch(() => showToast(text + '\n' + url));
+        } else {
+          showToast(text + '\n' + url);
+        }
+      }
+      return;
+    }
     const detail = event.target.closest('[data-detail]');
     if (detail) window.HubaishFeatures?.showDetail?.(detail.dataset.detail);
     const ask = event.target.closest('[data-ask]');
