@@ -6,6 +6,7 @@ import { fileURLToPath } from 'node:url';
 const root = resolve(fileURLToPath(new URL('../', import.meta.url)));
 const required = [
   'www/index.html', 'www/styles.css', 'www/app.js', 'www/features.js', 'www/sw.js',
+  'www/assets/styles.css', 'www/assets/app.js', 'www/assets/features.js',
   'www/manifest.json', 'www/manifest.webmanifest', 'www/icons/icon.svg',
   'www/icons/icon-192.png', 'www/icons/icon-512.png', 'capacitor.config.json',
   'scripts/serve.mjs', '.github/workflows/build-and-deploy.yml'
@@ -17,6 +18,11 @@ const app = await readFile(resolve(root, 'www/app.js'), 'utf8');
 const features = await readFile(resolve(root, 'www/features.js'), 'utf8');
 const css = await readFile(resolve(root, 'www/styles.css'), 'utf8');
 const sw = await readFile(resolve(root, 'www/sw.js'), 'utf8');
+const appAsset = await readFile(resolve(root, 'www/assets/app.js'), 'utf8');
+const featuresAsset = await readFile(resolve(root, 'www/assets/features.js'), 'utf8');
+const cssAsset = await readFile(resolve(root, 'www/assets/styles.css'), 'utf8');
+if (appAsset !== app || featuresAsset !== features || cssAsset !== css) throw new Error('Duplicate public assets in www/assets must exactly match the root app files');
+
 const manifest = JSON.parse(await readFile(resolve(root, 'www/manifest.webmanifest'), 'utf8'));
 const manifestJson = JSON.parse(await readFile(resolve(root, 'www/manifest.json'), 'utf8'));
 const capacitor = JSON.parse(await readFile(resolve(root, 'capacitor.config.json'), 'utf8'));
