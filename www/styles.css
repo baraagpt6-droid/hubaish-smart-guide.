@@ -384,3 +384,9 @@ body{padding-bottom:calc(88px + env(safe-area-inset-bottom,0px))}
 @media(max-width:390px){.brand-text strong{font-size:12px}.brand-text small{font-size:9px;max-width:31vw}.topbar{gap:5px;padding-inline:9px}}
 @media(max-width:540px){.smart-tool-grid{grid-template-columns:1fr}}
 @media(prefers-reduced-motion:reduce){.app-splash-inner,.app-splash img{animation:none!important}.app-splash{transition:none}}
+
+.reading-settings .card-actions{display:flex;gap:7px;flex-wrap:wrap}
+.reading-settings button{min-width:92px}
+.cloud-row-actions{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.cloud-row-actions .input-field{width:auto;min-width:112px;min-height:34px}
+@media(max-width:520px){.cloud-row-actions{width:100%}.cloud-row-actions .input-field{flex:1}.cloud-admin-row{flex-wrap:wrap}}
