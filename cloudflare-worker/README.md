@@ -7,7 +7,7 @@ This Worker protects the administration endpoints for the GitHub JSON CMS at `ww
 - KV namespace: `hubaish-admins`
 - KV binding name expected by the code: `ADMINS`
 
-The Worker stores administrator records, password hashes, login throttling counters and audit events in Cloudflare KV. The GitHub token remains in Cloudflare Secrets. Published content remains in the GitHub JSON file.
+The Worker stores administrator records, password hashes, login throttling counters and audit events in Cloudflare KV. The GitHub token remains in Cloudflare Secrets. Published content remains in the GitHub JSON file. The frontend has no direct GitHub-token sign-in path.
 
 ## 1. Confirm the KV binding in Cloudflare
 
@@ -57,26 +57,28 @@ https://hubaish-cms.baraagpt6.workers.dev
 
 ## 4. Create the first super administrator
 
-Open the published app and open **المزيد → إدارة الموسوعة المنشورة**. The frontend fills the Worker URL above automatically and checks `GET /setup/status`.
+Before first setup, confirm the Production Worker has the `ADMINS` KV binding and temporarily add the `BOOTSTRAP_KEY` secret. The application checks `GET /setup/status` automatically.
 
-While no administrator exists in KV, use **تأسيس النظام لأول مرة (Setup)**. Enter:
+When KV contains no administrator and `BOOTSTRAP_KEY` is configured, the app displays a one-time setup form under **More → Smart Admin Gateway**. Enter:
 
-- The one-time `BOOTSTRAP_KEY`
+- The temporary `BOOTSTRAP_KEY`
 - A username
 - A password of at least 12 characters
 
-The app sends `POST /setup`, creates the first `super_admin` in KV, saves the Worker URL and signs in.
+The app sends `POST /setup`, creates the first `super_admin` in KV, then signs in through `POST /auth/login` and verifies the session with `GET /auth/me`.
 
-Immediately after successful setup, remove the `BOOTSTRAP_KEY` secret from Worker settings.
+Immediately after successful setup, remove the `BOOTSTRAP_KEY` secret from the Production Worker. The admin panel displays a reminder while that secret remains configured.
+
+If `/api/health` reports `ADMINS binding missing`, do not retry setup. Open **Workers & Pages → hubaish-cms → Settings → Bindings** and bind the `hubaish-admins` namespace to the variable name `ADMINS` in the Production environment.
 
 ## 5. Use the administration panel
 
-Administrators sign in using the Worker URL, username and password. Enable **Remember me** only on a device you control. Remembered sessions last up to 30 days; other sessions last up to 8 hours.
+Administrators sign in with their Worker username and password. The Worker URL is built into the application; the login form does not accept a custom endpoint or a GitHub token. Enable **Remember me** only on a device you control. Remembered sessions last up to 30 days; other sessions last up to 8 hours.
 
-- `super_admin`: publish content, create or disable administrator accounts, and view the audit log.
+- `super_admin`: publish content, create, update or delete administrator accounts, view the audit log and restore the shared content backup.
 - `editor`: publish CMS content but cannot manage administrator accounts.
 
-The direct GitHub Personal Access Token login remains available as an emergency fallback.
+The frontend uses Worker sessions only. GitHub credentials remain in Cloudflare Worker Secrets and are never entered in the browser.
 
 ## Worker endpoints
 
@@ -86,7 +88,7 @@ The direct GitHub Personal Access Token login remains available as an emergency 
 - `POST /auth/login` — username/password login.
 - `GET /auth/me` — validate the current session.
 - `PUT /content` — publish validated CMS JSON to GitHub `main`.
-- `GET /admin/users`, `POST /admin/users`, `PATCH /admin/users` — manage administrator accounts.
+- `GET /admin/users`, `POST /admin/users`, `PATCH /admin/users`, `PUT /admin/users`, `DELETE /admin/users`, `POST /admin/users/password` — manage administrator accounts.
 - `GET /admin/audit` — read the latest audit events.
 
 A Cloudflare KV binding named `ADMINS` and the secrets `GITHUB_TOKEN`, `SESSION_SECRET` and (only during first setup) `BOOTSTRAP_KEY` are required. This design uses Workers and KV; usage remains subject to Cloudflare's plan limits and current service terms.
