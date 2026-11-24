@@ -21,6 +21,10 @@ jobs:
       id-token: write
     steps:
       - uses: actions/checkout@v4
+      - name: Install SVG icon renderer
+        run: sudo apt-get update && sudo apt-get install -y python3-cairosvg python3-pil
+      - name: Generate PWA and favicon icons
+        run: python3 scripts/generate-icons.py
       - uses: actions/setup-node@v4
         with:
           node-version: 22
@@ -57,6 +61,10 @@ jobs:
       signed: ${{ steps.apk.outputs.signed }}
     steps:
       - uses: actions/checkout@v4
+      - name: Install SVG icon renderer
+        run: sudo apt-get update && sudo apt-get install -y python3-cairosvg python3-pil
+      - name: Generate PWA and favicon icons
+        run: python3 scripts/generate-icons.py
       - uses: actions/setup-node@v4
         with:
           node-version: 22
@@ -73,6 +81,8 @@ jobs:
         run: npm run build
       - name: Add Android platform
         run: npx cap add android
+      - name: Apply Hubaish launcher icons
+        run: python3 scripts/apply-android-icons.py
       - name: Sync Capacitor
         run: npx cap sync android
       - name: Set Android version and build APK
