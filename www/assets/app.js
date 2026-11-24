@@ -293,7 +293,31 @@ function createContentCard(item, options = {}) {
   meta.append(heritageIcon(isHistory ? 'scroll' : (item.cat || 'fort')), makeTag(options.meta || genericMeta, true));
   meta.append(makeTag(category, false));
   if (options.extraMeta) meta.append(makeTag(options.extraMeta));
-  card.append(meta, element('h3', 'item-title', view.title), element('p', 'item-body', view.body));
+  card.append(meta);
+  if (item.imageUrl && validHttpUrl(item.imageUrl)) {
+    const figure = element('figure', 'content-photo');
+    const photo = element('img', 'content-photo-image');
+    photo.src = item.imageUrl;
+    photo.alt = cleanText(item.imageAlt || view.title, 180);
+    photo.loading = 'lazy';
+    photo.decoding = 'async';
+    photo.referrerPolicy = 'no-referrer';
+    photo.dataset.lightboxSrc = item.imageUrl;
+    photo.dataset.lightboxAlt = photo.alt;
+    photo.addEventListener('error', () => figure.classList.add('photo-unavailable'), { once: true });
+    figure.append(photo);
+    if (item.imageCredit) {
+      const credit = element('figcaption', 'photo-credit', item.imageCredit);
+      if (item.imageSourceUrl && validHttpUrl(item.imageSourceUrl)) {
+        const link = element('a', 'photo-credit-link', 'المصدر');
+        link.href = item.imageSourceUrl; link.target = '_blank'; link.rel = 'noopener noreferrer'; link.referrerPolicy = 'no-referrer';
+        credit.append(' · ', link);
+      }
+      figure.append(credit);
+    }
+    card.append(figure);
+  }
+  card.append(element('h3', 'item-title', view.title), element('p', 'item-body', view.body));
   const actions = element('div', 'card-actions');
   const favButton = createAction(isSaved(item.id) ? 'محفوظ' : 'حفظ', 'favId', item.id);
   if (isSaved(item.id)) favButton.classList.add('saved');
@@ -465,12 +489,19 @@ function renderGlobalSearch(query) {
   const matchedUzal = directoryNames.filter(name => normalizeArabic(name).includes(needle)).map((name, index) => ({ title: `عزلة ${name}`, body: 'إحدى العزل المدرجة ضمن قائمة مديرية حبيش. التفاصيل القروية بحاجة إلى توثيق ميداني.', id: `uzal-search-${index}` }));
   const matchedPeople = (window.HubaishFeatures?.getPeople?.() || []).filter(item => normalizeArabic(`${item.title} ${item.body}`).includes(needle)).map(item => ({title:item.title,body:item.body,id:`person-${normalizeArabic(item.title)}`}));
   const refs = [{title:'التعداد السكاني 2004',body:'105,998 نسمة وفق المركز الوطني للمعلومات اليمني.'},{title:'مساحة المديرية',body:'228 كم² في بيانات OCHA/Local Governance، مع وجود مرجع محلي ينشر 330 كم².'},{title:'التقسيم الإداري',body:'مديرية حبيش تضم 22 عزلة وفق المركز الوطني للمعلومات.'}].filter(item=>normalizeArabic(`${item.title} ${item.body}`).includes(needle)).map((item,index)=>({...item,id:`ref-${index}`}));
-  const all = [...matchedPlaces, ...matchedHistory, ...matchedUzal, ...matchedPeople, ...refs].slice(0, 20);
+  const groups = [
+    {label:'المعالم',kind:'landmark',items:matchedPlaces},
+    {label:'التاريخ',kind:'history',items:matchedHistory},
+    {label:'العزل',kind:'district',items:matchedUzal},
+    {label:'الشخصيات',kind:'person',items:matchedPeople},
+    {label:'المراجع',kind:'reference',items:refs}
+  ].filter(group=>group.items.length);
+  const all = groups.flatMap(group=>group.items.map(item=>({...item,searchKind:group.kind,searchLabel:group.label}))).slice(0, 24);
   if (!all.length) { appendEmpty(target, 'لا توجد نتائج مطابقة.'); target.append(createAction('اسأل المساعد عن: ' + cleanText(query, 80), 'ask', query, 'btn-primary')); return; }
-  target.append(element('h2', 'section-title', `نتائج البحث (${all.length})`));
+  target.append(element('h2', 'section-title', `نتائج البحث المصنفة (${all.length})`));
   all.forEach(item => {
-    const card = element('article', 'item-card');
-    card.append(element('h3', 'item-title', item.title), element('p', 'item-body', item.body));
+    const card = element('article', 'item-card search-result-card');
+    card.append(makeTag(item.searchLabel,true),element('h3', 'item-title', item.title), element('p', 'item-body', item.body));
     card.append(createAction('اسأل المساعد', 'ask', item.title));
     target.append(card);
   });
@@ -722,6 +753,19 @@ function bindEvents() {
   // Full-state JSON import is handled by the extended feature layer.
   document.getElementById('resetLocalBtn')?.addEventListener('click', resetLocalData);
   document.body.addEventListener('click', event => {
+    const image = event.target.closest('[data-lightbox-src]');
+    if (image) {
+      const source = image.dataset.lightboxSrc;
+      const preview = document.getElementById('imageLightboxImage');
+      const caption = document.getElementById('imageLightboxCaption');
+      if (preview && validHttpUrl(source)) {
+        preview.src = source;
+        preview.alt = image.dataset.lightboxAlt || image.alt || '';
+        if (caption) caption.textContent = preview.alt;
+        openModal('imageLightbox');
+      }
+      return;
+    }
     const explored = event.target.closest('[data-explore-id]');
     if (explored) window.HubaishFeatures?.markExplored?.(explored.dataset.exploreId, explored.dataset.exploreKind);
     const fav = event.target.closest('[data-fav-id]');
