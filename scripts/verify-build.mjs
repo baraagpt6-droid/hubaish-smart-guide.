@@ -6,7 +6,7 @@ import { fileURLToPath } from 'node:url';
 const root = resolve(fileURLToPath(new URL('../', import.meta.url)));
 const required = [
   'www/index.html', 'www/styles.css', 'www/app.js', 'www/catalog.js', 'www/features.js',
-  'www/github-cms.js', 'www/data/live-content.json', 'www/sw.js',
+  'www/github-cms.js', 'www/data/live-content.json', 'www/sw.js', 'cloudflare-worker/worker.js', 'cloudflare-worker/wrangler.toml', 'cloudflare-worker/README.md',
   'www/assets/styles.css', 'www/assets/app.js', 'www/assets/catalog.js', 'www/assets/features.js',
   'www/manifest.json', 'www/manifest.webmanifest', 'www/icons/icon.svg',
   'www/icons/icon-192.png', 'www/icons/icon-512.png', 'capacitor.config.json',
@@ -102,15 +102,19 @@ const workerSource = await read('cloudflare-worker/worker.js');
 const workerSyntax = spawnSync(process.execPath, ['--input-type=module', '--check'], { input: workerSource, encoding: 'utf8' });
 if (workerSyntax.status !== 0) throw new Error('Cloudflare Worker syntax check failed: ' + (workerSyntax.stderr || workerSyntax.stdout));
 const worker = await read('cloudflare-worker/worker.js');
-if (!worker.includes('/auth/login') || !worker.includes('/admin/users') || !worker.includes('/admin/audit') ||
+if (!worker.includes('/setup/status') || !worker.includes('/setup') || !worker.includes('https://baraagpt6-droid.github.io') || !worker.includes('capacitor://localhost') || !worker.includes('http://localhost') || !worker.includes('https://localhost') || !worker.includes('ALLOWED_ORIGIN') || !worker.includes('/auth/login') || !worker.includes('/admin/users') || !worker.includes('/admin/audit') ||
     !worker.includes('PBKDF2') || !worker.includes('GITHUB_TOKEN') || !worker.includes('SESSION_SECRET') ||
     !worker.includes('super_admin') || !worker.includes('editor') || !worker.includes('updatedBy')) {
   throw new Error('Cloudflare Worker multi-admin authentication, RBAC or audit support is incomplete.');
 }
 if (!githubCms.includes('workerLoginForm') || !githubCms.includes('hubaish_worker_session') ||
     !githubCms.includes('workerToken') || !githubCms.includes('cloudCreateAdminForm') ||
-    !html.includes('id="workerRemember"') || !html.includes('id="cloudAuditList"') ||
-    !html.includes('id="cloudAdminUsersList"')) {
+    !githubCms.includes('async function firstAdminSetup') || !githubCms.includes('/setup/status') ||
+    !html.includes('id="workerSetupForm"') || !html.includes('id="workerSetupEndpoint"') ||
+    !html.includes('id="workerBootstrapKey"') || !html.includes('id="workerSetupUsername"') ||
+    !html.includes('id="workerSetupPassword"') || !html.includes('إنشاء حساب المشرف العام وتفعيل الربط') ||
+    !html.includes('id="workerRemember"') || !html.includes('id="cloudTokenRemember"') ||
+    !html.includes('id="cloudAuditList"') || !html.includes('id="cloudAdminUsersList"')) {
   throw new Error('Cloudflare Worker login, remember-me or super-admin UI is incomplete.');
 }
 if (!githubCms.includes('function fillTranslations') || !githubCms.includes('api.mymemory.translated.net')) {
@@ -167,7 +171,7 @@ if (!css.includes('--bg:#08100d') || !css.includes('--gold:#d4af37') || !css.inc
 if (!css.includes('left:16px!important') || !css.includes('width:46px!important') || !css.includes('right:auto!important')) {
   throw new Error('The assistant button must remain fixed at left:16px.');
 }
-if (!sw.includes('hubaish-guide-v3.4.0') || !sw.includes("'github-cms.js'") ||
+if (!sw.includes('hubaish-guide-v3.5.0') || !sw.includes("'github-cms.js'") ||
     !sw.includes("'data/live-content.json'") || !sw.includes("event.data?.type === 'SKIP_WAITING'") ||
     sw.includes('supabase')) throw new Error('Offline app shell does not include the GitHub CMS or live JSON file.');
 if (!workflow.includes('actions/deploy-pages@v4') || !workflow.includes('assembleDebug') ||
