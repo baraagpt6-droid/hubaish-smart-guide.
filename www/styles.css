@@ -335,3 +335,7 @@ html[data-theme=light] .story-heritage-icon{color:#e8cc72}
 .geo-profile-grid span{font-size:10px;line-height:1.65;color:var(--sub)}
 .geo-source-links{font-size:10px!important}
 .geo-source-links a{color:var(--green);text-decoration:underline;text-underline-offset:3px}
+
+/* Facebook brand mark: keep the official blue circle and white f untouched. */
+.community-icon{background:transparent;color:inherit;border-radius:0;box-shadow:none;font-size:0}
+.community-icon svg{display:block;width:48px;height:48px;flex:none}
