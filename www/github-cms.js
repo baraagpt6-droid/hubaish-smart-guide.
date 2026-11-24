@@ -183,7 +183,8 @@
     return documentData.subDistrictUpdates.filter(x=>String(x.district_name_ar||'').trim()===String(name||'').trim()).map(x=>({
       place:localized(x,'place_name',l),
       description:localized(x,'description',l),
-      source:x.source_text||''
+      source:x.source_text||'',
+      sourceUrl:safeUrl(x.source_url)?x.source_url:''
     })).filter(x=>x.place||x.description);
   }
   function districtProfile(name,l){
