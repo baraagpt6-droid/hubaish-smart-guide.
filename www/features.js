@@ -407,7 +407,7 @@
   function init() {
     if(typeof state==='undefined')return;
     document.getElementById('communityJoinLink')?.setAttribute('href',featureState.communityUrl);
-    const categorySelect=document.getElementById('langSelect');if(categorySelect){categorySelect.value=state.lang||'AR';categorySelect.addEventListener('change',()=>{applyLang(categorySelect.value);applyExtendedLang();renderStories();renderQuiz();renderExplorerProgress();renderSeasonGuide();localizeAdminControls();});}
+    const categorySelect=document.getElementById('langSelect');if(categorySelect){categorySelect.value=state.lang||'AR';categorySelect.addEventListener('change',()=>{applyExtendedLang();renderStories();renderQuiz();renderExplorerProgress();renderSeasonGuide();localizeAdminControls();});}
     applyExtendedLang();renderStories();renderQuiz();renderPeople();const fact=document.getElementById('didYouKnow');if(fact)fact.textContent=(FACTS_I18N[state.lang]||FACTS)[factIndex];renderAdminLists();renderCommunitySocials();renderUzalDetails();updateCounters();updateSavedAt();initAdminLock();renderExplorerProgress();renderSeasonGuide();
     document.getElementById('nextFactBtn')?.addEventListener('click',()=>{factIndex=(factIndex+1)%FACTS.length;document.getElementById('didYouKnow').textContent=(FACTS_I18N[state.lang]||FACTS)[factIndex];});
     document.getElementById('randomTourBtn')?.addEventListener('click',randomTour);
