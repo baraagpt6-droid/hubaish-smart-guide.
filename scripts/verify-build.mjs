@@ -32,8 +32,6 @@ const manifest=JSON.parse(await read('www/manifest.webmanifest'));
 const manifestJson=JSON.parse(await read('www/manifest.json'));
 const capacitor=JSON.parse(await read('capacitor.config.json'));
 const pkg=JSON.parse(await read('package.json'));
-const readme=await read('README.md');
-const workerReadme=await read('cloudflare-worker/README.md');
 const data=JSON.parse(await read('www/data/live-content.json'));
 const assets = {
   app: await read('www/assets/app.js'),
