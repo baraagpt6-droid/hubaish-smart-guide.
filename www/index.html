@@ -65,11 +65,11 @@
       </div>
 
       <section class="stories-section" aria-label="قصص استكشافية"><div class="section-heading-inline"><h2 class="section-title">استكشف حبيش في لحظات</h2><span class="tag tag-gold">قصص بصرية</span></div><div class="stories-rail" id="visualStories"></div></section>
-      <section class="pulse-bar"><div><span class="pulse-live-dot"></span><strong>نبض حبيش الاستكشافي</strong><small>اختر وجهتك التالية</small></div><button class="btn-secondary" id="randomTourBtn">جولة عشوائية</button></section>
+      <section class="pulse-bar"><div><span class="pulse-live-dot"></span><strong>نبض حبيش الاستكشافي</strong><small>اختر وجهتك التالية</small></div><button class="btn-secondary" id="randomTourBtn" data-random-tour>جولة عشوائية</button></section>
       <section class="explorer-progress" aria-labelledby="explorerProgressTitle">
-        <div class="progress-head"><div><span class="tag tag-gold">رحلتك داخل المديرية</span><h2 id="explorerProgressTitle">تقدم المستكشف</h2></div><strong id="explorerProgressText">0%</strong></div>
-        <progress id="explorerProgressMeter" max="100" value="0">0%</progress>
-        <p id="explorerProgressMeta" class="small muted">استكشف المعالم والعزل لتسجيل تقدمك على هذا الجهاز.</p>
+        <div class="progress-head"><div><span class="tag tag-gold">رحلتك داخل المديرية</span><h2 id="explorerProgressTitle">تقدم المستكشف</h2></div><strong id="explorerProgressText" data-explorer-progress-text>0%</strong></div>
+        <progress id="explorerProgressMeter" data-explorer-progress-meter max="100" value="0">0%</progress>
+        <p id="explorerProgressMeta" data-explorer-progress-meta class="small muted">استكشف المعالم والعزل لتسجيل تقدمك على هذا الجهاز.</p>
       </section>
 
       <section class="prayer-card" aria-labelledby="prayerTitle">
@@ -116,7 +116,7 @@
         <span class="tag tag-gold" id="communityTag">مجتمع حبيش • +11,068 عضو وفق بيانات المشروع</span><h3 id="communityTitle">مديرية حبيش HUBAISH DISTRICT</h3><p id="communityDesc">مساحة لأبناء حبيش لمشاركة الأخبار والصور والذاكرة المحلية.</p>
         <div class="card-actions"><a class="btn-primary" id="communityJoinLink" href="https://www.facebook.com/share/g/1JMCzDUsdZ/" target="_blank" rel="noopener noreferrer">انضم إلى المجتمع</a><button class="btn-sm" id="copyCommunityBtn">نسخ الرابط</button><button class="btn-sm" id="editCommunityBtn">تعديل الرابط</button></div>
       </div></article>
-      <article class="item-card hub-panel"><div class="item-meta"><span class="tag tag-gold">HUBAISH EXPLORER</span><span class="muted small" id="lastSavedAt">لم يُسجل وقت الحفظ بعد</span></div><h3 class="item-title" id="explorerTitle">تقدم استكشاف الموسوعة</h3><progress id="explorerProgressMeter" class="explorer-progress-meter" max="100" value="0"></progress><strong id="explorerProgressText">0%</strong><p id="explorerProgressMeta" class="item-body">استكشف المعالم والعزل والمحطات التاريخية.</p><span id="explorerDesc" hidden>استكشف المعالم والعزل والمحطات التاريخية.</span><button id="randomTourBtn" class="btn-secondary">اقترح لي محطة استكشاف</button></article>
+      <article class="item-card hub-panel"><div class="item-meta"><span class="tag tag-gold">HUBAISH EXPLORER</span><span class="muted small" id="lastSavedAt">لم يُسجل وقت الحفظ بعد</span></div><h3 class="item-title" id="explorerTitle">تقدم استكشاف الموسوعة</h3><progress id="moreExplorerProgressMeter" data-explorer-progress-meter class="explorer-progress-meter" max="100" value="0"></progress><strong id="moreExplorerProgressText" data-explorer-progress-text>0%</strong><p id="moreExplorerProgressMeta" data-explorer-progress-meta class="item-body">استكشف المعالم والعزل والمحطات التاريخية.</p><span id="explorerDesc" hidden>استكشف المعالم والعزل والمحطات التاريخية.</span><button id="moreRandomTourBtn" data-random-tour class="btn-secondary">اقترح لي محطة استكشاف</button></article>
       <article class="item-card hub-panel"><h3 class="item-title" id="peopleSectionTitle">أعلام وشخصيات مرتبطة بحبيش ومخلاف وحاظة</h3><div id="peopleList" class="people-grid"></div></article>
       <article class="item-card hub-panel"><h3 class="item-title" id="referencesSectionTitle">مكتبة المراجع والمصادر</h3><div id="referenceList" class="reference-list"></div></article>
       <article class="item-card hub-panel"><h3 class="item-title" id="quizSectionTitle">تحدي معلوماتك عن حبيش</h3><div id="quizArea"></div></article>

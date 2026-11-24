@@ -153,7 +153,13 @@ function loadState() {
 
 function saveState() {
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    const persistentState = {
+      ...state,
+      places: state.places.filter(item => !String(item.id || '').startsWith('cloud-')),
+      history: state.history.filter(item => !String(item.id || '').startsWith('cloud-')),
+      socials: state.socials.filter(item => !item.cloudId)
+    };
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(persistentState));
     window.HubaishFeatures?.touchSaved?.();
     const status = document.getElementById('saveStatusChip');
     if (status) status.textContent = document.documentElement.lang === 'ar' ? 'محفوظ على هذا الجهاز' : 'Saved on this device';
@@ -714,7 +720,7 @@ function bindEvents() {
   // Social administration is handled by the extended local admin panel.
   // Full-state JSON export is handled by the extended feature layer.
   // Full-state JSON import is handled by the extended feature layer.
-  document.getElementById('resetLocalBtn').addEventListener('click', resetLocalData);
+  document.getElementById('resetLocalBtn')?.addEventListener('click', resetLocalData);
   document.body.addEventListener('click', event => {
     const explored = event.target.closest('[data-explore-id]');
     if (explored) window.HubaishFeatures?.markExplored?.(explored.dataset.exploreId, explored.dataset.exploreKind);
@@ -776,15 +782,37 @@ function bindServiceWorkerUpdates() {
 }
 
 function init() {
-  window.HubaishRuntime = { get places(){ return state.places; }, get history(){ return state.history; } };
+  state = normalizeState(state);
+  window.HubaishRuntime = {
+    get places(){ return state.places; }, get history(){ return state.history; },
+    renderAll: renderAll,
+    applyCloudData(data) {
+      const incoming = data || {};
+      state.places = state.places.filter(item => !String(item.id || '').startsWith('cloud-')).concat(incoming.landmarks || []);
+      state.history = state.history.filter(item => !String(item.id || '').startsWith('cloud-')).concat(incoming.history || []);
+      state.socials = state.socials.filter(item => !item.cloudId).concat(incoming.links || []);
+    }
+  };
   applyTheme(state.theme);
   applyLang(state.lang);
   if(window.HubaishCatalog?.seed?.(state))saveState();
+  const bootReport = {
+    landmarks: state.places.length, history: state.history.length,
+    subDistricts: window.HubaishFeatures?.getUzal?.().length || UZAL_22.length,
+    people: window.HubaishCatalog?.people?.length || 0,
+    references: window.HubaishCatalog?.refs?.length || 0,
+    quiz: window.HubaishCatalog?.quiz?.length || 0
+  };
+  window.HubaishRuntime.bootReport = bootReport;
+  if (bootReport.landmarks < 19 || bootReport.history < 7 || bootReport.subDistricts < 22 || bootReport.people < 4 || bootReport.references < 1 || bootReport.quiz < 10) console.error('[Hubaish] Core catalog incomplete at boot:', bootReport);
+  else console.info('[Hubaish] Boot check passed:', bootReport);
+  window.HubaishCloud?.applyCached?.();
   bindEvents();
   renderAll();
   renderRadar();
   updatePrayerUI();
   switchTab(state.tab || 'home');
+  window.HubaishCloud?.start?.();
   window.setInterval(updatePrayerUI, 1000);
   bindServiceWorkerUpdates();
 }

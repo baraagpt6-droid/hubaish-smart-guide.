@@ -54,6 +54,7 @@
     FR: { greetingMorning:'Bonjour', greetingEvening:'Bonsoir', stories:['Forteresses','Sous-districts','Chronologie','Communauté'], question:'Question', start:'Commencer', next:'Suivant', score:'Votre score', finish:'Quiz terminé', noResult:'Aucun résultat correspondant. Essayez un autre terme ou demandez à l’assistant.', ask:'Voulez-vous demander à l’assistant ?', saved:'Modifications enregistrées sur cet appareil', pending:'En attente de vérification', approved:'Vérifié', rejected:'Rejeté', save:'Enregistrer', edit:'Modifier', delete:'Supprimer', empty:'Aucune donnée ajoutée pour le moment.', local:'Modification locale sur cet appareil uniquement', notVerified:'Récit local non vérifié', memberCount:'Groupe public • 11 068+ membres', noVillages:'Aucune liste de villages vérifiée n’est disponible.' }
   };
   let featureState = loadFeatureState();
+  let cloudPeople = [];
   let factIndex = 0;
   let quizIndex = 0;
   let quizScore = 0;
@@ -201,9 +202,13 @@
     const total=Math.max(1,(state.places?.length||0)+(state.history?.length||0)+22);
     const done=Math.min(total,featureState.visitedPlaces.length+featureState.visitedUzal.length);
     const percent=Math.round(done/total*100);
-    const meter=document.getElementById('explorerProgressMeter'); const value=document.getElementById('explorerProgressText'); const meta=document.getElementById('explorerProgressMeta');
-    if(meter)meter.value=percent; if(value)value.textContent=percent+'%';
-    if(meta)meta.textContent=state.lang==='EN' ? done+' of '+total+' landmarks, history stops and sub-districts explored on this device.' : state.lang==='TR' ? total+' yer ve bucaktan '+done+' tanesi bu cihazda keşfedildi.' : state.lang==='FR' ? done+' éléments explorés sur '+total+' monuments, étapes et sous-districts sur cet appareil.' : 'استكشفت '+done+' من أصل '+total+' بين المعالم والمحطات التاريخية والعزل على هذا الجهاز.';
+    const meters=document.querySelectorAll('[data-explorer-progress-meter]');
+    const values=document.querySelectorAll('[data-explorer-progress-text]');
+    const metas=document.querySelectorAll('[data-explorer-progress-meta]');
+    meters.forEach(meter=>meter.value=percent);
+    values.forEach(value=>value.textContent=percent+'%');
+    const copy=state.lang==='EN' ? done+' of '+total+' landmarks, history stops and sub-districts explored on this device.' : state.lang==='TR' ? total+' yer ve bucaktan '+done+' tanesi bu cihazda keşfedildi.' : state.lang==='FR' ? done+' éléments explorés sur '+total+' monuments, étapes et sous-districts sur cet appareil.' : 'استكشفت '+done+' من أصل '+total+' بين المعالم والمحطات التاريخية والعزل على هذا الجهاز.';
+    metas.forEach(meta=>meta.textContent=copy);
   }
   function markExplored(itemId, kind) {
     if(!itemId)return; const key=String(itemId); const list=kind==='uzal'?featureState.visitedUzal:featureState.visitedPlaces;
@@ -405,7 +410,8 @@
     actions.append(button(isSaved(item.id)?'محفوظ':L.save,'detail-favorite',item.id),button(L.ask,'detail-ask',item.title,'btn-primary'),button(L.share,'detail-share',item.id));
     box.append(actions);openModal('detailModal');
   }
-  function renderPeople(){const box=document.getElementById('peopleList');if(!box)return;if(window.HubaishCatalog?.renderPeople){window.HubaishCatalog.renderPeople(box,featureState.people,state.lang||'AR');return;}box.replaceChildren();}
+  function renderPeople(){const box=document.getElementById('peopleList');if(!box)return;if(window.HubaishCatalog?.renderPeople){window.HubaishCatalog.renderPeople(box,[...featureState.people,...cloudPeople],state.lang||'AR');return;}box.replaceChildren();}
+  function setCloudPeople(items){cloudPeople=Array.isArray(items)?items:[];renderPeople();}
   function exportAllBackup(){if(!adminUnlocked){showToast('افتح لوحة الإشراف برمز المرور أولاً.');return;}const payload={schemaVersion:2,exportedAt:new Date().toISOString(),coreState:state,featureState};const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});const url=URL.createObjectURL(blob);const a=node('a');a.href=url;a.download='hubaish-guide-complete-backup.json';document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);}
   function importAllBackup(file){if(!adminUnlocked){showToast('افتح لوحة الإشراف برمز المرور أولاً.');return;}if(!file)return;if(file.size>2*1024*1024){showToast('حجم النسخة يتجاوز 2 ميغابايت.');return;}file.text().then(raw=>{const parsed=JSON.parse(raw);const incoming=parsed.coreState||parsed.state;if(!incoming||typeof incoming!=='object'||!Array.isArray(incoming.places)||!Array.isArray(incoming.history))throw new Error('bad schema');const normalized=normalizeState(incoming);state=normalized;const ext=parsed.featureState;if(ext&&typeof ext==='object'&&!Array.isArray(ext)){featureState={...featureState,...ext,contributions:Array.isArray(ext.contributions)?ext.contributions.slice(0,200):[]};}saveState();saveFeatureState();applyTheme(state.theme);applyLang(state.lang);renderAll();renderRadar();renderAdminLists();renderPeople();showToast('تم استيراد النسخة والتحقق من البيانات.');}).catch(()=>showToast('ملف النسخة غير صالح أو لا يطابق البنية المطلوبة.')).finally(()=>{const input=document.getElementById('importJsonInput');if(input)input.value='';});}
   function editItem(typeAndId){const [kind,itemId]=typeAndId.split(':');const array=kind==='place'?state.places:state.history;const item=array.find(x=>x.id===itemId);if(!item)return;const title=prompt('العنوان الجديد',item.title);if(title===null)return;const body=prompt('الوصف الجديد',item.body);if(body===null)return;item.title=clean(title,100);item.body=clean(body,700);window.HubaishCatalog?.autoTranslate?.(item);saveState();renderAll();renderAdminLists();showToast('تم تحديث العنصر.');}
@@ -427,7 +433,7 @@
     const categorySelect=document.getElementById('langSelect');if(categorySelect){categorySelect.value=state.lang||'AR';categorySelect.addEventListener('change',()=>{applyExtendedLang();renderStories();renderQuiz();renderExplorerProgress();renderSeasonGuide();localizeAdminControls();});}
     applyExtendedLang();renderStories();renderQuiz();renderPeople();window.HubaishCatalog?.applyUi?.();const fact=document.getElementById('didYouKnow');if(fact)fact.textContent=(FACTS_I18N[state.lang]||FACTS)[factIndex];renderAdminLists();renderCommunitySocials();renderUzalDetails();updateCounters();updateSavedAt();initAdminLock();renderExplorerProgress();renderSeasonGuide();
     document.getElementById('nextFactBtn')?.addEventListener('click',()=>{factIndex=(factIndex+1)%FACTS.length;document.getElementById('didYouKnow').textContent=(FACTS_I18N[state.lang]||FACTS)[factIndex];});
-    document.getElementById('randomTourBtn')?.addEventListener('click',randomTour);
+    document.querySelectorAll('[data-random-tour]').forEach(button=>button.addEventListener('click',randomTour));
     document.getElementById('nextSeasonBtn')?.addEventListener('click',()=>{seasonIndex=(seasonIndex+1)%4;renderSeasonGuide();});
     document.getElementById('addHistorySaveBtn')?.addEventListener('click',addHistory);
     document.getElementById('addUzalBtn')?.addEventListener('click',()=>{if(!adminUnlocked){showToast('افتح لوحة الإشراف برمز المرور أولاً.');return;}const input=document.getElementById('newUzalName');const name=clean(input.value,70);if(!name){showToast('أدخل اسم العزلة.');return;}if(featureState.uzal.length>=60){showToast('وصل الحد الأقصى للأسماء.');return;}featureState.uzal.push(name);saveFeatureState();input.value='';renderUzal();renderAdminLists();showToast('تمت إضافة الاسم إلى القائمة المحلية.');});
@@ -453,6 +459,6 @@
   function exportFavorites(){const items=state.favs.map(id=>[...state.places,...state.history].find(x=>x.id===id)).filter(Boolean);const blob=new Blob([JSON.stringify({exportedAt:new Date().toISOString(),favorites:items},null,2)],{type:'application/json'});const url=URL.createObjectURL(blob);const a=node('a');a.href=url;a.download='hubaish-favorites.json';document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);}
   if (typeof localAssistantAnswer === 'function') { const baseAnswer=localAssistantAnswer; window.localAssistantAnswer = question => localizeAssistant(question,baseAnswer(question)); }
   window.normAr = value => normalizeArabic(value);
-  window.HubaishFeatures = { exportAllBackup, randomTour, renderAdminLists, getState:()=>featureState, isAdminUnlocked:()=>adminUnlocked, touchSaved, markExplored, renderExplorerProgress, getUzal:()=>featureState.uzal.slice(), getPeople:()=>featureState.people.slice(), showDetail, assistantAnswer:question=>localizeAssistant(question,localAssistantAnswer(question)), text:t, reset:()=>{localStorage.removeItem(FEATURE_KEY);featureState=loadFeatureState();saveFeatureState();renderAdminLists();renderExplorerProgress();} };
+  window.HubaishFeatures = { exportAllBackup, randomTour, renderAdminLists, getState:()=>featureState, isAdminUnlocked:()=>adminUnlocked, touchSaved, markExplored, renderExplorerProgress, getUzal:()=>featureState.uzal.slice(), getPeople:()=>featureState.people.slice(), setCloudPeople, showDetail, assistantAnswer:question=>localizeAssistant(question,localAssistantAnswer(question)), text:t, reset:()=>{localStorage.removeItem(FEATURE_KEY);featureState=loadFeatureState();saveFeatureState();renderAdminLists();renderExplorerProgress();} };
   document.addEventListener('DOMContentLoaded',init,{once:true});
 })();
