@@ -5,7 +5,7 @@ import { fileURLToPath } from 'node:url';
 
 const root = resolve(fileURLToPath(new URL('../', import.meta.url)));
 const required = [
-  'www/index.html', 'www/styles.css', 'www/app.js', 'www/catalog.js', 'www/features.js', 'www/cloud.js', 'www/sw.js',
+  'www/index.html', 'www/styles.css', 'www/app.js', 'www/catalog.js', 'www/features.js', 'www/cloud.js', 'www/supabase-config.js', 'www/sw.js',
   'supabase/schema.sql',
   'www/assets/styles.css', 'www/assets/app.js', 'www/assets/catalog.js', 'www/assets/features.js',
   'www/manifest.json', 'www/manifest.webmanifest', 'www/icons/icon.svg',
@@ -19,6 +19,7 @@ const app = await readFile(resolve(root, 'www/app.js'), 'utf8');
 const catalog = await readFile(resolve(root, 'www/catalog.js'), 'utf8');
 const features = await readFile(resolve(root, 'www/features.js'), 'utf8');
 const cloud = await readFile(resolve(root, 'www/cloud.js'), 'utf8');
+const cloudConfig = await readFile(resolve(root, 'www/supabase-config.js'), 'utf8');
 const schema = await readFile(resolve(root, 'supabase/schema.sql'), 'utf8');
 const css = await readFile(resolve(root, 'www/styles.css'), 'utf8');
 const sw = await readFile(resolve(root, 'www/sw.js'), 'utf8');
@@ -55,8 +56,9 @@ for (const source of [app, features]) {
 for (const id of ['historyList','placesList','uzalList','peopleList','referenceList','quizArea','langSelect','cloudConfigForm','cloudAdminForm','cloudContentForm','cloudInboxList']) {
   if (!html.includes('id="' + id + '"')) throw new Error('Required UI container is missing: ' + id);
 }
-if (!html.includes('<script src="./cloud.js" defer></script>')) throw new Error('Supabase cloud module is not loaded.');
-if (!sw.includes("'cloud.js'")) throw new Error('Cloud module is missing from the offline app shell.');
+if (!html.includes('<script src="./supabase-config.js" defer></script>') || !html.includes('<script src="./cloud.js" defer></script>')) throw new Error('Supabase config or cloud module is not loaded.');
+if (!sw.includes("'supabase-config.js'") || !sw.includes("'cloud.js'")) throw new Error('Supabase config or cloud module is missing from the offline app shell.');
+if (!cloudConfig.includes('HUBAISH_SUPABASE_CONFIG') || !cloud.includes('embeddedConfig.url')) throw new Error('Shared public Supabase configuration is not wired to the client.');
 if (!cloud.includes('/rest/v1/') || !cloud.includes('/auth/v1/token?grant_type=password') || !cloud.includes('user_contributions')) throw new Error('Supabase REST/Auth integration is incomplete.');
 if (!features.includes('window.HubaishCloud.submitContribution') || !features.includes('Cloud contribution failed')) throw new Error('Community contributions are not wired to the Supabase inbox.');
 if (!catalog.includes('getDistrictUpdates') || !catalog.includes('cloud-district-update')) throw new Error('Cloud district updates are not rendered in the sub-district directory.');

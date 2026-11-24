@@ -3,7 +3,10 @@
   const CONFIG_KEY='hubaish_supabase_config_v1', CACHE_KEY='hubaish_supabase_cache_v1', SESSION_KEY='hubaish_supabase_session_v1';
   const TABLES=['landmarks','history_events','sub_districts_updates','historical_figures','community_links'];
   const $=id=>document.getElementById(id);
-  let config=read(CONFIG_KEY,{}), cache=read(CACHE_KEY,{landmarks:[],history_events:[],sub_districts_updates:[],historical_figures:[],community_links:[]});
+  const embeddedConfig=window.HUBAISH_SUPABASE_CONFIG||{};
+  let config=read(CONFIG_KEY,{});
+  if(embeddedConfig.url&&embeddedConfig.anonKey)config={url:embeddedConfig.url,anonKey:embeddedConfig.anonKey};
+  let cache=read(CACHE_KEY,{landmarks:[],history_events:[],sub_districts_updates:[],historical_figures:[],community_links:[]});
   let session=read(SESSION_KEY,null), started=false, syncing=false;
   function read(key,fallback){try{const x=JSON.parse(localStorage.getItem(key)||'null');return x&&typeof x==='object'?x:fallback}catch{return fallback}}
   function save(key,value){try{localStorage.setItem(key,JSON.stringify(value));return true}catch{return false}}
