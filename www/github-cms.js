@@ -232,17 +232,20 @@
   async function loadWorkerAdminData(){
     if(workerUser?.role!=='super_admin')return;
     const [usersResponse,auditResponse]=await Promise.all([workerRequest('/admin/users'),workerRequest('/admin/audit')]);
-    const users=await usersResponse.json(),audit=await auditResponse.json();
-    if(!usersResponse.ok||!auditResponse.ok)throw new Error(users.error||audit.error||'تعذر تحميل إدارة المشرفين.');
+    const users=await readWorkerJson(usersResponse,'تعذر تحميل حسابات المشرفين.'),audit=await readWorkerJson(auditResponse,'تعذر تحميل سجل التدقيق.');
     const list=$('cloudAdminUsersList');
     if(list){
       list.replaceChildren();
       for(const user of users.users||[]){
-        const row=document.createElement('div'),name=document.createElement('strong'),meta=document.createElement('span'),button=document.createElement('button');
-        row.className='cloud-admin-row';name.textContent=user.displayName||user.username;
-        meta.textContent='@'+user.username+' · '+user.role+' · '+(user.disabled?'معطل':'نشط');
-        button.className='btn-sm';button.type='button';button.dataset.userToggle=user.username;button.dataset.disabled=String(!user.disabled);button.textContent=user.disabled?'تفعيل':'تعطيل';
-        row.append(name,meta,button);list.append(row);
+        const row=document.createElement('div'),name=document.createElement('strong'),meta=document.createElement('span'),actions=document.createElement('div'),role=document.createElement('select'),toggle=document.createElement('button'),password=document.createElement('button'),remove=document.createElement('button');
+        row.className='cloud-admin-row';name.textContent=user.displayName||user.username;meta.textContent='@'+user.username+' · '+(user.disabled?'معطل':'نشط');actions.className='cloud-row-actions';
+        role.className='input-field';role.dataset.userRole=user.username;role.setAttribute('aria-label','صلاحية '+user.username);
+        for(const [value,label] of [['editor','محرر محتوى'],['super_admin','مشرف عام']]){const option=document.createElement('option');option.value=value;option.textContent=label;role.append(option)}
+        role.value=user.role;
+        toggle.className='btn-sm';toggle.type='button';toggle.dataset.userToggle=user.username;toggle.dataset.disabled=String(!user.disabled);toggle.textContent=user.disabled?'تفعيل':'تعطيل';
+        password.className='btn-sm';password.type='button';password.dataset.userPassword=user.username;password.textContent='تغيير كلمة المرور';
+        remove.className='btn-sm';remove.type='button';remove.dataset.userDelete=user.username;remove.textContent='حذف الحساب';
+        actions.append(role,toggle,password,remove);row.append(name,meta,actions);list.append(row);
       }
       if(!users.users?.length){const empty=document.createElement('p');empty.className='muted';empty.textContent='لا يوجد مشرفون.';list.append(empty)}
     }
@@ -251,26 +254,35 @@
       log.replaceChildren();
       for(const event of audit.events||[]){
         const row=document.createElement('div'),name=document.createElement('strong'),meta=document.createElement('span');
-        row.className='cloud-admin-row';name.textContent=event.actor||'';meta.textContent=(event.action||'')+' · '+(event.at||'');row.append(name,meta);log.append(row);
+        const changes=(event.changes||[]).map(item=>(item.action||'')+' · '+(item.title||item.id||'')).join('، ');
+        row.className='cloud-admin-row';name.textContent=(event.actor||'')+(event.displayName?' · '+event.displayName:'');meta.textContent=(event.action||'')+' · '+(event.at||'')+(changes?' · '+changes:'');row.append(name,meta);log.append(row);
       }
       if(!audit.events?.length){const empty=document.createElement('p');empty.className='muted';empty.textContent='لا توجد تعديلات مسجلة.';log.append(empty)}
     }
   }
   async function createWorkerAdmin(event){
     event.preventDefault();
-    try{
-      const response=await workerRequest('/admin/users',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:$('newAdminUsername').value,displayName:$('newAdminDisplayName').value,password:$('newAdminPassword').value,role:$('newAdminRole').value})});
-      const result=await response.json();if(!response.ok)throw new Error(result.error||'تعذر إضافة المشرف.');
-      $('cloudCreateAdminForm').reset();await loadWorkerAdminData();toast('تم إنشاء حساب المشرف.');
-    }catch(error){toast(error.message)}
+    try{const response=await workerRequest('/admin/users',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:$('newAdminUsername').value,displayName:$('newAdminDisplayName').value,password:$('newAdminPassword').value,role:$('newAdminRole').value})});await readWorkerJson(response,'تعذر إضافة المشرف.');$('cloudCreateAdminForm').reset();await loadWorkerAdminData();toast('تم إنشاء حساب المشرف.')}catch(error){toast(error.message)}
   }
   async function toggleWorkerAdmin(event){
     const button=event.target.closest('[data-user-toggle]');if(!button)return;
-    try{
-      const response=await workerRequest('/admin/users',{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:button.dataset.userToggle,disabled:button.dataset.disabled==='true'})});
-      const result=await response.json();if(!response.ok)throw new Error(result.error||'تعذر تحديث الحساب.');
-      await loadWorkerAdminData();toast('تم تحديث حالة الحساب.');
-    }catch(error){toast(error.message)}
+    try{const response=await workerRequest('/admin/users',{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:button.dataset.userToggle,disabled:button.dataset.disabled==='true'})});await readWorkerJson(response,'تعذر تحديث الحساب.');await loadWorkerAdminData();toast('تم تحديث حالة الحساب.')}catch(error){toast(error.message)}
+  }
+  async function changeWorkerAdminRole(event){
+    const select=event.target.closest('[data-user-role]');if(!select)return;
+    try{const response=await workerRequest('/admin/users',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:select.dataset.userRole,role:select.value})});await readWorkerJson(response,'تعذر تغيير الصلاحية.');await loadWorkerAdminData();toast('تم تحديث صلاحية الحساب.')}catch(error){toast(error.message);await loadWorkerAdminData()}
+  }
+  async function resetWorkerAdminPassword(username){
+    const password=window.prompt('أدخل كلمة مرور جديدة لا تقل عن 12 حرفاً لحساب '+username);if(password===null)return;if(password.length<12){toast('كلمة المرور يجب أن تكون 12 حرفاً على الأقل.');return}
+    try{const response=await workerRequest('/admin/users/password',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username,password})});await readWorkerJson(response,'تعذر تغيير كلمة المرور.');toast('تم تغيير كلمة المرور.')}catch(error){toast(error.message)}
+  }
+  async function deleteWorkerAdmin(username){
+    if(!window.confirm('هل تريد حذف حساب المشرف '+username+'؟ لا يمكن التراجع عن هذا الإجراء.'))return;
+    try{const response=await workerRequest('/admin/users',{method:'DELETE',headers:{'Content-Type':'application/json'},body:JSON.stringify({username})});await readWorkerJson(response,'تعذر حذف الحساب.');await loadWorkerAdminData();toast('تم حذف حساب المشرف.')}catch(error){toast(error.message)}
+  }
+  async function handleAdminUserAction(event){
+    const pass=event.target.closest('[data-user-password]');if(pass){await resetWorkerAdminPassword(pass.dataset.userPassword);return}
+    const remove=event.target.closest('[data-user-delete]');if(remove)await deleteWorkerAdmin(remove.dataset.userDelete);
   }
   async function connect(event){
     event.preventDefault();
