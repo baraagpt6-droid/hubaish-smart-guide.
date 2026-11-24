@@ -103,7 +103,7 @@ const workerSyntax = spawnSync(process.execPath, ['--input-type=module', '--chec
 if (workerSyntax.status !== 0) throw new Error('Cloudflare Worker syntax check failed: ' + (workerSyntax.stderr || workerSyntax.stdout));
 const worker = await read('cloudflare-worker/worker.js');
 const workerConfig = await read('cloudflare-worker/wrangler.toml');
-const expectedWorkerOrigins = 'ALLOWED_ORIGIN = "https://baraagpt6-droid.github.io,http://localhost"';
+const expectedWorkerOrigins = 'ALLOWED_ORIGIN = "https://baraagpt6-droid.github.io,http://localhost,http://localhost:4173"';
 if (!workerConfig.includes(expectedWorkerOrigins)) {
   throw new Error('Cloudflare Worker CORS must allow the production GitHub Pages origin and http://localhost.');
 }
