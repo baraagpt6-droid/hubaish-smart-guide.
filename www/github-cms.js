@@ -30,7 +30,7 @@
   }
   function normalizeDocument(value){
     const source=value&&typeof value==='object'&&!Array.isArray(value)?value:{};
-    const clean={schemaVersion:1,updatedAt:typeof source.updatedAt==='string'?source.updatedAt:null};
+    const clean={schemaVersion:1,updatedAt:typeof source.updatedAt==='string'?source.updatedAt:null,updatedBy:source.updatedBy&&typeof source.updatedBy==='object'?{username:String(source.updatedBy.username||''),displayName:String(source.updatedBy.displayName||''),role:String(source.updatedBy.role||'')}:null};
     for(const key of Object.values(TABLES))clean[key]=Array.isArray(source[key])?source[key].filter(x=>x&&typeof x==='object'&&!Array.isArray(x)).slice(0,1000):[];
     return clean;
   }
