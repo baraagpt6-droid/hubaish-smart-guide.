@@ -5,328 +5,146 @@ import { fileURLToPath } from 'node:url';
 
 const root = resolve(fileURLToPath(new URL('../', import.meta.url)));
 const required = [
-  'www/index.html', 'www/styles.css', 'www/app.js', 'www/catalog.js', 'www/features.js',
-  'www/github-cms.js', 'www/data/live-content.json', 'www/sw.js', 'cloudflare-worker/worker.js', 'cloudflare-worker/wrangler.toml', 'cloudflare-worker/README.md',
-  'www/assets/styles.css', 'www/assets/app.js', 'www/assets/catalog.js', 'www/assets/features.js',
-  'www/manifest.json', 'www/manifest.webmanifest', 'www/icons/icon.svg',
-  'www/icons/icon-192.png', 'www/icons/icon-512.png', 'www/icons/apple-touch-icon.png', 'www/icons/favicon-32.png', 'www/icons/photo-fallback.svg', 'capacitor.config.json',
-  'scripts/generate-icons.py', 'scripts/apply-android-icons.py', 'scripts/serve.mjs',
-  'assets/icon-only.png', 'assets/icon-foreground.png', 'assets/icon-background.png', 'assets/splash.png', 'assets/splash-dark.png', 'cloudflare-worker/worker.js', 'cloudflare-worker/wrangler.toml', '.github/workflows/build-and-deploy.yml'
+  'www/index.html','www/styles.css','www/app.js','www/catalog.js','www/features.js',
+  'www/github-cms.js','www/splash.js','www/data/live-content.json','www/sw.js',
+  'www/manifest.json','www/manifest.webmanifest','www/icons/icon.svg',
+  'www/icons/icon-192.png','www/icons/icon-512.png','www/icons/apple-touch-icon.png',
+  'www/icons/favicon-32.png','www/icons/photo-fallback.svg','www/assets/app.js',
+  'www/assets/catalog.js','www/assets/features.js','www/assets/styles.css',
+  'cloudflare-worker/worker.js','cloudflare-worker/wrangler.toml',
+  'capacitor.config.json','package.json','scripts/generate-icons.py',
+  'scripts/apply-android-icons.py','scripts/patch-android-config.py',
+  'scripts/serve.mjs','.github/workflows/build-and-deploy.yml',
+  '.github/workflows/worker-production-health.yml','README.md','cloudflare-worker/README.md',
+  'assets/icon-only.png','assets/icon-foreground.png','assets/icon-background.png',
+  'assets/splash.png','assets/splash-dark.png'
 ];
-for (const file of required) await access(resolve(root, file));
-
-const read = async file => readFile(resolve(root, file), 'utf8');
-const html = await read('www/index.html');
-const app = await read('www/app.js');
-const catalog = await read('www/catalog.js');
-const features = await read('www/features.js');
-const githubCms = await read('www/github-cms.js');
-const css = await read('www/styles.css');
-const sw = await read('www/sw.js');
-const data = JSON.parse(await read('www/data/live-content.json'));
-const appAsset = await read('www/assets/app.js');
-const catalogAsset = await read('www/assets/catalog.js');
-const featuresAsset = await read('www/assets/features.js');
-const cssAsset = await read('www/assets/styles.css');
-if (appAsset !== app || catalogAsset !== catalog || featuresAsset !== features || cssAsset !== css) {
-  throw new Error('Duplicate Android web assets must exactly match the source app files.');
+for (const file of required) await access(resolve(root,file));
+const read = file => readFile(resolve(root,file),'utf8');
+const [html,css,app,catalog,features,cms,sw,worker,wrangler,workflow,readme,workerReadme,androidPatch] = await Promise.all([
+  read('www/index.html'),read('www/styles.css'),read('www/app.js'),read('www/catalog.js'),
+  read('www/features.js'),read('www/github-cms.js'),read('www/sw.js'),
+  read('cloudflare-worker/worker.js'),read('cloudflare-worker/wrangler.toml'),
+  read('.github/workflows/build-and-deploy.yml'),read('README.md'),
+  read('cloudflare-worker/README.md'),read('scripts/patch-android-config.py')
+]);
+const manifest=JSON.parse(await read('www/manifest.webmanifest'));
+const manifestJson=JSON.parse(await read('www/manifest.json'));
+const capacitor=JSON.parse(await read('capacitor.config.json'));
+const pkg=JSON.parse(await read('package.json'));
+const data=JSON.parse(await read('www/data/live-content.json'));
+const assets = {
+  app: await read('www/assets/app.js'),
+  catalog: await read('www/assets/catalog.js'),
+  features: await read('www/assets/features.js'),
+  styles: await read('www/assets/styles.css')
+};
+if (assets.app!==app || assets.catalog!==catalog || assets.features!==features || assets.styles!==css) {
+  throw new Error('Android duplicate web assets do not match the current web sources.');
 }
-
-const manifest = JSON.parse(await read('www/manifest.webmanifest'));
-const manifestJson = JSON.parse(await read('www/manifest.json'));
-const capacitor = JSON.parse(await read('capacitor.config.json'));
-const workflow = await read('.github/workflows/build-and-deploy.yml');
-const workerHealth = await read('.github/workflows/worker-production-health.yml');
-const readme = await read('README.md');
-const workerReadme = await read('cloudflare-worker/README.md');
-const pkg = JSON.parse(await read('package.json'));
-
-for (const file of ['www/app.js', 'www/catalog.js', 'www/features.js', 'www/github-cms.js', 'www/sw.js']) {
-  const result = spawnSync(process.execPath, ['--check', resolve(root, file)], { encoding: 'utf8' });
-  if (result.status !== 0) throw new Error('JavaScript syntax check failed for ' + file + ': ' + (result.stderr || result.stdout));
+for (const file of ['www/app.js','www/catalog.js','www/features.js','www/github-cms.js','www/sw.js','cloudflare-worker/worker.js']) {
+  const result=spawnSync(process.execPath,['--check',resolve(root,file)],{encoding:'utf8'});
+  if(result.status!==0)throw new Error('JavaScript syntax error in '+file+': '+(result.stderr||result.stdout));
 }
-
-for (const fragment of ['./styles.css', './app.js', './catalog.js', './features.js', './github-cms.js', './manifest.webmanifest']) {
-  if (!html.includes(fragment)) throw new Error('Missing app reference: ' + fragment);
+for (const fragment of ['./styles.css','./splash.js','./app.js','./catalog.js','./features.js','./github-cms.js','./manifest.webmanifest']) {
+  if(!html.includes(fragment))throw new Error('Missing app reference: '+fragment);
 }
-if (!html.includes('https://*.workers.dev') || !html.includes('https://api.github.com') || !html.includes('https://raw.githubusercontent.com') ||
-    !html.includes('https://api.mymemory.translated.net')) throw new Error('CSP does not allow GitHub JSON CMS or translation requests.');
-if (html.includes('supabase') || app.includes('supabase') || features.includes('supabase') ||
-    catalog.includes('supabase') || githubCms.includes('supabase') || sw.includes('supabase')) {
-  throw new Error('Supabase remnants remain in the shipped application.');
+if (!html.includes('id="appSplash"') || !html.includes('id="offlineIndicator"') ||
+    !html.includes('id="privacyPolicyText"') || !html.includes('id="languagePickerMenu"') ||
+    !html.includes('id="readerFontIncrease"') || !html.includes('id="readerOpenFavorites"')) {
+  throw new Error('Splash, offline, privacy, custom language or reading controls are missing.');
 }
-if (!html.includes('<script src="./github-cms.js" defer></script>') || html.includes('./cloud.js') || html.includes('supabase-config.js')) {
-  throw new Error('The app must load the GitHub CMS module and no retired cloud module.');
+const loginStart=html.indexOf('<form id="workerLoginForm"'),loginEnd=html.indexOf('</form>',loginStart);
+const login=loginStart>=0&&loginEnd>loginStart?html.slice(loginStart,loginEnd):'';
+if(!login.includes('workerUsername')||!login.includes('workerPassword')||!login.includes('workerRemember')||
+   login.includes('workerBootstrapKey')||login.includes('workerEndpoint')||html.includes('workerSetupForm')||
+   html.includes('id="adminPanelToggle"')||html.includes('id="adminAuthGate"')) {
+  throw new Error('Public admin gate must only show username, password and 30-day remember-me.');
 }
-if (!manifest.name || manifest.start_url !== './' || manifest.scope !== './' || !manifest.icons?.length) {
-  throw new Error('PWA manifest is incomplete.');
+if(!html.includes('id="cloudAdminPanel" class="hidden"')||!html.includes('id="cloudSuperAdminPanel"')||
+   !html.includes('id="cloudContentForm"')||!html.includes('id="cloudAdminUsersList"')||
+   !html.includes('id="cloudAuditList"')||!html.includes('id="exportJsonBtn"')||
+   !html.includes('id="importJsonInput"')) {
+  throw new Error('Authenticated admin dashboard, content editor, audit or backup interface is incomplete.');
 }
-if (JSON.stringify(manifest) !== JSON.stringify(manifestJson)) throw new Error('PWA manifests must match.');
-if (capacitor.webDir !== 'www' || !capacitor.appId) throw new Error('Capacitor webDir/appId configuration is incomplete.');
-if (pkg.dependencies?.['@capacitor/splash-screen'] !== '8.0.2' ||
-    pkg.devDependencies?.['@capacitor/assets'] !== '4.0.0' ||
-    capacitor.plugins?.SplashScreen?.backgroundColor !== '#052d24' ||
-    !workflow.includes('npx capacitor-assets generate --android')) {
-  throw new Error('Capacitor 8 native splash screen or branded asset generation is not configured.');
+if(html.includes('class="ai-fab"')||!html.includes('id="openAiBtn"'))throw new Error('Floating AI overlay has returned or the More-tab assistant is missing.');
+if(!html.includes('id="itineraryList"')||!html.includes('id="comparePlaceA"')||
+   !features.includes('function renderSmartItineraries')||!features.includes('function compareSelectedPlaces')||
+   !features.includes('shareExplorerBadge')||!features.includes('quizBest')) {
+  throw new Error('Smart routes, comparison or explorer gamification are incomplete.');
 }
-
-const htmlIds = [...html.matchAll(/\bid="([^"]+)"/g)].map(match => match[1]);
-const duplicateHtmlIds = [...new Set(htmlIds.filter((id, index) => htmlIds.indexOf(id) !== index))];
-if (duplicateHtmlIds.length) throw new Error('Duplicate HTML id values: ' + duplicateHtmlIds.join(', '));
-for (const source of [app, features]) {
-  const directBindings = [...source.matchAll(/getElementById\(['"]([^'"]+)['"]\)\s*\.addEventListener/g)].map(match => match[1]);
-  const missingBindings = directBindings.filter(id => !html.includes('id="' + id + '"'));
-  if (missingBindings.length) throw new Error('Event bindings target missing HTML elements: ' + missingBindings.join(', '));
+if (!['AR','EN','TR','FR'].every(lang=>app.includes('appName:') && features.includes(lang+': {')) ||
+    !features.includes('#globalSearchInput') || !features.includes('#dataSourceNote') ||
+    !features.includes('Politique de confidentialité') || !features.includes('Gizlilik Politikası')) {
+  throw new Error('Four-language labels, search, statistics or privacy translations are missing.');
 }
-for (const id of ['historyList','placesList','uzalList','peopleList','referenceList','quizArea','langSelect',
-  'cloudAdminForm','cloudAdminPassword','cloudContentForm','cloudContentList','cloudStatus','cloudAdminPanel',
-  'cloudRefreshBtn','cloudAdminLogoutBtn','cloudRecordType','cloudTranslateBtn','cloudContentClearBtn']) {
-  if (!html.includes('id="' + id + '"')) throw new Error('Required UI container is missing: ' + id);
+if (features.includes('adminUnlocked')||features.includes('ADMIN_PIN_KEY')||
+    features.includes('initAdminLock')||features.includes('adminPinEntry')) {
+  throw new Error('The legacy device-local PIN admin path must remain removed.');
 }
-for (const type of ['landmark','history_event','sub_district','sub_district_update','historical_figure','community_link']) {
-  if (!html.includes('value="' + type + '"')) throw new Error('GitHub CMS content type is missing: ' + type);
+if(cms.includes('githubToken')||cms.includes('API_URL')||cms.includes('readRepositoryFile')||
+   cms.includes('cloudAdminForm')||cms.includes('workerSetupForm')||
+   !cms.includes('function adminStatus()')||!cms.includes('async function restoreWorkerSession')||
+   !cms.includes("readWorkerJson(await workerRequest('/auth/me')")||
+   !cms.includes("localStorage.removeItem('hubaish_direct_github_token')")||
+   !cms.includes("function isAdmin(){return !!workerToken&&!!workerUser?.username}")) {
+  throw new Error('Admin login must use Worker sessions only and validate /auth/me.');
 }
-if (!html.includes('GitHub Personal Access Token') || !html.includes('Fine-grained')) throw new Error('Session-only GitHub token guidance is missing.');
-if (/<script\b(?![^>]*\bsrc=)/i.test(html)) throw new Error('Inline scripts are prohibited.');
-if (/\bon(?:click|load|error)\s*=/i.test(html)) throw new Error('Inline event handlers are prohibited.');
-if (/\bstyle\s*=/i.test(html)) throw new Error('Inline style attributes are prohibited.');
-if (/\.innerHTML\s*=/.test(app + features + catalog + githubCms)) throw new Error('Unsafe HTML string assignment detected.');
-
-for (const key of ['landmarks','historyEvents','subDistrictUpdates','subDistricts','historicalFigures','communityLinks']) {
-  if (!Array.isArray(data[key])) throw new Error('GitHub live-content.json is missing collection: ' + key);
+if(!cms.includes("fetch(DEFAULT_WORKER_URL+'/auth/login'")||!cms.includes("String($('workerUsername')?.value||'').trim()")||
+   !cms.includes("await workerRequest('/content'")||!cms.includes('data-user-role')||
+   !cms.includes('data-user-password')||!cms.includes('data-user-delete')) {
+  throw new Error('Worker login, content publishing or super-admin account controls are incomplete.');
 }
-if (data.subDistricts.length !== 22) throw new Error('GitHub live-content.json must include 22 translated sub-district profiles.');
-if (data.landmarks.length < 22 || data.historyEvents.length < 7 || data.historicalFigures.length < 5 || data.subDistrictUpdates.length < 19) {
-  throw new Error('Sourced Hubaish landmarks, historical events, figures or village profiles are incomplete.');
+if(!worker.includes('ITER=100000')||!worker.includes('hashIterations:ITER')||
+   !worker.includes('function passwordMatches')||!worker.includes('path==="/auth/login"')||
+   !worker.includes('path==="/auth/me"')||!worker.includes('path==="/admin/users/password"')||
+   !worker.includes('req.method==="DELETE"')||!worker.includes('req.method==="PUT"')||
+   !worker.includes('changes:changes.slice(0,100)')||
+   !worker.includes('X-Content-Type-Options')||!worker.includes('Content-Security-Policy')||
+   !worker.includes('microphone=(self)')) {
+  throw new Error('Worker authentication, RBAC, audit log or security headers are incomplete.');
 }
-if (!data.landmarks.some(x=>x.id==='khudad-fort') || !data.landmarks.some(x=>x.id==='wuhaza-fortress') ||
-    !data.landmarks.some(x=>x.id==='nahrah-mosque') || !data.landmarks.some(x=>x.id==='zawahi-islamic-school') ||
-    !data.landmarks.some(x=>x.id==='qubbat-al-zum'&&x.source_url.includes('goam.gov.ye')) ||
-    !data.landmarks.some(x=>x.id==='jabal-dhi-harran') ||
-    !data.landmarks.some(x=>x.id==='hubaish-weekly-market'&&x.category==='market') ||
-    !data.landmarks.some(x=>x.id==='bayn-al-dur-dome') || !data.landmarks.some(x=>x.id==='marwaha-mosque') ||
-    !data.landmarks.some(x=>x.id==='al-farawi-mosque-dome') ||
-    !data.landmarks.some(x=>x.id==='kareef-dardaa-wuhaza') ||
-    !data.landmarks.some(x=>x.id==='kareef-al-wufait-khudad') ||
-    !data.landmarks.some(x=>x.id==='north-cistern-khudad') ||
-    !data.historyEvents.some(x=>x.id==='hubaish-uprising-final-battle-17-may-1919')) {
-  throw new Error('Key Hubaish heritage or historical records are missing.');
+if(!css.includes('env(safe-area-inset-top')||!css.includes('var(--status-bar-height')||
+   !css.includes('env(safe-area-inset-bottom')||!css.includes('.ai-fab{display:none!important}')) {
+  throw new Error('Safe-area CSS or floating assistant removal is missing.');
 }
-if (!data.subDistrictUpdates.some(x=>x.id==='villages-jabal-khadra') ||
-    !data.subDistrictUpdates.some(x=>x.id==='villages-al-salaq') ||
-    !data.subDistrictUpdates.some(x=>x.id==='villages-bani-muayn-study') ||
-    !data.subDistrictUpdates.some(x=>x.id==='villages-al-farai-study') ||
-    !data.subDistrictUpdates.some(x=>x.id==='villages-al-sadr-areq-index') ||
-    !data.subDistrictUpdates.some(x=>x.id==='villages-bani-shabib-areq-index') ||
-    !data.subDistrictUpdates.some(x=>x.id==='villages-bani-muayn-areq-index') ||
-    !data.subDistrictUpdates.some(x=>x.id==='villages-jabal-khadra-areq-index') ||
-    !data.subDistrictUpdates.some(x=>x.id==='village-al-shawafi')) {
-  throw new Error('Village references are missing from the district directory.');
+if(capacitor.appName!=='دليل حبيش'||capacitor.plugins?.StatusBar?.overlaysWebView!==false||
+   capacitor.plugins?.StatusBar?.backgroundColor!=='#081812'||
+   manifest.short_name!=='دليل حبيش'||manifest.name!=='دليل حبيش الذكي'||
+   manifestJson.short_name!=='دليل حبيش'||manifestJson.name!=='دليل حبيش الذكي'||
+   !pkg.dependencies?.['@capacitor/status-bar']) {
+  throw new Error('App naming and native StatusBar configuration are inconsistent.');
 }
-if (data.subDistricts.length !== 22 || data.subDistricts.some(x => !x.body_ar || x.body_ar.length < 80)) {
-  throw new Error('Each of the 22 Hubaish sub-districts must have a sourced descriptive profile.');
+if(!app.includes('setOverlaysWebView?.({ overlay: false })')||
+   !app.includes('setBackgroundColor?.({ color })')||
+   !app.includes('setReaderScale')||!app.includes('languagePickerButton')) {
+  throw new Error('Runtime status bar, reader settings or custom language picker wiring is missing.');
 }
-if (data.subDistrictUpdates.some(x => !x.source_url || !/^https?:\/\//.test(x.source_url))) {
-  throw new Error('Every published village/locality record must include a source URL.');
+if(!sw.includes('hubaish-guide-v4.0.0')||!sw.includes("'splash.js'")||
+   !sw.includes("'github-cms.js'")||!sw.includes("'data/live-content.json'")) {
+  throw new Error('The service-worker cache does not include the updated app shell.');
 }
-if (data.schemaVersion !== 1) throw new Error('Unsupported GitHub live-content.json schema version.');
-if (!githubCms.includes('raw.githubusercontent.com') || !githubCms.includes('api.github.com/repos/') ||
-    !githubCms.includes("method:'PUT'") || !githubCms.includes('/contents/') || !githubCms.includes("cache:'no-store'")) {
-  throw new Error('GitHub raw JSON polling or Contents API publishing is incomplete.');
+if(!workflow.includes('actions/deploy-pages@v4')||!workflow.includes('assembleRelease')||
+   !workflow.includes('bundleRelease')||!workflow.includes('Daleel-Hubaish-v')||
+   !workflow.includes('Daleel-Hubaish-release.aab')||
+   !workflow.includes('patch-android-config.py')||!workflow.includes('upload-artifact@v4')) {
+  throw new Error('The signed APK/AAB and Pages release workflow is incomplete.');
 }
-if (!githubCms.includes('const CACHE_KEY=') || !githubCms.includes('localStorage.setItem(CACHE_KEY') ||
-    !githubCms.includes('function applyCached') || !githubCms.includes('getDistrictProfile')) {
-  throw new Error('Offline cache or live district profile merge is incomplete.');
+if(!androidPatch.includes('android:windowOptOutEdgeToEdgeEnforcement')||
+   !androidPatch.includes('setDecorFitsSystemWindows')||!androidPatch.includes('دليل حبيش')) {
+  throw new Error('Android 15+ edge-to-edge and app-name patch is incomplete.');
 }
-if (!githubCms.includes('githubToken') || !githubCms.includes('Authorization:') || !githubCms.includes('Bearer ') ||
-    !githubCms.includes('githubToken=\'\'') || /localStorage\.(?:setItem|getItem)\([^)]*githubToken/i.test(githubCms)) {
-  throw new Error('GitHub token must remain in memory and be sent only as an API authorization header.');
-}
-const workerSource = await read('cloudflare-worker/worker.js');
-const workerSyntax = spawnSync(process.execPath, ['--input-type=module', '--check'], { input: workerSource, encoding: 'utf8' });
-if (workerSyntax.status !== 0) throw new Error('Cloudflare Worker syntax check failed: ' + (workerSyntax.stderr || workerSyntax.stdout));
-const worker = await read('cloudflare-worker/worker.js');
-const workerConfig = await read('cloudflare-worker/wrangler.toml');
-const expectedWorkerOrigins = 'ALLOWED_ORIGIN = "https://baraagpt6-droid.github.io,http://localhost,http://localhost:4173"';
-if (!workerConfig.includes(expectedWorkerOrigins)) {
-  throw new Error('Cloudflare Worker CORS must allow the production GitHub Pages origin and http://localhost.');
-}
-if (!worker.includes('filter(x=>x&&x!=="*")') || worker.includes('"Access-Control-Allow-Origin":"*"')) {
-  throw new Error('Cloudflare Worker CORS must reject wildcard origins and use an explicit allowlist.');
-}
-if (!worker.includes('path==="/api/health"') || !worker.includes('githubContentsRead') ||
-    !worker.includes('sessionSecret') || !worker.includes('healthKV')) {
-  throw new Error('Cloudflare Worker health endpoint must check KV, GitHub contents and SESSION_SECRET.');
-}
-if (!githubCms.includes('imageUrl:val(\'cloudImageUrl\')') ||
-    !githubCms.includes('function updateImagePreview') || !githubCms.includes('image_url:safeUrl(v.imageUrl)') ||
-    !html.includes('id="cloudImagePreview"') || !html.includes('id="cloudImageUrl"')) {
-  throw new Error('CMS image URL, preview or publishing workflow is incomplete.');
-}
-if (!html.includes('27 كم في مقدمة النص') && !html.includes('42 كم في مقدمة النص')) {
-  throw new Error('Conflicting local distance reports must be disclosed in the geography profile.');
-}
-if (!html.includes('id="imageLightbox"') || !html.includes('data-lightbox-src') ||
-    !app.includes('photo.loading') || !sw.includes('REMOTE_IMAGE_HOSTS') ||
-    !sw.includes('icons/apple-touch-icon.png') || !sw.includes('icons/photo-fallback.svg') ||
-    !sw.includes('hubaish-guide-v3.8.2')) {
-  throw new Error('Image lazy loading, lightbox or offline image caching is incomplete.');
-}
-if (!app.includes("market: 'M3 10h18l-2-6H5l-2 6Z") ||
-    !html.includes('data-pcat="market"') || !html.includes('أسواق شعبية') ||
-    !githubCms.includes("'market'].includes(row.category)") ||
-    !app.includes('data-share') || !app.includes('navigator.share({ title: item.title, text, url })') ||
-    !app.includes('const candidates = [...state.places, ...state.history]') ||
-    !features.includes("timeZone:'Asia/Aden'") || !features.includes('factIndex=((dayNumber%FACTS.length)+FACTS.length)%FACTS.length')) {
-  throw new Error('Daily Hubaish feature or direct content sharing is incomplete.');
-}
-if (!html.includes('id="cloudAdminStats"') || !html.includes('id="cloudContentSearch"') ||
-    !githubCms.includes('function renderAdminStats') || !githubCms.includes('cloudContentFilter') ||
-    !githubCms.includes('x.cmsOverride===true')) {
-  throw new Error('CMS admin dashboard must include all cloud-backed content in counters and search.');
-}
-if (!html.includes('upload.wikimedia.org') || !html.includes('al-jandprovince.com') ||
-    !html.includes('hekmahyemanya.com') || !html.toLowerCase().includes('cc by-sa') ) {
-  throw new Error('Photo gallery must include verified sources and license attribution.');
-}
-const frontendWorkerContracts = [
-  "fetch(value+'/setup/status'",
-  "fetch(endpoint+'/setup'",
-  "fetch(endpoint+'/auth/login'",
-  "workerRequest('/auth/me'",
-  "workerRequest('/admin/users'",
-  "workerRequest('/admin/audit'",
-  "workerRequest('/content'"
-];
-for (const contract of frontendWorkerContracts) {
-  if (!githubCms.includes(contract)) throw new Error('Frontend Cloudflare Worker endpoint contract is missing: ' + contract);
-}
-if (!githubCms.includes('result.bootstrapKeyConfigured===false') ||
-    !githubCms.includes('BOOTSTRAP_KEY غير مضبوط في Cloudflare Secrets')) {
-  throw new Error('First-admin setup UI must detect a missing BOOTSTRAP_KEY before submitting the form.');
-}
-if (!worker.includes('/setup/status') || !worker.includes('/setup') || !worker.includes('https://baraagpt6-droid.github.io') || !worker.includes('capacitor://localhost') || !worker.includes('http://localhost') || !worker.includes('https://localhost') || !worker.includes('ALLOWED_ORIGIN') || !worker.includes('/auth/login') || !worker.includes('/admin/users') || !worker.includes('/admin/audit') ||
-    !worker.includes('PBKDF2') || !worker.includes('GITHUB_TOKEN') || !worker.includes('SESSION_SECRET') ||
-    !worker.includes('super_admin') || !worker.includes('editor') || !worker.includes('updatedBy')) {
-  throw new Error('Cloudflare Worker multi-admin authentication, RBAC or audit support is incomplete.');
-}
-const canonicalWorkerUrl = 'https://hubaish-cms.baraagpt6.workers.dev';
-if (!githubCms.includes("const DEFAULT_WORKER_URL='" + canonicalWorkerUrl + "';") ||
-    !githubCms.includes("localStorage.removeItem('hubaish_worker_url');") ||
-    githubCms.includes("localStorage.setItem('hubaish_worker_url'") ||
-    !githubCms.includes("checkWorkerSetup(workerUrl,true);") ||
-    html.split(canonicalWorkerUrl).length - 1 < 2 ||
-    !workerHealth.includes("const base = '" + canonicalWorkerUrl + "';") ||
-    !readme.includes(canonicalWorkerUrl) || !workerReadme.includes(canonicalWorkerUrl)) {
-  throw new Error('The Cloudflare Worker default URL must use the canonical baraagpt6 hostname and clear stale saved endpoints.');
-}
-
-const setupFormStart = html.indexOf('<form id="workerSetupForm"');
-const setupFormEnd = html.indexOf('</form>', setupFormStart);
-const setupForm = setupFormStart >= 0 && setupFormEnd > setupFormStart ? html.slice(setupFormStart, setupFormEnd) : '';
-const loginFormStart = html.indexOf('<form id="workerLoginForm"');
-const loginFormEnd = html.indexOf('</form>', loginFormStart);
-const loginForm = loginFormStart >= 0 && loginFormEnd > loginFormStart ? html.slice(loginFormStart, loginFormEnd) : '';
-if (!loginForm.includes('id="workerUsername"') || !loginForm.includes('id="workerPassword"') ||
-    !githubCms.includes("String($('workerEndpoint')?.value||DEFAULT_WORKER_URL)") ||
-    !githubCms.includes("String($('workerSetupEndpoint')?.value||DEFAULT_WORKER_URL)")) {
-  throw new Error('Admin login and first setup must use the canonical Worker automatically without asking for its URL.');
-}
-const setupFieldIds = [...setupForm.matchAll(/id="(workerSetupEndpoint|workerBootstrapKey|workerSetupUsername|workerSetupPassword)"/g)].map(m => m[1]);
-if (setupFieldIds.join(',') !== 'workerBootstrapKey,workerSetupUsername,workerSetupPassword' || setupForm.includes('workerSetupEndpoint')) {
-  throw new Error('First-admin setup must show bootstrap key, username and password while keeping the server URL advanced.');
-}
-if (!githubCms.includes("localStorage.setItem('hubaish_direct_github_token'") ||
-    !githubCms.includes("localStorage.getItem('hubaish_direct_github_token')") ||
-    !githubCms.includes("localStorage.removeItem('hubaish_worker_url');") ||
-    githubCms.includes("localStorage.setItem('hubaish_worker_url'")) {
-  throw new Error('Direct GitHub token handling or stale Worker URL cleanup is missing.');
-}
-if (loginForm.includes('workerEndpoint') || loginForm.includes('workerSetupEndpoint') ||
-    !html.includes('<summary>إعدادات متقدمة · عنوان خادم تسجيل الدخول</summary>') ||
-    !html.includes('<summary>إعدادات متقدمة · عنوان خادم التأسيس</summary>')) {
-  throw new Error('Worker URL inputs must remain inside the collapsed advanced settings, outside normal login/setup fields.');
-}
-if (!githubCms.includes('workerLoginForm') || !githubCms.includes('hubaish_worker_session') ||
-    !githubCms.includes('workerToken') || !githubCms.includes('cloudCreateAdminForm') ||
-    !githubCms.includes('async function firstAdminSetup') || !githubCms.includes('/setup/status') ||
-    !html.includes('id="workerSetupForm"') || !html.includes('id="workerSetupEndpoint"') ||
-    !html.includes('id="workerBootstrapKey"') || !html.includes('id="workerSetupUsername"') ||
-    !html.includes('id="workerSetupPassword"') || !html.includes('إنشاء حساب المشرف العام وتفعيل الربط') ||
-    !html.includes('id="workerRemember"') || !html.includes('id="cloudTokenRemember"') ||
-    !html.includes('id="cloudAuditList"') || !html.includes('id="cloudAdminUsersList"')) {
-  throw new Error('Cloudflare Worker login, remember-me or super-admin UI is incomplete.');
-}
-if (!githubCms.includes('function fillTranslations') || !githubCms.includes('api.mymemory.translated.net')) {
-  throw new Error('Four-language translation workflow is missing.');
-}
-if (!features.includes('function exportAllBackup') || !features.includes('function importAllBackup') ||
-    !features.includes('liveContent:window.HubaishCloud?.exportData?.()') ||
-    !features.includes('window.HubaishCloud.importBackup(parsed.liveContent)') ||
-    !githubCms.includes('exportData:()=>deepCopy(documentData)') || !githubCms.includes('async function importBackup(value)') ||
-    !html.includes('id="exportJsonBtn"') || !html.includes('id="importJsonInput"')) {
-  throw new Error('Complete local and GitHub CMS JSON backup/restore is missing.');
-}
-if (!app.includes('window.HubaishRuntime.bootReport') || !app.includes('landmarks < 19') ||
-    !app.includes('history < 7') || !app.includes('subDistricts < 22') ||
-    !app.includes('people < 4') || !app.includes('references < 1') || !app.includes('quiz < 10')) {
-  throw new Error('Core catalogue boot checks are missing.');
-}
-const districtStart = catalog.indexOf('const D=[');
-const districtEnd = catalog.indexOf('const PN=', districtStart);
-const districtBlock = districtStart >= 0 && districtEnd > districtStart ? catalog.slice(districtStart, districtEnd) : '';
-const districtRows = [...districtBlock.matchAll(/^\s*\['/gm)].length;
-if (districtRows !== 22) throw new Error('The core sub-district directory must contain 22 names.');
-const personStart = catalog.indexOf('const PEOPLE=[');
-const personEnd = catalog.indexOf('const REFS=', personStart);
-const personBlock = personStart >= 0 && personEnd > personStart ? catalog.slice(personStart, personEnd) : '';
-if ([...personBlock.matchAll(/^\s*\{n:/gm)].length !== 4) throw new Error('The four baseline historical figures are incomplete.');
-const refsStart = catalog.indexOf('const REFS=[');
-const refsEnd = catalog.indexOf('const QUIZ=', refsStart);
-const refsBlock = refsStart >= 0 && refsEnd > refsStart ? catalog.slice(refsStart, refsEnd) : '';
-if ([...refsBlock.matchAll(/^\s*\{t:/gm)].length < 11) throw new Error('The expanded government and heritage reference library is incomplete.');
-const quizStart = catalog.indexOf('const QUIZ=[');
-const quizEnd = catalog.indexOf('  ];', quizStart);
-const quizBlock = quizStart >= 0 && quizEnd > quizStart ? catalog.slice(quizStart, quizEnd) : '';
-if ([...quizBlock.matchAll(/^\s*\[\[/gm)].length !== 10) throw new Error('The ten-question quiz is incomplete.');
-const placeTranslations = catalog.match(/const PN=\{([\s\S]*?)\n  \};/);
-if (!placeTranslations || [...placeTranslations[1].matchAll(/^\s*p\d+:\[/gm)].length !== 19) {
-  throw new Error('The 19 landmark translations are incomplete.');
-}
-const locationStart = catalog.indexOf('const PLOC={');
-const locationEnd = locationStart >= 0 ? catalog.indexOf('\n  };', locationStart) : -1;
-const locationBlock = locationStart >= 0 && locationEnd > locationStart ? catalog.slice(locationStart, locationEnd) : '';
-if (locationBlock.split('\n').filter(line => line.trim().startsWith('p') && line.includes(':[')).length !== 19 ||
-    !catalog.includes('if(!item.cmsOverride&&PLOC[item.id])copy.loc=PLOC[item.id][index]')) {
-  throw new Error('All 19 landmark locations must be localized in four languages.');
-}
-const historyStart = catalog.indexOf('const HISTORY={');
-const historyEnd = catalog.indexOf('const HISTORY_BODY=', historyStart);
-const historyBlock = historyStart >= 0 && historyEnd > historyStart ? catalog.slice(historyStart, historyEnd) : '';
-if ([...historyBlock.matchAll(/\bh[1-7]:\{/g)].length !== 7) throw new Error('The seven history milestones are incomplete.');
-
-if (!html.includes('aria-label="Facebook official logo"') ||
-    !html.includes('<circle cx="12" cy="12" r="12" fill="#0866FF"/>') ||
-    !html.includes('fill="#FFFFFF" d="M13.4 21v-8.2') ||
-    !css.includes('.community-icon svg{display:block;width:48px;height:48px')) {
-  throw new Error('Facebook community mark must use the blue-circle and white-f SVG treatment.');
-}
-if (!css.includes('--bg:#08100d') || !css.includes('--gold:#d4af37') || !css.includes('--green:#34d399')) {
-  throw new Error('Expected theme tokens are missing.');
-}
-if (!css.includes('left:16px!important') || !css.includes('width:46px!important') || !css.includes('right:auto!important')) {
-  throw new Error('The assistant button must remain fixed at left:16px.');
-}
-if (!sw.includes('hubaish-guide-v3.8.2') || !sw.includes("'github-cms.js'") ||
-    !sw.includes("'data/live-content.json'") || !sw.includes("event.data?.type === 'SKIP_WAITING'") ||
-    sw.includes('supabase')) throw new Error('Offline app shell does not include the GitHub CMS or live JSON file.');
-if (!workflow.includes('actions/deploy-pages@v4') || !workflow.includes('assembleDebug') ||
-    !workflow.includes('upload-artifact@v4') || !workflow.includes('assembleRelease')) {
-  throw new Error('Website deployment and Android release workflow is incomplete.');
-}
-for (const [file, expected] of [['www/icons/icon-192.png',192],['www/icons/icon-512.png',512]]) {
+const districtStart=catalog.indexOf('const D=['),districtEnd=catalog.indexOf('const PN=',districtStart);
+const districtBlock=districtStart>=0&&districtEnd>districtStart?catalog.slice(districtStart,districtEnd):'';
+if([...districtBlock.matchAll(/^\s*\['/gm)].length!==22)throw new Error('The core district list must contain 22 names.');
+const quizStart=catalog.indexOf('const QUIZ=['),quizEnd=catalog.indexOf('  ];',quizStart);
+const quizBlock=quizStart>=0&&quizEnd>quizStart?catalog.slice(quizStart,quizEnd):'';
+if([...quizBlock.matchAll(/^\s*\[\[/gm)].length!==10)throw new Error('The ten-question quiz catalogue is incomplete.');
+const liveKeys=['landmarks','historyEvents','subDistrictUpdates','subDistricts','historicalFigures','communityLinks'];
+if(data.schemaVersion!==1||!liveKeys.every(key=>Array.isArray(data[key])))throw new Error('The live content JSON schema is invalid.');
+for(const [file,expected] of [['www/icons/icon-192.png',192],['www/icons/icon-512.png',512]]) {
   const image=await readFile(resolve(root,file));
-  if(image.toString('hex',0,8)!=='89504e470d0a1a0a')throw new Error(file+' is not a PNG.');
-  if(image.readUInt32BE(16)!==expected||image.readUInt32BE(20)!==expected)throw new Error(file+' must be '+expected+'x'+expected+'.');
+  if(image.toString('hex',0,8)!=='89504e470d0a1a0a'||image.readUInt32BE(16)!==expected||image.readUInt32BE(20)!==expected)
+    throw new Error(file+' must be a valid '+expected+'x'+expected+' PNG.');
 }
-console.log('Build check passed. GitHub JSON CMS, token memory handling, offline cache, 19 landmarks, 22 districts, 7 history events, 4 figures, 4 references, 10 quiz questions, four-language landmark data, PWA and Android assets verified.');
+console.log('Build check passed: Worker-only admin auth, RBAC, audit, privacy, four locales, offline shell, Android safe areas, APK/AAB workflow and app assets.');
