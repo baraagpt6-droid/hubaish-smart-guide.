@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-24T10:49:33.503Z",
+  "updatedAt": "2026-11-24T10:55:22.403Z",
   "landmarks": [
     {
       "id": "khudad-fort",
@@ -86,6 +86,66 @@
       "image_credit": "مبادرة إقليم الجند، صفحة مديرية حبيش، 29 مايو 2024",
       "image_source_url": "https://al-jandprovince.com/p-61",
       "image_license": "لم يظهر ترخيص إعادة استخدام للصورة؛ تعرض من المصدر الأصلي فقط."
+    },
+    {
+      "id": "nahrah-mosque",
+      "category": "mosque",
+      "status": "documented",
+      "title_ar": "مسجد نَهْرَة على جبل الخضراء",
+      "title_en": "مسجد نَهْرَة على جبل الخضراء",
+      "location_ar": "رأس جبل الخضراء – مديرية حبيش",
+      "location_en": "رأس جبل الخضراء – مديرية حبيش",
+      "description_ar": "تذكر مادة محلية أن كتاب صفة جزيرة العرب أشار إلى مسجد نَهْرَة في رأس جبل الخضراء، وتنقل عن محقق الكتاب القاضي محمد علي الأكوع أنه زار المسجد. لا يورد المصدر تاريخ تأسيس المسجد أو وصفاً معمارياً موثقاً؛ لذلك تسجل البطاقة الإحالة والزيارة المنقولة دون تأريخ المبنى.",
+      "description_en": "تذكر مادة محلية أن كتاب صفة جزيرة العرب أشار إلى مسجد نَهْرَة في رأس جبل الخضراء، وتنقل عن محقق الكتاب القاضي محمد علي الأكوع أنه زار المسجد. لا يورد المصدر تاريخ تأسيس المسجد أو وصفاً معمارياً موثقاً؛ لذلك تسجل البطاقة الإحالة والزيارة المنقولة دون تأريخ المبنى.",
+      "importance_ar": "سجل تراثي أو طبيعي، مع الإبقاء على حدود التوثيق الواردة في المصدر.",
+      "importance_en": "A heritage or natural record, retaining the verification limits stated by the source.",
+      "source_text": "إسماعيل عبدالقادر الفلاحي، نبذة تاريخية عن مديرية حبيش؛ إحالة إلى صفة جزيرة العرب وتحقيق محمد علي الأكوع.",
+      "source_url": "https://kenanaonline.com/users/esmaeilalflahi/posts/280884"
+    },
+    {
+      "id": "zawahi-islamic-school",
+      "category": "mosque",
+      "status": "documented",
+      "title_ar": "مدرسة الزواحي الإسلامية",
+      "title_en": "مدرسة الزواحي الإسلامية",
+      "location_ar": "قرية الزواحي – عزلة كومان",
+      "location_en": "قرية الزواحي – عزلة كومان",
+      "description_ar": "تذكر المادة التاريخية أن مدرسة الزواحي تقع في قرية الزواحي التابعة لعزلة كومان، وأن الشيخ قاسم بن حمير الوائلي بناها وأوقف لها أوقافاً للعلماء والمتعلمين. كما تنقل عن القاضي إسماعيل الأكوع تراجم أربعة من علمائها في كتاب هجر العلم ومعاقله في اليمن. لا يتوفر في المصدر تاريخ تأسيس محدد أو وصف أثري ميداني للمبنى.",
+      "description_en": "تذكر المادة التاريخية أن مدرسة الزواحي تقع في قرية الزواحي التابعة لعزلة كومان، وأن الشيخ قاسم بن حمير الوائلي بناها وأوقف لها أوقافاً للعلماء والمتعلمين. كما تنقل عن القاضي إسماعيل الأكوع تراجم أربعة من علمائها في كتاب هجر العلم ومعاقله في اليمن. لا يتوفر في المصدر تاريخ تأسيس محدد أو وصف أثري ميداني للمبنى.",
+      "importance_ar": "سجل تراثي أو طبيعي، مع الإبقاء على حدود التوثيق الواردة في المصدر.",
+      "importance_en": "A heritage or natural record, retaining the verification limits stated by the source.",
+      "source_text": "إسماعيل عبدالقادر الفلاحي، نبذة تاريخية عن مديرية حبيش، ناقلاً عن المدارس الإسلامية في اليمن وهجر العلم ومعاقله.",
+      "source_url": "https://kenanaonline.com/users/esmaeilalflahi/posts/280884"
+    },
+    {
+      "id": "shafa-fort",
+      "category": "fort",
+      "status": "documented",
+      "title_ar": "حصن شافة",
+      "title_en": "حصن شافة",
+      "location_ar": "عزلة الناحية – بين ظُلمة وقحزة بحسب وصف المقال",
+      "location_en": "عزلة الناحية – بين ظُلمة وقحزة بحسب وصف المقال",
+      "description_ar": "تذكر دراسة انتفاضة حبيش سنة 1919م أن قوات الأمير علي الوزير وصلت إلى حصن شافة بعد السيطرة على عزلة الناحية، وتضع المقالة الناحية بين عزلتي ظُلمة وقحزة. تورد البطاقة الحصن في سياق الحدث التاريخي، ولا تفترض بقاء مبانيه أو إحداثياته الحالية.",
+      "description_en": "تذكر دراسة انتفاضة حبيش سنة 1919م أن قوات الأمير علي الوزير وصلت إلى حصن شافة بعد السيطرة على عزلة الناحية، وتضع المقالة الناحية بين عزلتي ظُلمة وقحزة. تورد البطاقة الحصن في سياق الحدث التاريخي، ولا تفترض بقاء مبانيه أو إحداثياته الحالية.",
+      "importance_ar": "سجل تراثي أو طبيعي، مع الإبقاء على حدود التوثيق الواردة في المصدر.",
+      "importance_en": "A heritage or natural record, retaining the verification limits stated by the source.",
+      "source_text": "بلال الطيب، حبيش.. مفتتح المجد وذروته، 21 مايو 2022.",
+      "source_url": "https://hekmahyemanya.com/آثار/حُبيش-مُفتتح-المجد-وذروته/"
+    },
+    {
+      "id": "ayal-ibrahim-fort",
+      "category": "fort",
+      "status": "documented",
+      "title_ar": "حصن عيال إبراهيم",
+      "title_en": "حصن عيال إبراهيم",
+      "location_ar": "موضع محلي في حبيش – العزلة الدقيقة غير مثبتة في المصدر",
+      "location_en": "موضع محلي في حبيش – العزلة الدقيقة غير مثبتة في المصدر",
+      "description_ar": "تذكر دراسة تاريخية عن انتفاضة 1919م حصن عيال إبراهيم ضمن الحصون والمنازل التي أُحرقت أو خُربت عقب إخماد الانتفاضة. لا يحدد النص العزلة أو الإحداثيات؛ لذا تبقى البطاقة سجلاً تاريخياً للاسم لا دليلاً على موقع جغرافي دقيق.",
+      "description_en": "تذكر دراسة تاريخية عن انتفاضة 1919م حصن عيال إبراهيم ضمن الحصون والمنازل التي أُحرقت أو خُربت عقب إخماد الانتفاضة. لا يحدد النص العزلة أو الإحداثيات؛ لذا تبقى البطاقة سجلاً تاريخياً للاسم لا دليلاً على موقع جغرافي دقيق.",
+      "importance_ar": "سجل تراثي أو طبيعي، مع الإبقاء على حدود التوثيق الواردة في المصدر.",
+      "importance_en": "A heritage or natural record, retaining the verification limits stated by the source.",
+      "source_text": "بلال الطيب، حبيش.. مفتتح المجد وذروته، 21 مايو 2022.",
+      "source_url": "https://hekmahyemanya.com/آثار/حُبيش-مُفتتح-المجد-وذروته/"
     }
   ],
   "historyEvents": [
@@ -153,6 +213,32 @@
       "body_en": "A local historical account says Ismail ibn Ibrahim al-Wuhazi taught children of Sulayhid rulers and reports that the Rasulid ruler al-Afdal Abbas praised scholars from Wuhaza in al-Ataya al-Saniyya. These references show scholarly and literary connections in the sources; they do not by themselves prove that all of modern Hubaish was politically governed by those states. The sources reviewed here do not establish a specific Tahirid administrative relationship.",
       "source_text": "مادة حبيش في موقع ثور رأين، مع إحالات إلى هجر العلم ومعاقله والعطايا السنية.",
       "source_url": "https://www.thu-raein.com/index.php/ar/makhaleef-ar/hubaish-district-ar?id=17&view=category"
+    },
+    {
+      "id": "hubaish-uprising-first-clashes-1919",
+      "era": "modern",
+      "status": "documented",
+      "title_ar": "بداية انتفاضة حبيش وحصار ظُلمة",
+      "title_en": "The beginning of the Hubaish uprising and the siege of Dhulmah",
+      "period_ar": "بداية 1919م – أبريل 1919م",
+      "period_en": "Early 1919 – April 1919",
+      "body_ar": "تذكر دراسة بلال الطيب أن الشيخ محمد عايض العقاب هاجم في مطلع 1919م القوات الإمامية الموجودة في جبل حبيش، ثم حاصر من بقي منها بقيادة القاضي عبدالله بن محمد يونس في مركز الناحية بظُلمة، في دار الحكومة التي يصفها المقال بأنها مبنى تركي. وتنقل الدراسة عن مذكرات يوسف بك حسن إشارة إلى وصول قوة إلى إب في 23 أبريل 1919م استعداداً للتوجه إلى حبيش. تختلف الروايات في أعداد القتلى والأسرى وتفاصيل الحملات، لذا لا تثبت البطاقة الأرقام المختلف عليها.",
+      "body_en": "Bilal al-Tayyib's study says Sheikh Muhammad Ayed al-Aqab attacked Imam Yahya's forces on Mount Hubaish early in 1919 and then besieged the remaining troops under judge Abdullah ibn Muhammad Yunus at the administrative centre in Dhulmah. The study also cites Yusuf Bek Hasan's memoirs mentioning a force arriving in Ibb on 23 April 1919 before moving toward Hubaish. Accounts differ on casualties and campaign details.",
+      "source_text": "بلال الطيب، «حبيش.. مفتتح المجد وذروته»، 21 مايو 2022؛ مع إحالة داخل المقال إلى مذكرات يوسف بك حسن.",
+      "source_url": "https://hekmahyemanya.com/آثار/حُبيش-مُفتتح-المجد-وذروته/"
+    },
+    {
+      "id": "hubaish-uprising-final-battle-17-may-1919",
+      "era": "modern",
+      "status": "documented",
+      "title_ar": "المواجهة الكبرى في جبل حبيش",
+      "title_en": "The major battle on Mount Hubaish",
+      "period_ar": "17 مايو 1919م",
+      "period_en": "17 May 1919",
+      "body_ar": "تحدد الدراسة يوم 17 مايو 1919م لهجوم واسع على مواقع الثوار في جبل حبيش. وتذكر تحرك محاور عسكرية نحو عزلة الناحية والمشيرق وظُلمة، وتورد مقتل الشيخ عبدالعزيز بن عبدالكريم الحداد قرب حصن شافة وفق الرواية التي ينقلها المقال. ثم تذكر الدراسة أن المقاومة انكسرت في أواخر مايو 1919م، مع اختلاف المؤرخين في مدة الانتفاضة بين نحو شهرين وخمسة أشهر. لذلك تحفظ البطاقة التاريخ الذي يورده المقال وتصرح بوجود اختلاف في تقدير المدة.",
+      "body_en": "The study dates a major attack on rebel positions on Mount Hubaish to 17 May 1919. It recounts movements toward Al-Nahiyah, Al-Mushriq and Dhulmah and reports the death of Sheikh Abdulaziz ibn Abdulkarim al-Haddad near Shafa Fort. It says the uprising was defeated in late May 1919, while historians differ on its duration.",
+      "source_text": "بلال الطيب، «حبيش.. مفتتح المجد وذروته»، 21 مايو 2022.",
+      "source_url": "https://hekmahyemanya.com/آثار/حُبيش-مُفتتح-المجد-وذروته/"
     }
   ],
   "subDistrictUpdates": [
@@ -185,6 +271,46 @@
       "description_en": "A historical study of the Hubaish uprising says al-Jarajiz village belongs to Naqil al-Aqab and relays a family account that Sheikh Muhammad Ayed al-Aqab died there around 1925. The guide labels this as an attributed family account, not a civil record.",
       "source_text": "بلال الطيب، «حبيش.. مفتتح المجد وذروته»، 21 مايو 2022.",
       "source_url": "https://hekmahyemanya.com/آثار/حُبيش-مُفتتح-المجد-وذروته/"
+    },
+    {
+      "id": "villages-jabal-khadra",
+      "district_name_ar": "جبل خضراء",
+      "place_name_ar": "مواضع وقرى عزلة جبل خضراء",
+      "description_ar": "تورد قائمة نشرها حساب شركة سبأفون في خبر توسع تغطية الجيل الرابع أسماء مواضع في عزلة جبل خضراء هي: أكمة الدار، القرية، أكمة الطريف، المقاضيب، بيت مروان، الشجن، الشرجة، بين العروش. هذه قائمة مواضع وردت في منشور تغطية اتصالات، وليست سجلاً حكومياً نهائياً بأسماء القرى وحدودها؛ قد تشمل أسماء أحياء أو تجمعات أو مواقع تغطية، ويجب مطابقتها ميدانياً قبل اعتمادها كقائمة إدارية.",
+      "source_text": "سبأفون، قناة الشركة على Telegram، منشور «أخبار توسع تغطية الفورجي – محافظة إب – مديرية حبيش».",
+      "source_url": "https://t.me/s/sabafonye71?before=2961"
+    },
+    {
+      "id": "villages-tafadi",
+      "district_name_ar": "التفادي",
+      "place_name_ar": "مواضع وقرى عزلة التفادي",
+      "description_ar": "تورد قائمة نشرها حساب شركة سبأفون في خبر توسع تغطية الجيل الرابع أسماء مواضع في عزلة التفادي هي: العارضة، الظهرة، العدايف، المصاعيب، شعبة الضبيع، الشعوبة، القرقرة، الجيرة، ذي كريب، الذراع، المحلة، المنازل، الطباق، الشعبة. هذه قائمة مواضع وردت في منشور تغطية اتصالات، وليست سجلاً حكومياً نهائياً بأسماء القرى وحدودها؛ قد تشمل أسماء أحياء أو تجمعات أو مواقع تغطية، ويجب مطابقتها ميدانياً قبل اعتمادها كقائمة إدارية.",
+      "source_text": "سبأفون، قناة الشركة على Telegram، منشور «أخبار توسع تغطية الفورجي – محافظة إب – مديرية حبيش».",
+      "source_url": "https://t.me/s/sabafonye71?before=2961"
+    },
+    {
+      "id": "villages-wadi-al-muqab",
+      "district_name_ar": "وادي المعقاب",
+      "place_name_ar": "مواضع وقرى عزلة وادي المعقاب",
+      "description_ar": "تورد قائمة نشرها حساب شركة سبأفون في خبر توسع تغطية الجيل الرابع أسماء مواضع في عزلة وادي المعقاب هي: حبس الظرائم، السقاعة، المحواشة. هذه قائمة مواضع وردت في منشور تغطية اتصالات، وليست سجلاً حكومياً نهائياً بأسماء القرى وحدودها؛ قد تشمل أسماء أحياء أو تجمعات أو مواقع تغطية، ويجب مطابقتها ميدانياً قبل اعتمادها كقائمة إدارية.",
+      "source_text": "سبأفون، قناة الشركة على Telegram، منشور «أخبار توسع تغطية الفورجي – محافظة إب – مديرية حبيش».",
+      "source_url": "https://t.me/s/sabafonye71?before=2961"
+    },
+    {
+      "id": "villages-naqil-al-aqab",
+      "district_name_ar": "نقيل العقاب",
+      "place_name_ar": "مواضع وقرى عزلة نقيل العقاب",
+      "description_ar": "تورد قائمة نشرها حساب شركة سبأفون في خبر توسع تغطية الجيل الرابع أسماء مواضع في عزلة نقيل العقاب هي: مروحة، الخربة، المدان، بيت القصيعي، الوقابة، هابان العليا، هابان السفلى، المرابعة، شعب النجد، الأرس. هذه قائمة مواضع وردت في منشور تغطية اتصالات، وليست سجلاً حكومياً نهائياً بأسماء القرى وحدودها؛ قد تشمل أسماء أحياء أو تجمعات أو مواقع تغطية، ويجب مطابقتها ميدانياً قبل اعتمادها كقائمة إدارية.",
+      "source_text": "سبأفون، قناة الشركة على Telegram، منشور «أخبار توسع تغطية الفورجي – محافظة إب – مديرية حبيش».",
+      "source_url": "https://t.me/s/sabafonye71?before=2961"
+    },
+    {
+      "id": "villages-al-salaq",
+      "district_name_ar": "السلق",
+      "place_name_ar": "مواضع وقرى عزلة السلق",
+      "description_ar": "تورد قائمة نشرها حساب شركة سبأفون في خبر توسع تغطية الجيل الرابع أسماء مواضع في عزلة السلق هي: الجبانة، العرجوش، المنزل، المخباط، الذراع، الذبيب، الرواحب، ذي الناهم، المشعب، الدقيق، العدنة، السهلة، شعب العقبة، المصينعة، ذي النعير، سفل النقيل، أجدل، خير، الدار، القشبة، المراغة، الظهرة، النقيل، الحصن، الحريقة، الدمنة، المحيار، اللفج، عزان، الدغم، هيجة العفيف، الأنمنة، عميقة السفلى، عميقة العليا، بيت عبادي، أندب. هذه قائمة مواضع وردت في منشور تغطية اتصالات، وليست سجلاً حكومياً نهائياً بأسماء القرى وحدودها؛ قد تشمل أسماء أحياء أو تجمعات أو مواقع تغطية، ويجب مطابقتها ميدانياً قبل اعتمادها كقائمة إدارية.",
+      "source_text": "سبأفون، قناة الشركة على Telegram، منشور «أخبار توسع تغطية الفورجي – محافظة إب – مديرية حبيش».",
+      "source_url": "https://t.me/s/sabafonye71?before=2961"
     }
   ],
   "historicalFigures": [
