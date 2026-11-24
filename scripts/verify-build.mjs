@@ -40,7 +40,7 @@ for (const fragment of ['./styles.css', './app.js', './catalog.js', './features.
   if (!html.includes(fragment)) throw new Error(`Missing app reference: ${fragment}`);
 }
 if (!manifest.name || manifest.start_url !== './' || manifest.scope !== './' || !manifest.icons?.length) throw new Error('PWA manifest is incomplete');
-const sectionTags = [...html.matchAll(/<\\/?section\\b[^>]*>/gi)];
+const sectionTags = [...html.matchAll(new RegExp('<\\/?section\\b[^>]*>', 'gi'))];
 const sectionDepth = [];
 for (const match of sectionTags) {
   if (match[0].startsWith('</')) {
