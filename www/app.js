@@ -45,10 +45,10 @@ const DEFAULT_PLACES = [
 const DEFAULT_SOCIALS = [{ name: 'مديرية حبيش HUBAISH DISTRICT', url: 'https://www.facebook.com/share/g/1JMCzDUsdZ/' }, { name: 'المركز الوطني للمعلومات اليمني', url: 'https://yemen-nic.info/contents/Brief/detail.php?ID=7617&phrase_id=1191776&print=Y' }];
 
 const I18N = {
-  AR: { dir: 'rtl', appName: 'دليل حبيش الذكي', appSub: 'دليل رقمي للتراث والمعالم', govBadge: 'محافظة إب • الجمهورية اليمنية', heroTitle: 'دليل مديرية حبيش', heroDesc: 'موسوعة رقمية لتاريخ حبيش وعزلها وقراها وحصونها ومعالمها ومواقيت الصلاة.', statUzal: 'عزلة إدارية', statArea: 'كم² المساحة', statPop: 'نسمة (تعداد)', spotlightTitle: 'معلم مختار من حبيش', navHome: 'الرئيسية', navHistory: 'التاريخ', navPlaces: 'المعالم', navUzal: 'العزل', navMore: 'المزيد' },
-  EN: { dir: 'ltr', appName: 'Hubaish Smart Guide', appSub: 'Digital heritage and landmark guide', govBadge: 'Ibb Governorate • Yemen', heroTitle: 'Hubaish District Guide', heroDesc: 'A local guide to Hubaish history, sub-districts, villages, forts, landmarks and prayer times.', statUzal: 'Sub-districts', statArea: 'Area in km²', statPop: 'Population', spotlightTitle: 'Featured landmark', navHome: 'Home', navHistory: 'History', navPlaces: 'Landmarks', navUzal: 'Sub-districts', navMore: 'More' },
-  TR: { dir: 'ltr', appName: 'Hubaish Akıllı Rehberi', appSub: 'Dijital miras ve gezi rehberi', govBadge: 'İbb Valiliği • Yemen', heroTitle: 'Hubeyş İlçe Rehberi', heroDesc: 'Hubeyş tarihi, bucakları, köyleri, kaleleri, tarihi yerleri ve namaz vakitleri için yerel rehber.', statUzal: 'Bucak', statArea: 'Alan km²', statPop: 'Nüfus', spotlightTitle: 'Öne çıkan eser', navHome: 'Ana Sayfa', navHistory: 'Tarih', navPlaces: 'Yerler', navUzal: 'Bucaklar', navMore: 'Daha Fazla' },
-  FR: { dir: 'ltr', appName: 'Guide intelligent de Hubaish', appSub: 'Guide numérique du patrimoine', govBadge: 'Gouvernorat d’Ibb • Yémen', heroTitle: 'Guide du district de Hubaish', heroDesc: 'Guide local de l’histoire, des sous-districts, villages, forts, monuments et horaires de prière de Hubaish.', statUzal: 'Sous-districts', statArea: 'Superficie km²', statPop: 'Population', spotlightTitle: 'Monument à la une', navHome: 'Accueil', navHistory: 'Histoire', navPlaces: 'Monuments', navUzal: 'Sous-districts', navMore: 'Plus' }
+  AR: { dir: 'rtl', appName: 'دليل حبيش الذكي', appSub: 'دليل رقمي للتراث والمعالم', govBadge: 'محافظة إب • الجمهورية اليمنية', statCenter: 'مركز المديرية', heroTitle: 'دليل حبيش الذكي', heroDesc: 'موسوعة رقمية لتاريخ حبيش وعزلها وقراها وحصونها ومعالمها ومواقيت الصلاة.', statUzal: 'عزلة إدارية', statArea: 'كم² المساحة', statPop: 'نسمة (تعداد)', spotlightTitle: 'معلم مختار من حبيش', navHome: 'الرئيسية', navHistory: 'التاريخ', navPlaces: 'المعالم', navUzal: 'العزل', navMore: 'المزيد' },
+  EN: { dir: 'ltr', appName: 'Hubaish Smart Guide', appSub: 'Digital heritage and landmark guide', govBadge: 'Ibb Governorate • Yemen', statCenter: 'District center', heroTitle: 'Hubaish Smart Guide', heroDesc: 'A local guide to Hubaish history, sub-districts, villages, forts, landmarks and prayer times.', statUzal: 'Sub-districts', statArea: 'Area in km²', statPop: 'Population', spotlightTitle: 'Featured landmark', navHome: 'Home', navHistory: 'History', navPlaces: 'Landmarks', navUzal: 'Sub-districts', navMore: 'More' },
+  TR: { dir: 'ltr', appName: 'Hubaish Akıllı Rehberi', appSub: 'Dijital miras ve gezi rehberi', govBadge: 'İbb Valiliği • Yemen', statCenter: 'İlçe merkezi', heroTitle: 'Hubaish Akıllı Rehberi', heroDesc: 'Hubeyş tarihi, bucakları, köyleri, kaleleri, tarihi yerleri ve namaz vakitleri için yerel rehber.', statUzal: 'Bucak', statArea: 'Alan km²', statPop: 'Nüfus', spotlightTitle: 'Öne çıkan eser', navHome: 'Ana Sayfa', navHistory: 'Tarih', navPlaces: 'Yerler', navUzal: 'Bucaklar', navMore: 'Daha Fazla' },
+  FR: { dir: 'ltr', appName: 'Guide intelligent de Hubaish', appSub: 'Guide numérique du patrimoine', govBadge: 'Gouvernorat d’Ibb • Yémen', statCenter: 'Centre du district', heroTitle: 'Guide intelligent de Hubaish', heroDesc: 'Guide local de l’histoire, des sous-districts, villages, forts, monuments et horaires de prière de Hubaish.', statUzal: 'Sous-districts', statArea: 'Superficie km²', statPop: 'Population', spotlightTitle: 'Monument à la une', navHome: 'Accueil', navHistory: 'Histoire', navPlaces: 'Monuments', navUzal: 'Sous-districts', navMore: 'Plus' }
 };
 
 let currentEra = 'all';
@@ -208,6 +208,15 @@ function applyLang(lang) {
   if (languageCode) languageCode.textContent = state.lang;
   const languageSelect = document.getElementById('langSelect');
   if (languageSelect) languageSelect.value = state.lang;
+  const offlineLabel=document.getElementById('offlineIndicator');
+  if(offlineLabel)offlineLabel.textContent=({AR:'أنت دون اتصال. المحتوى المحفوظ متاح.',EN:'You are offline. Cached content is available.',TR:'Çevrimdışısınız. Önbellekteki içerik kullanılabilir.',FR:'Vous êtes hors ligne. Le contenu en cache reste disponible.'})[state.lang];
+  const loginUser=document.getElementById('workerUsername'),loginPass=document.getElementById('workerPassword');
+  if(loginUser)loginUser.placeholder=({AR:'اسم المستخدم',EN:'Username',TR:'Kullanıcı adı',FR:'Nom d’utilisateur'})[state.lang];
+  if(loginPass)loginPass.placeholder=({AR:'كلمة المرور',EN:'Password',TR:'Şifre',FR:'Mot de passe'})[state.lang];
+  const remember=document.querySelector('#workerRemember')?.parentElement;
+  if(remember)remember.lastChild.textContent=' '+({AR:'تذكرني لمدة 30 يوماً',EN:'Remember me for 30 days',TR:'30 gün boyunca beni hatırla',FR:'Se souvenir de moi pendant 30 jours'})[state.lang];
+  const loginButton=document.querySelector('#workerLoginForm button[type="submit"]');
+  if(loginButton&&!loginButton.disabled)loginButton.textContent=({AR:'دخول آمن',EN:'Secure sign in',TR:'Güvenli giriş',FR:'Connexion sécurisée'})[state.lang];
   const code = document.getElementById('languageCurrentCode');
   if (code) code.textContent = state.lang;
   const trigger = document.getElementById('languagePickerButton');
@@ -746,10 +755,22 @@ function resetLocalData() {
   showToast('تمت إعادة البيانات المحلية.');
 }
 
+function getReaderScale(){const value=Number(localStorage.getItem('hubaish_reader_scale')||'1');return Number.isFinite(value)?Math.max(.88,Math.min(1.18,value)):1}
+function setReaderScale(value){
+  const scale=Math.max(.88,Math.min(1.18,Math.round(value*100)/100));
+  localStorage.setItem('hubaish_reader_scale',String(scale));
+  document.documentElement.style.fontSize=(16*scale)+'px';
+}
 function bindEvents() {
   document.querySelectorAll('.nav-btn').forEach(button => button.addEventListener('click', () => switchTab(button.dataset.tab)));
   document.getElementById('homeLogoBtn').addEventListener('click', () => { switchTab('home'); window.scrollTo({ top: 0, behavior: 'smooth' }); });
   document.getElementById('themeToggleBtn').addEventListener('click', () => applyTheme(state.theme === 'dark' ? 'light' : 'dark'));
+  setReaderScale(getReaderScale());
+  document.getElementById('readerFontDecrease')?.addEventListener('click',()=>setReaderScale(getReaderScale()-.04));
+  document.getElementById('readerFontIncrease')?.addEventListener('click',()=>setReaderScale(getReaderScale()+.04));
+  document.getElementById('readerFontReset')?.addEventListener('click',()=>setReaderScale(1));
+  document.getElementById('readerOpenFavorites')?.addEventListener('click',()=>document.getElementById('favOpenBtn')?.click());
+  document.getElementById('readerToggleTheme')?.addEventListener('click',()=>applyTheme(state.theme==='dark'?'light':'dark'));
   const languageSelect = document.getElementById('langSelect');
   languageSelect?.addEventListener('change', () => applyLang(languageSelect.value));
   const languagePickerButton = document.getElementById('languagePickerButton');
@@ -786,9 +807,9 @@ function bindEvents() {
     if (willOpen) renderRadar();
   });
   document.getElementById('favOpenBtn').addEventListener('click', () => { renderFavorites(); openModal('favModal'); });
-  document.getElementById('openAiBtn').addEventListener('click', () => openModal('aiModal'));
+  document.getElementById('openAiBtn')?.addEventListener('click', () => openModal('aiModal'));
   document.getElementById('aiForm').addEventListener('submit', event => { event.preventDefault(); sendAiMessage(); });
-  document.getElementById('openAiBtn').addEventListener('keydown', event => { if (event.key === 'Enter') openModal('aiModal'); });
+  document.getElementById('openAiBtn')?.addEventListener('keydown', event => { if (event.key === 'Enter') openModal('aiModal'); });
   document.getElementById('addPlaceSaveBtn')?.addEventListener('click', handleAddPlace);
   // Social administration is handled by the extended local admin panel.
   // Full-state JSON export is handled by the extended feature layer.
