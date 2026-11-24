@@ -788,9 +788,19 @@ function init() {
     renderAll: renderAll,
     applyCloudData(data) {
       const incoming = data || {};
-      state.places = state.places.filter(item => !String(item.id || '').startsWith('cloud-')).concat(incoming.landmarks || []);
-      state.history = state.history.filter(item => !String(item.id || '').startsWith('cloud-')).concat(incoming.history || []);
-      state.socials = state.socials.filter(item => !item.cloudId).concat(incoming.links || []);
+      const mergeById = (base, additions) => {
+        const merged = new Map((base || []).map(item => [String(item.id || ''), item]));
+        for (const item of additions || []) {
+          if (!item || !item.id) continue;
+          merged.set(String(item.id), item);
+        }
+        return [...merged.values()];
+      };
+      const retainedPlaces = state.places.filter(item => !String(item.id || '').startsWith('cms-landmark-'));
+      const retainedHistory = state.history.filter(item => !String(item.id || '').startsWith('cms-history_event-'));
+      state.places = mergeById(retainedPlaces, incoming.landmarks || []);
+      state.history = mergeById(retainedHistory, incoming.history || []);
+      state.socials = state.socials.filter(item => !item.cloudId).concat((incoming.links || []).filter(item => item?.url && item?.name));
     }
   };
   applyTheme(state.theme);
