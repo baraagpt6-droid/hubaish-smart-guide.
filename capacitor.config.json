@@ -2,5 +2,6 @@
   "appId": "com.hubaish.guide",
   "appName": "دليل مديرية حبيش",
   "webDir": "www",
-  "bundledWebRuntime": false
+  "bundledWebRuntime": false,
+  "server": { "androidScheme": "https" }
 }
