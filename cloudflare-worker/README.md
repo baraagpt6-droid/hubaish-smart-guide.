@@ -44,10 +44,10 @@ The Wrangler configuration restricts browser access to the GitHub Pages site ori
 
 ```toml
 [vars]
-ALLOWED_ORIGIN = "https://baraagpt6-droid.github.io,http://localhost"
+ALLOWED_ORIGIN = "https://baraagpt6-droid.github.io,http://localhost,http://localhost:4173"
 ```
 
-The Worker code also permits Capacitor's `capacitor://localhost` and `https://localhost` origins by default. The configured allowlist above explicitly includes the published GitHub Pages origin and `http://localhost`. If you move the website to a custom domain, add that exact origin to `ALLOWED_ORIGIN` (comma-separated) in the Worker settings.
+The Worker code also permits Capacitor's `capacitor://localhost` and `https://localhost` origins by default. The configured allowlist above explicitly includes the published GitHub Pages origin, `http://localhost`, and the repository preview origin `http://localhost:4173`. If you move the website to a custom domain, add that exact origin to `ALLOWED_ORIGIN` (comma-separated) in the Worker settings.
 
 Deploy using the Cloudflare dashboard or the deployment method already connected to this Worker. Confirm the deployed URL is:
 
