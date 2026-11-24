@@ -146,6 +146,11 @@ if (!html.includes('id="imageLightbox"') || !html.includes('data-lightbox-src') 
     !sw.includes('hubaish-guide-v3.7.0')) {
   throw new Error('Image lazy loading, lightbox or offline image caching is incomplete.');
 }
+if (!app.includes('data-share') || !app.includes('navigator.share({ title: item.title, text, url })') ||
+    !app.includes('const candidates = [...state.places, ...state.history]') ||
+    !features.includes("timeZone:'Asia/Aden'") || !features.includes('factIndex=((dayNumber%FACTS.length)+FACTS.length)%FACTS.length')) {
+  throw new Error('Daily Hubaish feature or direct content sharing is incomplete.');
+}
 if (!html.includes('id="cloudAdminStats"') || !html.includes('id="cloudContentSearch"') ||
     !githubCms.includes('function renderAdminStats') || !githubCms.includes('cloudContentFilter')) {
   throw new Error('CMS admin dashboard counters and content search are incomplete.');
