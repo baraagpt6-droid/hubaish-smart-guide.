@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#08100d">
   <meta name="description" content="دليل مديرية حبيش، موسوعة جغرافية وتاريخية للعزل والمعالم والتاريخ والمجتمع ومواقيت الصلاة.">
   <meta name="referrer" content="strict-origin-when-cross-origin">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob:; connect-src 'self' https://api.mymemory.translated.net https://*.supabase.co; worker-src 'self'; manifest-src 'self'; upgrade-insecure-requests">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob:; connect-src 'self' https://api.mymemory.translated.net https://api.github.com https://raw.githubusercontent.com; worker-src 'self'; manifest-src 'self'; upgrade-insecure-requests">
   <title>مديرية حبيش | موسوعة جغرافية وتاريخية</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -18,8 +18,7 @@
   <script src="./app.js" defer></script>
   <script src="./catalog.js" defer></script>
   <script src="./features.js" defer></script>
-  <script src="./supabase-config.js" defer></script>
-  <script src="./cloud.js" defer></script>
+  <script src="./github-cms.js" defer></script>
 </head>
 <body>
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
@@ -141,35 +140,40 @@
       </article>
 
       <article class="item-card cloud-admin-card hub-panel" id="cloudAdminCard">
-        <div class="cloud-card-heading"><div><span class="tag tag-gold">SUPABASE LIVE CMS</span><h3 class="item-title">إدارة الموسوعة السحابية</h3><p class="item-body">انشر المحتوى لجميع الأجهزة من لوحة واحدة. يستمر التطبيق بالعمل محلياً عند انقطاع الإنترنت.</p></div><span class="cloud-status-pill" id="cloudStatus">لم يتم إعداد الاتصال السحابي بعد.</span></div>
-        <form id="cloudConfigForm" class="cloud-config-grid">
-          <label>Project URL<input id="cloudProjectUrl" class="input-field" type="url" placeholder="https://your-project.supabase.co" required></label>
-          <label>Publishable key / anon public key<textarea id="cloudAnonKey" class="input-field" rows="2" placeholder="sb_publishable_..." required></textarea></label>
-          <div class="cloud-config-actions"><button class="btn-primary" type="submit">حفظ الإعدادات والاتصال</button><button class="btn-sm" id="cloudRefreshBtn" type="button">مزامنة الآن</button></div>
-        </form>
-        <div id="cloudAdminLoginArea" class="cloud-login-area"><h4 class="item-title">دخول مشرف حبيش</h4><form id="cloudAdminForm" class="cloud-login-grid"><input id="cloudAdminEmail" class="input-field" type="email" placeholder="البريد الإلكتروني للمشرف" autocomplete="username" required><input id="cloudAdminPassword" class="input-field" type="password" placeholder="كلمة المرور" autocomplete="current-password" required><button class="btn-secondary" type="submit">دخول لوحة الإشراف</button></form></div>
+        <div class="cloud-card-heading"><div><span class="tag tag-gold">GITHUB JSON CMS</span><h3 class="item-title">إدارة الموسوعة المنشورة</h3><p class="item-body">يُحفظ المحتوى في ملف JSON داخل المستودع، ويُحمّل للزوار دون تسجيل دخول. الكتابة متاحة للمشرف فقط.</p></div><span class="cloud-status-pill" id="cloudStatus">يجري تحميل آخر نسخة من GitHub...</span></div>
+        <div id="cloudAdminLoginArea" class="cloud-login-area">
+          <h4 class="item-title">دخول مشرف GitHub</h4>
+          <p class="small muted">أنشئ Fine-grained Personal Access Token لمستودع هذا المشروع فقط، مع صلاحية Contents: Read and write وMetadata: Read. لا تستخدم Token عاماً بصلاحيات جميع المستودعات.</p>
+          <form id="cloudAdminForm" class="cloud-login-grid">
+            <input id="cloudAdminPassword" class="input-field" type="password" placeholder="GitHub Personal Access Token" autocomplete="off" autocapitalize="off" spellcheck="false" required>
+            <button class="btn-primary" type="submit">التحقق وفتح لوحة الإشراف</button>
+          </form>
+          <p class="small muted">لا يُحفظ الرمز في localStorage أو ملف عام. يبقى في ذاكرة صفحة المشرف حتى تسجيل الخروج أو إغلاق الصفحة أو إعادة تحميلها.</p>
+          <p class="small"><a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener noreferrer">إنشاء Fine-grained Token من GitHub</a></p>
+        </div>
         <div id="cloudAdminPanel" class="hidden">
-          <div class="cloud-admin-top"><strong id="cloudAdminIdentity"></strong><button class="btn-sm" id="cloudAdminLogoutBtn" type="button">تسجيل الخروج</button></div>
+          <div class="cloud-admin-top"><strong id="cloudAdminIdentity"></strong><div class="card-actions"><button class="btn-sm" id="cloudRefreshBtn" type="button">قراءة آخر نسخة</button><button class="btn-sm" id="cloudAdminLogoutBtn" type="button">تسجيل الخروج ومسح الرمز</button></div></div>
+          <p class="small muted">اختر سجلاً لتعديله. السجلات الأساسية لا تُحذف؛ حذف تعديلها يعيد النص الأصلي. الإضافات والقرى والروابط المضافة يمكن حذفها.</p>
           <section id="cloudContentEditor" class="cloud-editor"><h4 class="item-title">إضافة أو تعديل محتوى منشور</h4>
             <form id="cloudContentForm"><input id="cloudRecordId" type="hidden"><input id="cloudContributionId" type="hidden">
-              <label>نوع المحتوى<select id="cloudRecordType" class="input-field"><option value="landmark">معلم</option><option value="history_event">محطة تاريخية</option><option value="sub_district_update">قرية أو تحديث عزلة</option><option value="historical_figure">شخصية أو علم</option><option value="community_link">رابط مجتمع</option></select></label>
+              <label>نوع المحتوى<select id="cloudRecordType" class="input-field"><option value="landmark">معلم</option><option value="history_event">محطة تاريخية</option><option value="sub_district">تعديل إحدى العزل الـ22</option><option value="sub_district_update">قرية أو موضع داخل عزلة</option><option value="historical_figure">شخصية أو علم</option><option value="community_link">رابط مجتمع</option></select></label>
               <div class="cloud-fields-grid">
-                <label>الاسم بالعربية<input id="cloudTitleAr" class="input-field"></label><label>الاسم EN<input id="cloudTitleEn" class="input-field"></label><label>الاسم TR<input id="cloudTitleTr" class="input-field"></label><label>الاسم FR<input id="cloudTitleFr" class="input-field"></label>
+                <label>الاسم بالعربية<input id="cloudTitleAr" class="input-field" required></label><label>الاسم EN<input id="cloudTitleEn" class="input-field"></label><label>الاسم TR<input id="cloudTitleTr" class="input-field"></label><label>الاسم FR<input id="cloudTitleFr" class="input-field"></label>
                 <label>الموقع بالعربية<input id="cloudLocationAr" class="input-field"></label><label>الموقع EN<input id="cloudLocationEn" class="input-field"></label><label>الموقع TR<input id="cloudLocationTr" class="input-field"></label><label>الموقع FR<input id="cloudLocationFr" class="input-field"></label>
-                <label>اسم العزلة بالعربية<input id="cloudDistrictAr" class="input-field"></label><label>اسم القرية أو الموضع بالعربية<input id="cloudPlaceAr" class="input-field"></label>
+                <label>اسم العزلة بالعربية<input id="cloudDistrictAr" class="input-field"></label><label>اسم العزلة EN<input id="cloudDistrictEn" class="input-field"></label><label>اسم العزلة TR<input id="cloudDistrictTr" class="input-field"></label><label>اسم العزلة FR<input id="cloudDistrictFr" class="input-field"></label>
                 <label>الفترة بالعربية<input id="cloudPeriodAr" class="input-field"></label><label>الفترة EN<input id="cloudPeriodEn" class="input-field"></label><label>الفترة TR<input id="cloudPeriodTr" class="input-field"></label><label>الفترة FR<input id="cloudPeriodFr" class="input-field"></label>
-                <label>التصنيف أو الدور<input id="cloudCategory" class="input-field" placeholder="fort / modern / شخصية"></label><label>رابط المجتمع<input id="cloudUrl" class="input-field" type="url" placeholder="https://"></label><label>ترتيب الرابط<input id="cloudSortOrder" class="input-field" type="number" value="0"></label>
+                <label>التصنيف أو الدور<input id="cloudCategory" class="input-field" placeholder="fort / modern / دور الشخصية"></label><label>رابط المجتمع<input id="cloudUrl" class="input-field" type="url" placeholder="https://"></label><label>ترتيب الرابط<input id="cloudSortOrder" class="input-field" type="number" value="0"></label>
               </div>
-              <label>التفاصيل بالعربية<textarea id="cloudDetailsAr" class="input-field" rows="4" maxlength="5000"></textarea></label>
+              <label>الموقع / أهمية المعلم<textarea id="cloudImportanceAr" class="input-field" rows="2" maxlength="600"></textarea></label>
+              <label>التفاصيل بالعربية<textarea id="cloudDetailsAr" class="input-field" rows="4" maxlength="5000" required></textarea></label>
               <div class="cloud-fields-grid"><label>التفاصيل EN<textarea id="cloudDetailsEn" class="input-field" rows="3"></textarea></label><label>التفاصيل TR<textarea id="cloudDetailsTr" class="input-field" rows="3"></textarea></label><label>التفاصيل FR<textarea id="cloudDetailsFr" class="input-field" rows="3"></textarea></label></div>
               <label>المصدر<input id="cloudSource" class="input-field" maxlength="500"></label><label>رابط المصدر<input id="cloudSourceUrl" class="input-field" type="url" maxlength="1000" placeholder="https://"></label>
-              <div class="cloud-config-actions"><button class="btn-primary" type="submit">حفظ ونشر للجميع</button><button class="btn-sm" id="cloudTranslateBtn" type="button">ترجمة الحقول الناقصة</button><button class="btn-sm" id="cloudContentClearBtn" type="button">مسح النموذج</button></div>
+              <div class="cloud-config-actions"><button class="btn-primary" type="submit">حفظ ونشر عبر GitHub</button><button class="btn-sm" id="cloudTranslateBtn" type="button">ترجمة الحقول الناقصة</button><button class="btn-sm" id="cloudContentClearBtn" type="button">مسح النموذج</button></div>
             </form>
           </section>
-          <section class="cloud-manager-section"><h4 class="item-title">إدارة المحتوى المنشور</h4><div id="cloudContentList" class="cloud-list"><p class="empty-state">اضغط مزامنة لتحميل المحتوى.</p></div></section>
-          <section class="cloud-manager-section"><h4 class="item-title">صندوق وارد أبناء حبيش</h4><p class="small muted">تصل المساهمات بحالة pending ولا تظهر للزوار قبل موافقة المشرف.</p><div id="cloudInboxList" class="cloud-list"><p class="empty-state">لا توجد مساهمات محملة بعد.</p></div></section>
+          <section class="cloud-manager-section"><h4 class="item-title">إدارة المحتوى المنشور</h4><div id="cloudContentList" class="cloud-list"><p class="empty-state">يجري تحميل القائمة...</p></div></section>
         </div>
-        <p class="cloud-security-note">المفتاح المستخدم هو anon public فقط. لا تضع service_role أو أي مفتاح سري داخل التطبيق.</p>
+        <p class="cloud-security-note">يحتاج النشر إلى اتصال بالإنترنت ورمز صالح. رمز المشرف لا يُرفع داخل بيانات JSON ولا يُرسل إلا إلى GitHub API. عرض المحتوى العام لا يحتاج إلى رمز.</p>
       </article>
     </section>
   </main>
