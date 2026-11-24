@@ -126,6 +126,10 @@ const frontendWorkerContracts = [
 for (const contract of frontendWorkerContracts) {
   if (!githubCms.includes(contract)) throw new Error('Frontend Cloudflare Worker endpoint contract is missing: ' + contract);
 }
+if (!githubCms.includes('result.bootstrapKeyConfigured===false') ||
+    !githubCms.includes('BOOTSTRAP_KEY غير مضبوط في Cloudflare Secrets')) {
+  throw new Error('First-admin setup UI must detect a missing BOOTSTRAP_KEY before submitting the form.');
+}
 if (!worker.includes('/setup/status') || !worker.includes('/setup') || !worker.includes('https://baraagpt6-droid.github.io') || !worker.includes('capacitor://localhost') || !worker.includes('http://localhost') || !worker.includes('https://localhost') || !worker.includes('ALLOWED_ORIGIN') || !worker.includes('/auth/login') || !worker.includes('/admin/users') || !worker.includes('/admin/audit') ||
     !worker.includes('PBKDF2') || !worker.includes('GITHUB_TOKEN') || !worker.includes('SESSION_SECRET') ||
     !worker.includes('super_admin') || !worker.includes('editor') || !worker.includes('updatedBy')) {
