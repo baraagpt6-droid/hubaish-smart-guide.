@@ -160,7 +160,7 @@
     const progress=document.querySelector('[data-explorer-progress-text]')?.textContent||'0%';
     const text=({AR:'رتبتي في استكشاف حبيش: ',EN:'My Hubaish Explorer rank: ',TR:'Hubaish kaşif seviyem: ',FR:'Mon niveau d’explorateur Hubaish : '})[state.lang]||'رتبتي في استكشاف حبيش: ';
     const message=text+rank+' · '+progress;
-    if(navigator.share)navigator.share({title:'Hubaish Smart Guide',text:message}).catch(()=>{});
+    if(navigator.share)navigator.share({title:'Hubaish Guide',text:message}).catch(()=>{});
     else if(navigator.clipboard?.writeText)navigator.clipboard.writeText(message).then(()=>showToast('تم نسخ شارة الإنجاز.')).catch(()=>showToast(message));
     else showToast(message);
   }
@@ -178,6 +178,16 @@
     if(title)title.textContent=item.title; if(body)body.textContent=item.body; if(source)source.textContent=item.source;
     if(label)label.textContent=({AR:'دليل المواسم الزراعية والمناخ الجبلي',EN:'Mountain farming and seasons',TR:'Dağ tarımı ve mevsimler',FR:'Agriculture de montagne et saisons'})[lang];
     if(next)next.textContent=({AR:'موسم آخر',EN:'Another season',TR:'Başka mevsim',FR:'Autre saison'})[lang];
+  }
+
+  function applyLanguage() {
+    localizeAdminControls();
+    renderExplorerProgress();
+    renderSmartItineraries();
+    renderSmartCompare();
+    renderSeasonGuide();
+    localizeDynamicLabels();
+    updateSavedAt();
   }
 
   function clean(value, max = 1500) { return String(value ?? '').replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F]/g, '').trim().slice(0, max); }
@@ -424,6 +434,6 @@
   if (typeof localAssistantAnswer === 'function') { const baseAnswer=localAssistantAnswer; window.localAssistantAnswer = question => localizeAssistant(question,baseAnswer(question)); }
   window.normAr = value => normalizeArabic(value);
   function setCommunityUrl(url){featureState.communityUrl=validHttpUrl(url)?url:FACEBOOK_URL;const link=document.getElementById('communityJoinLink');if(link)link.href=featureState.communityUrl;saveFeatureState();renderCommunitySocials();}
-  window.HubaishFeatures = { exportAllBackup, randomTour, renderAdminLists, getState:()=>featureState, isAdminUnlocked:()=>window.HubaishCloud?.isAdmin?.(), touchSaved, markExplored, renderExplorerProgress, getUzal:()=>featureState.uzal.slice(), getPeople:()=>featureState.people.slice(), setCloudPeople, setCommunityUrl, showDetail, renderSmartItineraries, renderSmartCompare, assistantAnswer:question=>localizeAssistant(question,localAssistantAnswer(question)), text:t, reset:()=>{localStorage.removeItem(FEATURE_KEY);featureState=loadFeatureState();saveFeatureState();renderAdminLists();renderExplorerProgress();} };
+  window.HubaishFeatures = { exportAllBackup, randomTour, renderAdminLists, applyLanguage, getState:()=>featureState, isAdminUnlocked:()=>window.HubaishCloud?.isAdmin?.(), touchSaved, markExplored, renderExplorerProgress, getUzal:()=>featureState.uzal.slice(), getPeople:()=>featureState.people.slice(), setCloudPeople, setCommunityUrl, showDetail, renderSmartItineraries, renderSmartCompare, assistantAnswer:question=>localizeAssistant(question,localAssistantAnswer(question)), text:t, reset:()=>{localStorage.removeItem(FEATURE_KEY);featureState=loadFeatureState();saveFeatureState();renderAdminLists();renderExplorerProgress();} };
   document.addEventListener('DOMContentLoaded',init,{once:true});
 })();
