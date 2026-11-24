@@ -273,7 +273,7 @@
       if($('workerSetupForm'))$('workerSetupForm').reset();
       const remember=!!$('workerRemember')?.checked;
       await finishWorkerLogin(endpoint,username,password,remember,false);
-      status('تم إنشاء المشرف العام وتفعيل الربط وتسجيل الدخول بنجاح.',false);
+      status('تم إنشاء المشرف العام وتفعيل الربط وتسجيل الدخول بنجاح. احذف BOOTSTRAP_KEY من Cloudflare Worker Secrets الآن.',false);
       toast('تم تأسيس دليل حبيش. مرحباً بالمشرف العام.');
     }catch(error){status(error.message,true);toast('تعذر تأسيس النظام. تحقق من Worker Secrets وBootstrap Key.')}
     finally{if($('workerBootstrapKey'))$('workerBootstrapKey').value='';if($('workerSetupPassword'))$('workerSetupPassword').value=''}
