@@ -179,3 +179,14 @@ body{font-family:'IBM Plex Sans Arabic',Tahoma,Arial,sans-serif}.hero-title,.bra
   .sw-update-banner .btn-secondary{font-size:9px}
   .explorer-progress,.season-card{padding:11px}
 }
+
+.story-heritage-icon{
+  position:absolute;
+  top:12px;
+  inset-inline-start:12px;
+  width:30px;
+  height:30px;
+  color:#d4af37;
+  filter:drop-shadow(0 2px 8px rgba(0,0,0,.25));
+}
+html[data-theme=light] .story-heritage-icon{color:#e8cc72}
