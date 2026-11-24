@@ -112,15 +112,19 @@ function validateHistory(item, index = 0) {
 
 function normalizeState(value) {
   const source = value && typeof value === 'object' && !Array.isArray(value) ? value : {};
-  const migrateContent = Number(source.contentVersion || 1) < 3;
-  let places = Array.isArray(source.places) ? source.places.slice(0, 200).map(validatePlace).filter(Boolean) : DEFAULT_PLACES.map(item => ({ ...item }));
-  let history = Array.isArray(source.history) ? source.history.slice(0, 100).map(validateHistory).filter(Boolean) : DEFAULT_HISTORY.map(item => ({ ...item }));
-  if (migrateContent) {
-    const customPlaces = places.filter(item => !DEFAULT_PLACES.some(base => base.id === item.id));
-    const customHistory = history.filter(item => !DEFAULT_HISTORY.some(base => base.id === item.id));
-    places = [...DEFAULT_PLACES.map(item => ({ ...item })), ...customPlaces];
-    history = [...DEFAULT_HISTORY.map(item => ({ ...item })), ...customHistory];
-  }
+  let places = Array.isArray(source.places) ? source.places.slice(0, 200).map(validatePlace).filter(Boolean) : [];
+  let history = Array.isArray(source.history) ? source.history.slice(0, 100).map(validateHistory).filter(Boolean) : [];
+  // Restore missing built-in records without overwriting saved edits.
+  const basePlaceIds = new Set(DEFAULT_PLACES.map(item => item.id));
+  const baseHistoryIds = new Set(DEFAULT_HISTORY.map(item => item.id));
+  places = [
+    ...DEFAULT_PLACES.map(base => places.find(item => item.id === base.id) || { ...base }),
+    ...places.filter(item => !basePlaceIds.has(item.id))
+  ];
+  history = [
+    ...DEFAULT_HISTORY.map(base => history.find(item => item.id === base.id) || { ...base }),
+    ...history.filter(item => !baseHistoryIds.has(item.id))
+  ];
   const socials = Array.isArray(source.socials) ? source.socials.slice(0, 50).map(item => {
     if (!item || typeof item !== 'object') return null;
     const name = cleanText(item.name, 70);
@@ -130,7 +134,7 @@ function normalizeState(value) {
   const ids = new Set([...places, ...history].map(item => item.id));
   const favs = Array.isArray(source.favs) ? source.favs.filter(id => typeof id === 'string' && ids.has(id)).slice(0, 300) : [];
   return {
-    contentVersion: 3,
+    contentVersion: 4,
     theme: source.theme === 'light' ? 'light' : 'dark',
     lang: I18N[source.lang] ? source.lang : 'AR',
     tab: ['home', 'history', 'places', 'uzal', 'more'].includes(source.tab) ? source.tab : 'home',

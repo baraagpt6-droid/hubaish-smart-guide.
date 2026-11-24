@@ -226,8 +226,29 @@
   function node(tag, cls, text) { const el = document.createElement(tag); if (cls) el.className = cls; if (text !== undefined) el.textContent = String(text); return el; }
   function button(text, action, value, cls = 'btn-sm') { const el = node('button', cls, text); el.type = 'button'; el.dataset.featureAction = action; if (value !== undefined) el.dataset.featureValue = value; return el; }
   function loadFeatureState() {
-    const defaults = { contributions: [], quizRuns: 0, lastSavedAt: null, socialHidden: [], people: [], uzal: (typeof UZAL_22!=='undefined'?UZAL_22.slice():[]), visitedPlaces: [], visitedUzal: [], communityUrl: FACEBOOK_URL, schemaVersion: 3 };
-    try { const raw = JSON.parse(localStorage.getItem(FEATURE_KEY) || 'null'); if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return defaults; return { ...defaults, ...raw, contributions: Array.isArray(raw.contributions) ? raw.contributions.slice(0, 200) : [], quizRuns: Number.isFinite(raw.quizRuns) ? raw.quizRuns : 0, socialHidden: Array.isArray(raw.socialHidden) ? raw.socialHidden.filter(x => typeof x === 'string') : [], people: Array.isArray(raw.people) ? raw.people.slice(0, 100) : [], uzal: Array.isArray(raw.uzal) ? raw.uzal.map(x=>clean(x,70)).filter(Boolean).slice(0,60) : (typeof UZAL_22!=='undefined'?UZAL_22.slice():[]), visitedPlaces: Array.isArray(raw.visitedPlaces) ? [...new Set(raw.visitedPlaces.filter(x=>typeof x==='string'))].slice(0,300) : [], visitedUzal: Array.isArray(raw.visitedUzal) ? [...new Set(raw.visitedUzal.filter(x=>typeof x==='string'))].slice(0,60) : [], communityUrl: validHttpUrl(raw.communityUrl)?raw.communityUrl:FACEBOOK_URL }; } catch { return defaults; }
+    const baseUzal = typeof UZAL_22 !== 'undefined' ? UZAL_22.slice() : [];
+    const defaults = { contributions: [], quizRuns: 0, lastSavedAt: null, socialHidden: [], people: [], uzal: baseUzal, visitedPlaces: [], visitedUzal: [], communityUrl: FACEBOOK_URL, schemaVersion: 4 };
+    try {
+      const raw = JSON.parse(localStorage.getItem(FEATURE_KEY) || 'null');
+      if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return defaults;
+      const savedUzal = Array.isArray(raw.uzal) ? raw.uzal.map(x => clean(x, 70)).filter(Boolean).slice(0, 60) : [];
+      const mergedUzal = [...baseUzal, ...savedUzal.filter(name => !baseUzal.includes(name))].slice(0, 60);
+      return {
+        ...defaults,
+        ...raw,
+        contributions: Array.isArray(raw.contributions) ? raw.contributions.slice(0, 200) : [],
+        quizRuns: Number.isFinite(raw.quizRuns) ? raw.quizRuns : 0,
+        socialHidden: Array.isArray(raw.socialHidden) ? raw.socialHidden.filter(x => typeof x === 'string') : [],
+        people: Array.isArray(raw.people) ? raw.people.slice(0, 100) : [],
+        uzal: mergedUzal,
+        visitedPlaces: Array.isArray(raw.visitedPlaces) ? [...new Set(raw.visitedPlaces.filter(x => typeof x === 'string'))].slice(0, 300) : [],
+        visitedUzal: Array.isArray(raw.visitedUzal) ? [...new Set(raw.visitedUzal.filter(x => typeof x === 'string'))].slice(0, 60) : [],
+        communityUrl: validHttpUrl(raw.communityUrl) ? raw.communityUrl : FACEBOOK_URL,
+        schemaVersion: 4
+      };
+    } catch {
+      return defaults;
+    }
   }
   function touchSaved() { saveFeatureState(); }
   function saveFeatureState() {
