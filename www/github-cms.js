@@ -4,7 +4,6 @@
   const REPO='hubaish-smart-guide.';
   const BRANCH='main';
   const FILE='www/data/live-content.json';
-  const API_URL='https://api.github.com/repos/'+OWNER+'/'+REPO+'/contents/'+FILE;
   const RAW_URL='https://raw.githubusercontent.com/'+OWNER+'/'+REPO+'/'+BRANCH+'/'+FILE;
   const CACHE_KEY='hubaish_github_live_content_v1';
   const TABLES={
@@ -17,7 +16,6 @@
   };
   const $=id=>document.getElementById(id);
   let documentData=readCache();
-  let githubToken='';
   let workerToken=sessionStorage.getItem('hubaish_worker_session')||localStorage.getItem('hubaish_worker_session')||'';
   let workerUser=(()=>{try{return JSON.parse(sessionStorage.getItem('hubaish_worker_user')||localStorage.getItem('hubaish_worker_user')||'null')}catch{return null}})();
   const DEFAULT_WORKER_URL='https://hubaish-cms.baraagpt6.workers.dev';
@@ -49,6 +47,14 @@
     const el=$('cloudStatus');
     if(el){el.textContent=message;el.classList.toggle('cloud-error',!!error);el.classList.toggle('cloud-ok',!error)}
   }
+  function adminStatus(){
+    const authenticated=!!workerToken&&!!workerUser?.username;
+    $('cloudAdminLoginArea')?.classList.toggle('hidden',authenticated);
+    $('cloudAdminPanel')?.classList.toggle('hidden',!authenticated);
+    $('cloudSuperAdminPanel')?.classList.toggle('hidden',!authenticated||workerUser?.role!=='super_admin');
+    const identity=$('cloudAdminIdentity');
+    if(identity)identity.textContent=authenticated?(workerUser.displayName||workerUser.username)+' · '+(workerUser.role==='super_admin'?'مشرف عام':'محرر محتوى'):'';
+  }
   function toast(message){
     if(typeof window.showToast==='function')window.showToast(message);
     else if($('toast')){$('toast').textContent=message;$('toast').classList.add('show')}
@@ -73,36 +79,6 @@
   function makeId(type){
     const suffix=globalThis.crypto?.randomUUID?crypto.randomUUID():Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,10);
     return 'cms-'+type+'-'+suffix;
-  }
-  function decodeBase64(value){
-    const binary=atob(String(value||'').replace(/\s/g,''));
-    const bytes=new Uint8Array(binary.length);
-    for(let i=0;i<binary.length;i++)bytes[i]=binary.charCodeAt(i);
-    return new TextDecoder().decode(bytes);
-  }
-  function encodeBase64(value){
-    const bytes=new TextEncoder().encode(value);
-    let binary='';
-    for(let i=0;i<bytes.length;i+=0x8000)binary+=String.fromCharCode(...bytes.subarray(i,Math.min(i+0x8000,bytes.length)));
-    return btoa(binary);
-  }
-  function apiHeaders(token){
-    return {Authorization:'Bearer '+token,Accept:'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28'};
-  }
-  async function readRepositoryFile(token){
-    const response=await fetch(API_URL+'?ref='+encodeURIComponent(BRANCH)+'&t='+Date.now(),{headers:apiHeaders(token),cache:'no-store'});
-    const raw=await response.text();
-    let payload={};try{payload=raw?JSON.parse(raw):{}}catch{}
-    if(!response.ok){
-      if(response.status===401||response.status===403)throw new Error('رفض GitHub الرمز. تحقق من انتهاء صلاحيته وصلاحية Contents Read.');
-      if(response.status===404)throw new Error('لم يتم العثور على ملف البيانات أو لا يملك الرمز صلاحية الوصول.');
-      throw new Error(payload.message||'تعذر قراءة ملف البيانات من GitHub (HTTP '+response.status+').');
-    }
-    if(!payload.content||!payload.sha)throw new Error('استجابة GitHub لا تحتوي محتوى الملف أو SHA.');
-    let parsed;
-    try{parsed=JSON.parse(decodeBase64(payload.content))}
-    catch{throw new Error('ملف live-content.json ليس JSON صالحاً. لم يتم تعديل الملف.')}
-    return {data:normalizeDocument(parsed),sha:payload.sha};
   }
   async function publicFetch(){
     const candidates=[RAW_URL+'?v='+Date.now(),new URL('./data/live-content.json',document.baseURI).href];
