@@ -86,7 +86,7 @@ for (const key of ['landmarks','historyEvents','subDistrictUpdates','subDistrict
 }
 if (data.schemaVersion !== 1) throw new Error('Unsupported GitHub live-content.json schema version.');
 if (!githubCms.includes('raw.githubusercontent.com') || !githubCms.includes('api.github.com/repos/') ||
-    !githubCms.includes("method:'PUT'") || !githubCms.includes('/contents/') || !githubCms.includes("method:'PUT'") || !githubCms.includes('cache:'no-store'')) {
+    !githubCms.includes("method:'PUT'") || !githubCms.includes('/contents/') || !githubCms.includes("method:'PUT'") || !githubCms.includes("cache:'no-store'")) {
   throw new Error('GitHub raw JSON polling or Contents API publishing is incomplete.');
 }
 if (!githubCms.includes('const CACHE_KEY=') || !githubCms.includes('localStorage.setItem(CACHE_KEY') ||
