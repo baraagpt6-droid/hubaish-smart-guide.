@@ -30,9 +30,4 @@ values.mkdir(parents=True, exist_ok=True)
 (values / "hubaish_icon_colors.xml").write_text('''<?xml version="1.0" encoding="utf-8"?>
 <resources><color name="hubaish_launcher_bg">#07543D</color></resources>
 ''')
-manifest = root / "android/app/src/main/AndroidManifest.xml"
-if manifest.exists():
-    text = manifest.read_text()
-    text = text.replace('android:icon="@mipmap/ic_launcher"', 'android:icon="@mipmap/ic_launcher" android:roundIcon="@mipmap/ic_launcher_round"')
-    manifest.write_text(text)
 print("Applied Hubaish launcher icons to generated Android resources")
