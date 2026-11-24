@@ -58,6 +58,7 @@
     const code=String(l||lang()).toLowerCase();
     return String(row?.[key+'_'+code]??row?.[key+'_ar']??row?.[key+'_en']??'');
   }
+  function escapeHtml(value){return String(value??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]))}
   function safeUrl(value){
     try{const url=new URL(String(value||''));return url.protocol==='https:'||url.protocol==='http:'}
     catch{return false}
