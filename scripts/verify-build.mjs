@@ -93,16 +93,20 @@ for (const key of ['landmarks','historyEvents','subDistrictUpdates','subDistrict
   if (!Array.isArray(data[key])) throw new Error('GitHub live-content.json is missing collection: ' + key);
 }
 if (data.subDistricts.length !== 22) throw new Error('GitHub live-content.json must include 22 translated sub-district profiles.');
-if (data.landmarks.length < 9 || data.historyEvents.length < 7 || data.historicalFigures.length < 5 || data.subDistrictUpdates.length < 8) {
+if (data.landmarks.length < 17 || data.historyEvents.length < 7 || data.historicalFigures.length < 5 || data.subDistrictUpdates.length < 15) {
   throw new Error('Sourced Hubaish landmarks, historical events, figures or village profiles are incomplete.');
 }
 if (!data.landmarks.some(x=>x.id==='khudad-fort') || !data.landmarks.some(x=>x.id==='wuhaza-fortress') ||
     !data.landmarks.some(x=>x.id==='nahrah-mosque') || !data.landmarks.some(x=>x.id==='zawahi-islamic-school') ||
+    !data.landmarks.some(x=>x.id==='bayn-al-dur-dome') || !data.landmarks.some(x=>x.id==='marwaha-mosque') ||
+    !data.landmarks.some(x=>x.id==='al-farawi-mosque-dome') ||
     !data.historyEvents.some(x=>x.id==='hubaish-uprising-final-battle-17-may-1919')) {
   throw new Error('Key Hubaish heritage or historical records are missing.');
 }
 if (!data.subDistrictUpdates.some(x=>x.id==='villages-jabal-khadra') ||
     !data.subDistrictUpdates.some(x=>x.id==='villages-al-salaq') ||
+    !data.subDistrictUpdates.some(x=>x.id==='villages-bani-muayn-study') ||
+    !data.subDistrictUpdates.some(x=>x.id==='villages-al-farai-study') ||
     !data.subDistrictUpdates.some(x=>x.id==='village-al-shawafi')) {
   throw new Error('Village references are missing from the district directory.');
 }
@@ -139,6 +143,9 @@ if (!githubCms.includes('imageUrl:val(\'cloudImageUrl\')') ||
     !githubCms.includes('function updateImagePreview') || !githubCms.includes('image_url:safeUrl(v.imageUrl)') ||
     !html.includes('id="cloudImagePreview"') || !html.includes('id="cloudImageUrl"')) {
   throw new Error('CMS image URL, preview or publishing workflow is incomplete.');
+}
+if (!html.includes('27 كم في مقدمة النص') && !html.includes('42 كم في مقدمة النص')) {
+  throw new Error('Conflicting local distance reports must be disclosed in the geography profile.');
 }
 if (!html.includes('id="imageLightbox"') || !html.includes('data-lightbox-src') ||
     !app.includes('photo.loading') || !sw.includes('REMOTE_IMAGE_HOSTS') ||
