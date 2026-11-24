@@ -43,8 +43,7 @@ jobs:
                 catch { throw new Error(path + ' returned non-JSON HTTP ' + response.status + ': ' + raw.slice(0, 300)); }
                 console.log('\n' + path + ' — HTTP ' + response.status);
                 console.log(JSON.stringify(body, null, 2));
-                if (!response.ok) throw new Error(path + ' returned HTTP ' + response.status);
-                return body;
+                return { status: response.status, ok: response.ok, body };
               } catch (error) {
                 lastError = error;
                 console.error('Attempt ' + attempt + '/3 failed: ' + error.message);
@@ -55,21 +54,31 @@ jobs:
           }
 
           (async () => {
-            const health = await getJson('/api/health');
-            for (const key of ['kv', 'githubContentsRead', 'sessionSecret']) {
-              if (health.checks?.[key]?.ok !== true) {
-                throw new Error('Production health check failed: ' + key + ' is not ok. See response above.');
+            const healthResult = await getJson('/api/health');
+            const setupResult = await getJson('/setup/status');
+            const failures = [];
+
+            if (!healthResult.ok || healthResult.body.ok !== true) {
+              for (const key of ['kv', 'githubContentsRead', 'sessionSecret']) {
+                if (healthResult.body.checks?.[key]?.ok !== true) {
+                  failures.push(key + ': ' + (healthResult.body.checks?.[key]?.error || 'not ok'));
+                }
+              }
+              if (!failures.length) failures.push('/api/health returned HTTP ' + healthResult.status);
+            }
+
+            if (!setupResult.ok) {
+              failures.push('/setup/status returned HTTP ' + setupResult.status + ': ' + (setupResult.body.error || 'request failed'));
+            } else {
+              if (setupResult.body.setupRequired !== true) {
+                failures.push('Expected setupRequired=true; received ' + String(setupResult.body.setupRequired));
+              }
+              if (setupResult.body.bootstrapKeyConfigured !== true) {
+                failures.push('BOOTSTRAP_KEY is not configured in the active Worker environment.');
               }
             }
-            if (health.ok !== true) throw new Error('Production Worker did not report healthy status.');
 
-            const setup = await getJson('/setup/status');
-            if (setup.setupRequired !== true) {
-              throw new Error('Expected setupRequired=true for first-admin bootstrap; received ' + String(setup.setupRequired));
-            }
-            if (setup.bootstrapKeyConfigured !== true) {
-              throw new Error('BOOTSTRAP_KEY is missing from Worker Secrets. Add this secret in Cloudflare.');
-            }
+            if (failures.length) throw new Error('Production readiness failures:\n- ' + failures.join('\n- '));
             console.log('\nPASS: Worker health, KV, GitHub read, session secret and first-admin bootstrap are ready.');
           })().catch(error => {
             console.error('\nFAIL: ' + error.message);
