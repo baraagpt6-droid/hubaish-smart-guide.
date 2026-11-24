@@ -345,7 +345,12 @@
       TR:{category:'Kategori',location:'Bölge / konum',height:'Yükseklik',status:'Kaynak durumu',importance:'Önem',source:'Kaynak',documented:'Yayımlanmış kaynak',local:'Yerel anlatı — doğrulanmalı',unverified:'Doğrulanacak',unknown:'Sahada doğrulanmadı',share:'Paylaş',ask:'Asistana sor',save:'Kaydet'},
       FR:{category:'Catégorie',location:'Zone / lieu',height:'Altitude',status:'État des sources',importance:'Importance',source:'Source',documented:'Référence publiée',local:'Récit local — à vérifier',unverified:'À vérifier',unknown:'Non vérifié sur le terrain',share:'Partager',ask:'Demander à l’assistant',save:'Enregistrer'}
     }[lang];
-    const cats={fort:'حصون وقلاع',mountain:'جبال ومرتفعات',valley:'أودية ومياه',mosque:'مساجد'};
+    const cats=({
+      AR:{fort:'حصون وقلاع',mountain:'جبال ومرتفعات',valley:'أودية ومياه',mosque:'مساجد'},
+      EN:{fort:'Forts and castles',mountain:'Mountains',valley:'Valleys and water',mosque:'Mosques'},
+      TR:{fort:'Kaleler',mountain:'Dağlar',valley:'Vadiler ve su',mosque:'Camiler'},
+      FR:{fort:'Forts et châteaux',mountain:'Montagnes',valley:'Vallées et eau',mosque:'Mosquées'}
+    }[lang]||{})
     const status=L[item.status]||L.unknown;
     box.replaceChildren(node('span','tag tag-gold',item.loc||item.period||'مديرية حبيش'),node('h3','item-title',item.title),node('p','item-body',item.body));
     const facts=node('div','detail-grid');
