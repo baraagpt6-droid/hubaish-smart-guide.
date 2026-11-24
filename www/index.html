@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="ar" dir="rtl" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0f291e">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self'; worker-src 'self'; manifest-src 'self'; upgrade-insecure-requests">
+  <meta name="description" content="دليل مديرية حبيش، موسوعة محلية للعزل والمعالم والتاريخ ومواقيت الصلاة.">
+  <title>دليل مديرية حبيش | الموسوعة الذكية</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <link rel="stylesheet" href="assets/styles.css">
+  <script src="assets/app.js" defer></script>
+</head>
+<body>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <header class="topbar">
+    <button class="brand-btn" id="homeLogoBtn" aria-label="العودة للرئيسية">
+      <span class="brand-emblem" aria-hidden="true">⌁</span>
+      <span class="brand-text"><strong data-i18n="appName">مديرية حبيش</strong><small data-i18n="appSub">حصن صهبان • 22 عزلة</small></span>
+    </button>
+    <div class="top-actions">
+      <button class="icon-pill" id="favOpenBtn" aria-label="المفضلة">🔖 <span id="favCount" class="badge-count">0</span></button>
+      <button class="icon-pill" id="langToggleBtn" aria-label="تبديل اللغة">🌐 <span id="langCode">AR</span></button>
+      <button class="icon-pill" id="themeToggleBtn" aria-label="تبديل المظهر">☀️</button>
+    </div>
+  </header>
+
+  <main class="container">
+    <section id="view-home" class="view-section active">
+      <div class="hero-card">
+        <div class="hero-chips"><span class="chip"><i class="dot-live"></i><span data-i18n="govBadge">محافظة إب • الجمهورية اليمنية</span></span><span class="chip" id="saveStatusChip">محفوظ على هذا الجهاز</span></div>
+        <h1 class="hero-title" data-i18n="heroTitle">دليل مديرية حبيش</h1>
+        <p class="hero-desc" data-i18n="heroDesc">موسوعة رقمية لتاريخ حبيش وعزلها وقراها وحصونها ومعالمها ومواقيت الصلاة.</p>
+        <label class="search-box"><span aria-hidden="true">⌕</span><input id="globalSearchInput" class="search-input" type="search" placeholder="ابحث عن عزلة أو حصن أو قرية..."><button class="mic-btn" id="globalMicBtn" type="button" aria-label="بحث صوتي">🎙</button></label>
+        <div class="bento-stats">
+          <div class="stat-tile"><b class="stat-num">22</b><span data-i18n="statUzal">عزلة إدارية</span></div>
+          <div class="stat-tile"><b class="stat-num">330</b><span data-i18n="statArea">كم² المساحة</span></div>
+          <div class="stat-tile"><b class="stat-num">105,998</b><span data-i18n="statPop">نسمة (تعداد)</span></div>
+        </div>
+      </div>
+      <section class="prayer-card" aria-labelledby="prayerTitle">
+        <div class="prayer-head"><strong id="prayerTitle">مواقيت الصلاة في حبيش</strong><span id="prayerCountdown" class="prayer-countdown">--:--</span></div>
+        <p id="prayerDate" class="muted small">التوقيت المحلي لليمن — Asia/Aden</p>
+        <div id="prayerGrid" class="prayer-grid"></div>
+        <p class="small muted note">حساب فلكي تقريبي وفق إحداثيات حبيش وطريقة زوايا الفجر والعشاء المضبوطة في التطبيق. قد تختلف الدقائق عن تقويم المسجد المحلي.</p>
+      </section>
+      <div class="section-header"><h2 class="section-title" data-i18n="spotlightTitle">معلم مختار من حبيش</h2></div>
+      <div id="spotlightContainer"></div>
+      <div id="globalSearchResults" aria-live="polite"></div>
+    </section>
+
+    <section id="view-history" class="view-section">
+      <div class="section-header"><h2 class="section-title" data-i18n="navHistory">تاريخ مديرية حبيش</h2><p class="section-sub">محطات تاريخية واردة في بيانات الدليل</p></div>
+      <label class="search-box"><span>⌕</span><input id="histSearchInput" class="search-input" type="search" placeholder="ابحث في المحطات التاريخية..."><button class="mic-btn" id="histMicBtn" type="button" aria-label="بحث صوتي">🎙</button></label>
+      <div id="histFilters" class="filter-row"><button class="filter-pill active" data-era="all">جميع الحقب</button><button class="filter-pill" data-era="ancient">قديم وإسلامي</button><button class="filter-pill" data-era="modern">التاريخ الحديث</button></div>
+      <div id="historyList"></div>
+    </section>
+
+    <section id="view-places" class="view-section">
+      <div class="section-header"><h2 class="section-title" data-i18n="navPlaces">الحصون والمعالم الأثرية</h2><p class="section-sub">الحصون والمساجد والأودية المسجلة في بيانات الدليل</p></div>
+      <label class="search-box"><span>⌕</span><input id="placeSearchInput" class="search-input" type="search" placeholder="ابحث عن حصن أو مسجد أو وادٍ..."><button class="mic-btn" id="placeMicBtn" type="button" aria-label="بحث صوتي">🎙</button></label>
+      <div class="filter-row" id="placeFilters"><button class="filter-pill active" data-pcat="all">الكل</button><button class="filter-pill" data-pcat="fort">حصون وقلاع</button><button class="filter-pill" data-pcat="mosque">مساجد أثرية</button><button class="filter-pill" data-pcat="valley">أودية ومرتفعات</button><button class="filter-pill" id="radarToggleBtn">🧭 رادار المسافات</button></div>
+      <div id="radarBox" class="item-card hidden"></div>
+      <div id="placesList"></div>
+    </section>
+
+    <section id="view-uzal" class="view-section">
+      <div class="section-header"><h2 class="section-title" data-i18n="navUzal">عزل مديرية حبيش (22 عزلة)</h2><p class="section-sub">قائمة العزل الواردة في بيانات النسخة</p></div>
+      <label class="search-box"><span>⌕</span><input id="uzalSearchInput" class="search-input" type="search" placeholder="ابحث باسم العزلة..."><button class="mic-btn" id="uzalMicBtn" type="button" aria-label="بحث صوتي">🎙</button></label>
+      <div id="uzalList"></div>
+    </section>
+
+    <section id="view-more" class="view-section">
+      <div class="section-header"><h2 class="section-title" data-i18n="navMore">المزيد والمراجع والإشراف</h2><p class="section-sub">المراجع والروابط وإدارة البيانات المحلية</p></div>
+      <article class="item-card"><h3 class="item-title">📚 مراجع تاريخية</h3><p class="item-body">صفة جزيرة العرب — أبو محمد الحسن الهمداني<br>معجم البلدان والقبائل اليمنية — إبراهيم المقحفي<br>المركز الوطني للمعلومات — التقسيم الإداري لمحافظة إب</p><p class="small muted">وجود المرجع في هذه القائمة لا يعني أن كل معلومة تاريخية في الدليل قد خضعت للتحقق الأكاديمي.</p></article>
+      <article class="item-card"><h3 class="item-title">🌐 منصات وروابط المجتمع</h3><div id="socialLinksList" class="card-actions"></div></article>
+      <article class="item-card admin-card"><h3 class="item-title">⚙️ إدارة محتوى هذا الجهاز</h3><p class="item-body">يمكنك إضافة معالم وروابط وتصدير نسخة احتياطية أو استيرادها. البيانات تحفظ في متصفح هذا الجهاز فقط ولا تتزامن مع أجهزة أخرى.</p><p class="security-note">لا توجد هنا لوحة إدارة سحابية. لا تعتبر كلمة مرور أو بصمة SHA-256 محفوظة داخل المتصفح وسيلة حماية إدارية.</p>
+        <details class="admin-details"><summary class="btn-sm">فتح أدوات إدارة المحتوى المحلية</summary>
+          <div class="admin-form"><h4>إضافة معلم</h4><input id="newPlaceTitle" class="input-field" maxlength="90" placeholder="اسم المعلم"><input id="newPlaceLoc" class="input-field" maxlength="90" placeholder="العزلة / الموقع"><textarea id="newPlaceDesc" class="input-field" rows="3" maxlength="700" placeholder="وصف المعلم"></textarea><select id="newPlaceCat" class="input-field"><option value="fort">حصن أو قلعة</option><option value="mosque">مسجد</option><option value="valley">وادٍ أو مرتفع</option></select><button class="btn-primary" id="addPlaceSaveBtn" type="button">حفظ المعلم على هذا الجهاز</button>
+          <hr><h4>إضافة رابط مجتمع</h4><input id="newSocialName" class="input-field" maxlength="70" placeholder="اسم المنصة"><input id="newSocialUrl" class="input-field" type="url" maxlength="500" placeholder="https://example.com"><button class="btn-secondary" id="addSocialSaveBtn" type="button">إضافة الرابط</button>
+          <hr><h4>النسخ الاحتياطي</h4><div class="card-actions"><button class="btn-sm" id="exportJsonBtn" type="button">⬇ تصدير JSON</button><label class="btn-sm file-label">⬆ استيراد JSON<input id="importJsonInput" type="file" accept="application/json,.json"></label></div>
+          <button class="btn-danger" id="resetLocalBtn" type="button">إعادة بيانات هذا الجهاز إلى الافتراضي</button>
+        </div></details>
+      </article>
+    </section>
+  </main>
+
+  <button class="ai-fab" id="openAiBtn" aria-label="فتح مساعد دليل حبيش">✦</button>
+  <nav class="bottom-nav" aria-label="التنقل الرئيسي">
+    <button class="nav-btn active" data-tab="home"><span>⌂</span><span data-i18n="navHome">الرئيسية</span></button>
+    <button class="nav-btn" data-tab="history"><span>◷</span><span data-i18n="navHistory">التاريخ</span></button>
+    <button class="nav-btn" data-tab="places"><span>⌂</span><span data-i18n="navPlaces">المعالم</span></button>
+    <button class="nav-btn" data-tab="uzal"><span>▧</span><span data-i18n="navUzal">العزل</span></button>
+    <button class="nav-btn" data-tab="more"><span>⋯</span><span data-i18n="navMore">المزيد</span></button>
+  </nav>
+
+  <div class="modal-backdrop" id="aiModal" aria-hidden="true"><section class="modal-sheet" role="dialog" aria-modal="true" aria-labelledby="aiTitle"><div class="modal-head"><strong id="aiTitle">✦ مساعد دليل حبيش المحلي</strong><button class="btn-sm" data-close="aiModal" aria-label="إغلاق">✕</button></div><div id="aiChatLog" class="chat-log"><div class="item-card">مرحباً. أستطيع البحث في محتوى هذا الدليل المحفوظ على جهازك. لا أستخدم نموذج ذكاء اصطناعي سحابياً في هذه النسخة.</div></div><form id="aiForm" class="chat-form"><input id="aiInput" class="search-input" type="text" maxlength="500" placeholder="اسأل عن عزلة أو معلم..."><button class="mic-btn" id="aiMicBtn" type="button" aria-label="إملاء صوتي">🎙</button><button class="btn-primary" type="submit">إرسال</button></form></section></div>
+  <div class="modal-backdrop" id="favModal" aria-hidden="true"><section class="modal-sheet" role="dialog" aria-modal="true" aria-labelledby="favTitle"><div class="modal-head"><strong id="favTitle">🔖 المحفوظات والمفضلة</strong><button class="btn-sm" data-close="favModal" aria-label="إغلاق">✕</button></div><div id="favListContainer"></div></section></div>
+  <footer class="site-footer"><span>دليل مديرية حبيش</span><span id="appVersion">نسخة PWA محلية</span></footer>
+</body>
+</html>
