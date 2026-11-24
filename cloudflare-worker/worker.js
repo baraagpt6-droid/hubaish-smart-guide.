@@ -12,13 +12,15 @@ const enc=s=>new TextEncoder().encode(s),dec=b=>new TextDecoder().decode(b);
 const b64u=b=>btoa(String.fromCharCode(...new Uint8Array(b))).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,"");
 const un64=s=>Uint8Array.from(atob(s.replace(/-/g,"+").replace(/_/g,"/")+"===".slice((s.length+3)%4)),c=>c.charCodeAt(0));
 const random=n=>crypto.getRandomValues(new Uint8Array(n));
+const sessionVersion=()=>b64u(random(16));
+const versionOf=user=>String(user.sessionVersion||"legacy");
 const uname=s=>String(s||"").trim().toLowerCase().replace(/[^a-z0-9._-]/g,"").slice(0,32);
 async function hkey(secret){return crypto.subtle.importKey("raw",enc(secret),{name:"HMAC",hash:"SHA-256"},false,["sign","verify"])}
 async function issue(payload,secret){const body=b64u(enc(JSON.stringify(payload)));return body+"."+b64u(await crypto.subtle.sign("HMAC",await hkey(secret),enc(body)))}
 async function check(token,secret){try{const [body,sig]=String(token||"").split(".");if(!body||!sig)return null;if(!await crypto.subtle.verify("HMAC",await hkey(secret),un64(sig),enc(body)))return null;const p=JSON.parse(dec(un64(body)));return p.exp>Date.now()?p:null}catch{return null}}
 async function passHash(password,salt,iterations=ITER){if(!Number.isInteger(iterations)||iterations<10000||iterations>ITER)throw Error("Unsupported password hash parameters.");const m=await crypto.subtle.importKey("raw",enc(password),"PBKDF2",false,["deriveBits"]);return b64u(await crypto.subtle.deriveBits({name:"PBKDF2",salt,iterations,hash:"SHA-256"},m,256))}
 async function passwordMatches(password,user){const iterations=Number(user.hashIterations||ITER);if(iterations>ITER)return false;return await passHash(password,un64(user.salt),iterations)===user.passwordHash}
-async function saveUser(env,user,password){const salt=random(16);await env.ADMINS.put(UP+user.username,JSON.stringify({...user,hashIterations:ITER,salt:b64u(salt),passwordHash:await passHash(password,salt),updatedAt:new Date().toISOString()}))}
+async function saveUser(env,user,password){const salt=random(16);await env.ADMINS.put(UP+user.username,JSON.stringify({...user,sessionVersion:user.sessionVersion||sessionVersion(),hashIterations:ITER,salt:b64u(salt),passwordHash:await passHash(password,salt),updatedAt:new Date().toISOString()}))}
 const getUser=(env,name)=>env.ADMINS.get(UP+name,"json");
 async function log(env,event){const a=await env.ADMINS.get(AUDIT,"json")||[];a.unshift({at:new Date().toISOString(),...event});await env.ADMINS.put(AUDIT,JSON.stringify(a.slice(0,200)))}
 function cors(req,env){
@@ -35,7 +37,7 @@ function cors(req,env){
   "Vary":"Origin"
  };
 }
-async function auth(req,env){const t=(req.headers.get("Authorization")||"").replace(/^Bearer\s+/i,""),p=await check(t,env.SESSION_SECRET);if(!p?.sub)return null;const u=await getUser(env,p.sub);if(!u||u.disabled||u.role!==p.role)return null;return {username:u.username,displayName:u.displayName,role:u.role}}
+async function auth(req,env){const t=(req.headers.get("Authorization")||"").replace(/^Bearer\s+/i,""),p=await check(t,env.SESSION_SECRET);if(!p?.sub)return null;const u=await getUser(env,p.sub);if(!u||u.disabled||u.role!==p.role||String(p.ver||"legacy")!==versionOf(u))return null;return {username:u.username,displayName:u.displayName,role:u.role}}
 async function ghRead(env){const url="https://api.github.com/repos/"+OWNER+"/"+REPO+"/contents/"+FILE+"?ref="+BRANCH;const r=await fetch(url,{headers:{Authorization:"Bearer "+env.GITHUB_TOKEN,Accept:"application/vnd.github+json","X-GitHub-Api-Version":"2022-11-28","User-Agent":"Hubaish-CMS-Worker"}}),p=await r.json();if(!r.ok)throw Error("GitHub read failed: "+(p.message||r.status));const raw=atob(p.content.replace(/\s/g,"")),bytes=Uint8Array.from(raw,c=>c.charCodeAt(0));return {sha:p.sha,data:JSON.parse(dec(bytes))}}
 async function ghWrite(env,data,actor){const old=await ghRead(env),url="https://api.github.com/repos/"+OWNER+"/"+REPO+"/contents/"+FILE,content=b64bytes(enc(JSON.stringify(data,null,2)+"\n"));const r=await fetch(url,{method:"PUT",headers:{Authorization:"Bearer "+env.GITHUB_TOKEN,Accept:"application/vnd.github+json","X-GitHub-Api-Version":"2022-11-28","Content-Type":"application/json","User-Agent":"Hubaish-CMS-Worker"},body:JSON.stringify({message:"CMS: update live content by "+actor.username,content,sha:old.sha,branch:BRANCH,committer:{name:"Hubaish CMS — "+(actor.displayName||actor.username),email:"41898282+github-actions[bot]@users.noreply.github.com"}})}),p=await r.json();if(!r.ok)throw Error("GitHub write failed: "+(p.message||r.status));return p}
 async function healthKV(env){
@@ -77,7 +79,7 @@ async function route(req,env){
   if(keys.keys.length)return json({error:"Initial setup already completed."},409);
   if(!env.BOOTSTRAP_KEY||b.bootstrapKey!==env.BOOTSTRAP_KEY)return json({error:"Invalid bootstrap key."},403);
   const username=uname(b.username),password=String(b.password||"");if(!username||password.length<12)return json({error:"Username required; password must be at least 12 characters."},400);
-  await saveUser(env,{username,displayName:String(b.displayName||username).slice(0,80),role:"super_admin",disabled:false,createdAt:new Date().toISOString()},password);
+  await saveUser(env,{username,displayName:String(b.displayName||username).slice(0,80),role:"super_admin",disabled:false,sessionVersion:sessionVersion(),createdAt:new Date().toISOString()},password);
   await log(env,{actor:username,action:"bootstrap_super_admin"});return json({ok:true,message:"Admin created. Remove BOOTSTRAP_KEY secret now."},201)
  }
  if(req.method==="POST"&&path==="/auth/login"){
@@ -92,7 +94,7 @@ async function route(req,env){
    return json({error:"اسم المستخدم أو كلمة المرور غير صحيحة."},401);
   }
   await env.ADMINS.delete(attemptKey);
-  const ttl=b.remember===true?30*86400000:8*3600000,token=await issue({sub:user.username,role:user.role,exp:Date.now()+ttl},env.SESSION_SECRET);
+  const ttl=b.remember===true?30*86400000:8*3600000,token=await issue({sub:user.username,role:user.role,ver:versionOf(user),exp:Date.now()+ttl},env.SESSION_SECRET);
   await log(env,{actor:username,action:"login"});return json({token,expiresIn:ttl,user:{username,displayName:user.displayName,role:user.role}})
  }
  const actor=await auth(req,env);if(!actor)return json({error:"انتهت الجلسة أو بيانات الدخول غير صالحة."},401);
@@ -124,20 +126,21 @@ async function route(req,env){
   const b=await req.json(),username=uname(b.username),password=String(b.password||""),role=String(b.role||"editor");
   if(!username||password.length<12||!ROLES.has(role))return json({error:"اسم المستخدم مطلوب وكلمة المرور 12 حرفاً على الأقل."},400);
   if(await getUser(env,username))return json({error:"اسم المستخدم مستخدم بالفعل."},409);
-  await saveUser(env,{username,displayName:String(b.displayName||username).slice(0,80),role,disabled:false,createdAt:new Date().toISOString()},password);await log(env,{actor:actor.username,action:"create_admin",target:username,role});return json({ok:true},201)
+  await saveUser(env,{username,displayName:String(b.displayName||username).slice(0,80),role,disabled:false,sessionVersion:sessionVersion(),createdAt:new Date().toISOString()},password);await log(env,{actor:actor.username,action:"create_admin",target:username,role});return json({ok:true},201)
  }
  if(path==="/admin/users"&&actor.role==="super_admin"&&req.method==="PATCH"){
   const b=await req.json(),username=uname(b.username),user=await getUser(env,username);if(!user)return json({error:"الحساب غير موجود."},404);if(username===actor.username)return json({error:"لا يمكنك تعطيل حسابك الحالي."},400);
-  user.disabled=b.disabled===true;user.updatedAt=new Date().toISOString();await env.ADMINS.put(UP+username,JSON.stringify(user));await log(env,{actor:actor.username,action:user.disabled?"disable_admin":"enable_admin",target:username});return json({ok:true})
+  const wasDisabled=!!user.disabled;user.disabled=b.disabled===true;if(user.disabled!==wasDisabled)user.sessionVersion=sessionVersion();user.updatedAt=new Date().toISOString();await env.ADMINS.put(UP+username,JSON.stringify(user));await log(env,{actor:actor.username,action:user.disabled?"disable_admin":"enable_admin",target:username});return json({ok:true})
  }
  if(path==="/admin/users"&&actor.role==="super_admin"&&req.method==="PUT"){
   const b=await req.json(),username=uname(b.username),user=await getUser(env,username);
   if(!user)return json({error:"الحساب غير موجود."},404);
   const role=String(b.role||user.role);if(!ROLES.has(role))return json({error:"الصلاحية المطلوبة غير صالحة."},400);
   if(username===actor.username&&(role!=="super_admin"||b.disabled===true))return json({error:"لا يمكنك تعطيل حسابك أو خفض صلاحيتك."},400);
-  user.role=role;
+  const previousRole=user.role,previousDisabled=!!user.disabled;user.role=role;
   if(typeof b.displayName==="string"&&b.displayName.trim())user.displayName=b.displayName.trim().slice(0,80);
   if(typeof b.disabled==="boolean")user.disabled=b.disabled;
+  if(user.role!==previousRole||!!user.disabled!==previousDisabled)user.sessionVersion=sessionVersion();
   user.updatedAt=new Date().toISOString();await env.ADMINS.put(UP+username,JSON.stringify(user));
   await log(env,{actor:actor.username,action:"update_admin",target:username,role});return json({ok:true})
  }
@@ -145,7 +148,7 @@ async function route(req,env){
   const b=await req.json(),username=uname(b.username),password=String(b.password||""),user=await getUser(env,username);
   if(!user)return json({error:"الحساب غير موجود."},404);
   if(password.length<12)return json({error:"كلمة المرور يجب أن تتكون من 12 حرفاً على الأقل."},400);
-  await saveUser(env,user,password);await log(env,{actor:actor.username,action:"reset_admin_password",target:username});return json({ok:true})
+  user.sessionVersion=sessionVersion();await saveUser(env,user,password);await log(env,{actor:actor.username,action:"reset_admin_password",target:username});return json({ok:true})
  }
  if(path==="/admin/users"&&actor.role==="super_admin"&&req.method==="DELETE"){
   const b=await req.json(),username=uname(b.username);if(!username)return json({error:"اسم المستخدم غير صالح."},400);
