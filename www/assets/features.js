@@ -1,0 +1,244 @@
+'use strict';
+
+/* Optional feature layer: relies on the core data and safe rendering functions in app.js. */
+(() => {
+  const FEATURE_KEY = 'hubaish_features_v2';
+  const FACEBOOK_URL = 'https://www.facebook.com/share/g/1JMCzDUsdZ/';
+  const FACTS = [
+    'تسجل بيانات المركز الوطني للمعلومات 105,998 نسمة في مديرية حبيش ضمن تعداد 2004.',
+    'ترد مساحة مديرية حبيش في البيانات الإحصائية المنشورة بمقدار 228 كم².',
+    'ظُلمة هي مركز مديرية حبيش بحسب البيانات التعريفية المتاحة.',
+    'تضم قائمة الدليل 22 اسماً للعزل، وتحتاج التفاصيل القروية إلى استكمال ميداني.',
+    'المعالم الجبلية والمدرجات الزراعية من السمات البارزة في المشهد الريفي لمحافظة إب.'
+  ];
+  const FACTS_I18N = {
+    AR: FACTS,
+    EN: ['The 2004 census lists 105,998 residents in Hubaish District.','Published OCHA/local governance data lists Hubaish at 228 km²; another local source reports 330 km².','Dhulmah is identified as the district centre in the available administrative information.','The administrative division lists 22 sub-districts; village-level information still needs field verification.','Terraced farming and mountain landscapes are prominent features of rural Ibb.'],
+    TR: ['2004 nüfus sayımı Hubaish ilçesinde 105.998 kişi kaydetmiştir.','Yayımlanmış OCHA/yerel yönetişim verisi Hubaish yüzölçümünü 228 km² olarak verir; başka bir yerel kaynak 330 km² belirtir.','Mevcut idari kaynaklarda ilçe merkezi Dhulmah olarak gösterilir.','İdari kaynak 22 bucak listeler; köy düzeyindeki bilgiler saha doğrulaması gerektirir.','Teraslı tarım ve dağlık peyzaj, İbb kırsalının belirgin özelliklerindendir.'],
+    FR: ['Le recensement de 2004 indique 105 998 habitants dans le district de Hubaish.','Les données OCHA/gouvernance locale publiées indiquent 228 km² ; une autre source locale mentionne 330 km².','Les informations administratives disponibles identifient Dhulmah comme centre du district.','La division administrative recense 22 sous-districts ; les données villageoises doivent encore être vérifiées sur le terrain.','Les cultures en terrasses et les paysages montagneux caractérisent les campagnes d’Ibb.']
+  };
+  const QUIZ_TRANSLATIONS = {
+    EN: [
+      {q:'In which governorate is Hubaish District located?',a:['Ibb','Taiz','Dhamar'],why:'Hubaish is part of Ibb Governorate.'},
+      {q:'What is named as the administrative centre?',a:['Yarim','Dhulmah','Jiblah'],why:'The available administrative listing names Dhulmah.'},
+      {q:'What population was recorded in the 2004 census?',a:['105,998','85,300','228,000'],why:'The National Information Center lists 105,998 residents.'},
+      {q:'Which area figure is used in the OCHA/local governance table?',a:['330 km²','228 km²','480 km²'],why:'The OCHA/local governance district table lists 228 km².'},
+      {q:'Which fort is highlighted in this guide?',a:['Sahban Fort','Cairo Fort','Hab Fort'],why:'The guide highlights Sahban Fort.'}
+    ],
+    TR: [
+      {q:'Hubaish ilçesi hangi valilikte bulunur?',a:['İbb','Taiz','Zamar'],why:'Hubaish, İbb Valiliği sınırları içindedir.'},
+      {q:'İdari merkez olarak hangi yer belirtilir?',a:['Yarim','Dhulmah','Jiblah'],why:'Mevcut idari listede merkez Dhulmah olarak belirtilir.'},
+      {q:'2004 nüfus sayımında kaç kişi kaydedildi?',a:['105.998','85.300','228.000'],why:'Ulusal Bilgi Merkezi 105.998 kişi kaydeder.'},
+      {q:'OCHA/yerel yönetişim tablosundaki yüzölçümü nedir?',a:['330 km²','228 km²','480 km²'],why:'Tabloda 228 km² bilgisi yer alır.'},
+      {q:'Bu rehberde hangi kale öne çıkarılır?',a:['Sahban Kalesi','Kahire Kalesi','Hab Kalesi'],why:'Rehber Sahban Kalesi’ni öne çıkarır.'}
+    ],
+    FR: [
+      {q:'Dans quel gouvernorat se trouve Hubaish ?',a:['Ibb','Taëz','Dhamar'],why:'Hubaish fait partie du gouvernorat d’Ibb.'},
+      {q:'Quel lieu est indiqué comme centre administratif ?',a:['Yarim','Dhulmah','Jiblah'],why:'La liste administrative disponible indique Dhulmah.'},
+      {q:'Quelle population a été recensée en 2004 ?',a:['105 998','85 300','228 000'],why:'Le Centre national d’information indique 105 998 habitants.'},
+      {q:'Quelle superficie figure dans le tableau OCHA/gouvernance locale ?',a:['330 km²','228 km²','480 km²'],why:'Le tableau indique 228 km².'},
+      {q:'Quel fort est mis en avant dans ce guide ?',a:['Fort de Sahban','Fort du Caire','Fort Hab'],why:'Le guide met en avant le fort de Sahban.'}
+    ]
+  };
+  const QUIZ = [
+    { q: 'في أي محافظة تقع مديرية حبيش؟', a: ['إب', 'تعز', 'ذمار'], correct: 0, why: 'تقع مديرية حبيش ضمن محافظة إب.' },
+    { q: 'ما المركز الإداري المذكور لمديرية حبيش؟', a: ['يريم', 'ظُلمة', 'جبلة'], correct: 1, why: 'المركز الإداري هو ظُلمة.' },
+    { q: 'كم بلغ عدد سكان حبيش في تعداد 2004؟', a: ['105,998', '85,300', '228,000'], correct: 0, why: 'الرقم المنشور في بيانات التعداد هو 105,998 نسمة.' },
+    { q: 'ما المساحة المنشورة للمديرية؟', a: ['330 كم²', '228 كم²', '480 كم²'], correct: 1, why: 'المساحة المنشورة للمديرية 228 كم².' },
+    { q: 'ما اسم الحصن البارز في محتوى الدليل؟', a: ['حصن صهبان', 'حصن القاهرة', 'حصن حب'], correct: 0, why: 'يذكر محتوى الدليل حصن صهبان.' }
+  ];
+  const UI_TEXT = {
+    AR: {'.terrain-strip strong':'جبال إب الغربية','.terrain-strip small':'إحداثيات تقريبية 14°07′N · 44°05′E','.terrain-strip b':'1,550–2,450 م','.section-heading-inline .section-title':'استكشف حبيش في لحظات','.pulse-bar strong':'نبض حبيش الاستكشافي','.pulse-bar small':'اختر وجهتك التالية','#prayerTitle':'مواقيت الصلاة في حبيش','.fact-card .tag':'هل تعلم عن حبيش؟','.fact-card .text-action':'معلومة أخرى ↻','.spotlight-card .tag':'معلم مختار اليوم','#view-history .section-title':'تاريخ مديرية حبيش','#view-places .section-title':'المعالم','#view-uzal .section-title':'عزل مديرية حبيش (22 عزلة)','#view-more .section-title':'المزيد','#histSearchInput':'ابحث في المحطات التاريخية...','#placeSearchInput':'ابحث عن حصن أو جبل أو وادٍ...','#uzalSearchInput':'ابحث باسم العزلة...','#newPlaceTitle':'اسم المعلم','#newPlaceLoc':'العزلة / الموقع','#newPlaceDesc':'وصف المعلم','#newHistoryTitle':'عنوان الحدث','#newHistoryPeriod':'الفترة','#newHistoryBody':'التفاصيل والمصدر','#newSocialName':'اسم المنصة','#newSocialUrl':'https://example.com','#contribTitle':'عنوان المساهمة','#contribBody':'اكتب التفاصيل والمصدر إن وجد','#contribName':'اسمك (اختياري)','#contribSource':'رابط أو مرجع يدعم المعلومة (اختياري)'},
+    EN: {'.terrain-strip strong':'Western Ibb Highlands','.terrain-strip small':'Approximate coordinates 14°07′N · 44°05′E','.terrain-strip b':'1,550–2,450 m','.section-heading-inline .section-title':'Explore Hubaish in moments','.pulse-bar strong':'Hubaish exploration pulse','.pulse-bar small':'Choose your next destination','#prayerTitle':'Prayer times in Hubaish','.fact-card .tag':'Did you know?','.fact-card .text-action':'Another fact ↻','.spotlight-card .tag':'Featured landmark today','#view-history .section-title':'History of Hubaish District','#view-places .section-title':'Landmarks','#view-uzal .section-title':'Hubaish sub-districts (22)','#view-more .section-title':'More','#histSearchInput':'Search historical events…','#placeSearchInput':'Search forts, mountains or valleys…','#uzalSearchInput':'Search sub-districts…','#newPlaceTitle':'Landmark name','#newPlaceLoc':'Sub-district / location','#newPlaceDesc':'Description','#newHistoryTitle':'Event title','#newHistoryPeriod':'Period','#newHistoryBody':'Details and source','#newSocialName':'Platform name','#newSocialUrl':'https://example.com','#contribTitle':'Contribution title','#contribBody':'Write details and source if available','#contribName':'Your name (optional)','#contribSource':'Source link or reference (optional)'},
+    TR: {'.terrain-strip strong':'Batı İbb Dağları','.terrain-strip small':'Yaklaşık koordinatlar 14°07′K · 44°05′D','.terrain-strip b':'1.550–2.450 m','.section-heading-inline .section-title':'Hubaish’i keşfedin','.pulse-bar strong':'Hubaish keşif akışı','.pulse-bar small':'Sonraki durağınızı seçin','#prayerTitle':'Hubaish namaz vakitleri','.fact-card .tag':'Biliyor muydunuz?','.fact-card .text-action':'Başka bir bilgi ↻','.spotlight-card .tag':'Günün öne çıkan yeri','#view-history .section-title':'Hubaish İlçesi tarihi','#view-places .section-title':'Tarihî yerler','#view-uzal .section-title':'Hubaish bucakları (22)','#view-more .section-title':'Daha fazla','#histSearchInput':'Tarihî olayları ara…','#placeSearchInput':'Kale, dağ veya vadi ara…','#uzalSearchInput':'Bucakları ara…','#newPlaceTitle':'Yer adı','#newPlaceLoc':'Bucak / konum','#newPlaceDesc':'Açıklama','#newHistoryTitle':'Olay başlığı','#newHistoryPeriod':'Dönem','#newHistoryBody':'Ayrıntılar ve kaynak','#newSocialName':'Platform adı','#newSocialUrl':'https://example.com','#contribTitle':'Katkı başlığı','#contribBody':'Ayrıntıları ve varsa kaynağı yazın','#contribName':'Adınız (isteğe bağlı)','#contribSource':'Kaynak bağlantısı veya referans'},
+    FR: {'.terrain-strip strong':'Montagnes de l’ouest d’Ibb','.terrain-strip small':'Coordonnées approximatives 14°07′N · 44°05′E','.terrain-strip b':'1 550–2 450 m','.section-heading-inline .section-title':'Découvrez Hubaish','.pulse-bar strong':'Explorer Hubaish','.pulse-bar small':'Choisissez votre prochaine étape','#prayerTitle':'Horaires de prière à Hubaish','.fact-card .tag':'Le saviez-vous ?','.fact-card .text-action':'Autre fait ↻','.spotlight-card .tag':'Monument du jour','#view-history .section-title':'Histoire du district de Hubaish','#view-places .section-title':'Monuments','#view-uzal .section-title':'Sous-districts de Hubaish (22)','#view-more .section-title':'Plus','#histSearchInput':'Rechercher dans l’histoire…','#placeSearchInput':'Rechercher un fort, une montagne ou une vallée…','#uzalSearchInput':'Rechercher les sous-districts…','#newPlaceTitle':'Nom du monument','#newPlaceLoc':'Sous-district / lieu','#newPlaceDesc':'Description','#newHistoryTitle':'Titre de l’événement','#newHistoryPeriod':'Période','#newHistoryBody':'Détails et source','#newSocialName':'Nom de la plateforme','#newSocialUrl':'https://example.com','#contribTitle':'Titre de la contribution','#contribBody':'Écrivez les détails et la source si disponible','#contribName':'Votre nom (facultatif)','#contribSource':'Lien ou référence source (facultatif)'}
+  };
+  const D = {
+    AR: { greetingMorning:'صباح الخير', greetingEvening:'مساء الخير', stories:['الحصون','العزل','المحطات','المجتمع'], question:'السؤال', start:'ابدأ', next:'التالي', score:'نتيجتك', finish:'انتهى الاختبار', noResult:'لم أعثر على نتيجة مطابقة. جرّب كلمة أخرى أو اسأل المساعد.', ask:'هل تريد أن تسأل المساعد عن هذا الموضوع؟', saved:'تم حفظ التغييرات على هذا الجهاز', pending:'بانتظار المراجعة', approved:'تمت المراجعة', rejected:'مرفوضة', save:'حفظ', edit:'تعديل', delete:'حذف', empty:'لا توجد بيانات هنا بعد.', local:'تحرير محلي على هذا الجهاز فقط', notVerified:'رواية تحتاج إلى توثيق', memberCount:'مجموعة عامة • +11,068 عضو', noVillages:'لا تتوفر حالياً قائمة قرى معتمدة لهذه العزلة في قاعدة البيانات.' },
+    EN: { greetingMorning:'Good morning', greetingEvening:'Good evening', stories:['Forts','Sub-districts','Timeline','Community'], question:'Question', start:'Start', next:'Next', score:'Your score', finish:'Quiz complete', noResult:'No matching result. Try another term or ask the assistant.', ask:'Would you like to ask the assistant about this?', saved:'Changes saved on this device', pending:'Pending review', approved:'Reviewed', rejected:'Rejected', save:'Save', edit:'Edit', delete:'Delete', empty:'No data has been added here yet.', local:'Local editing on this device only', notVerified:'Unverified local account', memberCount:'Public group • 11,068+ members', noVillages:'No verified village list is available for this sub-district yet.' },
+    TR: { greetingMorning:'Günaydın', greetingEvening:'İyi akşamlar', stories:['Kaleler','Bucaklar','Zaman çizelgesi','Topluluk'], question:'Soru', start:'Başla', next:'Sonraki', score:'Puanınız', finish:'Test tamamlandı', noResult:'Eşleşen sonuç bulunamadı. Başka bir kelime deneyin veya asistana sorun.', ask:'Bu konu hakkında asistana sormak ister misiniz?', saved:'Değişiklikler bu cihaza kaydedildi', pending:'İnceleme bekliyor', approved:'İncelendi', rejected:'Reddedildi', save:'Kaydet', edit:'Düzenle', delete:'Sil', empty:'Henüz veri eklenmedi.', local:'Yalnızca bu cihazda yerel düzenleme', notVerified:'Doğrulanmamış yerel anlatı', memberCount:'Herkese açık grup • 11.068+ üye', noVillages:'Bu bucak için henüz doğrulanmış köy listesi yok.' },
+    FR: { greetingMorning:'Bonjour', greetingEvening:'Bonsoir', stories:['Forteresses','Sous-districts','Chronologie','Communauté'], question:'Question', start:'Commencer', next:'Suivant', score:'Votre score', finish:'Quiz terminé', noResult:'Aucun résultat correspondant. Essayez un autre terme ou demandez à l’assistant.', ask:'Voulez-vous demander à l’assistant ?', saved:'Modifications enregistrées sur cet appareil', pending:'En attente de vérification', approved:'Vérifié', rejected:'Rejeté', save:'Enregistrer', edit:'Modifier', delete:'Supprimer', empty:'Aucune donnée ajoutée pour le moment.', local:'Modification locale sur cet appareil uniquement', notVerified:'Récit local non vérifié', memberCount:'Groupe public • 11 068+ membres', noVillages:'Aucune liste de villages vérifiée n’est disponible.' }
+  };
+  let featureState = loadFeatureState();
+  let factIndex = 0;
+  let quizIndex = 0;
+  let quizScore = 0;
+  let quizAnswered = false;
+
+  function t(key) { const lang = (typeof state !== 'undefined' && state.lang) || 'AR'; return (D[lang] || D.AR)[key] || D.AR[key] || key; }
+  function clean(value, max = 1500) { return String(value ?? '').replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F]/g, '').trim().slice(0, max); }
+  function id(prefix) { return `${prefix}-${globalThis.crypto?.randomUUID ? crypto.randomUUID() : `${Date.now()}-${Math.random().toString(16).slice(2)}`}`; }
+  function node(tag, cls, text) { const el = document.createElement(tag); if (cls) el.className = cls; if (text !== undefined) el.textContent = String(text); return el; }
+  function button(text, action, value, cls = 'btn-sm') { const el = node('button', cls, text); el.type = 'button'; el.dataset.featureAction = action; if (value !== undefined) el.dataset.featureValue = value; return el; }
+  function loadFeatureState() {
+    const defaults = { contributions: [], quizRuns: 0, lastSavedAt: null, socialHidden: [], people: [], uzal: (typeof UZAL_22!=='undefined'?UZAL_22.slice():[]), communityUrl: FACEBOOK_URL, schemaVersion: 2 };
+    try { const raw = JSON.parse(localStorage.getItem(FEATURE_KEY) || 'null'); if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return defaults; return { ...defaults, ...raw, contributions: Array.isArray(raw.contributions) ? raw.contributions.slice(0, 200) : [], quizRuns: Number.isFinite(raw.quizRuns) ? raw.quizRuns : 0, socialHidden: Array.isArray(raw.socialHidden) ? raw.socialHidden.filter(x => typeof x === 'string') : [], people: Array.isArray(raw.people) ? raw.people.slice(0, 100) : [], uzal: Array.isArray(raw.uzal) ? raw.uzal.map(x=>clean(x,70)).filter(Boolean).slice(0,60) : (typeof UZAL_22!=='undefined'?UZAL_22.slice():[]), communityUrl: validHttpUrl(raw.communityUrl)?raw.communityUrl:FACEBOOK_URL }; } catch { return defaults; }
+  }
+  function touchSaved() { saveFeatureState(); }
+  function saveFeatureState() {
+    featureState.lastSavedAt = new Date().toISOString();
+    try { localStorage.setItem(FEATURE_KEY, JSON.stringify(featureState)); } catch { showToast('تعذر حفظ البيانات المحلية.'); }
+    const label = document.getElementById('lastSavedAt');
+    if (label) label.textContent = `آخر حفظ: ${new Date(featureState.lastSavedAt).toLocaleString(document.documentElement.lang || 'ar')}`;
+  }
+  function updateSavedAt() {
+    const label = document.getElementById('lastSavedAt');
+    if (label) label.textContent = featureState.lastSavedAt ? `آخر حفظ: ${new Date(featureState.lastSavedAt).toLocaleString(document.documentElement.lang || 'ar')}` : 'لم يُسجل وقت الحفظ بعد';
+  }
+  function localizeDynamicLabels() {
+    const lang = state.lang || 'AR';
+    const words = {
+      AR: { save: '☆ حفظ', saved: '★ محفوظ', ask: '✦ اسأل المساعد', details: 'التفاصيل', empty: 'لا توجد نتائج مطابقة.' },
+      EN: { save: '☆ Save', saved: '★ Saved', ask: '✦ Ask assistant', details: 'Details', empty: 'No matching results.' },
+      TR: { save: '☆ Kaydet', saved: '★ Kaydedildi', ask: '✦ Asistana sor', details: 'Ayrıntılar', empty: 'Eşleşen sonuç bulunamadı.' },
+      FR: { save: '☆ Enregistrer', saved: '★ Enregistré', ask: '✦ Demander à l’assistant', details: 'Détails', empty: 'Aucun résultat correspondant.' }
+    }[lang];
+    document.querySelectorAll('.card-actions button').forEach(btn => {
+      const text = btn.textContent.trim();
+      let label = text;
+      if (/محفوظ|Saved|Kaydedildi|Enregistré/.test(text)) label = words.saved;
+      else if (/حفظ|^Save$|^Kaydet$|^Enregistrer$/.test(text)) label = words.save;
+      else if (/اسأل المساعد|Ask assistant|Asistana sor|Demander à l’assistant/.test(text)) label = words.ask;
+      else if (/^التفاصيل$|^Details$|^Ayrıntılar$|^Détails$/.test(text)) label = words.details;
+      if (btn.textContent !== label) btn.textContent = label;
+    });
+    document.querySelectorAll('.empty-state').forEach(el => {
+      if (/لا توجد نتائج مطابقة|No matching results|Eşleşen sonuç bulunamadı|Aucun résultat correspondant/.test(el.textContent) && el.textContent !== words.empty) el.textContent = words.empty;
+    });
+  }
+  function applyExtendedLang() {
+    const lang = state.lang || 'AR';
+    document.querySelectorAll('[data-i18n-extra]').forEach(el => { const key = el.dataset.i18nExtra; if (D[lang]?.[key]) el.textContent = D[lang][key]; });
+    const select = document.getElementById('langSelect'); if (select && select.value !== lang) select.value = lang;
+    const translations=UI_TEXT[lang]||{};Object.entries(translations).forEach(([selector,value])=>{document.querySelectorAll(selector).forEach(el=>{if(el.matches('input,textarea'))el.placeholder=value;else el.textContent=value;});});
+    const greeting = document.getElementById('greetingChip');
+    if (greeting) { const hour = Number(new Intl.DateTimeFormat('en', { hour:'2-digit', hourCycle:'h23', timeZone:'Asia/Aden' }).format(new Date())); greeting.textContent = hour >= 5 && hour < 12 ? t('greetingMorning') : t('greetingEvening'); }
+  }
+  function renderStories() {
+    const box = document.getElementById('visualStories'); if (!box) return;
+    const labels=(D[state.lang]||D.AR).stories;const titles={AR:['حصن صهبان','العزل الـ22','محطات التاريخ','مجتمع حبيش'],EN:['Sahban Fort','22 Sub-districts','History timeline','Hubaish community'],TR:['Sahban Kalesi','22 Bucak','Tarih çizelgesi','Hubaish topluluğu'],FR:['Fort de Sahban','22 sous-districts','Chronologie','Communauté de Hubaish']}[state.lang]||['حصن صهبان','العزل الـ22','محطات التاريخ','مجتمع حبيش'];const data = [ ['🏰',titles[0],labels[0],'places'], ['▧',titles[1],labels[1],'uzal'], ['◷',titles[2],labels[2],'history'], ['◎',titles[3],labels[3],'more'] ];
+    box.replaceChildren(); data.forEach(([icon,title,sub,tab]) => { const card = node('button','story-card'); card.type='button'; card.dataset.storyTab=tab; card.append(node('span','story-icon',icon),node('strong','',title),node('small','',sub)); box.append(card); });
+  }
+  function currentQuiz(){return (QUIZ_TRANSLATIONS[state.lang]||QUIZ)[quizIndex] ? { ...QUIZ[quizIndex], ...(QUIZ_TRANSLATIONS[state.lang]?.[quizIndex]||{}) } : QUIZ[quizIndex];}
+  function renderQuiz() {
+    const box = document.getElementById('quizArea'); if (!box) return;
+    box.replaceChildren();
+    if (quizIndex >= QUIZ.length) {
+      box.append(node('p','quiz-question',`${t('finish')} — ${t('score')}: ${quizScore}/${QUIZ.length}`), button('إعادة الاختبار','quiz-restart',undefined,'btn-primary'));
+      return;
+    }
+    const q = currentQuiz();
+    box.append(node('div','item-meta',`${t('question')} ${quizIndex+1}/${QUIZ.length}`),node('p','quiz-question',q.q));
+    const opts = node('div','quiz-options');
+    q.a.forEach((answer,i) => { const btn = button(answer,'quiz-answer',String(i),'quiz-option'); if (quizAnswered && i===q.correct) btn.classList.add('correct'); opts.append(btn); });
+    box.append(opts);
+    if (quizAnswered) { box.append(node('p','quiz-feedback',q.why),button(quizIndex===QUIZ.length-1?'عرض النتيجة':t('next'),'quiz-next',undefined,'btn-primary')); }
+  }
+  function resetQuiz() { quizIndex=0; quizScore=0; quizAnswered=false; renderQuiz(); }
+  function handleQuizAction(action, value) {
+    if (action==='detail-favorite'){toggleFavorite(value);return;}
+    if (action==='detail-ask'){openModal('aiModal');document.getElementById('aiInput').value=value;sendAiMessage();return;}
+    if (action==='quiz-restart') { resetQuiz(); return; }
+    if (action==='quiz-answer' && !quizAnswered) { const answer=Number(value); quizAnswered=true; if (answer===QUIZ[quizIndex].correct) quizScore++; renderQuiz(); const options=document.querySelectorAll('#quizArea .quiz-option'); options.forEach((el,i)=>{el.disabled=true;if(i===answer&&i!==QUIZ[quizIndex].correct)el.classList.add('wrong');}); return; }
+    if (action==='quiz-next' && quizAnswered) { quizIndex++; quizAnswered=false; if(quizIndex>=QUIZ.length){featureState.quizRuns++;saveFeatureState();} renderQuiz(); }
+  }
+  function renderUzalDetails() {
+    const box = document.getElementById('uzalList'); if (!box || typeof UZAL_22 === 'undefined') return;
+    const cards = box.querySelectorAll('.item-card');
+    cards.forEach((card,index)=>{
+      if(card.querySelector('.uzal-note')) return;
+      const note=node('p','uzal-note',t('noVillages'));
+      const meta=node('div','detail-grid'); meta.append(node('div','detail-cell','المديرية: حبيش'),node('div','detail-cell','المركز: ظُلمة'));
+      card.append(note,meta);
+    });
+  }
+  function renderCommunitySocials() {
+    const base = document.getElementById('socialLinksList'); if (!base) return;
+    [...base.children].forEach(el=>{ const name=el.textContent.replace(/^↗\s*/, '').trim(); el.hidden=featureState.socialHidden.includes(name); el.dataset.extended='1'; });
+    const join=document.getElementById('communityJoinLink'); if(join) join.href=featureState.communityUrl;
+  }
+  function renderAdminLists() {
+    const social = document.getElementById('socialAdminList');
+    if (social) { social.replaceChildren(); (state.socials||[]).forEach((item,index)=>{ const row=node('div','admin-list-row'); row.append(node('span','',item.name)); const actions=node('div','admin-list-actions'); actions.append(button(featureState.socialHidden.includes(item.name)?'إظهار':'إخفاء','social-hide',String(index)),button('تعديل','social-edit',String(index)),button('حذف','social-delete',String(index),'btn-sm mini-danger')); row.append(actions); social.append(row); }); }
+    const uzalAdmin = document.getElementById('uzalAdminList');
+    if(uzalAdmin){uzalAdmin.replaceChildren();(featureState.uzal||[]).forEach((name,index)=>{const row=node('div','admin-list-row');row.append(node('span','',`${index+1}. ${name}`));const actions=node('div','admin-list-actions');actions.append(button('تعديل','uzal-edit',String(index)),button('حذف','uzal-delete',String(index),'btn-sm mini-danger'));row.append(actions);uzalAdmin.append(row);});}
+    const content = document.getElementById('contentAdminList');
+    if (content) { content.replaceChildren(); [...state.places.map(x=>({...x,_kind:'place'})),...state.history.map(x=>({...x,_kind:'history'}))].forEach(item=>{ const row=node('div','admin-list-row'); row.append(node('span','',`${item.title} · ${item._kind==='place'?'معلم':'تاريخ'}`)); const actions=node('div','admin-list-actions'); actions.append(button('تعديل','content-edit',`${item._kind}:${item.id}`),button('حذف','content-delete',`${item._kind}:${item.id}`,'btn-sm mini-danger')); row.append(actions); content.append(row); }); if(!content.childElementCount)content.append(node('p','empty-state',t('empty'))); }
+    const review = document.getElementById('contributionReviewList');
+    if (review) { review.replaceChildren(); const pending=featureState.contributions.filter(x=>x.status==='pending'); if(!pending.length)review.append(node('p','empty-state','لا توجد مساهمات بانتظار المراجعة.')); pending.forEach(item=>{const row=node('article','item-card');row.append(node('div','item-meta',`${item.type} · ${new Date(item.createdAt).toLocaleDateString()}`),node('h4','item-title',item.title),node('p','item-body',item.body),node('small','muted',item.source||'لم يرفق مصدر'));const actions=node('div','card-actions');actions.append(button('اعتماد','contrib-approve',item.id,'btn-primary'),button('رفض','contrib-reject',item.id,'btn-sm mini-danger'));row.append(actions);review.append(row);}); }
+  }
+  function addHistory() {
+    const title=clean(document.getElementById('newHistoryTitle')?.value,100),period=clean(document.getElementById('newHistoryPeriod')?.value,70),body=clean(document.getElementById('newHistoryBody')?.value,700),era=document.getElementById('newHistoryEra')?.value;
+    if(!title||!body){showToast('أدخل عنوان المحطة وتفاصيلها.');return;}
+    state.history.unshift({id:id('history'),era:era==='modern'?'modern':'ancient',period,title,body});saveState();renderAll();renderAdminLists();['newHistoryTitle','newHistoryPeriod','newHistoryBody'].forEach(k=>document.getElementById(k).value='');showToast('تم حفظ المحطة على هذا الجهاز.');
+  }
+  function submitContribution(event) {
+    event.preventDefault();
+    const item={id:id('contrib'),name:clean(document.getElementById('contribName').value,70),type:document.getElementById('contribType').value,title:clean(document.getElementById('contribTitle').value,100),body:clean(document.getElementById('contribBody').value,1600),source:clean(document.getElementById('contribSource').value,350),status:'pending',createdAt:new Date().toISOString()};
+    if(!item.title||!item.body){showToast('أدخل عنوان المساهمة والتفاصيل.');return;}
+    if(item.source && /^javascript:/i.test(item.source)){showToast('رابط المصدر غير صالح.');return;}
+    featureState.contributions.unshift(item);saveFeatureState();renderAdminLists();event.target.reset();showToast('حُفظت المساهمة محلياً بانتظار المراجعة.');
+  }
+  function handleContribution(idValue, approve) {
+    const item=featureState.contributions.find(x=>x.id===idValue);if(!item)return;
+    if(approve){
+      if(item.type==='place') state.places.unshift({id:id('place'),cat:'fort',title:item.title,loc:'مديرية حبيش',body:item.body});
+      else if(item.type==='history') state.history.unshift({id:id('history'),era:'modern',period:'مساهمة زائر',title:item.title,body:`${item.body}${item.source?`\nالمصدر: ${item.source}`:''}`});
+      else if(item.type==='person') featureState.people.unshift({title:item.title,body:item.body,source:item.source});
+      else if(item.type==='uzal') featureState.uzal.unshift(item.title);
+      item.status='approved';item.reviewedAt=new Date().toISOString();saveState();
+    }else{item.status='rejected';item.reviewedAt=new Date().toISOString();}
+    saveFeatureState();renderAll();renderAdminLists();renderPeople();showToast(approve?'تم اعتماد المساهمة وإضافتها محلياً.':'تم رفض المساهمة محلياً.');
+  }
+  function showDetail(itemId){const item=findDirectoryItem(itemId);if(!item)return;const box=document.getElementById('detailContent');if(!box)return;box.replaceChildren(node('span','tag tag-gold',item.loc||item.period||'مديرية حبيش'),node('h3','item-title',item.title),node('p','item-body',item.body));const actions=node('div','card-actions');const fav=button(isSaved(item.id)?'★ محفوظ':'☆ حفظ','detail-favorite',item.id);fav.dataset.favId=item.id;actions.append(fav,button('اسأل المساعد','detail-ask',item.title,'btn-primary'));box.append(actions);openModal('detailModal');}
+  function renderPeople(){const box=document.getElementById('peopleList');if(!box)return;box.replaceChildren();if(!featureState.people.length){box.append(node('p','empty-state','لا توجد شخصيات موثقة مضافة بعد.'));return;}featureState.people.forEach(person=>box.append(node('p','item-body',`${person.title}: ${person.body}`)));}
+  function exportAllBackup(){const payload={schemaVersion:2,exportedAt:new Date().toISOString(),coreState:state,featureState};const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});const url=URL.createObjectURL(blob);const a=node('a');a.href=url;a.download='hubaish-guide-complete-backup.json';document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);}
+  function importAllBackup(file){if(!file)return;if(file.size>2*1024*1024){showToast('حجم النسخة يتجاوز 2 ميغابايت.');return;}file.text().then(raw=>{const parsed=JSON.parse(raw);const incoming=parsed.coreState||parsed.state;if(!incoming||typeof incoming!=='object'||!Array.isArray(incoming.places)||!Array.isArray(incoming.history))throw new Error('bad schema');const normalized=normalizeState(incoming);state=normalized;const ext=parsed.featureState;if(ext&&typeof ext==='object'&&!Array.isArray(ext)){featureState={...featureState,...ext,contributions:Array.isArray(ext.contributions)?ext.contributions.slice(0,200):[]};}saveState();saveFeatureState();applyTheme(state.theme);applyLang(state.lang);renderAll();renderRadar();renderAdminLists();renderPeople();showToast('تم استيراد النسخة والتحقق من البيانات.');}).catch(()=>showToast('ملف النسخة غير صالح أو لا يطابق البنية المطلوبة.')).finally(()=>{const input=document.getElementById('importJsonInput');if(input)input.value='';});}
+  function editItem(typeAndId){const [kind,itemId]=typeAndId.split(':');const array=kind==='place'?state.places:state.history;const item=array.find(x=>x.id===itemId);if(!item)return;const title=prompt('العنوان الجديد',item.title);if(title===null)return;const body=prompt('الوصف الجديد',item.body);if(body===null)return;item.title=clean(title,100);item.body=clean(body,700);saveState();renderAll();renderAdminLists();showToast('تم تحديث العنصر.');}
+  function deleteItem(typeAndId){if(!confirm('هل تريد حذف هذا العنصر من بيانات هذا الجهاز؟'))return;const [kind,itemId]=typeAndId.split(':');if(kind==='place')state.places=state.places.filter(x=>x.id!==itemId);else state.history=state.history.filter(x=>x.id!==itemId);state.favs=state.favs.filter(x=>x!==itemId);saveState();renderAll();renderAdminLists();showToast('تم حذف العنصر.');}
+  function addSocial(){const name=clean(document.getElementById('newSocialName').value,70),url=clean(document.getElementById('newSocialUrl').value,500);if(!name||!validHttpUrl(url)){showToast('أدخل اسماً ورابط HTTP أو HTTPS صحيحاً.');return;}if(state.socials.length>=50){showToast('وصلت إلى الحد الأقصى للروابط.');return;}state.socials.push({name,url});saveState();renderAll();renderAdminLists();renderCommunitySocials();document.getElementById('newSocialName').value='';document.getElementById('newSocialUrl').value='';showToast('تمت إضافة المنصة.');}
+  function randomTour(){const choices=[...state.places.map(p=>({title:p.title,body:p.body,tab:'places'})),...UZAL_22.map(z=>({title:`عزلة ${z}`,body:`${z} ضمن قائمة العزل في مديرية حبيش. ${t('noVillages')}`,tab:'uzal'}))];if(!choices.length)return;const choice=choices[Math.floor(Math.random()*choices.length)];switchTab(choice.tab);setTimeout(()=>{openModal('aiModal');document.getElementById('aiInput').value=`عرفني على ${choice.title}`;sendAiMessage();},80);}
+  function updateCounters(){document.querySelectorAll('[data-count]').forEach(el=>{const target=Number(el.dataset.count);if(!Number.isFinite(target))return;let start=0;const step=Math.max(1,Math.ceil(target/36));const timer=setInterval(()=>{start=Math.min(target,start+step);el.textContent=start.toLocaleString('en-US');if(start>=target)clearInterval(timer);},22);});}
+  function animateBookmark(source){const target=document.getElementById('favOpenBtn');if(!source||!target)return;const a=source.getBoundingClientRect(),b=target.getBoundingClientRect();const flyer=node('span','fly-bookmark','★');flyer.style.left=`${a.left+a.width/2}px`;flyer.style.top=`${a.top+a.height/2}px`;document.body.append(flyer);requestAnimationFrame(()=>{flyer.style.transform=`translate(${b.left-a.left}px,${b.top-a.top}px) scale(.3)`;flyer.style.opacity='0.1';});setTimeout(()=>flyer.remove(),780);target.classList.remove('fav-count-pulse');void target.offsetWidth;target.classList.add('fav-count-pulse');}
+  function localizeAssistant(question, fallback){const lang=state.lang||'AR';const q=normalizeArabic(question);if(lang==='AR')return fallback;const yes={EN:'This answer comes from the guide data stored on this device.\n\n',TR:'Bu yanıt cihazınızda saklanan rehber verilerinden alınmıştır.\n\n',FR:'Cette réponse provient des données du guide stockées sur cet appareil.\n\n'};if(/105998|105,998|population|nufus|population/.test(q))return ({EN:'The 2004 census figure listed for Hubaish is 105,998 residents.',TR:'Hubaish için 2004 nüfus sayımında 105.998 kişi kaydedilmiştir.',FR:'Le recensement de 2004 indique 105 998 habitants pour Hubaish.'})[lang];if(/228|مساحه|alan|superficie/.test(q))return ({EN:'The published area figure used in this guide is 228 km².',TR:'Bu rehberde kullanılan yayımlanmış yüzölçümü 228 km²’dir.',FR:'La superficie publiée utilisée dans ce guide est de 228 km².'})[lang];if(/subdistrict|bucak|sous district|عزله|عزل/.test(q))return ({EN:'The guide lists 22 sub-district names. Verified village-level details are not yet available for every one.',TR:'Rehberde 22 bucak adı listelenmiştir. Her biri için doğrulanmış köy ayrıntıları henüz mevcut değildir.',FR:'Le guide répertorie 22 sous-districts. Les détails vérifiés des villages ne sont pas encore disponibles pour chacun.'})[lang];if(/prayer|namaz|صلاه|مواقيت/.test(q))return ({EN:'Approximate prayer times are displayed on the home screen for Hubaish. Check the local mosque timetable for confirmation.',TR:'Yaklaşık namaz vakitleri ana ekranda gösterilir. Kesin bilgi için yerel cami takvimini kontrol edin.',FR:'Les horaires approximatifs sont affichés sur l’accueil. Vérifiez le calendrier de la mosquée locale.'})[lang];return (yes[lang]||'')+fallback;}
+  function openDetails(item){const modal=document.getElementById('aiModal');openModal('aiModal');const input=document.getElementById('aiInput');input.value=`${item.title} — ${item.body}`;sendAiMessage();}
+  function onFeatureClick(event){const action=event.target.closest('[data-feature-action]');if(action){const a=action.dataset.featureAction,v=action.dataset.featureValue;if(a.startsWith('quiz-')||a==='detail-favorite'||a==='detail-ask'){handleQuizAction(a,v);return;}if(a==='contrib-approve'||a==='contrib-reject'){handleContribution(v,a==='contrib-approve');return;}if(a==='uzal-edit'){const index=Number(v);const old=featureState.uzal[index];if(old!==undefined){const name=prompt('اسم العزلة',old);if(name!==null&&clean(name,70)){featureState.uzal[index]=clean(name,70);saveFeatureState();renderUzal();renderUzalDetails();renderAdminLists();}}return;}if(a==='uzal-delete'){const index=Number(v);if(Number.isInteger(index)&&confirm('حذف اسم العزلة من القائمة المحلية؟')){featureState.uzal.splice(index,1);saveFeatureState();renderUzal();renderAdminLists();}return;}if(a==='social-delete'){const index=Number(v);if(Number.isInteger(index)){state.socials.splice(index,1);saveState();renderAll();renderAdminLists();}return;}if(a==='social-hide'){const item=state.socials[Number(v)];if(item){if(featureState.socialHidden.includes(item.name))featureState.socialHidden=featureState.socialHidden.filter(x=>x!==item.name);else featureState.socialHidden.push(item.name);saveFeatureState();renderSocials();renderCommunitySocials();renderAdminLists();}return;}if(a==='social-edit'){const item=state.socials[Number(v)];if(item){const name=prompt('اسم المنصة',item.name);if(name===null)return;const url=prompt('رابط المنصة',item.url);if(url===null)return;if(!clean(name,70)||!validHttpUrl(url)){showToast('الاسم أو الرابط غير صالح.');return;}item.name=clean(name,70);item.url=clean(url,500);saveState();renderAll();renderAdminLists();renderCommunitySocials();}return;}if(a==='content-edit'){editItem(v);return;}if(a==='content-delete'){deleteItem(v);return;}}
+    const story=event.target.closest('[data-story-tab]');if(story){switchTab(story.dataset.storyTab);window.scrollTo({top:0,behavior:'smooth'});return;}
+    const quick=event.target.closest('[data-query]');if(quick){const input=document.getElementById('globalSearchInput');input.value=quick.dataset.query;input.dispatchEvent(new Event('input',{bubbles:true}));return;}
+    const question=event.target.closest('[data-ai-question]');if(question){openModal('aiModal');document.getElementById('aiInput').value=question.dataset.aiQuestion;sendAiMessage();}
+  }
+  function init() {
+    if(typeof state==='undefined')return;
+    document.getElementById('communityJoinLink')?.setAttribute('href',featureState.communityUrl);
+    const categorySelect=document.getElementById('langSelect');if(categorySelect){categorySelect.value=state.lang||'AR';categorySelect.addEventListener('change',()=>{applyLang(categorySelect.value);applyExtendedLang();});}
+    applyExtendedLang();renderStories();renderQuiz();renderPeople();const fact=document.getElementById('didYouKnow');if(fact)fact.textContent=(FACTS_I18N[state.lang]||FACTS)[factIndex];renderAdminLists();renderCommunitySocials();renderUzalDetails();updateCounters();updateSavedAt();
+    document.getElementById('nextFactBtn')?.addEventListener('click',()=>{factIndex=(factIndex+1)%FACTS.length;document.getElementById('didYouKnow').textContent=(FACTS_I18N[state.lang]||FACTS)[factIndex];});
+    document.getElementById('randomTourBtn')?.addEventListener('click',randomTour);
+    document.getElementById('adminPanelToggle')?.addEventListener('click',()=>{const p=document.getElementById('adminPanel');p.classList.toggle('hidden');document.getElementById('adminPanelToggle').textContent=p.classList.contains('hidden')?'فتح أدوات التحرير':'إغلاق أدوات التحرير';});
+    document.getElementById('addHistorySaveBtn')?.addEventListener('click',addHistory);
+    document.getElementById('addUzalBtn')?.addEventListener('click',()=>{const input=document.getElementById('newUzalName');const name=clean(input.value,70);if(!name){showToast('أدخل اسم العزلة.');return;}if(featureState.uzal.length>=60){showToast('وصل الحد الأقصى للأسماء.');return;}featureState.uzal.push(name);saveFeatureState();input.value='';renderUzal();renderAdminLists();showToast('تمت إضافة الاسم إلى القائمة المحلية.');});
+    document.getElementById('contributionForm')?.addEventListener('submit',submitContribution);
+    document.getElementById('addSocialSaveBtn')?.addEventListener('click',addSocial);
+    document.getElementById('exportJsonBtn')?.addEventListener('click',exportAllBackup);
+    document.getElementById('importJsonInput')?.addEventListener('change',e=>importAllBackup(e.target.files?.[0]));
+    document.getElementById('favSearch')?.addEventListener('input',filterFavorites);
+    document.getElementById('favTypeFilter')?.addEventListener('change',filterFavorites);
+    document.getElementById('favExportBtn')?.addEventListener('click',exportFavorites);
+    document.getElementById('copyCommunityBtn')?.addEventListener('click',async()=>{try{await navigator.clipboard.writeText(featureState.communityUrl);showToast('تم نسخ رابط المجموعة.');}catch{showToast(featureState.communityUrl);}});
+    document.getElementById('editCommunityBtn')?.addEventListener('click',()=>{const url=prompt('رابط مجموعة فيسبوك',featureState.communityUrl);if(url===null)return;if(!validHttpUrl(url)){showToast('أدخل رابط HTTP أو HTTPS صحيحاً.');return;}featureState.communityUrl=url;const fb=state.socials.find(x=>x.name.includes('HUBAISH')||x.name.includes('حبيش'));if(fb)fb.url=url;saveState();saveFeatureState();renderAll();renderAdminLists();renderCommunitySocials();showToast('تم تحديث رابط المجتمع محلياً.');});
+    document.body.addEventListener('click',onFeatureClick);
+    const socialsRoot=document.getElementById('socialLinksList');if(socialsRoot)new MutationObserver(renderCommunitySocials).observe(socialsRoot,{childList:true});
+    const dynamicRoots=['placesList','historyList','uzalList','spotlightContainer','favListContainer','globalSearchResults'];dynamicRoots.forEach(key=>{const target=document.getElementById(key);if(target)new MutationObserver(localizeDynamicLabels).observe(target,{childList:true,subtree:true});});
+    const prayerGrid=document.getElementById('prayerGrid');if(prayerGrid)new MutationObserver(()=>{const lang=state.lang||'AR';const names={EN:['Fajr','Dhuhr','Asr','Maghrib','Isha'],TR:['İmsak','Öğle','İkindi','Akşam','Yatsı'],FR:['Fajr','Dhuhr','Asr','Maghrib','Isha']}[lang];if(names)prayerGrid.querySelectorAll('.p-name').forEach((el,i)=>{if(names[i])el.textContent=names[i];});}).observe(prayerGrid,{childList:true});
+    localizeDynamicLabels();
+    document.getElementById('homeLogoBtn')?.addEventListener('click',()=>{if(state.tab==='home'){updateCounters();showToast('تم تحديث مؤشرات الصفحة الرئيسية.');}else showToast('عدت إلى الصفحة الرئيسية.');},{capture:true});
+    document.body.addEventListener('click',e=>{const fav=e.target.closest('[data-fav-id]');if(fav)animateBookmark(fav);},{capture:true});
+    const langObserver=new MutationObserver(()=>applyExtendedLang());langObserver.observe(document.documentElement,{attributes:true,attributeFilter:['lang']});
+  }
+  function filterFavorites(){const query=normalizeArabic(document.getElementById('favSearch')?.value||'');const type=document.getElementById('favTypeFilter')?.value||'all';const list=document.querySelectorAll('#favListContainer .item-card');list.forEach(card=>{const text=normalizeArabic(card.textContent);const isHistory=card.dataset.kind==='history';card.hidden=!!((type==='history'&&!isHistory)||(type==='place'&&isHistory)||(query&&!text.includes(query)));});}
+  function exportFavorites(){const items=state.favs.map(id=>[...state.places,...state.history].find(x=>x.id===id)).filter(Boolean);const blob=new Blob([JSON.stringify({exportedAt:new Date().toISOString(),favorites:items},null,2)],{type:'application/json'});const url=URL.createObjectURL(blob);const a=node('a');a.href=url;a.download='hubaish-favorites.json';document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);}
+  if (typeof localAssistantAnswer === 'function') { const baseAnswer=localAssistantAnswer; window.localAssistantAnswer = question => localizeAssistant(question,baseAnswer(question)); }
+  window.normAr = value => normalizeArabic(value);
+  window.HubaishFeatures = { exportAllBackup, randomTour, renderAdminLists, getState:()=>featureState, touchSaved, getUzal:()=>featureState.uzal.slice(), getPeople:()=>featureState.people.slice(), showDetail, assistantAnswer:question=>localizeAssistant(question,localAssistantAnswer(question)), text:t, reset:()=>{localStorage.removeItem(FEATURE_KEY);featureState=loadFeatureState();saveFeatureState();renderAdminLists();} };
+  document.addEventListener('DOMContentLoaded',init,{once:true});
+})();
