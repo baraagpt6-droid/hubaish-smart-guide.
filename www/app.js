@@ -598,6 +598,7 @@ function renderRadar() {
 }
 
 function handleAddPlace() {
+  if (!window.HubaishFeatures?.isAdminUnlocked?.()) return showToast('افتح لوحة الإشراف برمز المرور أولاً.');
   const title = cleanText(document.getElementById('newPlaceTitle').value, 90);
   const loc = cleanText(document.getElementById('newPlaceLoc').value, 90) || 'مديرية حبيش';
   const body = cleanText(document.getElementById('newPlaceDesc').value, 700);
@@ -658,6 +659,7 @@ async function importBackup(file) {
 }
 
 function resetLocalData() {
+  if (!window.HubaishFeatures?.isAdminUnlocked?.()) return showToast('افتح لوحة الإشراف برمز المرور أولاً.');
   if (!window.confirm('سيتم حذف الإضافات والمفضلة والإعدادات المحلية وإعادة البيانات الافتراضية. هل تريد المتابعة؟')) return;
   state = normalizeState({});
   window.HubaishFeatures?.reset?.();
