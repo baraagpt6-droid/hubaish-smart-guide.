@@ -130,7 +130,7 @@
     return {
       id:String(row.id||makeId('landmark')),
       cmsOverride:true,
-      cat:['fort','mosque','valley','mountain'].includes(row.category)?row.category:'fort',
+      cat:['fort','mosque','valley','mountain','market'].includes(row.category)?row.category:'fort',
       title:localized(row,'title',l),
       loc:localized(row,'location',l)||'مديرية حبيش',
       body:localized(row,'description',l),
