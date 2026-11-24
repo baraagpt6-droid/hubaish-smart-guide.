@@ -93,13 +93,16 @@ for (const key of ['landmarks','historyEvents','subDistrictUpdates','subDistrict
   if (!Array.isArray(data[key])) throw new Error('GitHub live-content.json is missing collection: ' + key);
 }
 if (data.subDistricts.length !== 22) throw new Error('GitHub live-content.json must include 22 translated sub-district profiles.');
-if (data.landmarks.length < 17 || data.historyEvents.length < 7 || data.historicalFigures.length < 5 || data.subDistrictUpdates.length < 19) {
+if (data.landmarks.length < 22 || data.historyEvents.length < 7 || data.historicalFigures.length < 5 || data.subDistrictUpdates.length < 19) {
   throw new Error('Sourced Hubaish landmarks, historical events, figures or village profiles are incomplete.');
 }
 if (!data.landmarks.some(x=>x.id==='khudad-fort') || !data.landmarks.some(x=>x.id==='wuhaza-fortress') ||
     !data.landmarks.some(x=>x.id==='nahrah-mosque') || !data.landmarks.some(x=>x.id==='zawahi-islamic-school') ||
     !data.landmarks.some(x=>x.id==='bayn-al-dur-dome') || !data.landmarks.some(x=>x.id==='marwaha-mosque') ||
     !data.landmarks.some(x=>x.id==='al-farawi-mosque-dome') ||
+    !data.landmarks.some(x=>x.id==='kareef-dardaa-wuhaza') ||
+    !data.landmarks.some(x=>x.id==='kareef-al-wufait-khudad') ||
+    !data.landmarks.some(x=>x.id==='north-cistern-khudad') ||
     !data.historyEvents.some(x=>x.id==='hubaish-uprising-final-battle-17-may-1919')) {
   throw new Error('Key Hubaish heritage or historical records are missing.');
 }
