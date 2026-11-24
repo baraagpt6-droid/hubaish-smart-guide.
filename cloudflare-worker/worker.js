@@ -4,7 +4,7 @@
  * First setup: POST /setup {bootstrapKey,username,password,displayName}; then remove BOOTSTRAP_KEY.
  */
 const OWNER="baraagpt6-droid",REPO="hubaish-smart-guide.",BRANCH="main",FILE="www/data/live-content.json";
-const ROLES=new Set(["super_admin","editor"]),ITER=210000,UP="user:",AUDIT="audit:latest";
+const ROLES=new Set(["super_admin","editor"]),ITER=100000,UP="user:",AUDIT="audit:latest";
 function b64bytes(bytes){let binary='';for(let i=0;i<bytes.length;i+=0x8000)binary+=String.fromCharCode(...bytes.subarray(i,Math.min(i+0x8000,bytes.length)));return btoa(binary)}
 const json=(d,s=200,h={})=>new Response(JSON.stringify(d),{status:s,headers:{"Content-Type":"application/json; charset=utf-8","Cache-Control":"no-store",...h}});
 const enc=s=>new TextEncoder().encode(s),dec=b=>new TextDecoder().decode(b);
