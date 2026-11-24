@@ -129,7 +129,7 @@ if (!html.includes('id="cloudAdminStats"') || !html.includes('id="cloudContentSe
   throw new Error('CMS admin dashboard counters and content search are incomplete.');
 }
 if (!html.includes('upload.wikimedia.org') || !html.includes('al-jandprovince.com') ||
-    !html.includes('hekmahyemanya.com') || !html.includes('cc-by-sa') ) {
+    !html.includes('hekmahyemanya.com') || !html.toLowerCase().includes('cc by-sa') ) {
   throw new Error('Photo gallery must include verified sources and license attribution.');
 }
 const frontendWorkerContracts = [
@@ -229,7 +229,7 @@ if (!css.includes('--bg:#08100d') || !css.includes('--gold:#d4af37') || !css.inc
 if (!css.includes('left:16px!important') || !css.includes('width:46px!important') || !css.includes('right:auto!important')) {
   throw new Error('The assistant button must remain fixed at left:16px.');
 }
-if (!sw.includes('hubaish-guide-v3.5.0') || !sw.includes("'github-cms.js'") ||
+if (!sw.includes('hubaish-guide-v3.6.0') || !sw.includes("'github-cms.js'") ||
     !sw.includes("'data/live-content.json'") || !sw.includes("event.data?.type === 'SKIP_WAITING'") ||
     sw.includes('supabase')) throw new Error('Offline app shell does not include the GitHub CMS or live JSON file.');
 if (!workflow.includes('actions/deploy-pages@v4') || !workflow.includes('assembleDebug') ||
