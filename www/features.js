@@ -460,7 +460,7 @@
   function exportFavorites(){const items=state.favs.map(id=>[...state.places,...state.history].find(x=>x.id===id)).filter(Boolean);const blob=new Blob([JSON.stringify({exportedAt:new Date().toISOString(),favorites:items},null,2)],{type:'application/json'});const url=URL.createObjectURL(blob);const a=node('a');a.href=url;a.download='hubaish-favorites.json';document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);}
   if (typeof localAssistantAnswer === 'function') { const baseAnswer=localAssistantAnswer; window.localAssistantAnswer = question => localizeAssistant(question,baseAnswer(question)); }
   window.normAr = value => normalizeArabic(value);
-  function setCommunityUrl(url){if(!validHttpUrl(url))return;featureState.communityUrl=url;const link=document.getElementById('communityJoinLink');if(link)link.href=url;saveFeatureState();renderCommunitySocials();}
+  function setCommunityUrl(url){featureState.communityUrl=validHttpUrl(url)?url:FACEBOOK_URL;const link=document.getElementById('communityJoinLink');if(link)link.href=featureState.communityUrl;saveFeatureState();renderCommunitySocials();}
   window.HubaishFeatures = { exportAllBackup, randomTour, renderAdminLists, getState:()=>featureState, isAdminUnlocked:()=>adminUnlocked, touchSaved, markExplored, renderExplorerProgress, getUzal:()=>featureState.uzal.slice(), getPeople:()=>featureState.people.slice(), setCloudPeople, setCommunityUrl, showDetail, assistantAnswer:question=>localizeAssistant(question,localAssistantAnswer(question)), text:t, reset:()=>{localStorage.removeItem(FEATURE_KEY);featureState=loadFeatureState();saveFeatureState();renderAdminLists();renderExplorerProgress();} };
   document.addEventListener('DOMContentLoaded',init,{once:true});
 })();
