@@ -79,10 +79,10 @@ jobs:
         id: apk
         shell: bash
         env:
-          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
-          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
-          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
-          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
         run: |
           set -euo pipefail
 
@@ -100,9 +100,10 @@ jobs:
           PY
 
           mkdir -p release-out
-          if [[ -n "${ANDROID_KEYSTORE_BASE64}" && -n "${ANDROID_KEYSTORE_PASSWORD}" && -n "${ANDROID_KEY_ALIAS}" && -n "${ANDROID_KEY_PASSWORD}" ]]; then
+          if [[ -n "${KEYSTORE_BASE64}" && -n "${KEYSTORE_PASSWORD}" && -n "${KEY_ALIAS}" && -n "${KEY_PASSWORD}" ]]; then
             mkdir -p android/keystore
-            printf '%s' "$ANDROID_KEYSTORE_BASE64" | base64 --decode > android/keystore/hubaish-release.jks
+            printf '%s' "$KEYSTORE_BASE64" | base64 --decode > android/keystore/hubaish-release.jks
+            keytool -list -keystore android/keystore/hubaish-release.jks -storetype JKS -storepass "$KEYSTORE_PASSWORD" -alias "$KEY_ALIAS" >/dev/null
             export ANDROID_KEYSTORE_PATH="$GITHUB_WORKSPACE/android/keystore/hubaish-release.jks"
             python3 - <<'PY'
           from pathlib import Path
@@ -112,9 +113,9 @@ jobs:
               signingConfigs {
                   hubaishRelease {
                       storeFile file(System.getenv("ANDROID_KEYSTORE_PATH"))
-                      storePassword System.getenv("ANDROID_KEYSTORE_PASSWORD")
-                      keyAlias System.getenv("ANDROID_KEY_ALIAS")
-                      keyPassword System.getenv("ANDROID_KEY_PASSWORD")
+                      storePassword System.getenv("KEYSTORE_PASSWORD")
+                      keyAlias System.getenv("KEY_ALIAS")
+                      keyPassword System.getenv("KEY_PASSWORD")
                   }
               }
               buildTypes {
@@ -135,6 +136,10 @@ jobs:
             echo "signed=true" >> "$GITHUB_OUTPUT"
             echo "Built a signed release APK with the configured persistent keystore."
           else
+            if [[ -n "${KEYSTORE_BASE64}" || -n "${KEYSTORE_PASSWORD}" || -n "${KEY_ALIAS}" || -n "${KEY_PASSWORD}" ]]; then
+              echo "::error::Signing secrets are only partially configured. Set all four secrets or clear all four."
+              exit 1
+            fi
             echo "::warning::Android signing secrets are not configured. Building a debug APK; it cannot be guaranteed to install over a differently signed APK."
             (cd android && ./gradlew --no-daemon assembleDebug)
             cp android/app/build/outputs/apk/debug/app-debug.apk release-out/hubaish-smart-guide.apk
