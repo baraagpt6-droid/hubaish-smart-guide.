@@ -514,7 +514,7 @@
       place:{ar:val('cloudPlaceAr'),en:val('cloudPlaceEn'),tr:val('cloudPlaceTr'),fr:val('cloudPlaceFr')},
       period:{ar:val('cloudPeriodAr'),en:val('cloudPeriodEn'),tr:val('cloudPeriodTr'),fr:val('cloudPeriodFr')},
       category:val('cloudCategory')||'fort',url:val('cloudUrl'),source:val('cloudSource'),sourceUrl:val('cloudSourceUrl'),
-      imageUrl:val('cloudImageUrl'),imageAlt:val('cloudImageAlt'),imageCredit:val('cloudImageCredit'),
+      imageUrl:val('cloudImageUrl'),imageAlt:val('cloudImageAlt'),imageCredit:val('cloudImageCredit'),imageSourceUrl:val('cloudImageSourceUrl'),
       importance:{ar:val('cloudImportanceAr'),en:val('cloudImportanceEn'),tr:val('cloudImportanceTr'),fr:val('cloudImportanceFr')},sortOrder:Number(val('cloudSortOrder')||0)
     };
   }
@@ -542,7 +542,7 @@
   function payload(v){
     const common={id:v.id||makeId(v.type),source_text:v.source||'',source_url:safeUrl(v.sourceUrl)?v.sourceUrl:'',status:'documented'};
     if(v.type==='landmark'){
-      const row=Object.assign(common,{category:v.category,elevation:'غير موثق ميدانياً',image_url:safeUrl(v.imageUrl)?v.imageUrl:'',image_alt_ar:v.imageAlt||v.title.ar,image_credit:v.imageCredit||'',image_source_url:safeUrl(v.imageUrl)?v.imageUrl:''});
+      const row=Object.assign(common,{category:v.category,elevation:'غير موثق ميدانياً',image_url:safeUrl(v.imageUrl)?v.imageUrl:'',image_alt_ar:v.imageAlt||v.title.ar,image_credit:v.imageCredit||'',image_source_url:safeUrl(v.imageSourceUrl)?v.imageSourceUrl:(safeUrl(v.sourceUrl)?v.sourceUrl:'')});
       localeFields(row,'title',v.title);localeFields(row,'location',v.location);localeFields(row,'description',v.details);localeFields(row,'importance',v.importance);
       return row;
     }
@@ -597,7 +597,7 @@
       put('cloudDistrict'+s,district[l]);put('cloudPlace'+s,'');put('cloudPeriod'+s,period[l]);
     });
     put('cloudCategory',category);put('cloudUrl',url);put('cloudSource',row?.source_text||'');put('cloudSourceUrl',row?.source_url||'');
-    put('cloudImageUrl',row?.image_url||'');put('cloudImageAlt',row?.image_alt_ar||'');put('cloudImageCredit',row?.image_credit||'');
+    put('cloudImageUrl',row?.image_url||'');put('cloudImageAlt',row?.image_alt_ar||'');put('cloudImageCredit',row?.image_credit||'');put('cloudImageSourceUrl',row?.image_source_url||'');
     updateImagePreview(row?.image_url||'');
     put('cloudImportanceAr',importance.ar);put('cloudImportanceEn',importance.en);put('cloudImportanceTr',importance.tr);put('cloudImportanceFr',importance.fr);put('cloudSortOrder',row?.sort_order||0);
     $('cloudContentEditor')?.scrollIntoView({behavior:'smooth',block:'start'});
@@ -708,7 +708,7 @@
     $('cloudContentForm')?.addEventListener('submit',saveEditor);
     $('cloudContentClearBtn')?.addEventListener('click',()=>{
       const type=val('cloudRecordType');['cloudRecordId','cloudContributionId'].forEach(id=>put(id,''));
-      ['cloudTitleAr','cloudTitleEn','cloudTitleTr','cloudTitleFr','cloudDetailsAr','cloudDetailsEn','cloudDetailsTr','cloudDetailsFr','cloudLocationAr','cloudLocationEn','cloudLocationTr','cloudLocationFr','cloudDistrictAr','cloudDistrictEn','cloudDistrictTr','cloudDistrictFr','cloudPlaceAr','cloudPlaceEn','cloudPlaceTr','cloudPlaceFr','cloudPeriodAr','cloudPeriodEn','cloudPeriodTr','cloudPeriodFr','cloudCategory','cloudUrl','cloudSource','cloudSourceUrl','cloudImportanceAr','cloudImportanceEn','cloudImportanceTr','cloudImportanceFr','cloudImageUrl','cloudImageAlt','cloudImageCredit'].forEach(id=>put(id,''));
+      ['cloudTitleAr','cloudTitleEn','cloudTitleTr','cloudTitleFr','cloudDetailsAr','cloudDetailsEn','cloudDetailsTr','cloudDetailsFr','cloudLocationAr','cloudLocationEn','cloudLocationTr','cloudLocationFr','cloudDistrictAr','cloudDistrictEn','cloudDistrictTr','cloudDistrictFr','cloudPlaceAr','cloudPlaceEn','cloudPlaceTr','cloudPlaceFr','cloudPeriodAr','cloudPeriodEn','cloudPeriodTr','cloudPeriodFr','cloudCategory','cloudUrl','cloudSource','cloudSourceUrl','cloudImportanceAr','cloudImportanceEn','cloudImportanceTr','cloudImportanceFr','cloudImageUrl','cloudImageAlt','cloudImageCredit','cloudImageSourceUrl'].forEach(id=>put(id,''));
       put('cloudRecordType',type);updateImagePreview('');
     });
     $('cloudRefreshBtn')?.addEventListener('click',async()=>{
