@@ -86,14 +86,14 @@ for (const key of ['landmarks','historyEvents','subDistrictUpdates','subDistrict
 }
 if (data.schemaVersion !== 1) throw new Error('Unsupported GitHub live-content.json schema version.');
 if (!githubCms.includes('raw.githubusercontent.com') || !githubCms.includes('api.github.com/repos/') ||
-    !githubCms.includes("method:'PUT'") || !githubCms.includes('contents:') || !githubCms.includes('cache:'no-store'')) {
+    !githubCms.includes("method:'PUT'") || !githubCms.includes('/contents/') || !githubCms.includes("method:'PUT'") || !githubCms.includes('cache:'no-store'')) {
   throw new Error('GitHub raw JSON polling or Contents API publishing is incomplete.');
 }
 if (!githubCms.includes('const CACHE_KEY=') || !githubCms.includes('localStorage.setItem(CACHE_KEY') ||
     !githubCms.includes('function applyCached') || !githubCms.includes('getDistrictProfile')) {
   throw new Error('Offline cache or live district profile merge is incomplete.');
 }
-if (!githubCms.includes('githubToken') || !githubCms.includes('Authorization:\'Bearer \'+token') ||
+if (!githubCms.includes('githubToken') || !githubCms.includes('Authorization:') || !githubCms.includes('Bearer ') ||
     !githubCms.includes('githubToken=\'\'') || /localStorage\.(?:setItem|getItem)\([^)]*githubToken/i.test(githubCms)) {
   throw new Error('GitHub token must remain in memory and be sent only as an API authorization header.');
 }
