@@ -9,17 +9,17 @@ This Worker protects the administration endpoints for the GitHub JSON CMS at `ww
 
 The Worker stores administrator records, password hashes, login throttling counters and audit events in Cloudflare KV. The GitHub token remains in Cloudflare Secrets. Published content remains in the GitHub JSON file. The frontend has no direct GitHub-token sign-in path.
 
-## 1. Confirm the KV binding in Cloudflare
+## 1. Production KV binding (automated)
 
-The KV namespace and binding are configured manually in the Cloudflare dashboard.
+On every push to `main`, the **Deploy Cloudflare Worker** GitHub Actions workflow calls Cloudflare's API, finds the exact namespace title `hubaish-admins`, injects its ID into `[[kv_namespaces]]` as `binding = "ADMINS"`, deploys `hubaish-cms`, then requires `/health` to return HTTP 200 with KV read/write/delete, GitHub CMS and session-secret checks passing.
 
-1. Open https://dash.cloudflare.com/
-2. Go to **Workers & Pages** and select `hubaish-cms`.
-3. Open **Settings → Bindings**.
-4. Confirm a KV namespace binding named `ADMINS` points to the namespace `hubaish-admins`.
-5. Save the setting.
+The committed Wrangler file contains a deployment-time marker, not a guessed ID. The workflow replaces it on its runner before every deployment. The resolved namespace ID is not committed to the repository.
 
-The repository's `cloudflare-worker/wrangler.toml` intentionally does not declare `[[kv_namespaces]]` or a placeholder namespace ID. Keep the dashboard binding name exactly `ADMINS`; the Worker code reads `env.ADMINS`.
+Required GitHub Actions configuration:
+- `CLOUDFLARE_API_TOKEN` as a repository secret. It must be allowed to list Account Workers KV namespaces and deploy/edit Workers.
+- `CLOUDFLARE_ACCOUNT_ID` as a repository variable or secret.
+
+These credentials are not stored in source files. Existing Worker secrets `GITHUB_TOKEN`, `SESSION_SECRET` and optional `BOOTSTRAP_KEY` remain configured on the Worker.
 
 ## 2. Create the GitHub token and Worker secrets
 
@@ -38,7 +38,7 @@ In **Settings → Variables and Secrets**, add these as Secrets:
 
 Never put secret values in this repository, in frontend JavaScript, or in GitHub Pages.
 
-## 3. Confirm the test CORS setting and deploy
+## 3. CORS setting and automated deployment
 
 The Wrangler configuration restricts browser access to the GitHub Pages site origin:
 
@@ -49,7 +49,7 @@ ALLOWED_ORIGIN = "https://baraagpt6-droid.github.io,http://localhost,http://loca
 
 The Worker code also permits Capacitor's `capacitor://localhost` and `https://localhost` origins by default. The configured allowlist above explicitly includes the published GitHub Pages origin, `http://localhost`, and the repository preview origin `http://localhost:4173`. If you move the website to a custom domain, add that exact origin to `ALLOWED_ORIGIN` (comma-separated) in the Worker settings.
 
-Deploy using the Cloudflare dashboard or the deployment method already connected to this Worker. Confirm the deployed URL is:
+Push changes to `main` to deploy through GitHub Actions. Confirm the deployed URL is:
 
 ```
 https://hubaish-cms.baraagpt6.workers.dev

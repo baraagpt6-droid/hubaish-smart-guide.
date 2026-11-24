@@ -14,19 +14,19 @@ const required = [
   'cloudflare-worker/worker.js','cloudflare-worker/wrangler.toml',
   'capacitor.config.json','package.json','scripts/generate-icons.py',
   'scripts/apply-android-icons.py','scripts/patch-android-config.py',
-  'scripts/serve.mjs','.github/workflows/build-and-deploy.yml',
-  '.github/workflows/worker-production-health.yml','README.md','cloudflare-worker/README.md',
+  'scripts/serve.mjs','scripts/configure-cloudflare-kv.mjs','.github/workflows/deploy-cloudflare-worker.yml','.github/workflows/build-and-deploy.yml',
+  '.github/workflows/worker-production-health.yml','.github/workflows/deploy-cloudflare-worker.yml','scripts/configure-cloudflare-kv.mjs','README.md','cloudflare-worker/README.md',
   'assets/icon-only.png','assets/icon-foreground.png','assets/icon-background.png',
   'assets/splash.png','assets/splash-dark.png'
 ];
 for (const file of required) await access(resolve(root,file));
 const read = file => readFile(resolve(root,file),'utf8');
-const [html,css,app,catalog,features,cms,sw,worker,wrangler,workflow,readme,workerReadme,androidPatch] = await Promise.all([
+const [html,css,app,catalog,features,cms,sw,worker,wrangler,workflow,readme,workerReadme,androidPatch,cloudflareDeployWorkflow,kvSetupScript] = await Promise.all([
   read('www/index.html'),read('www/styles.css'),read('www/app.js'),read('www/catalog.js'),
   read('www/features.js'),read('www/github-cms.js'),read('www/sw.js'),
   read('cloudflare-worker/worker.js'),read('cloudflare-worker/wrangler.toml'),
   read('.github/workflows/build-and-deploy.yml'),read('README.md'),
-  read('cloudflare-worker/README.md'),read('scripts/patch-android-config.py')
+  read('cloudflare-worker/README.md'),read('scripts/patch-android-config.py'),read('.github/workflows/deploy-cloudflare-worker.yml'),read('scripts/configure-cloudflare-kv.mjs')
 ]);
 const manifest=JSON.parse(await read('www/manifest.webmanifest'));
 const manifestJson=JSON.parse(await read('www/manifest.json'));
@@ -155,6 +155,15 @@ if(!css.includes('padding-top:max(9px,env(safe-area-inset-top')||
 if(!sw.includes('hubaish-guide-v4.0.3')||!sw.includes("'splash.js'")||
    !sw.includes("'github-cms.js'")||!sw.includes("'data/live-content.json'")) {
   throw new Error('The service-worker cache does not include the updated app shell.');
+}
+if(!wrangler.includes('[[kv_namespaces]]')||!wrangler.includes('binding = "ADMINS"')||
+   !wrangler.includes('__HUBAISH_ADMINS_KV_NAMESPACE_ID__')||
+   !kvSetupScript.includes("namespaceTitle = 'hubaish-admins'")||
+   !kvSetupScript.includes('CLOUDFLARE_API_TOKEN')||
+   !cloudflareDeployWorkflow.includes('scripts/configure-cloudflare-kv.mjs')||
+   !cloudflareDeployWorkflow.includes('wrangler-action@v3')||
+   !cloudflareDeployWorkflow.includes("check('/health')")) {
+  throw new Error('Automated Cloudflare ADMINS KV lookup, injection, deployment or production health verification is missing.');
 }
 if(!workflow.includes('actions/deploy-pages@v4')||!workflow.includes('assembleRelease')||
    !workflow.includes('bundleRelease')||!workflow.includes('Daleel-Hubaish-v')||
