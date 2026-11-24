@@ -62,8 +62,8 @@ if (!features.includes('PBKDF2') || !features.includes('function verifyAdminPin'
 if (!app.includes("window.HubaishIcon = heritageIcon")) throw new Error('Heritage icon helper is not exposed');
 if (!css.includes('left:16px!important') || !css.includes('width:46px!important') || !css.includes('right:auto!important')) throw new Error('The assistant button must be fixed at 46px on the left');
 if (!sw.includes('hubaish-guide-v3.0.0') || !sw.includes("event.data?.type === 'SKIP_WAITING'") || !sw.includes('fetch(request)')) throw new Error('Seamless update service worker is incomplete');
-if ((app.match(/\\{ id: 'p\\d+'/g) || []).length < 16) throw new Error('At least 16 landmark records are required');
-if ((app.match(/\\{ id: 'h\\d+'/g) || []).length < 6) throw new Error('At least 6 history milestones are required');
+if ((app.match(/\{\s*id:\s*['"]p\d+['"]/g) || []).length < 16) throw new Error('At least 16 landmark records are required');
+if ((app.match(/\{\s*id:\s*['"]h\d+['"]/g) || []).length < 6) throw new Error('At least 6 history milestones are required');
 if (!workflow.includes('ANDROID_KEYSTORE_BASE64') || !workflow.includes('ANDROID_KEY_ALIAS') || !workflow.includes('assembleRelease') || !workflow.includes('GITHUB_RUN_NUMBER') || !workflow.includes('softprops/action-gh-release@v2')) throw new Error('Android versioning and signed-release workflow is incomplete');
 
 for (const [file, expected] of [['www/icons/icon-192.png', 192], ['www/icons/icon-512.png', 512]]) {
