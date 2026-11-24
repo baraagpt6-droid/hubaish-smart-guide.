@@ -160,7 +160,7 @@
     const progress=document.querySelector('[data-explorer-progress-text]')?.textContent||'0%';
     const text=({AR:'رتبتي في استكشاف حبيش: ',EN:'My Hubaish Explorer rank: ',TR:'Hubaish kaşif seviyem: ',FR:'Mon niveau d’explorateur Hubaish : '})[state.lang]||'رتبتي في استكشاف حبيش: ';
     const message=text+rank+' · '+progress;
-    if(navigator.share)navigator.share({title:'Hubaish Smart Guide',text:message}).catch(()=>{});
+    if(navigator.share)navigator.share({title:'Hubaish Guide',text:message}).catch(()=>{});
     else if(navigator.clipboard?.writeText)navigator.clipboard.writeText(message).then(()=>showToast('تم نسخ شارة الإنجاز.')).catch(()=>showToast(message));
     else showToast(message);
   }
