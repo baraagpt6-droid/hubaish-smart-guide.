@@ -1,10 +1,6 @@
-name = "hubaish-smart-guide-cms"
+name = "hubaish-cms"
 main = "worker.js"
-compatibility_date = "2026-11-24"
-
-[[kv_namespaces]]
-binding = "ADMINS"
-id = "REPLACE_WITH_KV_NAMESPACE_ID"
+compatibility_date = "2024-11-01"
 
 [vars]
-ALLOWED_ORIGIN = "https://baraagpt6-droid.github.io"
+ALLOWED_ORIGINS = "*"
