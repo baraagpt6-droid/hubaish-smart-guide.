@@ -1,6 +1,6 @@
 {
   "id": "./",
-  "name": "دليل مديرية حبيش",
+  "name": "دليل حبيش الذكي",
   "short_name": "دليل حبيش",
   "description": "موسوعة جغرافية وتاريخية للعزل والمعالم والتاريخ والمجتمع ومواقيت الصلاة في مديرية حبيش.",
   "lang": "ar",
@@ -9,8 +9,8 @@
   "scope": "./",
   "display": "standalone",
   "orientation": "portrait",
-  "background_color": "#052d24",
-  "theme_color": "#07543d",
+  "background_color": "#081812",
+  "theme_color": "#081812",
   "icons": [
     {
       "src": "./icons/icon-192.png",

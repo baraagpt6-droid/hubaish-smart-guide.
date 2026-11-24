@@ -1,6 +1,6 @@
 {
   "appId": "com.hubaish.guide",
-  "appName": "دليل مديرية حبيش",
+  "appName": "دليل حبيش",
   "webDir": "www",
   "bundledWebRuntime": false,
   "server": {
@@ -8,11 +8,16 @@
   },
   "plugins": {
     "SplashScreen": {
-      "launchShowDuration": 1200,
+      "launchShowDuration": 1000,
       "launchAutoHide": true,
-      "backgroundColor": "#052d24",
+      "backgroundColor": "#081812",
       "showSpinner": false,
       "androidScaleType": "CENTER_INSIDE"
+    },
+    "StatusBar": {
+      "overlaysWebView": false,
+      "style": "LIGHT",
+      "backgroundColor": "#081812"
     }
   }
 }
