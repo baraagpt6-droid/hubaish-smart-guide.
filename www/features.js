@@ -64,15 +64,152 @@
   let quizIndex = 0;
   let quizScore = 0;
   let quizAnswered = false;
+  let seasonIndex = -1;
+  let adminUnlocked = false;
+  let adminFailedAttempts = 0;
+  let adminLockoutUntil = 0;
+  const ADMIN_PIN_KEY = 'hubaish_admin_pin_v1';
+  const SEASONS = {
+    AR: [
+      {title:'قطاف البن في المرتفعات',body:'تُظهر بيانات سلسلة قيمة البن في اليمن أن الحصاد في منطقة إب قد يمتد في أكتوبر–ديسمبر، مع موسم آخر في يناير–فبراير. تتقدم بعض المواقع المنخفضة في النضج عن المرتفعات، لذلك تختلف المواعيد بين القرى.',source:'FAO Yemen — Coffee Value Chain in Yemen (2025)'},
+      {title:'إزهار أشجار البن',body:'يشير تقويم البن لمنطقة إب إلى تركز الإزهار في مارس–أبريل. يتأثر الإزهار بالأمطار وارتفاع الموقع والعناية بالأشجار، ولا يمثل موعداً ثابتاً لكل مزارع حبيش.',source:'FAO Yemen — Coffee Value Chain in Yemen (2025)'},
+      {title:'موسم الأمطار في المرتفعات',body:'تسجل تقاويم الزراعة للمناطق الجبلية في اليمن فترتي أمطار رئيسيتين تقريباً، الأولى في الربيع والثانية خلال الصيف والخريف. راقب السيول واحمِ مدرجات الحقول وممرات المياه.',source:'FEWS NET — Yemen seasonal calendar for highlands (2025/2026)'},
+      {title:'الزراعة بعد انحسار الأمطار',body:'تختلف مواعيد تجهيز الأرض وزراعة الحبوب بحسب القرية ومصدر المياه وارتفاع الحقول. يُستخدم هذا الدليل للتذكير الموسمي فقط، ويُقدّم قرار الزراعة وفق خبرة المزارعين ونشرة الطقس المحلية.',source:'دليل إقليمي استرشادي — يلزم تأكيد محلي'}
+    ],
+    EN: [
+      {title:'Coffee harvest in the highlands',body:'FAO’s Yemen coffee value-chain calendar indicates harvest periods in Ibb around October–December and again in January–February. Lower sites can ripen earlier than higher slopes, so village dates differ.',source:'FAO Yemen — Coffee Value Chain in Yemen (2025)'},
+      {title:'Coffee flowering season',body:'The Ibb coffee calendar places flowering mainly in March–April. Rainfall, altitude and farm care shift the timing; it is not a fixed date for every Hubaish farm.',source:'FAO Yemen — Coffee Value Chain in Yemen (2025)'},
+      {title:'Rain seasons in the highlands',body:'Agricultural calendars for Yemen’s highlands show two broad rainy periods, around spring and again through summer into autumn. Watch runoff and keep terrace drains clear.',source:'FEWS NET — Yemen seasonal calendar for highlands (2025/2026)'},
+      {title:'Field work after the rains',body:'Planting and soil preparation vary by village, water access and field elevation. Use this as a regional guide and follow local farmers and current weather information.',source:'Regional guide — local confirmation required'}
+    ],
+    TR: [
+      {title:'Yüksek kesimlerde kahve hasadı',body:'FAO Yemen kahve takviminde İbb için hasat dönemleri yaklaşık Ekim–Aralık ve Ocak–Şubat olarak verilir. Rakım ve sıcaklık olgunlaşma tarihini köyden köye değiştirir.',source:'FAO Yemen — Coffee Value Chain in Yemen (2025)'},
+      {title:'Kahve çiçeklenme dönemi',body:'İbb kahve takvimi çiçeklenmenin ağırlıkla Mart–Nisan döneminde olduğunu gösterir. Yağış, rakım ve bakım zamanı etkiler; her Hubaish çiftliği için aynı tarih değildir.',source:'FAO Yemen — Coffee Value Chain in Yemen (2025)'},
+      {title:'Dağlık bölgelerde yağış',body:'Yemen yaylalarının tarım takvimlerinde ilkbahar ve yaz sonu–sonbahar dönemlerinde iki geniş yağış dönemi görülür. Teras kanallarını açık tutun ve ani sel riskini izleyin.',source:'FEWS NET — Yemen seasonal calendar for highlands (2025/2026)'},
+      {title:'Yağış sonrası tarla çalışması',body:'Ekim ve toprak hazırlığı köye, suya erişime ve tarla rakımına göre değişir. Bu metin bölgesel bir rehberdir; yerel çiftçilerin bilgisini ve güncel hava durumunu esas alın.',source:'Bölgesel rehber — yerel doğrulama gerekli'}
+    ],
+    FR: [
+      {title:'Récolte du café en altitude',body:'Le calendrier de la FAO pour Ibb indique des périodes de récolte vers octobre–décembre puis janvier–février. L’altitude décale la maturation entre les villages.',source:'FAO Yemen — Coffee Value Chain in Yemen (2025)'},
+      {title:'Floraison du caféier',body:'Le calendrier du café pour Ibb situe principalement la floraison en mars–avril. Les pluies, l’altitude et l’entretien modifient les dates d’une exploitation à l’autre.',source:'FAO Yemen — Coffee Value Chain in Yemen (2025)'},
+      {title:'Saisons des pluies en montagne',body:'Les calendriers agricoles des hauts plateaux du Yémen montrent deux périodes pluvieuses générales, au printemps puis de l’été à l’automne. Surveillez le ruissellement et les drains des terrasses.',source:'FEWS NET — Yemen seasonal calendar for highlands (2025/2026)'},
+      {title:'Travaux agricoles après les pluies',body:'Les semis et la préparation du sol varient selon le village, l’accès à l’eau et l’altitude. Ce guide est indicatif; suivez les agriculteurs et les informations météo locales.',source:'Guide régional — confirmation locale nécessaire'}
+    ]
+  };
+
 
   function t(key) { const lang = (typeof state !== 'undefined' && state.lang) || 'AR'; return (D[lang] || D.AR)[key] || D.AR[key] || key; }
+  function toBase64(bytes) { return btoa(String.fromCharCode(...new Uint8Array(bytes))); }
+  function fromBase64(value) { return Uint8Array.from(atob(value), char => char.charCodeAt(0)); }
+  async function hashAdminPin(pin, salt) {
+    if (!globalThis.crypto?.subtle) throw new Error('secure crypto unavailable');
+    const material = await crypto.subtle.importKey('raw', new TextEncoder().encode(String(pin)), 'PBKDF2', false, ['deriveBits']);
+    return new Uint8Array(await crypto.subtle.deriveBits({name:'PBKDF2',salt,iterations:210000,hash:'SHA-256'}, material, 256));
+  }
+  async function getAdminPinRecord() {
+    let record;
+    try { record = JSON.parse(localStorage.getItem(ADMIN_PIN_KEY) || 'null'); } catch {}
+    if (record?.version === 1 && record.salt && record.hash && record.iterations === 210000) return record;
+    const salt = crypto.getRandomValues(new Uint8Array(16));
+    const hash = await hashAdminPin('1234', salt);
+    record = {version:1, salt:toBase64(salt), hash:toBase64(hash), iterations:210000};
+    localStorage.setItem(ADMIN_PIN_KEY, JSON.stringify(record));
+    return record;
+  }
+  async function verifyAdminPin(pin) {
+    if (Date.now() < adminLockoutUntil) return false;
+    const record = await getAdminPinRecord();
+    const actual = await hashAdminPin(pin, fromBase64(record.salt));
+    const expected = fromBase64(record.hash);
+    return actual.length === expected.length && actual.every((byte,index)=>byte===expected[index]);
+  }
+  async function storeAdminPin(pin) {
+    const salt = crypto.getRandomValues(new Uint8Array(16));
+    const hash = await hashAdminPin(pin, salt);
+    localStorage.setItem(ADMIN_PIN_KEY, JSON.stringify({version:1,salt:toBase64(salt),hash:toBase64(hash),iterations:210000}));
+  }
+  function closeAdminPanel() {
+    adminUnlocked = false;
+    document.getElementById('adminPanel')?.classList.add('hidden');
+    document.getElementById('adminAuthGate')?.classList.add('hidden');
+    const toggle = document.getElementById('adminPanelToggle');
+    if (toggle) toggle.textContent = 'فتح أدوات التحرير';
+    const pin = document.getElementById('adminPinEntry');
+    if (pin) pin.value = '';
+  }
+  async function unlockAdmin(event) {
+    event.preventDefault();
+    const input = document.getElementById('adminPinEntry');
+    const pin = clean(input?.value,12);
+    if (!/^\d{4,12}$/.test(pin)) { showToast('استخدم من 4 إلى 12 رقماً.'); return; }
+    if (Date.now() < adminLockoutUntil) { showToast('تم إيقاف المحاولة مؤقتاً. أعد المحاولة بعد قليل.'); return; }
+    try {
+      if (!await verifyAdminPin(pin)) {
+        adminFailedAttempts++;
+        if (adminFailedAttempts >= 5) { adminLockoutUntil = Date.now()+30000; adminFailedAttempts=0; }
+        showToast('رمز المرور غير صحيح.'); input.value=''; input.focus(); return;
+      }
+      adminFailedAttempts=0; adminUnlocked=true;
+      document.getElementById('adminAuthGate')?.classList.add('hidden');
+      document.getElementById('adminPanel')?.classList.remove('hidden');
+      const toggle=document.getElementById('adminPanelToggle'); if(toggle)toggle.textContent='إغلاق أدوات التحرير';
+      input.value=''; showToast('تم فتح لوحة التحرير على هذا الجهاز.');
+    } catch { showToast('تعذر التحقق الآمن من الرمز في هذا المتصفح.'); }
+  }
+  async function changeAdminPin(event) {
+    event.preventDefault(); if (!adminUnlocked) return;
+    const current=clean(document.getElementById('adminCurrentPin')?.value,12);
+    const next=clean(document.getElementById('adminNewPin')?.value,12);
+    const confirmPin=clean(document.getElementById('adminConfirmPin')?.value,12);
+    if (!/^\d{4,12}$/.test(next) || next!==confirmPin) { showToast('الرمز الجديد يجب أن يتكون من 4 إلى 12 رقماً وأن يتطابق مع التأكيد.'); return; }
+    try { if (!await verifyAdminPin(current)) { showToast('الرمز الحالي غير صحيح.'); return; } await storeAdminPin(next); document.getElementById('adminPinChangeForm')?.reset(); showToast('تم تحديث رمز المرور المشتق والمملح.'); }
+    catch { showToast('تعذر حفظ رمز المرور.'); }
+  }
+  function initAdminLock() {
+    const toggle=document.getElementById('adminPanelToggle');
+    const gate=document.getElementById('adminAuthGate');
+    toggle?.addEventListener('click',async()=>{
+      if(adminUnlocked){closeAdminPanel();return;}
+      gate?.classList.remove('hidden'); document.getElementById('adminPanel')?.classList.add('hidden');
+      document.getElementById('adminPinEntry')?.focus();
+      try { await getAdminPinRecord(); } catch { showToast('الحماية تتطلب متصفحاً يدعم Web Crypto عبر HTTPS.'); }
+    });
+    gate?.addEventListener('submit',unlockAdmin);
+    document.getElementById('adminLockBtn')?.addEventListener('click',()=>{closeAdminPanel();showToast('تم قفل لوحة التحرير.');});
+    document.getElementById('adminPinChangeForm')?.addEventListener('submit',changeAdminPin);
+    document.addEventListener('visibilitychange',()=>{if(document.hidden&&adminUnlocked)closeAdminPanel();});
+    closeAdminPanel();
+  }
+  function renderExplorerProgress() {
+    const total=Math.max(1,(state.places?.length||0)+(state.history?.length||0)+22);
+    const done=Math.min(total,featureState.visitedPlaces.length+featureState.visitedUzal.length);
+    const percent=Math.round(done/total*100);
+    const meter=document.getElementById('explorerProgressMeter'); const value=document.getElementById('explorerProgressText'); const meta=document.getElementById('explorerProgressMeta');
+    if(meter)meter.value=percent; if(value)value.textContent=percent+'%';
+    if(meta)meta.textContent=state.lang==='EN' ? done+' of '+total+' landmarks, history stops and sub-districts explored on this device.' : state.lang==='TR' ? total+' yer ve bucaktan '+done+' tanesi bu cihazda keşfedildi.' : state.lang==='FR' ? done+' éléments explorés sur '+total+' monuments, étapes et sous-districts sur cet appareil.' : 'استكشفت '+done+' من أصل '+total+' بين المعالم والمحطات التاريخية والعزل على هذا الجهاز.';
+  }
+  function markExplored(itemId, kind) {
+    if(!itemId)return; const key=String(itemId); const list=kind==='uzal'?featureState.visitedUzal:featureState.visitedPlaces;
+    if(list.includes(key))return; list.push(key);
+    if(kind==='uzal')featureState.visitedUzal=list.slice(-60); else featureState.visitedPlaces=list.slice(-300);
+    saveFeatureState(); renderExplorerProgress();
+  }
+  function renderSeasonGuide() {
+    const lang=state.lang||'AR'; const month=new Date().getMonth();
+    const monthIndex=(month<=1||month>=9)?0:month<=3?1:month<=8?2:3;
+    if(seasonIndex<0)seasonIndex=monthIndex; const data=SEASONS[lang]||SEASONS.AR; const item=data[seasonIndex%data.length];
+    const title=document.getElementById('seasonTitle'); const body=document.getElementById('seasonCopy'); const source=document.getElementById('seasonSource'); const label=document.getElementById('seasonLabel'); const next=document.getElementById('nextSeasonBtn');
+    if(title)title.textContent=item.title; if(body)body.textContent=item.body; if(source)source.textContent=item.source;
+    if(label)label.textContent=({AR:'دليل المواسم الزراعية والمناخ الجبلي',EN:'Mountain farming and seasons',TR:'Dağ tarımı ve mevsimler',FR:'Agriculture de montagne et saisons'})[lang];
+    if(next)next.textContent=({AR:'موسم آخر',EN:'Another season',TR:'Başka mevsim',FR:'Autre saison'})[lang];
+  }
+
   function clean(value, max = 1500) { return String(value ?? '').replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F]/g, '').trim().slice(0, max); }
   function id(prefix) { return `${prefix}-${globalThis.crypto?.randomUUID ? crypto.randomUUID() : `${Date.now()}-${Math.random().toString(16).slice(2)}`}`; }
   function node(tag, cls, text) { const el = document.createElement(tag); if (cls) el.className = cls; if (text !== undefined) el.textContent = String(text); return el; }
   function button(text, action, value, cls = 'btn-sm') { const el = node('button', cls, text); el.type = 'button'; el.dataset.featureAction = action; if (value !== undefined) el.dataset.featureValue = value; return el; }
   function loadFeatureState() {
-    const defaults = { contributions: [], quizRuns: 0, lastSavedAt: null, socialHidden: [], people: [], uzal: (typeof UZAL_22!=='undefined'?UZAL_22.slice():[]), communityUrl: FACEBOOK_URL, schemaVersion: 2 };
-    try { const raw = JSON.parse(localStorage.getItem(FEATURE_KEY) || 'null'); if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return defaults; return { ...defaults, ...raw, contributions: Array.isArray(raw.contributions) ? raw.contributions.slice(0, 200) : [], quizRuns: Number.isFinite(raw.quizRuns) ? raw.quizRuns : 0, socialHidden: Array.isArray(raw.socialHidden) ? raw.socialHidden.filter(x => typeof x === 'string') : [], people: Array.isArray(raw.people) ? raw.people.slice(0, 100) : [], uzal: Array.isArray(raw.uzal) ? raw.uzal.map(x=>clean(x,70)).filter(Boolean).slice(0,60) : (typeof UZAL_22!=='undefined'?UZAL_22.slice():[]), communityUrl: validHttpUrl(raw.communityUrl)?raw.communityUrl:FACEBOOK_URL }; } catch { return defaults; }
+    const defaults = { contributions: [], quizRuns: 0, lastSavedAt: null, socialHidden: [], people: [], uzal: (typeof UZAL_22!=='undefined'?UZAL_22.slice():[]), visitedPlaces: [], visitedUzal: [], communityUrl: FACEBOOK_URL, schemaVersion: 3 };
+    try { const raw = JSON.parse(localStorage.getItem(FEATURE_KEY) || 'null'); if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return defaults; return { ...defaults, ...raw, contributions: Array.isArray(raw.contributions) ? raw.contributions.slice(0, 200) : [], quizRuns: Number.isFinite(raw.quizRuns) ? raw.quizRuns : 0, socialHidden: Array.isArray(raw.socialHidden) ? raw.socialHidden.filter(x => typeof x === 'string') : [], people: Array.isArray(raw.people) ? raw.people.slice(0, 100) : [], uzal: Array.isArray(raw.uzal) ? raw.uzal.map(x=>clean(x,70)).filter(Boolean).slice(0,60) : (typeof UZAL_22!=='undefined'?UZAL_22.slice():[]), visitedPlaces: Array.isArray(raw.visitedPlaces) ? [...new Set(raw.visitedPlaces.filter(x=>typeof x==='string'))].slice(0,300) : [], visitedUzal: Array.isArray(raw.visitedUzal) ? [...new Set(raw.visitedUzal.filter(x=>typeof x==='string'))].slice(0,60) : [], communityUrl: validHttpUrl(raw.communityUrl)?raw.communityUrl:FACEBOOK_URL }; } catch { return defaults; }
   }
   function touchSaved() { saveFeatureState(); }
   function saveFeatureState() {
@@ -211,10 +348,10 @@
     if(typeof state==='undefined')return;
     document.getElementById('communityJoinLink')?.setAttribute('href',featureState.communityUrl);
     const categorySelect=document.getElementById('langSelect');if(categorySelect){categorySelect.value=state.lang||'AR';categorySelect.addEventListener('change',()=>{applyLang(categorySelect.value);applyExtendedLang();});}
-    applyExtendedLang();renderStories();renderQuiz();renderPeople();const fact=document.getElementById('didYouKnow');if(fact)fact.textContent=(FACTS_I18N[state.lang]||FACTS)[factIndex];renderAdminLists();renderCommunitySocials();renderUzalDetails();updateCounters();updateSavedAt();
+    applyExtendedLang();renderStories();renderQuiz();renderPeople();const fact=document.getElementById('didYouKnow');if(fact)fact.textContent=(FACTS_I18N[state.lang]||FACTS)[factIndex];renderAdminLists();renderCommunitySocials();renderUzalDetails();updateCounters();updateSavedAt();initAdminLock();renderExplorerProgress();renderSeasonGuide();
     document.getElementById('nextFactBtn')?.addEventListener('click',()=>{factIndex=(factIndex+1)%FACTS.length;document.getElementById('didYouKnow').textContent=(FACTS_I18N[state.lang]||FACTS)[factIndex];});
     document.getElementById('randomTourBtn')?.addEventListener('click',randomTour);
-    document.getElementById('adminPanelToggle')?.addEventListener('click',()=>{const p=document.getElementById('adminPanel');p.classList.toggle('hidden');document.getElementById('adminPanelToggle').textContent=p.classList.contains('hidden')?'فتح أدوات التحرير':'إغلاق أدوات التحرير';});
+    document.getElementById('nextSeasonBtn')?.addEventListener('click',()=>{seasonIndex=(seasonIndex+1)%4;renderSeasonGuide();});
     document.getElementById('addHistorySaveBtn')?.addEventListener('click',addHistory);
     document.getElementById('addUzalBtn')?.addEventListener('click',()=>{const input=document.getElementById('newUzalName');const name=clean(input.value,70);if(!name){showToast('أدخل اسم العزلة.');return;}if(featureState.uzal.length>=60){showToast('وصل الحد الأقصى للأسماء.');return;}featureState.uzal.push(name);saveFeatureState();input.value='';renderUzal();renderAdminLists();showToast('تمت إضافة الاسم إلى القائمة المحلية.');});
     document.getElementById('contributionForm')?.addEventListener('submit',submitContribution);
@@ -239,6 +376,6 @@
   function exportFavorites(){const items=state.favs.map(id=>[...state.places,...state.history].find(x=>x.id===id)).filter(Boolean);const blob=new Blob([JSON.stringify({exportedAt:new Date().toISOString(),favorites:items},null,2)],{type:'application/json'});const url=URL.createObjectURL(blob);const a=node('a');a.href=url;a.download='hubaish-favorites.json';document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);}
   if (typeof localAssistantAnswer === 'function') { const baseAnswer=localAssistantAnswer; window.localAssistantAnswer = question => localizeAssistant(question,baseAnswer(question)); }
   window.normAr = value => normalizeArabic(value);
-  window.HubaishFeatures = { exportAllBackup, randomTour, renderAdminLists, getState:()=>featureState, touchSaved, getUzal:()=>featureState.uzal.slice(), getPeople:()=>featureState.people.slice(), showDetail, assistantAnswer:question=>localizeAssistant(question,localAssistantAnswer(question)), text:t, reset:()=>{localStorage.removeItem(FEATURE_KEY);featureState=loadFeatureState();saveFeatureState();renderAdminLists();} };
+  window.HubaishFeatures = { exportAllBackup, randomTour, renderAdminLists, getState:()=>featureState, touchSaved, markExplored, renderExplorerProgress, getUzal:()=>featureState.uzal.slice(), getPeople:()=>featureState.people.slice(), showDetail, assistantAnswer:question=>localizeAssistant(question,localAssistantAnswer(question)), text:t, reset:()=>{localStorage.removeItem(FEATURE_KEY);featureState=loadFeatureState();saveFeatureState();renderAdminLists();renderExplorerProgress();} };
   document.addEventListener('DOMContentLoaded',init,{once:true});
 })();
