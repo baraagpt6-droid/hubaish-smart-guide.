@@ -105,6 +105,9 @@
         const response=await fetch(url,{cache:'no-store',headers:{Accept:'application/json','Cache-Control':'no-cache'}});
         if(!response.ok)throw new Error('HTTP '+response.status);
         const parsed=normalizeDocument(await response.json());
+        const incomingTime=parsed.updatedAt?Date.parse(parsed.updatedAt):0;
+        const cachedTime=documentData.updatedAt?Date.parse(documentData.updatedAt):0;
+        if(incomingTime&&cachedTime&&incomingTime<cachedTime)throw new Error('تم تجاهل نسخة أقدم من الكاش المحلي.');
         return parsed;
       }catch(error){lastError=error}
     }
