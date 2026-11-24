@@ -101,7 +101,7 @@ if(cms.includes('githubToken')||cms.includes('API_URL')||cms.includes('readRepos
    !cms.includes("function isAdmin(){return !!workerToken&&!!workerUser?.username}")) {
   throw new Error('Admin login must use Worker sessions only and validate /auth/me.');
 }
-if(!cms.includes("fetch(DEFAULT_WORKER_URL+'/auth/login'")||!cms.includes("String($('workerUsername')?.value||'').trim()")||
+if(!cms.includes("fetchWithTimeout(DEFAULT_WORKER_URL+'/auth/login'")||!cms.includes("String($('workerUsername')?.value||'').trim()")||
    !cms.includes("DEFAULT_WORKER_URL+'/setup/status'")||!cms.includes("DEFAULT_WORKER_URL+'/setup'")||
    !cms.includes('async function firstAdminSetup')||!cms.includes('async function refreshSetupStatus')||
    !cms.includes("await workerRequest('/content'")||!cms.includes('data-user-role')||
