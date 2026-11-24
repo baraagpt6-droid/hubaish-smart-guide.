@@ -3,10 +3,6 @@ name: Cloudflare Worker Production Health
 on:
   push:
     branches: [main]
-    paths:
-      - 'cloudflare-worker/**'
-      - 'www/github-cms.js'
-      - '.github/workflows/worker-production-health.yml'
 
 permissions:
   contents: read
@@ -70,11 +66,12 @@ jobs:
             if (!setupResult.ok) {
               failures.push('/setup/status returned HTTP ' + setupResult.status + ': ' + (setupResult.body.error || 'request failed'));
             } else {
-              if (setupResult.body.setupRequired !== true) {
-                failures.push('Expected setupRequired=true; received ' + String(setupResult.body.setupRequired));
-              }
-              if (setupResult.body.bootstrapKeyConfigured !== true) {
-                failures.push('BOOTSTRAP_KEY is not configured in the active Worker environment.');
+              if (typeof setupResult.body.setupRequired !== 'boolean') {
+                failures.push('setupRequired is missing or is not a boolean.');
+              } else if (setupResult.body.setupRequired === true && setupResult.body.bootstrapKeyConfigured !== true) {
+                failures.push('First-admin setup is required, but BOOTSTRAP_KEY is not configured.');
+              } else if (setupResult.body.setupRequired === false) {
+                console.log('First-admin setup has already been completed.');
               }
             }
 
