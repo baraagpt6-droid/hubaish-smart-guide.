@@ -37,13 +37,39 @@ function cors(req,env){
 async function auth(req,env){const t=(req.headers.get("Authorization")||"").replace(/^Bearer\s+/i,""),p=await check(t,env.SESSION_SECRET);if(!p?.sub)return null;const u=await getUser(env,p.sub);if(!u||u.disabled||u.role!==p.role)return null;return {username:u.username,displayName:u.displayName,role:u.role}}
 async function ghRead(env){const url="https://api.github.com/repos/"+OWNER+"/"+REPO+"/contents/"+FILE+"?ref="+BRANCH;const r=await fetch(url,{headers:{Authorization:"Bearer "+env.GITHUB_TOKEN,Accept:"application/vnd.github+json","X-GitHub-Api-Version":"2022-11-28","User-Agent":"Hubaish-CMS-Worker"}}),p=await r.json();if(!r.ok)throw Error("GitHub read failed: "+(p.message||r.status));const raw=atob(p.content.replace(/\s/g,"")),bytes=Uint8Array.from(raw,c=>c.charCodeAt(0));return {sha:p.sha,data:JSON.parse(dec(bytes))}}
 async function ghWrite(env,data,actor){const old=await ghRead(env),url="https://api.github.com/repos/"+OWNER+"/"+REPO+"/contents/"+FILE,content=b64bytes(enc(JSON.stringify(data,null,2)+"\n"));const r=await fetch(url,{method:"PUT",headers:{Authorization:"Bearer "+env.GITHUB_TOKEN,Accept:"application/vnd.github+json","X-GitHub-Api-Version":"2022-11-28","Content-Type":"application/json","User-Agent":"Hubaish-CMS-Worker"},body:JSON.stringify({message:"CMS: update live content by "+actor.username,content,sha:old.sha,branch:BRANCH,committer:{name:"Hubaish CMS — "+(actor.displayName||actor.username),email:"41898282+github-actions[bot]@users.noreply.github.com"}})}),p=await r.json();if(!r.ok)throw Error("GitHub write failed: "+(p.message||r.status));return p}
+async function healthKV(env){
+ if(!env.ADMINS)throw Error("ADMINS binding missing.");
+ const key="healthcheck:"+b64u(random(16));let created=false;
+ try{
+  await env.ADMINS.put(key,"ok",{expirationTtl:60});created=true;
+  const value=await env.ADMINS.get(key);
+  if(value!=="ok")throw Error("KV read-back failed.");
+ }finally{if(created)await env.ADMINS.delete(key)}
+}
+async function healthGitHub(env){
+ if(!env.GITHUB_TOKEN)throw Error("GITHUB_TOKEN missing.");
+ const result=await ghRead(env),data=result.data;
+ const keys=["landmarks","historyEvents","subDistrictUpdates","subDistricts","historicalFigures","communityLinks"];
+ if(!data||data.schemaVersion!==1||!keys.every(key=>Array.isArray(data[key])))throw Error("GitHub CMS JSON schema is invalid.");
+}
+async function healthSession(env){
+ if(typeof env.SESSION_SECRET!=="string"||new TextEncoder().encode(env.SESSION_SECRET).length<32)throw Error("SESSION_SECRET must contain at least 32 bytes.");
+ await hkey(env.SESSION_SECRET);
+}
+async function healthStatus(env){
+ const run=async fn=>{try{await fn();return {ok:true}}catch(error){return {ok:false,error:String(error?.message||"check failed").slice(0,180)}}};
+ const checks={kv:await run(()=>healthKV(env)),githubContentsRead:await run(()=>healthGitHub(env)),sessionSecret:await run(()=>healthSession(env))};
+ const ok=Object.values(checks).every(check=>check.ok);
+ return json({ok,status:ok?"healthy":"degraded",checks,bootstrapKeyConfigured:!!env.BOOTSTRAP_KEY,checkedAt:new Date().toISOString()},ok?200:503);
+}
 async function route(req,env){
  const u=new URL(req.url),path=u.pathname;
  if(req.method==="OPTIONS")return new Response(null,{status:204});
+ if(req.method==="GET"&&path==="/api/health")return healthStatus(env);
  if(!env.ADMINS||!env.GITHUB_TOKEN||!env.SESSION_SECRET) return json({error:"Configure ADMINS KV, GITHUB_TOKEN and SESSION_SECRET."},500);
  if(req.method==="GET"&&path==="/setup/status"){
   const keys=await env.ADMINS.list({prefix:UP,limit:1});
-  return json({setupRequired:keys.keys.length===0,configured:true});
+  return json({setupRequired:keys.keys.length===0,configured:true,bootstrapKeyConfigured:!!env.BOOTSTRAP_KEY});
  }
  if(req.method==="POST"&&path==="/setup"){
   const b=await req.json(),keys=await env.ADMINS.list({prefix:UP,limit:1});
