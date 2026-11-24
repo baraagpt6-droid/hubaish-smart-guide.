@@ -41,6 +41,18 @@ for (const lang of ["'AR'", "'EN'", "'TR'", "'FR'"]) if (!app.includes(lang)) th
 if (!features.includes('function renderQuiz') || !features.includes('function submitContribution') || !features.includes('function exportAllBackup')) throw new Error('Feature module is incomplete');
 for (const key of ['quizArea', 'contributionForm', 'adminPanel', 'favModal', 'detailModal']) if (!html.includes(`id="${key}"`)) throw new Error(`UI section missing: ${key}`);
 
+
+if (html.includes('id="langToggleBtn"')) throw new Error('A duplicate language switch is still present');
+if (!html.includes('id="langSelect"') || !html.includes('id="swUpdateBanner"') || !html.includes('id="explorerProgressMeter"')) throw new Error('Language, update or explorer controls are missing');
+for (const key of ['adminAuthGate','adminPinEntry','adminPinChangeForm','adminLockBtn']) if (!html.includes('id="' + key + '"')) throw new Error('Admin lock control missing: ' + key);
+if (!features.includes('PBKDF2') || !features.includes('function verifyAdminPin') || !features.includes('function changeAdminPin') || !features.includes('function markExplored') || !features.includes('function renderSeasonGuide')) throw new Error('Admin PIN or explorer features are incomplete');
+if (!app.includes("window.HubaishIcon = heritageIcon") || !app.includes("left")) throw new Error('Heritage icon exports or assistant positioning hooks are missing');
+if (!css.includes('left:16px!important') || !css.includes('width:46px!important') || !css.includes('right:auto!important')) throw new Error('The assistant button must be fixed at 46px on the left');
+if (!sw.includes('hubaish-guide-v3.0.0') || !sw.includes("event.data?.type === 'SKIP_WAITING'") || !sw.includes('fetch(request)')) throw new Error('Seamless update service worker is incomplete');
+if ((app.match(/\\{ id: 'p\\d+'/g) || []).length < 16) throw new Error('At least 16 landmark records are required');
+if ((app.match(/\\{ id: 'h\\d+'/g) || []).length < 6) throw new Error('At least 6 history milestones are required');
+if (!workflow.includes('ANDROID_KEYSTORE_BASE64') || !workflow.includes('ANDROID_KEY_ALIAS') || !workflow.includes('assembleRelease') || !workflow.includes('GITHUB_RUN_NUMBER') || !workflow.includes('softprops/action-gh-release@v2')) throw new Error('Android versioning and signed-release workflow is incomplete');
+
 for (const [file, expected] of [['www/icons/icon-192.png', 192], ['www/icons/icon-512.png', 512]]) {
   const image = await readFile(resolve(root, file));
   if (image.toString('hex', 0, 8) !== '89504e470d0a1a0a') throw new Error(`${file} is not a PNG`);
