@@ -9,8 +9,8 @@ const required = [
   'www/github-cms.js', 'www/data/live-content.json', 'www/sw.js', 'cloudflare-worker/worker.js', 'cloudflare-worker/wrangler.toml', 'cloudflare-worker/README.md',
   'www/assets/styles.css', 'www/assets/app.js', 'www/assets/catalog.js', 'www/assets/features.js',
   'www/manifest.json', 'www/manifest.webmanifest', 'www/icons/icon.svg',
-  'www/icons/icon-192.png', 'www/icons/icon-512.png', 'capacitor.config.json',
-  'scripts/serve.mjs', 'cloudflare-worker/worker.js', 'cloudflare-worker/wrangler.toml', '.github/workflows/build-and-deploy.yml'
+  'www/icons/icon-192.png', 'www/icons/icon-512.png', 'www/icons/apple-touch-icon.png', 'www/icons/favicon-32.png', 'capacitor.config.json',
+  'scripts/generate-icons.py', 'scripts/apply-android-icons.py', 'scripts/serve.mjs', 'cloudflare-worker/worker.js', 'cloudflare-worker/wrangler.toml', '.github/workflows/build-and-deploy.yml'
 ];
 for (const file of required) await access(resolve(root, file));
 
@@ -113,6 +113,24 @@ if (!worker.includes('filter(x=>x&&x!=="*")') || worker.includes('"Access-Contro
 if (!worker.includes('path==="/api/health"') || !worker.includes('githubContentsRead') ||
     !worker.includes('sessionSecret') || !worker.includes('healthKV')) {
   throw new Error('Cloudflare Worker health endpoint must check KV, GitHub contents and SESSION_SECRET.');
+}
+if (!githubCms.includes('imageUrl:val(\'cloudImageUrl\')') ||
+    !githubCms.includes('function updateImagePreview') || !githubCms.includes('image_url:safeUrl(v.imageUrl)') ||
+    !html.includes('id="cloudImagePreview"') || !html.includes('id="cloudImageUrl"')) {
+  throw new Error('CMS image URL, preview or publishing workflow is incomplete.');
+}
+if (!html.includes('id="imageLightbox"') || !html.includes('data-lightbox-src') ||
+    !app.includes('photo.loading') || !sw.includes('REMOTE_IMAGE_HOSTS') ||
+    !sw.includes('icons/apple-touch-icon.png')) {
+  throw new Error('Image lazy loading, lightbox or offline image caching is incomplete.');
+}
+if (!html.includes('id="cloudAdminStats"') || !html.includes('id="cloudContentSearch"') ||
+    !githubCms.includes('function renderAdminStats') || !githubCms.includes('cloudContentFilter')) {
+  throw new Error('CMS admin dashboard counters and content search are incomplete.');
+}
+if (!html.includes('upload.wikimedia.org') || !html.includes('al-jandprovince.com') ||
+    !html.includes('hekmahyemanya.com') || !html.includes('cc-by-sa') ) {
+  throw new Error('Photo gallery must include verified sources and license attribution.');
 }
 const frontendWorkerContracts = [
   "fetch(value+'/setup/status'",
