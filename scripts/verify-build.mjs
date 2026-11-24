@@ -169,7 +169,7 @@ if (!html.includes('27 كم في مقدمة النص') && !html.includes('42 ك�
 if (!html.includes('id="imageLightbox"') || !html.includes('data-lightbox-src') ||
     !app.includes('photo.loading') || !sw.includes('REMOTE_IMAGE_HOSTS') ||
     !sw.includes('icons/apple-touch-icon.png') || !sw.includes('icons/photo-fallback.svg') ||
-    !sw.includes('hubaish-guide-v3.8.0')) {
+    !sw.includes('hubaish-guide-v3.8.1')) {
   throw new Error('Image lazy loading, lightbox or offline image caching is incomplete.');
 }
 if (!app.includes("market: 'M3 10h18l-2-6H5l-2 6Z") ||
@@ -301,7 +301,7 @@ if (!css.includes('--bg:#08100d') || !css.includes('--gold:#d4af37') || !css.inc
 if (!css.includes('left:16px!important') || !css.includes('width:46px!important') || !css.includes('right:auto!important')) {
   throw new Error('The assistant button must remain fixed at left:16px.');
 }
-if (!sw.includes('hubaish-guide-v3.8.0') || !sw.includes("'github-cms.js'") ||
+if (!sw.includes('hubaish-guide-v3.8.1') || !sw.includes("'github-cms.js'") ||
     !sw.includes("'data/live-content.json'") || !sw.includes("event.data?.type === 'SKIP_WAITING'") ||
     sw.includes('supabase')) throw new Error('Offline app shell does not include the GitHub CMS or live JSON file.');
 if (!workflow.includes('actions/deploy-pages@v4') || !workflow.includes('assembleDebug') ||
