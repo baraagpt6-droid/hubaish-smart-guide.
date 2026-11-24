@@ -359,12 +359,23 @@
     if(!title||!body){showToast('أدخل عنوان المحطة وتفاصيلها.');return;}
     const added={id:id('history'),era:era==='modern'?'modern':'ancient',period,title,body};state.history.unshift(added);window.HubaishCatalog?.autoTranslate?.(added);saveState();renderAll();renderAdminLists();['newHistoryTitle','newHistoryPeriod','newHistoryBody'].forEach(k=>document.getElementById(k).value='');showToast('تم حفظ المحطة على هذا الجهاز.');
   }
-  function submitContribution(event) {
+  async function submitContribution(event) {
     event.preventDefault();
     const item={id:id('contrib'),name:clean(document.getElementById('contribName').value,70),type:document.getElementById('contribType').value,title:clean(document.getElementById('contribTitle').value,100),body:clean(document.getElementById('contribBody').value,1600),source:clean(document.getElementById('contribSource').value,350),status:'pending',createdAt:new Date().toISOString()};
     if(!item.title||!item.body){showToast('أدخل عنوان المساهمة والتفاصيل.');return;}
     if(item.source && /^javascript:/i.test(item.source)){showToast('رابط المصدر غير صالح.');return;}
-    featureState.contributions.unshift(item);saveFeatureState();renderAdminLists();event.target.reset();showToast('حُفظت المساهمة محلياً بانتظار المراجعة.');
+    if(window.HubaishCloud?.isConfigured?.() && navigator.onLine){
+      try {
+        await window.HubaishCloud.submitContribution(item);
+        featureState.contributions.unshift(item);saveFeatureState();renderAdminLists();event.target.reset();
+        showToast('وصلت مساهمتك إلى صندوق المراجعة السحابي. ستظهر للجميع بعد موافقة المشرف.');
+        return;
+      } catch(error) {
+        console.error('[Hubaish] Cloud contribution failed:',error);
+      }
+    }
+    featureState.contributions.unshift(item);saveFeatureState();renderAdminLists();event.target.reset();
+    showToast('حُفظت المساهمة على هذا الجهاز بانتظار المراجعة.');
   }
   function handleContribution(idValue, approve) {
     const item=featureState.contributions.find(x=>x.id===idValue);if(!item)return;

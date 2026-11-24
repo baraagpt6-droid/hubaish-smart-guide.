@@ -125,7 +125,15 @@
       const origin=document.createElement('small');origin.className='uzal-original';origin.textContent=lang==='AR'?'':x.name;origin.hidden=lang==='AR';
       const body=document.createElement('p');body.className='item-body uzal-note';body.textContent=lang==='AR'?'ملف لاستكشاف المشهد الجبلي والريفي، والمدرجات والحقول ومسارات المياه والمواضع المرتبطة بالعزلة.':lang==='EN'?'Explore this sub-district’s highland and rural setting, terraces, fields, water routes and associated place names.':lang==='TR'?'Bu bucağın dağlık çevresini, teraslarını, tarlalarını, su yollarını ve yer adlarını keşfedin.':'Découvrez les reliefs, terrasses, champs, voies d’eau et noms de lieux de ce sous-district.';
       const btn=document.createElement('button');btn.className='btn-sm';btn.type='button';btn.dataset.ask=(lang==='AR'?'عرفني على عزلة ':lang==='EN'?'Tell me about sub-district ':lang==='TR'?'Bana şu bucağı anlat: ':'Présentez-moi le sous-district ')+d[LANGS.indexOf(lang)];btn.textContent=txt('ask',lang);
-      card.append(meta,h,origin,body,btn);target.append(card);
+      card.append(meta,h,origin,body,btn);
+      const updates=window.HubaishCloud?.getDistrictUpdates?.(x.name,lang)||[];
+      updates.forEach(update=>{
+        const entry=document.createElement('div');entry.className='cloud-district-update';
+        const label=document.createElement('strong');label.textContent=update.place||'معلومة محلية';
+        const detail=document.createElement('p');detail.className='small muted';detail.textContent=update.description||'';
+        entry.append(label,detail);card.append(entry);
+      });
+      target.append(card);
     });
   }
   function indexTheme(lang){return lang==='AR'?4:LANGS.indexOf(lang)+4;}

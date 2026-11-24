@@ -58,6 +58,8 @@ for (const id of ['historyList','placesList','uzalList','peopleList','referenceL
 if (!html.includes('<script src="./cloud.js" defer></script>')) throw new Error('Supabase cloud module is not loaded.');
 if (!sw.includes("'cloud.js'")) throw new Error('Cloud module is missing from the offline app shell.');
 if (!cloud.includes('/rest/v1/') || !cloud.includes('/auth/v1/token?grant_type=password') || !cloud.includes('user_contributions')) throw new Error('Supabase REST/Auth integration is incomplete.');
+if (!features.includes('window.HubaishCloud.submitContribution') || !features.includes('Cloud contribution failed')) throw new Error('Community contributions are not wired to the Supabase inbox.');
+if (!catalog.includes('getDistrictUpdates') || !catalog.includes('cloud-district-update')) throw new Error('Cloud district updates are not rendered in the sub-district directory.');
 for (const table of ['landmarks','history_events','sub_districts_updates','historical_figures','community_links','user_contributions']) {
   if (!schema.includes('create table if not exists public.' + table) || !schema.includes('alter table public.' + table + ' enable row level security')) throw new Error('RLS schema is incomplete for ' + table);
 }
