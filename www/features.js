@@ -127,12 +127,35 @@
     const hash = await hashAdminPin(pin, salt);
     localStorage.setItem(ADMIN_PIN_KEY, JSON.stringify({version:1,salt:toBase64(salt),hash:toBase64(hash),iterations:210000}));
   }
+  function localizeAdminControls() {
+    const lang=state.lang||'AR';
+    const labels={
+      AR:{open:'فتح أدوات التحرير',close:'إغلاق أدوات التحرير',prompt:'أدخل رمز الإشراف',placeholder:'رمز المرور',unlock:'فتح اللوحة',lock:'قفل اللوحة',change:'تغيير رمز المرور',current:'الرمز الحالي',next:'الرمز الجديد (4 إلى 12 رقماً)',confirm:'تأكيد الرمز الجديد',save:'حفظ الرمز الجديد'},
+      EN:{open:'Unlock editor',close:'Close editor',prompt:'Enter admin PIN',placeholder:'PIN',unlock:'Unlock panel',lock:'Lock panel',change:'Change PIN',current:'Current PIN',next:'New PIN (4–12 digits)',confirm:'Confirm new PIN',save:'Save new PIN'},
+      TR:{open:'Düzenleyiciyi aç',close:'Düzenleyiciyi kapat',prompt:'Yönetici PIN kodunu girin',placeholder:'PIN',unlock:'Paneli aç',lock:'Paneli kilitle',change:'PIN kodunu değiştir',current:'Mevcut PIN',next:'Yeni PIN (4–12 rakam)',confirm:'Yeni PIN doğrula',save:'Yeni PIN kaydet'},
+      FR:{open:'Ouvrir l’éditeur',close:'Fermer l’éditeur',prompt:'Saisir le code administrateur',placeholder:'Code PIN',unlock:'Ouvrir le panneau',lock:'Verrouiller le panneau',change:'Modifier le code PIN',current:'Code actuel',next:'Nouveau code (4 à 12 chiffres)',confirm:'Confirmer le nouveau code',save:'Enregistrer le code'}
+    }[lang]||{};
+    const toggle=document.getElementById('adminPanelToggle');if(toggle)toggle.textContent=adminUnlocked?labels.close:labels.open;
+    const prompt=document.getElementById('adminPinPrompt');if(prompt)prompt.textContent=labels.prompt;
+    const entry=document.getElementById('adminPinEntry');if(entry)entry.placeholder=labels.placeholder;
+    const unlock=document.getElementById('adminUnlockBtn');if(unlock)unlock.textContent=labels.unlock;
+    const lock=document.getElementById('adminLockBtn');if(lock)lock.textContent=labels.lock;
+    const form=document.getElementById('adminPinChangeForm');
+    const heading=form?.querySelector('h4');if(heading)heading.textContent=labels.change;
+    const current=document.getElementById('adminCurrentPin');if(current)current.placeholder=labels.current;
+    const next=document.getElementById('adminNewPin');if(next)next.placeholder=labels.next;
+    const confirm=document.getElementById('adminConfirmPin');if(confirm)confirm.placeholder=labels.confirm;
+    const save=form?.querySelector('button[type=submit]');if(save)save.textContent=labels.save;
+    const heritage=document.getElementById('heritageWisdomLabel');if(heritage)heritage.textContent=({AR:'من تراث وحكمة حبيش',EN:'Hubaish heritage and wisdom',TR:'Hubaish mirası ve bilgeliği',FR:'Patrimoine et savoirs de Hubaish'})[lang];
+    const factButton=document.getElementById('nextFactBtn');if(factButton)factButton.textContent=({AR:'معلومة أخرى',EN:'Another insight',TR:'Başka bir bilgi',FR:'Autre information'})[lang];
+    const fact=document.getElementById('didYouKnow');if(fact)fact.textContent=(FACTS_I18N[lang]||FACTS)[factIndex];
+  }
   function closeAdminPanel() {
     adminUnlocked = false;
     document.getElementById('adminPanel')?.classList.add('hidden');
     document.getElementById('adminAuthGate')?.classList.add('hidden');
     const toggle = document.getElementById('adminPanelToggle');
-    if (toggle) toggle.textContent = 'فتح أدوات التحرير';
+    localizeAdminControls();
     const pin = document.getElementById('adminPinEntry');
     if (pin) pin.value = '';
   }
@@ -151,7 +174,7 @@
       adminFailedAttempts=0; adminUnlocked=true;
       document.getElementById('adminAuthGate')?.classList.add('hidden');
       document.getElementById('adminPanel')?.classList.remove('hidden');
-      const toggle=document.getElementById('adminPanelToggle'); if(toggle)toggle.textContent='إغلاق أدوات التحرير';
+      localizeAdminControls();
       input.value=''; showToast('تم فتح لوحة التحرير على هذا الجهاز.');
     } catch { showToast('تعذر التحقق الآمن من الرمز في هذا المتصفح.'); }
   }
@@ -178,6 +201,7 @@
     document.getElementById('adminPinChangeForm')?.addEventListener('submit',changeAdminPin);
     document.addEventListener('visibilitychange',()=>{if(document.hidden&&adminUnlocked)closeAdminPanel();});
     closeAdminPanel();
+    localizeAdminControls();
   }
   function renderExplorerProgress() {
     const total=Math.max(1,(state.places?.length||0)+(state.history?.length||0)+22);
@@ -383,7 +407,7 @@
   function init() {
     if(typeof state==='undefined')return;
     document.getElementById('communityJoinLink')?.setAttribute('href',featureState.communityUrl);
-    const categorySelect=document.getElementById('langSelect');if(categorySelect){categorySelect.value=state.lang||'AR';categorySelect.addEventListener('change',()=>{applyLang(categorySelect.value);applyExtendedLang();});}
+    const categorySelect=document.getElementById('langSelect');if(categorySelect){categorySelect.value=state.lang||'AR';categorySelect.addEventListener('change',()=>{applyLang(categorySelect.value);applyExtendedLang();renderStories();renderQuiz();renderExplorerProgress();renderSeasonGuide();localizeAdminControls();});}
     applyExtendedLang();renderStories();renderQuiz();renderPeople();const fact=document.getElementById('didYouKnow');if(fact)fact.textContent=(FACTS_I18N[state.lang]||FACTS)[factIndex];renderAdminLists();renderCommunitySocials();renderUzalDetails();updateCounters();updateSavedAt();initAdminLock();renderExplorerProgress();renderSeasonGuide();
     document.getElementById('nextFactBtn')?.addEventListener('click',()=>{factIndex=(factIndex+1)%FACTS.length;document.getElementById('didYouKnow').textContent=(FACTS_I18N[state.lang]||FACTS)[factIndex];});
     document.getElementById('randomTourBtn')?.addEventListener('click',randomTour);
