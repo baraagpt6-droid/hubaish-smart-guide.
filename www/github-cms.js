@@ -240,7 +240,7 @@
       result['title_'+suffix]=x.title||item.title;
       result['location_'+suffix]=x.loc||item.loc||'مديرية حبيش';
       result['description_'+suffix]=x.body||item.body;
-      result['importance_'+suffix]=x.importance||item.importance||'';
+      result['importance_'+suffix]=l==='AR'?(item.importance||''):'';
     }
     return result;
   }
