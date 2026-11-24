@@ -443,7 +443,9 @@
         const draft=deepCopy(latest.data);
         mutator(draft);
         draft.updatedAt=new Date().toISOString();
-        const body={message:message,content:encodeBase64(JSON.stringify(draft,null,2)+'\n'),sha:latest.sha,branch:BRANCH};
+        const serialized=JSON.stringify(draft,null,2)+'\n';
+        if(serialized.length>700000)throw new Error('حجم ملف المحتوى تجاوز الحد الوقائي 700 كيلوبايت. قلّل أحجام النصوص وأبقِ الصور خارج JSON.');
+        const body={message:message,content:encodeBase64(serialized),sha:latest.sha,branch:BRANCH};
         const response=await fetch(API_URL,{method:'PUT',headers:{...apiHeaders(githubToken),'Content-Type':'application/json'},body:JSON.stringify(body),cache:'no-store'});
         const raw=await response.text();let result={};try{result=raw?JSON.parse(raw):{}}catch{}
         if(response.ok){
@@ -451,7 +453,7 @@
           return result;
         }
         if((response.status===409||response.status===422)&&attempt===0)continue;
-        if(response.status===401||response.status===403)throw new Error('رفض GitHub النشر. تحقق من صلاحية Contents Read and write ومن صلاحية الرمز.');
+        if(response.status===401){githubToken='';adminStatus();if($('cloudAdminPassword'))$('cloudAdminPassword').value='';throw new Error('انتهت صلاحية GitHub Token أو أُلغي. سجّل الدخول برمز جديد.')}\n        if(response.status===403)throw new Error('رفض GitHub النشر. تحقق من صلاحية Contents Read and write ومن صلاحية المستودع.');
         throw new Error(result.message||'فشل تحديث ملف JSON في GitHub (HTTP '+response.status+').');
       }
       throw new Error('تغير الملف بالتزامن مع النشر. أعد المحاولة لتفادي الكتابة فوق تعديل آخر.');
@@ -537,6 +539,7 @@
   }
   async function importBackup(value){
     if(!isAdmin())throw new Error('سجّل الدخول إلى GitHub قبل استيراد النسخة السحابية.');
+    if(!value||value.schemaVersion!==1||!Object.values(TABLES).every(key=>Array.isArray(value[key])))throw new Error('بنية نسخة GitHub CMS غير صالحة.');
     const imported=normalizeDocument(value);
     await mutateRepository(draft=>{
       for(const key of Object.values(TABLES))draft[key]=deepCopy(imported[key]||[]);
