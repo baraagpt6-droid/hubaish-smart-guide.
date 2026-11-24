@@ -19,7 +19,21 @@ async function passHash(password,salt){const m=await crypto.subtle.importKey("ra
 async function saveUser(env,user,password){const salt=random(16);await env.ADMINS.put(UP+user.username,JSON.stringify({...user,salt:b64u(salt),passwordHash:await passHash(password,salt),updatedAt:new Date().toISOString()}))}
 const getUser=(env,name)=>env.ADMINS.get(UP+name,"json");
 async function log(env,event){const a=await env.ADMINS.get(AUDIT,"json")||[];a.unshift({at:new Date().toISOString(),...event});await env.ADMINS.put(AUDIT,JSON.stringify(a.slice(0,200)))}
-function cors(req,env){const o=req.headers.get("Origin")||"",allowed=env.ALLOWED_ORIGIN||"https://baraagpt6-droid.github.io";const ok=o===allowed;return {"Access-Control-Allow-Origin":ok?o:"null","Access-Control-Allow-Methods":"GET,POST,PUT,PATCH,OPTIONS","Access-Control-Allow-Headers":"Content-Type,Authorization","Access-Control-Max-Age":"86400","Vary":"Origin"}}
+function cors(req,env){
+ const origin=req.headers.get("Origin")||"";
+ const configured=String(env.ALLOWED_ORIGIN||"").split(",").map(x=>x.trim()).filter(Boolean);
+ const wildcard=configured.includes("*");
+ const defaults=["https://baraagpt6-droid.github.io","capacitor://localhost","http://localhost"];
+ const allowed=new Set([...defaults,...configured]);
+ const permitted=!origin||wildcard||allowed.has(origin);
+ return {
+  ...(wildcard?{"Access-Control-Allow-Origin":"*"}:origin&&permitted?{"Access-Control-Allow-Origin":origin}:{}),
+  "Access-Control-Allow-Methods":"GET,POST,PUT,PATCH,OPTIONS",
+  "Access-Control-Allow-Headers":"Content-Type,Authorization",
+  "Access-Control-Max-Age":"86400",
+  "Vary":"Origin"
+ };
+}
 async function auth(req,env){const t=(req.headers.get("Authorization")||"").replace(/^Bearer\s+/i,""),p=await check(t,env.SESSION_SECRET);if(!p?.sub)return null;const u=await getUser(env,p.sub);if(!u||u.disabled||u.role!==p.role)return null;return {username:u.username,displayName:u.displayName,role:u.role}}
 async function ghRead(env){const url="https://api.github.com/repos/"+OWNER+"/"+REPO+"/contents/"+FILE+"?ref="+BRANCH;const r=await fetch(url,{headers:{Authorization:"Bearer "+env.GITHUB_TOKEN,Accept:"application/vnd.github+json","X-GitHub-Api-Version":"2022-11-28","User-Agent":"Hubaish-CMS-Worker"}}),p=await r.json();if(!r.ok)throw Error("GitHub read failed: "+(p.message||r.status));const raw=atob(p.content.replace(/\s/g,"")),bytes=Uint8Array.from(raw,c=>c.charCodeAt(0));return {sha:p.sha,data:JSON.parse(dec(bytes))}}
 async function ghWrite(env,data,actor){const old=await ghRead(env),url="https://api.github.com/repos/"+OWNER+"/"+REPO+"/contents/"+FILE,content=b64bytes(enc(JSON.stringify(data,null,2)+"\n"));const r=await fetch(url,{method:"PUT",headers:{Authorization:"Bearer "+env.GITHUB_TOKEN,Accept:"application/vnd.github+json","X-GitHub-Api-Version":"2022-11-28","Content-Type":"application/json","User-Agent":"Hubaish-CMS-Worker"},body:JSON.stringify({message:"CMS: update live content by "+actor.username,content,sha:old.sha,branch:BRANCH,committer:{name:"Hubaish CMS — "+(actor.displayName||actor.username),email:"41898282+github-actions[bot]@users.noreply.github.com"}})}),p=await r.json();if(!r.ok)throw Error("GitHub write failed: "+(p.message||r.status));return p}
@@ -27,6 +41,10 @@ async function route(req,env){
  const u=new URL(req.url),path=u.pathname;
  if(req.method==="OPTIONS")return new Response(null,{status:204});
  if(!env.ADMINS||!env.GITHUB_TOKEN||!env.SESSION_SECRET) return json({error:"Configure ADMINS KV, GITHUB_TOKEN and SESSION_SECRET."},500);
+ if(req.method==="GET"&&path==="/setup/status"){
+  const keys=await env.ADMINS.list({prefix:UP,limit:1});
+  return json({setupRequired:keys.keys.length===0,configured:true});
+ }
  if(req.method==="POST"&&path==="/setup"){
   const b=await req.json(),keys=await env.ADMINS.list({prefix:UP,limit:1});
   if(keys.keys.length)return json({error:"Initial setup already completed."},409);
@@ -75,4 +93,4 @@ async function route(req,env){
  if(path==="/admin/audit"&&actor.role==="super_admin"&&req.method==="GET")return json({events:(await env.ADMINS.get(AUDIT,"json")||[]).slice(0,100)});
  return json({error:"Not found."},404)
 }
-export default {async fetch(req,env){const h=cors(req,env);if(req.method!=="OPTIONS"&&h["Access-Control-Allow-Origin"]==="null")return json({error:"Origin not allowed."},403);try{const r=await route(req,env),headers=new Headers(r.headers);for(const [k,v] of Object.entries(h))headers.set(k,v);return new Response(r.body,{status:r.status,headers})}catch(e){return json({error:e.message||"Worker error."},500,h)}}};
+export default {async fetch(req,env){const h=cors(req,env);const origin=req.headers.get("Origin")||"";if(origin&&!h["Access-Control-Allow-Origin"])return json({error:"Origin not allowed."},403);try{const r=await route(req,env),headers=new Headers(r.headers);for(const [k,v] of Object.entries(h))headers.set(k,v);return new Response(r.body,{status:r.status,headers})}catch(e){return json({error:e.message||"Worker error."},500,h)}}};
