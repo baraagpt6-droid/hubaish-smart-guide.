@@ -234,10 +234,10 @@
   function localizeDynamicLabels() {
     const lang = state.lang || 'AR';
     const words = {
-      AR: { save: 'حفظ', saved: 'محفوظ', ask: 'اسأل المساعد', details: 'التفاصيل', empty: 'لا توجد نتائج مطابقة.' },
-      EN: { save: 'Save', saved: 'Saved', ask: 'Ask assistant', details: 'Details', empty: 'No matching results.' },
-      TR: { save: 'Kaydet', saved: 'Kaydedildi', ask: 'Asistana sor', details: 'Ayrıntılar', empty: 'Eşleşen sonuç bulunamadı.' },
-      FR: { save: 'Enregistrer', saved: 'Enregistré', ask: 'Demander à l’assistant', details: 'Détails', empty: 'Aucun résultat correspondant.' }
+      AR: { save: 'حفظ', saved: 'محفوظ', ask: 'اسأل المساعد', details: 'التفاصيل', share: 'مشاركة', empty: 'لا توجد نتائج مطابقة.' },
+      EN: { save: 'Save', saved: 'Saved', ask: 'Ask assistant', details: 'Details', share: 'Share', empty: 'No matching results.' },
+      TR: { save: 'Kaydet', saved: 'Kaydedildi', ask: 'Asistana sor', details: 'Ayrıntılar', share: 'Paylaş', empty: 'Eşleşen sonuç bulunamadı.' },
+      FR: { save: 'Enregistrer', saved: 'Enregistré', ask: 'Demander à l’assistant', details: 'Détails', share: 'Partager', empty: 'Aucun résultat correspondant.' }
     }[lang];
     document.querySelectorAll('.card-actions button').forEach(btn => {
       const text = btn.textContent.trim();
@@ -246,10 +246,11 @@
       else if (/حفظ|^Save$|^Kaydet$|^Enregistrer$/.test(text)) label = words.save;
       else if (/اسأل المساعد|Ask assistant|Asistana sor|Demander à l’assistant/.test(text)) label = words.ask;
       else if (/^التفاصيل$|^Details$|^Ayrıntılar$|^Détails$/.test(text)) label = words.details;
+      else if (/^مشاركة$|^Share$|^Paylaş$|^Partager$/.test(text)) label = words.share;
       if (btn.textContent !== label) btn.textContent = label;
     });
     document.querySelectorAll('.empty-state').forEach(el => {
-      if (/لا توجد نتائج مطابقة|No matching results|Eşleşen sonuç bulunamadı|Aucun résultat correspondant/.test(el.textContent) && el.textContent !== words.empty) el.textContent = words.empty;
+      if (/لا توجد نتائج مطابقة|لا توجد معالم مطابقة|No matching (results|landmarks)|Eşleşen (sonuç|yer) bulunamadı|Aucun (résultat|monument) correspondant/.test(el.textContent) && el.textContent !== words.empty) el.textContent = words.empty;
     });
   }
   function applyExtendedLang() {

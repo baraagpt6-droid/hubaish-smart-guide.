@@ -1,8 +1,11 @@
 name: Cloudflare Worker Production Health
 
 on:
-  push:
+  workflow_run:
+    workflows: ["Deploy Cloudflare Worker"]
+    types: [completed]
     branches: [main]
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -13,6 +16,7 @@ concurrency:
 
 jobs:
   production-health:
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
     name: Verify live Worker, KV, GitHub and first-admin state
     runs-on: ubuntu-latest
     timeout-minutes: 3
