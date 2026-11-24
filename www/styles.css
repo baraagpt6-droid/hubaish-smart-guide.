@@ -190,3 +190,23 @@ body{font-family:'IBM Plex Sans Arabic',Tahoma,Arial,sans-serif}.hero-title,.bra
   filter:drop-shadow(0 2px 8px rgba(0,0,0,.25));
 }
 html[data-theme=light] .story-heritage-icon{color:#e8cc72}
+
+.ui-icon,.nav-icon{
+  display:inline-block;
+  width:18px;
+  height:18px;
+  flex:none;
+  fill:none;
+  stroke:currentColor;
+  stroke-width:1.7;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+  vertical-align:middle;
+}
+.nav-icon{width:20px;height:20px;color:currentColor}
+.theme-toggle-icon{color:var(--gold)}
+.ai-fab .ui-icon{width:21px;height:21px}
+.terrain-icon .ui-icon{width:24px;height:24px}
+.mic-btn .ui-icon{width:18px;height:18px}
+#favOpenBtn .ui-icon{width:16px;height:16px;color:var(--gold)}
+.story-card{position:relative}
