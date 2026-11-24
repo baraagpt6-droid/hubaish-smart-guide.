@@ -98,6 +98,9 @@ if (!githubCms.includes('githubToken') || !githubCms.includes('Authorization:') 
     !githubCms.includes('githubToken=\'\'') || /localStorage\.(?:setItem|getItem)\([^)]*githubToken/i.test(githubCms)) {
   throw new Error('GitHub token must remain in memory and be sent only as an API authorization header.');
 }
+const workerSource = await read('cloudflare-worker/worker.js');
+const workerSyntax = spawnSync(process.execPath, ['--input-type=module', '--check'], { input: workerSource, encoding: 'utf8' });
+if (workerSyntax.status !== 0) throw new Error('Cloudflare Worker syntax check failed: ' + (workerSyntax.stderr || workerSyntax.stdout));
 const worker = await read('cloudflare-worker/worker.js');
 if (!worker.includes('/auth/login') || !worker.includes('/admin/users') || !worker.includes('/admin/audit') ||
     !worker.includes('PBKDF2') || !worker.includes('GITHUB_TOKEN') || !worker.includes('SESSION_SECRET') ||
