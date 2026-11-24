@@ -66,16 +66,17 @@ jobs:
             if (!setupResult.ok) {
               failures.push('/setup/status returned HTTP ' + setupResult.status + ': ' + (setupResult.body.error || 'request failed'));
             } else {
-              if (setupResult.body.setupRequired !== true) {
-                failures.push('First-admin setup must remain pending: expected setupRequired=true.');
-              }
-              if (setupResult.body.bootstrapKeyConfigured !== true) {
-                failures.push('BOOTSTRAP_KEY is not configured for first-admin setup.');
+              if (typeof setupResult.body.setupRequired !== 'boolean') {
+                failures.push('setupRequired is missing or is not a boolean.');
+              } else if (setupResult.body.setupRequired === true && setupResult.body.bootstrapKeyConfigured !== true) {
+                failures.push('First-admin setup is pending, but BOOTSTRAP_KEY is not configured.');
+              } else if (setupResult.body.setupRequired === false && setupResult.body.bootstrapKeyConfigured !== false) {
+                failures.push('An administrator already exists; remove BOOTSTRAP_KEY from Worker Secrets.');
               }
             }
 
             if (failures.length) throw new Error('Production readiness failures:\n- ' + failures.join('\n- '));
-            console.log('\nPASS: Worker health, KV, GitHub read, session secret and first-admin bootstrap are ready.');
+            console.log('\nPASS: Worker health, KV, GitHub read, session secret and first-admin lifecycle state are consistent.');
           })().catch(error => {
             console.error('\nFAIL: ' + error.message);
             process.exitCode = 1;
