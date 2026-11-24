@@ -1,1 +1,30 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><rect width="512" height="512" rx="112" fill="#0d2e20"/><rect x="19" y="19" width="474" height="474" rx="98" fill="none" stroke="#e5b94c" stroke-width="13"/><path d="M64 370 180 170l73 117 53-77 142 160H64Z" fill="#10b981" stroke="#e5b94c" stroke-width="12" stroke-linejoin="round"/><circle cx="360" cy="117" r="29" fill="#e5b94c"/><path d="M118 402h276" stroke="#e5b94c" stroke-width="14" stroke-linecap="round"/></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Hubaish green terraces and golden fortress">
+ <defs>
+  <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#07543d"/><stop offset="1" stop-color="#052d24"/></linearGradient>
+  <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#ffe79a"/><stop offset=".48" stop-color="#e8b943"/><stop offset="1" stop-color="#a96f19"/></linearGradient>
+  <linearGradient id="green" x1="0" y1="0" x2=".8" y2="1"><stop stop-color="#69d85b"/><stop offset=".55" stop-color="#159451"/><stop offset="1" stop-color="#075638"/></linearGradient>
+  <linearGradient id="shade" x1="0" y1="0" x2="1" y2="0"><stop stop-color="#fff2bd" stop-opacity=".22"/><stop offset="1" stop-color="#061d16" stop-opacity=".42"/></linearGradient>
+ </defs>
+ <rect width="512" height="512" rx="104" fill="url(#bg)"/>
+ <circle cx="256" cy="249" r="202" fill="none" stroke="#d9ad43" stroke-opacity=".16" stroke-width="2"/>
+ <path d="M66 350 138 278 191 311 256 238 324 312 377 278 446 350 414 410 256 460 98 410Z" fill="url(#green)" stroke="#0a6a45" stroke-width="5"/>
+ <path d="m138 278 53 33-39 25-55-8Zm53 33 65-73 10 92-75 6Zm65-73 68 74-54 18-14-92Zm68 74 53-34 41 50-77-2Z" fill="#8be16c" opacity=".66"/>
+ <path d="M75 358 170 374 256 354 342 374 437 358 430 382 342 400 256 382 170 400 82 382Z" fill="url(#gold)" stroke="#0b553c" stroke-width="7"/>
+ <path d="M82 389 170 410 256 392 342 410 430 389 420 414 342 435 256 416 170 435 92 414Z" fill="#16834d" stroke="#073e2d" stroke-width="7"/>
+ <path d="M98 424 174 441 256 424 338 441 414 424 400 447 338 463 256 447 174 463 112 447Z" fill="url(#gold)" stroke="#06412f" stroke-width="7"/>
+ <path d="M254 460c-25-22-45-39-32-57 12-17 53-19 53-39 0-18-49-21-49-39 0-15 30-28 57-44" fill="none" stroke="#073e2e" stroke-width="31" stroke-linecap="round"/>
+ <path d="M254 460c-25-22-45-39-32-57 12-17 53-19 53-39 0-18-49-21-49-39 0-15 30-28 57-44" fill="none" stroke="url(#gold)" stroke-width="20" stroke-linecap="round"/>
+ <path d="m213 250 12-150h70l15 150-34 24-32-8Z" fill="#063c2c" opacity=".8"/>
+ <path d="M206 244V103h100v141l-50 18Z" fill="url(#gold)"/>
+ <path d="M256 103h50v141l-50 18Z" fill="#bb8428"/>
+ <path d="M197 109h118v-21h-18V66h-21v22h-22V57h-20v31h-22V66h-15v22h-20Z" fill="url(#gold)" stroke="#895d19" stroke-width="3"/>
+ <path d="M256 58V24" stroke="#f4d77f" stroke-width="6" stroke-linecap="round"/>
+ <path d="M260 26c24-12 39 13 61 0l-12 18c-20 12-34-10-49 0Z" fill="url(#gold)"/>
+ <g fill="#07513a">
+  <path d="M220 140v-18a12 12 0 0 1 24 0v18Z"/><path d="M269 140v-18a12 12 0 0 1 24 0v18Z"/>
+  <path d="M220 179h14v20h-14zM269 179h14v20h-14z"/>
+  <path d="M235 244v-30a21 21 0 0 1 42 0v30Z"/>
+ </g>
+ <path d="M206 103h50v141l-50-1Z" fill="url(#shade)" opacity=".55"/>
+ <path d="M71 349 135 289M377 289l65 60" stroke="#f4dc8c" stroke-opacity=".58" stroke-width="3"/>
+</svg>
