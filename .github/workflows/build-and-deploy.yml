@@ -102,7 +102,28 @@ jobs:
           mkdir -p release-out
           if [[ -n "${KEYSTORE_BASE64}" && -n "${KEYSTORE_PASSWORD}" && -n "${KEY_ALIAS}" && -n "${KEY_PASSWORD}" ]]; then
             mkdir -p android/keystore
-            printf '%s' "$KEYSTORE_BASE64" | base64 --decode > android/keystore/hubaish-release.jks
+            python3 - <<'PY'
+          import base64, os, re
+          from pathlib import Path
+
+          raw = os.environ["KEYSTORE_BASE64"].strip()
+          lines = raw.splitlines()
+          matching = [line for line in lines if line.split("=", 1)[0].strip() == "KEYSTORE_BASE64" and "=" in line]
+          if matching:
+              raw = matching[0].split("=", 1)[1]
+          elif raw.split("=", 1)[0].strip() == "KEYSTORE_BASE64" and "=" in raw:
+              raw = raw.split("=", 1)[1]
+          raw = raw.strip().strip('"').strip("'")
+          raw = re.sub(r"\\s+", "", raw)
+          raw += "=" * (-len(raw) % 4)
+          try:
+              decoded = base64.b64decode(raw, validate=True)
+          except Exception as error:
+              raise SystemExit("KEYSTORE_BASE64 is not valid Base64. Paste the value only, or paste the complete generated secrets file.")
+          if not decoded.startswith(bytes.fromhex("feedfeed")):
+              raise SystemExit("Decoded keystore is not a valid JKS file.")
+          Path("android/keystore/hubaish-release.jks").write_bytes(decoded)
+          PY
             keytool -list -keystore android/keystore/hubaish-release.jks -storetype JKS -storepass "$KEYSTORE_PASSWORD" -alias "$KEY_ALIAS" >/dev/null
             export ANDROID_KEYSTORE_PATH="$GITHUB_WORKSPACE/android/keystore/hubaish-release.jks"
             python3 - <<'PY'
