@@ -180,6 +180,16 @@
     if(next)next.textContent=({AR:'موسم آخر',EN:'Another season',TR:'Başka mevsim',FR:'Autre saison'})[lang];
   }
 
+  function applyLanguage() {
+    localizeAdminControls();
+    renderExplorerProgress();
+    renderSmartItineraries();
+    renderSmartCompare();
+    renderSeasonGuide();
+    localizeDynamicLabels();
+    updateSavedAt();
+  }
+
   function clean(value, max = 1500) { return String(value ?? '').replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F]/g, '').trim().slice(0, max); }
   function id(prefix) { return `${prefix}-${globalThis.crypto?.randomUUID ? crypto.randomUUID() : `${Date.now()}-${Math.random().toString(16).slice(2)}`}`; }
   function node(tag, cls, text) { const el = document.createElement(tag); if (cls) el.className = cls; if (text !== undefined) el.textContent = String(text); return el; }
@@ -424,6 +434,6 @@
   if (typeof localAssistantAnswer === 'function') { const baseAnswer=localAssistantAnswer; window.localAssistantAnswer = question => localizeAssistant(question,baseAnswer(question)); }
   window.normAr = value => normalizeArabic(value);
   function setCommunityUrl(url){featureState.communityUrl=validHttpUrl(url)?url:FACEBOOK_URL;const link=document.getElementById('communityJoinLink');if(link)link.href=featureState.communityUrl;saveFeatureState();renderCommunitySocials();}
-  window.HubaishFeatures = { exportAllBackup, randomTour, renderAdminLists, getState:()=>featureState, isAdminUnlocked:()=>window.HubaishCloud?.isAdmin?.(), touchSaved, markExplored, renderExplorerProgress, getUzal:()=>featureState.uzal.slice(), getPeople:()=>featureState.people.slice(), setCloudPeople, setCommunityUrl, showDetail, renderSmartItineraries, renderSmartCompare, assistantAnswer:question=>localizeAssistant(question,localAssistantAnswer(question)), text:t, reset:()=>{localStorage.removeItem(FEATURE_KEY);featureState=loadFeatureState();saveFeatureState();renderAdminLists();renderExplorerProgress();} };
+  window.HubaishFeatures = { exportAllBackup, randomTour, renderAdminLists, applyLanguage, getState:()=>featureState, isAdminUnlocked:()=>window.HubaishCloud?.isAdmin?.(), touchSaved, markExplored, renderExplorerProgress, getUzal:()=>featureState.uzal.slice(), getPeople:()=>featureState.people.slice(), setCloudPeople, setCommunityUrl, showDetail, renderSmartItineraries, renderSmartCompare, assistantAnswer:question=>localizeAssistant(question,localAssistantAnswer(question)), text:t, reset:()=>{localStorage.removeItem(FEATURE_KEY);featureState=loadFeatureState();saveFeatureState();renderAdminLists();renderExplorerProgress();} };
   document.addEventListener('DOMContentLoaded',init,{once:true});
 })();
