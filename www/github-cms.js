@@ -457,7 +457,8 @@
     event.preventDefault();
     if(!isAdmin()){toast('سجّل الدخول برمز GitHub أولاً.');return}
     const v=formValues();
-    if(!v.title.ar||!v.details.ar){toast('أدخل العنوان والتفاصيل بالعربية.');return}
+    if(!v.title.ar){toast('أدخل الاسم أو العنوان بالعربية.');return}
+    if(v.type!=='community_link'&&!v.details.ar){toast('أدخل التفاصيل بالعربية.');return}
     if(v.type==='sub_district_update'&&!v.district.ar){toast('اختر اسم العزلة بالعربية.');return}
     if(v.type==='sub_district'&&!v.district.ar){toast('اختر العزلة الأصلية المراد تعديلها.');return}
     if(v.type==='community_link'&&!safeUrl(v.url)){toast('أدخل رابط HTTPS أو HTTP صحيحاً.');return}
