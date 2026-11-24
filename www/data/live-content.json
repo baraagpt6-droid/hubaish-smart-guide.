@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-24T10:43:30.495Z",
+  "updatedAt": "2026-11-24T10:49:33.503Z",
   "landmarks": [
     {
       "id": "khudad-fort",
@@ -140,9 +140,53 @@
       "body_en": "A local historical source says the village of al-Shawafi is now administratively in Al-Sadr sub-district, Hubaish, while the historical al-Shawafi district was wider. It mentions al-Dinwah fort and jurist Saeed bin Yasin al-Hattar's revolt in the twelfth Hijri century. Historical and current administrative boundaries are not the same.",
       "source_text": "مادة حبيش في موقع ثور رأين تنقل عن «التاريخ العام لليمن» لمحمد يحيى الحداد.",
       "source_url": "https://www.thu-raein.com/index.php/ar/makhaleef-ar/hubaish-district-ar?id=17&view=category"
+    },
+    {
+      "id": "hubaish-sulayhid-rasulid-context",
+      "era": "ancient",
+      "status": "documented",
+      "title_ar": "صلة علماء وحاظة بالمصادر الصليحية والرسولية",
+      "title_en": "Wuhaza scholars in Sulayhid and Rasulid sources",
+      "period_ar": "العصور الإسلامية • قرنان 5–7هـ تقريباً",
+      "period_en": "Islamic period • approximately 5th–7th Hijri centuries",
+      "body_ar": "تذكر مادة محلية أن إسماعيل بن إبراهيم الوحاظي عمل مؤدباً لأولاد الملوك الصليحيين، كما تنقل وصف الملك الأفضل العباس الرسولي لعدد من علماء وحاظة في كتابه «العطايا السنية». هذه الإشارات تثبت ورود صلات علمية وأدبية في روايات المصادر، لكنها لا تثبت وحدها أن كل منطقة حبيش الحالية كانت خاضعة سياسياً لتلك الدول. لم أعثر في المصادر التي راجعتها على إحالة موثقة كافية لتحديد تبعية حبيش للدولة الطاهرية؛ لذلك لا أدرجها كحقيقة مؤكدة.",
+      "body_en": "A local historical account says Ismail ibn Ibrahim al-Wuhazi taught children of Sulayhid rulers and reports that the Rasulid ruler al-Afdal Abbas praised scholars from Wuhaza in al-Ataya al-Saniyya. These references show scholarly and literary connections in the sources; they do not by themselves prove that all of modern Hubaish was politically governed by those states. The sources reviewed here do not establish a specific Tahirid administrative relationship.",
+      "source_text": "مادة حبيش في موقع ثور رأين، مع إحالات إلى هجر العلم ومعاقله والعطايا السنية.",
+      "source_url": "https://www.thu-raein.com/index.php/ar/makhaleef-ar/hubaish-district-ar?id=17&view=category"
     }
   ],
-  "subDistrictUpdates": [],
+  "subDistrictUpdates": [
+    {
+      "id": "village-al-fara'i",
+      "district_name_ar": "الفراعي",
+      "place_name_ar": "قرية الفراعي",
+      "place_name_en": "Al-Fara'i village",
+      "description_ar": "تسمي مادة منشورة عن حبيش صورةً لقرية الفراعي في مديرية حبيش. تسجل هذه البطاقة القرية والصورة بوصفهما مادة توثيق بصري، ولا تضيف أسماء أحياء أو حدوداً أو إحداثيات غير منشورة.",
+      "description_en": "A Hubaish article labels a photograph as Al-Fara'i village in Hubaish District. This record documents the village and photograph without adding unverified neighbourhoods, boundaries or coordinates.",
+      "source_text": "حكمة يمانية، مقال «حبيش.. مفتتح المجد وذروته»، الصورة معنونة بقرية الفراعي.",
+      "source_url": "https://hekmahyemanya.com/آثار/حُبيش-مُفتتح-المجد-وذروته/"
+    },
+    {
+      "id": "village-al-shawafi",
+      "district_name_ar": "الصدر",
+      "place_name_ar": "قرية الشوافي",
+      "place_name_en": "Al-Shawafi village",
+      "description_ar": "تذكر مادة تاريخية نقلاً عن كتاب «التاريخ العام لليمن» أن قرية الشوافي أصبحت إدارياً ضمن عزلة الصدر في مديرية حبيش، مع أن مخلاف الشوافي التاريخي كان نطاقاً أوسع. لا تورد البطاقة قائمة القرى التابعة للمخلاف القديم.",
+      "description_en": "A local historical account, citing the General History of Yemen, says al-Shawafi village is now administratively within Al-Sadr sub-district, Hubaish. The historical al-Shawafi district covered a wider area.",
+      "source_text": "مادة حبيش في موقع ثور رأين، ناقلة عن التاريخ العام لليمن لمحمد يحيى الحداد.",
+      "source_url": "https://www.thu-raein.com/index.php/ar/makhaleef-ar/hubaish-district-ar?id=17&view=category"
+    },
+    {
+      "id": "village-al-jarajiz",
+      "district_name_ar": "نقيل العقاب",
+      "place_name_ar": "قرية الجراجز",
+      "place_name_en": "Al-Jarajiz village",
+      "description_ar": "تذكر دراسة تاريخية عن انتفاضة حبيش أن قرية الجراجز تتبع عزلة نقيل العقاب، وتنقل عن حفيد الشيخ محمد عايض العقاب أن جده توفي فيها نحو 1925م. يعرض الدليل ذلك بوصفه رواية أسرية نقلها المقال، لا وثيقة وفاة رسمية.",
+      "description_en": "A historical study of the Hubaish uprising says al-Jarajiz village belongs to Naqil al-Aqab and relays a family account that Sheikh Muhammad Ayed al-Aqab died there around 1925. The guide labels this as an attributed family account, not a civil record.",
+      "source_text": "بلال الطيب، «حبيش.. مفتتح المجد وذروته»، 21 مايو 2022.",
+      "source_url": "https://hekmahyemanya.com/آثار/حُبيش-مُفتتح-المجد-وذروته/"
+    }
+  ],
   "historicalFigures": [
     {
       "id": "isa-al-rubai-wuhazi",
