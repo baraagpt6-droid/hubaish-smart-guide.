@@ -788,9 +788,21 @@ function init() {
     renderAll: renderAll,
     applyCloudData(data) {
       const incoming = data || {};
-      state.places = state.places.filter(item => !String(item.id || '').startsWith('cloud-')).concat(incoming.landmarks || []);
-      state.history = state.history.filter(item => !String(item.id || '').startsWith('cloud-')).concat(incoming.history || []);
-      state.socials = state.socials.filter(item => !item.cloudId).concat(incoming.links || []);
+      const mergeById = (base, additions) => {
+        const merged = new Map((base || []).map(item => [String(item.id || ''), item]));
+        for (const item of additions || []) {
+          if (!item || !item.id) continue;
+          merged.set(String(item.id), item);
+        }
+        return [...merged.values()];
+      };
+      state.places = mergeById(state.places, incoming.landmarks || []);
+      state.history = mergeById(state.history, incoming.history || []);
+      const links = new Map((state.socials || []).map(item => [String(item.cloudId || item.id || item.url), item]));
+      for (const item of incoming.links || []) {
+        if (item?.url && item?.name) links.set(String(item.cloudId || item.id || item.url), item);
+      }
+      state.socials = [...links.values()];
     }
   };
   applyTheme(state.theme);
