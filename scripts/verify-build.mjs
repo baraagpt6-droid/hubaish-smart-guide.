@@ -101,8 +101,11 @@ for (const feature of ['normalizeArabic', 'renderGlobalSearch', 'renderFavorites
 for (const lang of ["'AR'", "'EN'", "'TR'", "'FR'"]) if (!app.includes(lang)) throw new Error(`Language support missing: ${lang}`);
 if (!features.includes('function renderQuiz') || !features.includes('function submitContribution') || !features.includes('function exportAllBackup')) throw new Error('Feature module is incomplete');
 if (!catalog.includes("p19:['وادي نخلة'") || !catalog.includes("h7:{") || !catalog.includes('Muhammad A’id al-Aqab')) throw new Error('Extended landmark and history catalogue missing');
-const landmarkLocations = catalog.match(/const PLOC=\\{([\\s\\S]*?)\\n  \\};/);
-if (!landmarkLocations || [...landmarkLocations[1].matchAll(/^\\s*p\\d+:\\[/gm)].length !== 19 || !catalog.includes('if(PLOC[item.id])copy.loc=PLOC[item.id][index]')) throw new Error('All 19 landmark locations must be localized in four languages.');
+const locationStart = catalog.indexOf('const PLOC={');
+const locationEnd = locationStart >= 0 ? catalog.indexOf('\n  };', locationStart) : -1;
+const landmarkLocations = locationStart >= 0 && locationEnd > locationStart ? catalog.slice(locationStart, locationEnd) : '';
+const locationRows = landmarkLocations.split('\n').filter(line => line.trim().startsWith('p') && line.includes(':['));
+if (!landmarkLocations || locationRows.length !== 19 || !catalog.includes('if(PLOC[item.id])copy.loc=PLOC[item.id][index]')) throw new Error('All 19 landmark locations must be localized in four languages.');
 if (!catalog.includes("['بني معين'") || !catalog.includes("['الوطئة (الوطنة)'") || (catalog.match(/\n    \[\['/g)||[]).length !== 10) throw new Error('The 22-district catalogue or ten-question quiz is incomplete');
 if (!html.includes('id="referenceList"') || !html.includes('id="communityTag"') || !html.includes('id="translationNotice"')) throw new Error('Interactive hub sections are missing');
 for (const key of ['quizArea', 'contributionForm', 'adminPanel', 'favModal', 'detailModal']) if (!html.includes(`id="${key}"`)) throw new Error(`UI section missing: ${key}`);
