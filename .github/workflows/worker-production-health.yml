@@ -66,12 +66,11 @@ jobs:
             if (!setupResult.ok) {
               failures.push('/setup/status returned HTTP ' + setupResult.status + ': ' + (setupResult.body.error || 'request failed'));
             } else {
-              if (typeof setupResult.body.setupRequired !== 'boolean') {
-                failures.push('setupRequired is missing or is not a boolean.');
-              } else if (setupResult.body.setupRequired === true && setupResult.body.bootstrapKeyConfigured !== true) {
-                failures.push('First-admin setup is required, but BOOTSTRAP_KEY is not configured.');
-              } else if (setupResult.body.setupRequired === false) {
-                console.log('First-admin setup has already been completed.');
+              if (setupResult.body.setupRequired !== true) {
+                failures.push('First-admin setup must remain pending: expected setupRequired=true.');
+              }
+              if (setupResult.body.bootstrapKeyConfigured !== true) {
+                failures.push('BOOTSTRAP_KEY is not configured for first-admin setup.');
               }
             }
 
