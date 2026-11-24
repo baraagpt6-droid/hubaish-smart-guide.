@@ -1,4 +1,4 @@
-name: Deploy Cloudflare Worker
+name: Verify Cloudflare Production
 
 on:
   push:
@@ -13,38 +13,52 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  deploy-worker:
-    name: Resolve ADMINS KV, deploy Worker and verify production
+  deploy-and-verify:
+    name: Deploy when credentials exist; always verify production
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID || secrets.CLOUDFLARE_ACCOUNT_ID }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 22
-      - name: Resolve the hubaish-admins KV namespace and write Wrangler binding
-        env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID || secrets.CLOUDFLARE_ACCOUNT_ID }}
-        run: node scripts/configure-cloudflare-kv.mjs
+
       - name: Check Cloudflare setup script syntax
         run: node --check scripts/configure-cloudflare-kv.mjs
+
+      - name: Resolve the hubaish-admins KV namespace and write Wrangler binding
+        if: ${{ env.CLOUDFLARE_API_TOKEN != '' && env.CLOUDFLARE_ACCOUNT_ID != '' }}
+        run: node scripts/configure-cloudflare-kv.mjs
+
       - name: Deploy hubaish-cms with the ADMINS binding
+        if: ${{ env.CLOUDFLARE_API_TOKEN != '' && env.CLOUDFLARE_ACCOUNT_ID != '' }}
         uses: cloudflare/wrangler-action@v3
         with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ vars.CLOUDFLARE_ACCOUNT_ID || secrets.CLOUDFLARE_ACCOUNT_ID }}
+          apiToken: ${{ env.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ env.CLOUDFLARE_ACCOUNT_ID }}
           command: deploy --config cloudflare-worker/wrangler.toml
-      - name: Verify production health and ADMINS connectivity
+
+      - name: Skip deployment because Cloudflare credentials are not configured
+        if: ${{ env.CLOUDFLARE_API_TOKEN == '' || env.CLOUDFLARE_ACCOUNT_ID == '' }}
+        run: |
+          echo "::notice::Cloudflare deploy skipped because CLOUDFLARE_API_TOKEN and/or CLOUDFLARE_ACCOUNT_ID are not configured."
+          echo "Continuing with live production health checks. No credentials are printed or modified."
+
+      - name: Verify live production /health and /setup/status
         shell: bash
         run: |
           node <<'NODE'
           const base = 'https://hubaish-cms.baraagpt6.workers.dev';
           const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
+
           async function check(path) {
-            let last;
+            let lastError;
             for (let attempt = 1; attempt <= 6; attempt++) {
               try {
                 const response = await fetch(base + path, {
@@ -54,35 +68,47 @@ jobs:
                 });
                 const raw = await response.text();
                 let body;
-                try { body = raw ? JSON.parse(raw) : {}; }
-                catch { throw new Error(path + ' returned non-JSON HTTP ' + response.status); }
+                try {
+                  body = raw ? JSON.parse(raw) : {};
+                } catch {
+                  throw new Error(path + ' returned non-JSON HTTP ' + response.status);
+                }
+
                 console.log(path + ' — HTTP ' + response.status);
                 console.log(JSON.stringify(body, null, 2));
-                if (response.ok) return { response, body };
-                last = new Error(path + ' returned HTTP ' + response.status);
+
+                if (response.status !== 200) {
+                  throw new Error(path + ' must return HTTP 200; received ' + response.status);
+                }
+                return { response, body };
               } catch (error) {
-                last = error;
+                lastError = error;
                 console.error('Attempt ' + attempt + '/6: ' + error.message);
               }
               if (attempt < 6) await sleep(5000);
             }
-            throw last || new Error(path + ' failed');
+            throw lastError || new Error(path + ' failed');
           }
+
           (async () => {
             const health = await check('/health');
+            if (health.body.ok !== true) {
+              throw new Error('/health returned HTTP 200 but ok was not true');
+            }
             for (const key of ['kv', 'githubContentsRead', 'sessionSecret']) {
               if (health.body.checks?.[key]?.ok !== true) {
-                throw new Error('/health check failed for ' + key + ': ' + (health.body.checks?.[key]?.error || 'not ok'));
+                throw new Error('/health check failed for ' + key + ': ' +
+                  (health.body.checks?.[key]?.error || 'check missing or not ok'));
               }
             }
-            if (health.response.status !== 200 || health.body.ok !== true) {
-              throw new Error('/health did not return HTTP 200 with ok=true');
-            }
+
             const setup = await check('/setup/status');
             if (typeof setup.body.setupRequired !== 'boolean') {
-              throw new Error('/setup/status did not return a valid setupRequired flag');
+              throw new Error('/setup/status returned HTTP 200 but setupRequired was invalid');
             }
-            console.log('PASS: Production /health is HTTP 200; ADMINS KV read/write/delete, GitHub CMS read and SESSION_SECRET checks passed.');
+
+            console.log('PASS: production /health and /setup/status both returned HTTP 200.');
+            console.log('PASS: health, ADMINS KV, GitHub CMS read, and SESSION_SECRET checks passed.');
           })().catch(error => {
             console.error('FAIL: ' + error.message);
             process.exitCode = 1;
