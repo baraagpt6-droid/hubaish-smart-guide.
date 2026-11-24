@@ -432,6 +432,10 @@
     if(typeof state==='undefined')return;
     document.getElementById('communityJoinLink')?.setAttribute('href',featureState.communityUrl);
     const categorySelect=document.getElementById('langSelect');if(categorySelect){categorySelect.value=state.lang||'AR';categorySelect.addEventListener('change',()=>{applyExtendedLang();renderStories();renderQuiz();renderExplorerProgress();renderSeasonGuide();localizeAdminControls();});}
+    const dateParts=new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Aden',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date());
+    const dateValues=Object.fromEntries(dateParts.map(part=>[part.type,part.value]));
+    const dayNumber=Math.floor(Date.UTC(Number(dateValues.year),Number(dateValues.month)-1,Number(dateValues.day))/86400000);
+    factIndex=((dayNumber%FACTS.length)+FACTS.length)%FACTS.length;
     applyExtendedLang();renderStories();renderQuiz();renderPeople();window.HubaishCloud?.applyCached?.();window.HubaishCatalog?.applyUi?.();const fact=document.getElementById('didYouKnow');if(fact)fact.textContent=(FACTS_I18N[state.lang]||FACTS)[factIndex];renderAdminLists();renderCommunitySocials();renderUzalDetails();updateCounters();updateSavedAt();initAdminLock();renderExplorerProgress();renderSeasonGuide();
     document.getElementById('nextFactBtn')?.addEventListener('click',()=>{factIndex=(factIndex+1)%FACTS.length;document.getElementById('didYouKnow').textContent=(FACTS_I18N[state.lang]||FACTS)[factIndex];});
     document.querySelectorAll('[data-random-tour]').forEach(button=>button.addEventListener('click',randomTour));
