@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-24T11:34:43.991Z",
+  "updatedAt": "2026-11-24T11:37:28.010Z",
   "landmarks": [
     {
       "id": "khudad-fort",
@@ -210,17 +210,17 @@
     {
       "id": "qubbat-al-zum",
       "category": "mosque",
-      "status": "local",
-      "title_ar": "قبة الزوم",
-      "title_en": "قبة الزوم",
-      "location_ar": "الموقع التفصيلي بحاجة إلى توثيق",
-      "location_en": "الموقع التفصيلي بحاجة إلى توثيق",
-      "description_ar": "تورد دراسة محلية قبة الزوم ضمن القباب التاريخية في مديرية حبيش دون تحديد موضعها أو تاريخها في المادة المنشورة المتاحة. لا ينسب إليها الدليل إحداثيات أو تاريخاً غير مسند.",
-      "description_en": "تورد دراسة محلية قبة الزوم ضمن القباب التاريخية في مديرية حبيش دون تحديد موضعها أو تاريخها في المادة المنشورة المتاحة. لا ينسب إليها الدليل إحداثيات أو تاريخاً غير مسند.",
-      "importance_ar": "معلم ديني وتراثي مسجل مع الإحالة إلى الدراسة المحلية التي نقلت بيانات النقش.",
-      "importance_en": "A religious heritage record with attribution to the local study reporting the inscription.",
-      "source_text": "إسماعيل عبدالقادر الفلاحي، «نبذة تاريخية عن مديرية حبيش»، ناقلاً عن دراسة المعالم التاريخية والعناصر السياحية للدكتور محمد علي العروسي وعن نقوش المباني.",
-      "source_url": "https://kenanaonline.com/users/esmaeilalflahi/posts/280884"
+      "status": "documented",
+      "title_ar": "مسجد وقبة الزوم في ظُلمة",
+      "title_en": "Al-Zum Mosque and Dome in Dhulmah",
+      "location_ar": "مدينة ظُلمة – الجزء الشرقي من ظُلمة السفلى، مديرية حبيش",
+      "location_en": "Dhulmah town – eastern part of lower Dhulmah, Hubaish District",
+      "description_ar": "توثق حولية الآثار اليمنية الصادرة عن الهيئة العامة للآثار والمتاحف أن قبة الزوم تقع في مدينة ظُلمة مركز مديرية حبيش، على ارتفاع يقارب 2000 متر، فوق هضبة متوسطة في الجزء الشرقي من ظُلمة السفلى. ويذكر التقرير أن المبنى لا يحمل نص تأسيس، ولا تحدد المصادر التي راجعها المؤلف تاريخ إنشائه أو اسم بانيه. يعرض التقرير أعمال ترميم القبة وملحقاتها بين 2004 و2005م، ويصف بيت الصلاة والقبة والمنارة والبركة والسواقي وخزانات المياه. وتذكر مادة الفلاحي المحلية اسمها مسجد قبة الزوم.",
+      "description_en": "The Yemeni Archaeological Annual issued by the General Organization of Antiquities and Museums locates Qubbat al-Zum in Dhulmah, the centre of Hubaish District, at about 2,000 metres above sea level on a plateau in eastern lower Dhulmah. The report says the building has no foundation inscription and does not establish its construction date or builder. It documents restoration works in 2004–2005 and describes the prayer hall, dome, minaret, cisterns and water channels.",
+      "importance_ar": "من أهم المعالم الدينية الموثقة أثرياً في مركز المديرية، ويجمع بين عمارة القبة والمنارة ومنشآت إدارة المياه.",
+      "importance_en": "A documented religious monument in the district centre, combining a domed prayer hall, minaret and water-management structures.",
+      "source_text": "علي يحيى الحبابي، «ترميم قبة الزوم بمديرية حبيش، محافظة إب (2004–2005م)»، حولية الآثار اليمنية، العدد الأول، يناير 2008، ص 174–178؛ مع مادة إسماعيل الفلاحي المحلية.",
+      "source_url": "https://goam.gov.ye/assets/magz/18/0-azal_1.pdf"
     },
     {
       "id": "al-thumani-mosque",
@@ -341,6 +341,36 @@
       "importance_en": "A historic settlement area requiring archaeological survey and verified administrative boundaries.",
       "source_text": "مادة حبيش في ثور رأين، ناقلة عن وصف محلي لمنطقة الظهرة ومخلاف الشوافي وبني وائل.",
       "source_url": "https://www.thu-raein.com/index.php/ar/makhaleef-ar/hubaish-district-ar?id=17&view=category"
+    },
+    {
+      "id": "jabal-dhi-harran",
+      "category": "mountain",
+      "status": "documented",
+      "title_ar": "جبل ذي هرّان",
+      "title_en": "Jabal Dhi Harran",
+      "location_ar": "مديرية حبيش – الموضع التفصيلي بحاجة إلى إحداثيات",
+      "location_en": "Hubaish District – precise location needs coordinates",
+      "description_ar": "يذكر المركز الوطني للمعلومات اليمني جبل ذي هرّان ضمن قائمة الآثار والمعالم السياحية في مديرية حبيش. لا تحدد الصفحة عزلة الجبل أو إحداثياته أو وصفاً ميدانياً مفصلاً؛ لذلك يسجل الدليل الاسم كما ورد في القائمة الرسمية ولا يخمن موقعه داخل العزل.",
+      "description_en": "The Yemen National Information Centre lists Jabal Dhi Harran among Hubaish District's historic and tourism landmarks. The page does not specify its sub-district, coordinates or detailed field description, so this record retains the published name without guessing its precise location.",
+      "importance_ar": "معلم جبلي مدرج في قائمة المركز الوطني للمعلومات، وينتظر تحديد موضعه ميدانياً.",
+      "importance_en": "A mountain landmark listed by the National Information Centre; its precise location needs field verification.",
+      "source_text": "المركز الوطني للمعلومات – «السياحة في محافظة إب»، قائمة آثار ومعالم مديرية حبيش.",
+      "source_url": "https://www.yemen-nic.info/gover/ibb/tursm/index.php?print=Y"
+    },
+    {
+      "id": "hubaish-weekly-market",
+      "category": "market",
+      "status": "documented",
+      "title_ar": "سوق مديرية حبيش الأسبوعي",
+      "title_en": "Hubaish District Weekly Market",
+      "location_ar": "مديرية حبيش – الموقع الدقيق للسوق غير محدد في المصدر",
+      "location_en": "Hubaish District – exact market site not specified in the source",
+      "description_ar": "تدرج صفحة السياحة في محافظة إب التابعة للمركز الوطني للمعلومات سوق مديرية حبيش ضمن الأسواق الشعبية الأسبوعية. لكن الصفحة نفسها تورد موعداً يوم الجمعة لسوق مديرية حبيش، وتورد في سطر آخر أسواق السدة وحبيش والمخادر يوم الاثنين. لهذا لا يعتمد الدليل يوماً واحداً بوصفه مؤكداً؛ يلزم سؤال المجلس المحلي أو الأهالي عن موقع السوق ومواعيده الحالية. وتوضح الصفحة أن مادتها استندت إلى الدليل الصناعي التجاري 2005 ونتائج المسح السياحي 1996–1999م.",
+      "description_en": "The Yemen National Information Centre's tourism page lists a weekly market for Hubaish District. The same page gives Friday for the Hubaish market in one row, but Monday for a combined listing of markets in As-Saddah, Hubaish and Al-Makhadir in another. This guide does not select one day as certain; the current market location and schedule should be confirmed locally. The page cites a 2005 industrial and commercial directory and a 1996–1999 tourism survey.",
+      "importance_ar": "معلم اقتصادي واجتماعي من الموروث السوقي، ويحتاج موعده وموقعه الحاليان إلى تحقق محلي.",
+      "importance_en": "A local economic and social heritage feature whose current location and schedule need local confirmation.",
+      "source_text": "المركز الوطني للمعلومات – «السياحة في محافظة إب»، جدول الأسواق الشعبية الأسبوعية؛ مصادر الجدول: الدليل الصناعي التجاري 2005 ونتائج المسح السياحي 1996–1999م.",
+      "source_url": "https://www.yemen-nic.info/gover/ibb/tursm/index.php?print=Y"
     }
   ],
   "historyEvents": [
