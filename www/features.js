@@ -361,7 +361,7 @@
     if(item.source)box.append(node('p','small muted',L.source+': '+item.source));
     if(item.sourceUrl&&validHttpUrl(item.sourceUrl)){const link=node('a','btn-sm',L.source+' ↗');link.href=item.sourceUrl;link.target='_blank';link.rel='noopener noreferrer';box.append(link);}
     const actions=node('div','card-actions');
-    actions.append(button(isSaved(item.id)?'محفوظ':'☆ '+L.save,'detail-favorite',item.id),button(L.ask,'detail-ask',item.title,'btn-primary'),button(L.share,'detail-share',item.id));
+    actions.append(button(isSaved(item.id)?'محفوظ':L.save,'detail-favorite',item.id),button(L.ask,'detail-ask',item.title,'btn-primary'),button(L.share,'detail-share',item.id));
     box.append(actions);openModal('detailModal');
   }
   function renderPeople(){const box=document.getElementById('peopleList');if(!box)return;box.replaceChildren();if(!featureState.people.length){box.append(node('p','empty-state','لا توجد شخصيات موثقة مضافة بعد.'));return;}featureState.people.forEach(person=>box.append(node('p','item-body',`${person.title}: ${person.body}`)));}
