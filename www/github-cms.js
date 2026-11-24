@@ -138,6 +138,10 @@
       importance:localized(row,'importance',l),
       source:row.source_text||'',
       sourceUrl:row.source_url||'',
+      imageUrl:safeUrl(row.image_url)?row.image_url:'',
+      imageAlt:String(row.image_alt_ar||localized(row,'title',l)).slice(0,180),
+      imageCredit:String(row.image_credit||'').slice(0,160),
+      imageSourceUrl:safeUrl(row.image_source_url)?row.image_source_url:'',
       status:['documented','local','unverified'].includes(row.status)?row.status:'documented'
     };
   }
@@ -371,7 +375,7 @@
     return {ar:row?.[key+'_ar']||'',en:row?.[key+'_en']||'',tr:row?.[key+'_tr']||'',fr:row?.[key+'_fr']||''};
   }
   function fromBasePlace(item){
-    const result={id:item.id,category:item.cat||'fort',source_text:item.source||'',source_url:item.sourceUrl||'',elevation:item.elevation||'',status:item.status||'documented'};
+    const result={id:item.id,category:item.cat||'fort',source_text:item.source||'',source_url:item.sourceUrl||'',elevation:item.elevation||'',image_url:item.imageUrl||'',image_alt_ar:item.imageAlt||'',image_credit:item.imageCredit||'',image_source_url:item.imageSourceUrl||'',status:item.status||'documented'};
     for(const l of ['AR','EN','TR','FR']){
       const x=window.HubaishCatalog?.localizeItem?.(item,l)||item;
       const suffix=l.toLowerCase();
@@ -452,10 +456,29 @@
   function button(label,action,id,cls,disabled){
     const b=document.createElement('button');b.type='button';b.className=cls||'btn-sm';b.textContent=label;b.dataset.cloudAction=action;b.dataset.cloudId=id||'';b.disabled=!!disabled;return b;
   }
+  function renderAdminStats(rows){
+    const stats=$('cloudAdminStats');if(!stats)return;
+    const counts=[['landmark','المعالم'],['history_event','المحطات التاريخية'],['sub_district','العزل'],['historical_figure','الشخصيات'],['community_link','الروابط']];
+    stats.replaceChildren();
+    counts.forEach(([type,label])=>{
+      const tile=document.createElement('div');tile.className='cloud-stat-tile';
+      const value=document.createElement('strong');value.textContent=String(rows.filter(x=>x.type===type).length);
+      const caption=document.createElement('span');caption.textContent=label;
+      tile.append(value,caption);stats.append(tile);
+    });
+  }
   function renderAdminList(){
     const box=$('cloudContentList');if(!box)return;
+    const allRows=buildAdminRows();
+    renderAdminStats(allRows);
+    const query=String($('cloudContentSearch')?.value||'').trim().toLowerCase();
+    const type=String($('cloudContentFilter')?.value||'all');
+    const rows=allRows.filter(entry=>{
+      const matchesType=type==='all'||entry.type===type;
+      const haystack=[entry.title,entry.row.id,entry.row.source_text,entry.row.location_ar,entry.row.description_ar,entry.row.body_ar,entry.row.name_ar].join(' ').toLowerCase();
+      return matchesType&&(!query||haystack.includes(query));
+    });
     box.replaceChildren();
-    const rows=buildAdminRows();
     rows.forEach(entry=>{
       const row=document.createElement('div');row.className='cloud-admin-row';
       const title=document.createElement('strong');title.textContent=entry.title||entry.row.id;
@@ -467,7 +490,16 @@
       actions.append(button(deleteLabel,deleteAction,entry.row.id,'btn-sm mini-danger',entry.core&&!entry.hasOverride));
       row.append(title,meta,actions);box.append(row);
     });
-    if(!rows.length){const p=document.createElement('p');p.className='empty-state';p.textContent='لا يوجد محتوى لإدارته.';box.append(p)}
+    if(!rows.length){const p=document.createElement('p');p.className='empty-state';p.textContent=query?'لا توجد نتائج مطابقة لبحثك.':'لا يوجد محتوى لإدارته.';box.append(p)}
+  }
+  function updateImagePreview(value){
+    const preview=$('cloudImagePreview'),link=$('cloudImagePreviewLink');
+    if(!preview)return;
+    const valid=!!(value&&safeUrl(value));
+    preview.classList.toggle('hidden',!valid);
+    if(link)link.classList.toggle('hidden',!valid);
+    if(valid){preview.src=value;preview.alt=val('cloudImageAlt')||'معاينة صورة المعلم';if(link)link.href=value}
+    else{preview.removeAttribute('src');if(link)link.removeAttribute('href')}
   }
   function val(id){return $(id)?String($(id).value||'').trim():''}
   function put(id,value){if($(id))$(id).value=value||''}
@@ -482,6 +514,7 @@
       place:{ar:val('cloudPlaceAr'),en:val('cloudPlaceEn'),tr:val('cloudPlaceTr'),fr:val('cloudPlaceFr')},
       period:{ar:val('cloudPeriodAr'),en:val('cloudPeriodEn'),tr:val('cloudPeriodTr'),fr:val('cloudPeriodFr')},
       category:val('cloudCategory')||'fort',url:val('cloudUrl'),source:val('cloudSource'),sourceUrl:val('cloudSourceUrl'),
+      imageUrl:val('cloudImageUrl'),imageAlt:val('cloudImageAlt'),imageCredit:val('cloudImageCredit'),
       importance:{ar:val('cloudImportanceAr'),en:val('cloudImportanceEn'),tr:val('cloudImportanceTr'),fr:val('cloudImportanceFr')},sortOrder:Number(val('cloudSortOrder')||0)
     };
   }
@@ -509,7 +542,7 @@
   function payload(v){
     const common={id:v.id||makeId(v.type),source_text:v.source||'',source_url:safeUrl(v.sourceUrl)?v.sourceUrl:'',status:'documented'};
     if(v.type==='landmark'){
-      const row=Object.assign(common,{category:v.category,elevation:'غير موثق ميدانياً'});
+      const row=Object.assign(common,{category:v.category,elevation:'غير موثق ميدانياً',image_url:safeUrl(v.imageUrl)?v.imageUrl:'',image_alt_ar:v.imageAlt||v.title.ar,image_credit:v.imageCredit||'',image_source_url:safeUrl(v.imageUrl)?v.imageUrl:''});
       localeFields(row,'title',v.title);localeFields(row,'location',v.location);localeFields(row,'description',v.details);localeFields(row,'importance',v.importance);
       return row;
     }
@@ -564,6 +597,8 @@
       put('cloudDistrict'+s,district[l]);put('cloudPlace'+s,'');put('cloudPeriod'+s,period[l]);
     });
     put('cloudCategory',category);put('cloudUrl',url);put('cloudSource',row?.source_text||'');put('cloudSourceUrl',row?.source_url||'');
+    put('cloudImageUrl',row?.image_url||'');put('cloudImageAlt',row?.image_alt_ar||'');put('cloudImageCredit',row?.image_credit||'');
+    updateImagePreview(row?.image_url||'');
     put('cloudImportanceAr',importance.ar);put('cloudImportanceEn',importance.en);put('cloudImportanceTr',importance.tr);put('cloudImportanceFr',importance.fr);put('cloudSortOrder',row?.sort_order||0);
     $('cloudContentEditor')?.scrollIntoView({behavior:'smooth',block:'start'});
   }
@@ -615,6 +650,7 @@
     if(v.type==='sub_district'&&!v.district.ar){toast('اختر العزلة الأصلية المراد تعديلها.');return}
     if(v.type==='community_link'&&!safeUrl(v.url)){toast('أدخل رابط HTTPS أو HTTP صحيحاً.');return}
     if(v.sourceUrl&&!safeUrl(v.sourceUrl)){toast('رابط المصدر غير صالح.');return}
+    if(v.imageUrl&&!safeUrl(v.imageUrl)){toast('رابط الصورة يجب أن يبدأ بـ HTTP أو HTTPS.');return}
     try{
       status('جارٍ استكمال ترجمات الحقول الناقصة...',false);
       await fillTranslations(v);
@@ -664,12 +700,16 @@
     if($('cloudTokenRemember')&&localStorage.getItem('hubaish_direct_github_token'))$('cloudTokenRemember').checked=true;
     $('cloudCreateAdminForm')?.addEventListener('submit',createWorkerAdmin);
     $('cloudAdminUsersList')?.addEventListener('click',toggleWorkerAdmin);
+    $('cloudContentSearch')?.addEventListener('input',renderAdminList);
+    $('cloudContentFilter')?.addEventListener('change',renderAdminList);
+    $('cloudImageUrl')?.addEventListener('input',()=>updateImagePreview(val('cloudImageUrl')));
+    $('cloudImageAlt')?.addEventListener('input',()=>{if($('cloudImagePreview'))$('cloudImagePreview').alt=val('cloudImageAlt')||'معاينة صورة المعلم'});
     $('cloudAdminLogoutBtn')?.addEventListener('click',signOut);
     $('cloudContentForm')?.addEventListener('submit',saveEditor);
     $('cloudContentClearBtn')?.addEventListener('click',()=>{
       const type=val('cloudRecordType');['cloudRecordId','cloudContributionId'].forEach(id=>put(id,''));
-      ['cloudTitleAr','cloudTitleEn','cloudTitleTr','cloudTitleFr','cloudDetailsAr','cloudDetailsEn','cloudDetailsTr','cloudDetailsFr','cloudLocationAr','cloudLocationEn','cloudLocationTr','cloudLocationFr','cloudDistrictAr','cloudDistrictEn','cloudDistrictTr','cloudDistrictFr','cloudPlaceAr','cloudPlaceEn','cloudPlaceTr','cloudPlaceFr','cloudPeriodAr','cloudPeriodEn','cloudPeriodTr','cloudPeriodFr','cloudCategory','cloudUrl','cloudSource','cloudSourceUrl','cloudImportanceAr','cloudImportanceEn','cloudImportanceTr','cloudImportanceFr'].forEach(id=>put(id,''));
-      put('cloudRecordType',type);
+      ['cloudTitleAr','cloudTitleEn','cloudTitleTr','cloudTitleFr','cloudDetailsAr','cloudDetailsEn','cloudDetailsTr','cloudDetailsFr','cloudLocationAr','cloudLocationEn','cloudLocationTr','cloudLocationFr','cloudDistrictAr','cloudDistrictEn','cloudDistrictTr','cloudDistrictFr','cloudPlaceAr','cloudPlaceEn','cloudPlaceTr','cloudPlaceFr','cloudPeriodAr','cloudPeriodEn','cloudPeriodTr','cloudPeriodFr','cloudCategory','cloudUrl','cloudSource','cloudSourceUrl','cloudImportanceAr','cloudImportanceEn','cloudImportanceTr','cloudImportanceFr','cloudImageUrl','cloudImageAlt','cloudImageCredit'].forEach(id=>put(id,''));
+      put('cloudRecordType',type);updateImagePreview('');
     });
     $('cloudRefreshBtn')?.addEventListener('click',async()=>{
       if(workerToken){
