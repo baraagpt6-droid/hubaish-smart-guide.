@@ -25,6 +25,7 @@
   let started=false;
   let syncing=false;
   let saving=false;
+  let setupState={checked:false,setupRequired:false,bootstrapKeyConfigured:false,error:''};
 
   function emptyDocument(){
     return {schemaVersion:1,updatedAt:null,landmarks:[],historyEvents:[],subDistrictUpdates:[],subDistricts:[],historicalFigures:[],communityLinks:[]};
@@ -49,9 +50,12 @@
   }
   function adminStatus(){
     const authenticated=!!workerToken&&!!workerUser?.username;
-    $('cloudAdminLoginArea')?.classList.toggle('hidden',authenticated);
+    const canBootstrap=!setupState.error&&setupState.checked&&setupState.setupRequired&&setupState.bootstrapKeyConfigured;
+    $('workerSetupArea')?.classList.toggle('hidden',authenticated||!canBootstrap);
+    $('cloudAdminLoginArea')?.classList.toggle('hidden',authenticated||canBootstrap);
     $('cloudAdminPanel')?.classList.toggle('hidden',!authenticated);
     $('cloudSuperAdminPanel')?.classList.toggle('hidden',!authenticated||workerUser?.role!=='super_admin');
+    $('workerBootstrapCleanupNotice')?.classList.toggle('hidden',!authenticated||setupState.setupRequired||!setupState.bootstrapKeyConfigured);
     const identity=$('cloudAdminIdentity');
     if(identity)identity.textContent=authenticated?(workerUser.displayName||workerUser.username)+' · '+(workerUser.role==='super_admin'?'مشرف عام':'محرر محتوى'):'';
   }
@@ -196,6 +200,62 @@
     const raw=await response.text();let result={};try{result=raw?JSON.parse(raw):{}}catch{throw new Error('أعاد الخادم استجابة غير صالحة.')}
     if(!response.ok)throw new Error(result.error||fallback||('تعذر تنفيذ الطلب (HTTP '+response.status+').'));
     return result;
+  }
+  async function refreshSetupStatus(){
+    try{
+      const response=await fetch(DEFAULT_WORKER_URL+'/setup/status',{headers:{Accept:'application/json'},cache:'no-store'});
+      const result=await readWorkerJson(response,'تعذر فحص حالة تأسيس المشرفين.');
+      if(typeof result.setupRequired!=='boolean')throw new Error('استجابة حالة التأسيس غير مكتملة.');
+      setupState={checked:true,setupRequired:result.setupRequired,bootstrapKeyConfigured:result.bootstrapKeyConfigured===true,error:''};
+      adminStatus();
+      if(result.setupRequired&&result.bootstrapKeyConfigured){
+        status('لم يُنشأ مشرف بعد. أكمل تأسيس حساب المشرف الأول.',false);
+      }else if(result.setupRequired&&!result.bootstrapKeyConfigured){
+        status('لا يوجد مشرف. أضف BOOTSTRAP_KEY إلى أسرار Worker أولاً.',true);
+      }else if(!result.setupRequired&&result.bootstrapKeyConfigured){
+        status('احذف BOOTSTRAP_KEY من أسرار Cloudflare الآن.',true);
+      }else if(!workerToken){
+        status('خادم المشرفين جاهز. أدخل اسم المستخدم وكلمة المرور.',false);
+      }
+      return result;
+    }catch(error){
+      setupState={checked:true,setupRequired:false,bootstrapKeyConfigured:false,error:error.message||'Worker setup check failed'};
+      adminStatus();
+      status('تعذر فحص خادم المشرفين. تحقق من نشر Worker وربط KV باسم ADMINS. '+setupState.error,true);
+      return null;
+    }
+  }
+  async function firstAdminSetup(event){
+    event.preventDefault();
+    const form=$('workerSetupForm'),submit=form?.querySelector('button[type="submit"]');
+    const bootstrapKey=String($('workerBootstrapKey')?.value||'');
+    const username=String($('workerSetupUsername')?.value||'').trim();
+    const password=String($('workerSetupPassword')?.value||'');
+    if(!bootstrapKey||!username||password.length<12){
+      status('أدخل مفتاح التأسيس واسم المستخدم وكلمة مرور من 12 حرفاً على الأقل.',true);return;
+    }
+    if(submit){submit.disabled=true;submit.dataset.originalText=submit.textContent;submit.textContent='جارٍ إنشاء المشرف...'}
+    status('جارٍ إنشاء أول حساب مشرف داخل Cloudflare KV...',false);
+    try{
+      const response=await fetch(DEFAULT_WORKER_URL+'/setup',{
+        method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},
+        body:JSON.stringify({bootstrapKey,username,password,displayName:username}),cache:'no-store'
+      });
+      const result=await readWorkerJson(response,'تعذر إنشاء حساب المشرف الأول.');
+      if($('workerBootstrapKey'))$('workerBootstrapKey').value='';
+      setupState={checked:true,setupRequired:false,bootstrapKeyConfigured:true,error:''};
+      adminStatus();
+      await finishWorkerLogin(username,password,false);
+      if($('workerSetupPassword'))$('workerSetupPassword').value='';
+      if($('workerSetupUsername'))$('workerSetupUsername').value='';
+      status('تم إنشاء المشرف وتسجيل الدخول. احذف BOOTSTRAP_KEY من أسرار Cloudflare Worker فوراً.',true);
+      toast(result.message||'تم إنشاء حساب المشرف الأول.');
+    }catch(error){
+      status(error.message||'تعذر إكمال تأسيس المشرف الأول.',true);
+      toast('لم يكتمل تأسيس حساب المشرف. راجع إعدادات Worker.');
+    }finally{
+      if(submit){submit.disabled=false;submit.textContent=submit.dataset.originalText||'إنشاء المشرف الأول';delete submit.dataset.originalText}
+    }
   }
   async function finishWorkerLogin(username,password,remember){
     const response=await fetch(DEFAULT_WORKER_URL+'/auth/login',{method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},body:JSON.stringify({username:String(username||'').trim(),password,remember:!!remember}),cache:'no-store'});
@@ -611,6 +671,7 @@
   }
   function bind(){
     $('workerLoginForm')?.addEventListener('submit',workerLogin);
+    $('workerSetupForm')?.addEventListener('submit',firstAdminSetup);
     $('cloudCreateAdminForm')?.addEventListener('submit',createWorkerAdmin);
     $('cloudAdminUsersList')?.addEventListener('click',event=>{toggleWorkerAdmin(event);handleAdminUserAction(event)});
     $('cloudAdminUsersList')?.addEventListener('change',changeWorkerAdminRole);
@@ -660,9 +721,9 @@
     if(started)return;started=true;
     localStorage.removeItem('hubaish_direct_github_token');localStorage.removeItem('hubaish_worker_url');
     applyCached();bind();setTimeout(applyCached,0);
-    if(navigator.onLine)sync(true);
-    window.setInterval(()=>{if(document.visibilityState==='visible')sync(true)},60000);
-    window.addEventListener('online',()=>sync(true));
+    if(navigator.onLine){sync(true);refreshSetupStatus()}
+    window.setInterval(()=>{if(document.visibilityState==='visible'){sync(true);refreshSetupStatus()}},60000);
+    window.addEventListener('online',()=>{sync(true);refreshSetupStatus()});
     document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')sync(true)});
     renderAdminList();adminStatus();restoreWorkerSession();
   }
