@@ -98,7 +98,7 @@
     return {data:normalizeDocument(parsed),sha:payload.sha};
   }
   async function publicFetch(){
-    const candidates=[RAW_URL+'?v='+Date.now(),new URL('./data/live-content.json?v='+Date.now(),document.baseURI).href];
+    const candidates=[RAW_URL+'?v='+Date.now(),new URL('./data/live-content.json',document.baseURI).href];
     let lastError=null;
     for(const url of candidates){
       try{
@@ -273,6 +273,8 @@
     }));
   }
   function communityMainRow(){
+    const stored=documentData.communityLinks.find(x=>x.id==='community-main');
+    if(stored)return stored;
     const url=window.HubaishFeatures?.getState?.()?.communityUrl||'https://www.facebook.com/share/g/1JMCzDUsdZ/';
     return {id:'community-main',label_ar:'مجتمع حبيش',label_en:'Hubaish community',label_tr:'Hubaish topluluğu',label_fr:'Communauté Hubaish',url,sort_order:0};
   }
