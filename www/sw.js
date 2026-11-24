@@ -1,12 +1,12 @@
 'use strict';
 
-const CACHE_NAME = 'hubaish-guide-v3.6.0';
+const CACHE_NAME = 'hubaish-guide-v3.7.0';
 const BASE_URL = new URL('./', self.registration.scope);
 const INDEX_URL = new URL('index.html', BASE_URL).href;
 const REMOTE_IMAGE_HOSTS = new Set(['upload.wikimedia.org', 'al-jandprovince.com', 'hekmahyemanya.com']);
 const APP_SHELL = [
   '', 'index.html', 'styles.css', 'app.js', 'catalog.js', 'features.js', 'manifest.json',
-  'manifest.webmanifest', 'github-cms.js', 'data/live-content.json', 'icons/icon.svg', 'icons/icon-192.png', 'icons/icon-512.png', 'icons/apple-touch-icon.png', 'icons/favicon-32.png'
+  'manifest.webmanifest', 'github-cms.js', 'data/live-content.json', 'icons/icon.svg', 'icons/icon-192.png', 'icons/icon-512.png', 'icons/apple-touch-icon.png', 'icons/favicon-32.png', 'icons/photo-fallback.svg'
 ].map(path => new URL(path, BASE_URL).href);
 
 self.addEventListener('install', event => {
@@ -40,11 +40,17 @@ self.addEventListener('fetch', event => {
       caches.open(CACHE_NAME).then(async cache => {
         try {
           const response = await fetch(request);
-          if (response.ok || response.type === 'opaque') await cache.put(request, response.clone());
-          return response;
+          if (response.ok || response.type === 'opaque') {
+            await cache.put(request, response.clone());
+            return response;
+          }
+          const fallback = await cache.match(new URL('icons/photo-fallback.svg', BASE_URL).href);
+          return fallback || response;
         } catch {
           const cached = await cache.match(request);
-          return cached || new Response('', { status: 503, statusText: 'Image unavailable offline' });
+          if (cached) return cached;
+          const fallback = await cache.match(new URL('icons/photo-fallback.svg', BASE_URL).href);
+          return fallback || new Response('', { status: 503, statusText: 'Image unavailable offline' });
         }
       })
     );
