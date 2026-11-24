@@ -39,7 +39,7 @@ npm run preview
 
 ## Android
 
-يستخدم المشروع Capacitor 8.6.2. ينشئ سير عمل GitHub Actions مجلد Android مؤقتاً ويبني APK تجريبياً (Debug) ويرفعه كـ Artifact لمدة 30 يوماً. توزيع متجر Google Play يتطلب APK/AAB موقّعاً بمفتاح إصدار خاص؛ لا تحفظ مفاتيح التوقيع في المستودع.
+يستخدم المشروع Capacitor 8.6.2. يبني سير العمل APK موقّعاً عند ضبط أسرار التوقيع الأربعة، وينشره في GitHub Releases مع رابط دائم لآخر إصدار. وعند عدم ضبطها يبني APK تجريبياً (Debug) كـ Artifact لمدة 30 يوماً فقط.
 
 ## النشر
 
@@ -62,10 +62,10 @@ npm run preview
 
 يرفع سير العمل `versionCode` تلقائياً من رقم تشغيل GitHub Actions. ينشئ APK موقعاً وإصداراً دائماً في GitHub Releases فقط عند تهيئة مفاتيح التوقيع الأربعة التالية في Settings → Secrets and variables → Actions:
 
-- `ANDROID_KEYSTORE_BASE64`
-- `ANDROID_KEYSTORE_PASSWORD`
-- `ANDROID_KEY_ALIAS`
-- `ANDROID_KEY_PASSWORD`
+- `KEYSTORE_BASE64`
+- `KEYSTORE_PASSWORD`
+- `KEY_ALIAS`
+- `KEY_PASSWORD`
 
 أنشئ keystore مرة واحدة واحتفظ بنسخة احتياطية آمنة. استخدم keystore نفسه لكل الإصدارات اللاحقة. لا ترفع ملف keystore أو كلمات مروره إلى المستودع أو المحادثة. عند غياب الأسرار، يبني سير العمل APK تجريبياً ويضعه في Actions Artifacts لمدة 30 يوماً، ولا ينشئ Release دائماً. عند تفعيل الأسرار وإنشاء أول Release موقع، يكون رابط التنزيل الدائم لآخر إصدار هو `https://github.com/baraagpt6-droid/hubaish-smart-guide./releases/latest/download/hubaish-smart-guide.apk`.
 
