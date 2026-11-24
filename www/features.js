@@ -5,17 +5,17 @@
   const FEATURE_KEY = 'hubaish_features_v2';
   const FACEBOOK_URL = 'https://www.facebook.com/share/g/1JMCzDUsdZ/';
   const FACTS = [
-    'تسجل بيانات المركز الوطني للمعلومات 105,998 نسمة في مديرية حبيش ضمن تعداد 2004.',
-    'ترد مساحة مديرية حبيش في البيانات الإحصائية المنشورة بمقدار 228 كم².',
-    'ظُلمة هي مركز مديرية حبيش بحسب البيانات التعريفية المتاحة.',
-    'تضم قائمة الدليل 22 اسماً للعزل، وتحتاج التفاصيل القروية إلى استكمال ميداني.',
-    'المعالم الجبلية والمدرجات الزراعية من السمات البارزة في المشهد الريفي لمحافظة إب.'
+    'المدرجات الجبلية تحفظ التربة وتبطئ جريان مياه المطر، وتحتاج إلى صيانة مصارفها قبل مواسم الأمطار.',
+    'يختلف موعد نضج البن وقطافه بين السفوح المنخفضة والمرتفعات؛ لذلك لا يوجد موعد واحد لكل قرى حبيش.',
+    'يشير تقويم البن لمنطقة إب إلى موسم إزهار رئيسي في مارس–أبريل، مع اختلاف التوقيت حسب الارتفاع والطقس.',
+    'حصر أسماء الغيول ومجاري السيول والقرى القريبة منها يساعد على توثيق موارد الماء في المديرية.',
+    'توثيق اسم الموضع ورواية أهله ومصدرها يحفظ ذاكرة المكان ويميز التاريخ المنشور من الحكاية المحلية.'
   ];
   const FACTS_I18N = {
     AR: FACTS,
-    EN: ['The 2004 census lists 105,998 residents in Hubaish District.','Published OCHA/local governance data lists Hubaish at 228 km²; another local source reports 330 km².','Dhulmah is identified as the district centre in the available administrative information.','The administrative division lists 22 sub-districts; village-level information still needs field verification.','Terraced farming and mountain landscapes are prominent features of rural Ibb.'],
-    TR: ['2004 nüfus sayımı Hubaish ilçesinde 105.998 kişi kaydetmiştir.','Yayımlanmış OCHA/yerel yönetişim verisi Hubaish yüzölçümünü 228 km² olarak verir; başka bir yerel kaynak 330 km² belirtir.','Mevcut idari kaynaklarda ilçe merkezi Dhulmah olarak gösterilir.','İdari kaynak 22 bucak listeler; köy düzeyindeki bilgiler saha doğrulaması gerektirir.','Teraslı tarım ve dağlık peyzaj, İbb kırsalının belirgin özelliklerindendir.'],
-    FR: ['Le recensement de 2004 indique 105 998 habitants dans le district de Hubaish.','Les données OCHA/gouvernance locale publiées indiquent 228 km² ; une autre source locale mentionne 330 km².','Les informations administratives disponibles identifient Dhulmah comme centre du district.','La division administrative recense 22 sous-districts ; les données villageoises doivent encore être vérifiées sur le terrain.','Les cultures en terrasses et les paysages montagneux caractérisent les campagnes d’Ibb.']
+    EN: ['Mountain terraces help retain soil and slow rain runoff. Their drainage channels need maintenance before rainy periods.','Coffee ripening and harvest vary between lower slopes and higher ground; there is no single date for every Hubaish village.','The Ibb coffee calendar indicates a main flowering period around March–April, with timing affected by altitude and weather.','Recording springs, seasonal streams and nearby villages helps document the district’s water resources.','Recording a place name, a resident’s account and its source helps preserve local memory and distinguish published history from oral tradition.'],
+    TR: ['Dağ terasları toprağı tutar ve yağmur akışını yavaşlatır. Yağış öncesinde drenaj kanalları temizlenmelidir.','Kahvenin olgunlaşma ve hasat zamanı alçak yamaçlarla yüksek kesimler arasında değişir; her Hubaish köyü için tek tarih yoktur.','İbb kahve takvimi ana çiçeklenme dönemini yaklaşık Mart–Nisan olarak gösterir; rakım ve hava etkiler.','Kaynakları, mevsimlik dereleri ve yakındaki köyleri kaydetmek ilçenin su kaynaklarını belgelemeye yardımcı olur.','Yer adını, yerel anlatıyı ve kaynağını kaydetmek belleği korur; yayımlanmış tarih ile sözlü geleneği ayırır.'],
+    FR: ['Les terrasses de montagne retiennent le sol et ralentissent le ruissellement. Leurs drains doivent être entretenus avant les pluies.','La maturation et la récolte du café varient entre les versants bas et les hauteurs; il n’existe pas une date unique pour tous les villages.','Le calendrier du café d’Ibb indique une floraison principale vers mars–avril, selon l’altitude et la météo.','Recenser les sources, les cours d’eau saisonniers et les villages proches aide à documenter les ressources en eau du district.','Noter un nom de lieu, un récit local et sa source préserve la mémoire et distingue l’histoire publiée de la tradition orale.']
   };
   const QUIZ_TRANSLATIONS = {
     EN: [
