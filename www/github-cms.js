@@ -18,6 +18,9 @@
   const $=id=>document.getElementById(id);
   let documentData=readCache();
   let githubToken='';
+  let workerToken=sessionStorage.getItem('hubaish_worker_session')||localStorage.getItem('hubaish_worker_session')||'';
+  let workerUser=(()=>{try{return JSON.parse(sessionStorage.getItem('hubaish_worker_user')||localStorage.getItem('hubaish_worker_user')||'null')}catch{return null}})();
+  let workerUrl=localStorage.getItem('hubaish_worker_url')||'';
   let started=false;
   let syncing=false;
   let saving=false;
@@ -195,11 +198,63 @@
       return false;
     }finally{syncing=false}
   }
-  function isAdmin(){return !!githubToken}
+  function isAdmin(){return !!githubToken||!!workerToken}
+  function workerRequest(path,options={}){
+    if(!workerUrl)throw new Error('أدخل رابط Cloudflare Worker أولاً.');
+    return fetch(workerUrl.replace(/\/$/,'')+path,{...options,headers:{...(options.headers||{}),...(workerToken?{Authorization:'Bearer '+workerToken}:{})},cache:'no-store'});
+  }
   function adminStatus(){
     $('cloudAdminPanel')?.classList.toggle('hidden',!isAdmin());
     $('cloudAdminLoginArea')?.classList.toggle('hidden',isAdmin());
-    if($('cloudAdminIdentity'))$('cloudAdminIdentity').textContent=isAdmin()?'GitHub · '+OWNER+'/'+REPO+' · '+BRANCH:'';
+    $('cloudSuperAdminPanel')?.classList.toggle('hidden',workerUser?.role!=='super_admin');
+    if($('cloudAdminIdentity'))$('cloudAdminIdentity').textContent=isAdmin()?(workerUser?workerUser.displayName+' (@'+workerUser.username+') · '+(workerUser.role==='super_admin'?'مشرف عام':'محرر'):'GitHub PAT مباشر · '+OWNER+'/'+REPO):'';
+  }
+  async function workerLogin(event){
+    event.preventDefault();
+    workerUrl=String($('workerEndpoint')?.value||'').trim().replace(/\/$/,'');
+    const username=String($('workerUsername')?.value||'').trim(),password=String($('workerPassword')?.value||'');
+    if(!workerUrl||!username||!password){status('أكمل رابط Worker واسم المستخدم وكلمة المرور.',true);return}
+    localStorage.setItem('hubaish_worker_url',workerUrl);
+    try{
+      status('جارٍ التحقق من حساب المشرف...',false);
+      const response=await fetch(workerUrl+'/auth/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username,password,remember:!!$('workerRemember')?.checked}),cache:'no-store'});
+      const result=await response.json();
+      if(!response.ok)throw new Error(result.error||'تعذر تسجيل الدخول.');
+      workerToken=result.token;workerUser=result.user;
+      const store=$('workerRemember')?.checked?localStorage:sessionStorage,other=$('workerRemember')?.checked?sessionStorage:localStorage;
+      store.setItem('hubaish_worker_session',workerToken);store.setItem('hubaish_worker_user',JSON.stringify(workerUser));
+      other.removeItem('hubaish_worker_session');other.removeItem('hubaish_worker_user');
+      const latest=await publicFetch();documentData=latest;saveCache();applyCached();adminStatus();renderAdminList();
+      await loadWorkerAdminData();
+      status('تم تسجيل الدخول عبر Cloudflare Worker.',false);toast('مرحباً '+(workerUser.displayName||workerUser.username));
+    }catch(error){workerToken='';workerUser=null;sessionStorage.removeItem('hubaish_worker_session');localStorage.removeItem('hubaish_worker_session');adminStatus();status(error.message,true)}
+    finally{if($('workerPassword'))$('workerPassword').value=''}
+  }
+  async function loadWorkerAdminData(){
+    if(workerUser?.role!=='super_admin')return;
+    const [usersResponse,auditResponse]=await Promise.all([workerRequest('/admin/users'),workerRequest('/admin/audit')]);
+    const users=await usersResponse.json(),audit=await auditResponse.json();
+    if(!usersResponse.ok||!auditResponse.ok)throw new Error(users.error||audit.error||'تعذر تحميل إدارة المشرفين.');
+    const list=$('cloudAdminUsersList');
+    if(list)list.innerHTML=(users.users||[]).map(u=>'<div class="cloud-list-row"><strong>'+escapeHtml(u.displayName||u.username)+'</strong><span>@'+escapeHtml(u.username)+' · '+escapeHtml(u.role)+' · '+(u.disabled?'معطل':'نشط')+'</span><button class="btn-sm" data-user-toggle="'+escapeHtml(u.username)+'" data-disabled="'+(!u.disabled)+'">'+(u.disabled?'تفعيل':'تعطيل')+'</button></div>').join('')||'<p class="muted">لا يوجد مشرفون.</p>';
+    const log=$('cloudAuditList');
+    if(log)log.innerHTML=(audit.events||[]).map(e=>'<div class="cloud-list-row"><strong>'+escapeHtml(e.actor||'')+'</strong><span>'+escapeHtml(e.action||'')+' · '+escapeHtml(e.at||'')+'</span></div>').join('')||'<p class="muted">لا توجد تعديلات مسجلة.</p>';
+  }
+  async function createWorkerAdmin(event){
+    event.preventDefault();
+    try{
+      const response=await workerRequest('/admin/users',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:$('newAdminUsername').value,displayName:$('newAdminDisplayName').value,password:$('newAdminPassword').value,role:$('newAdminRole').value})});
+      const result=await response.json();if(!response.ok)throw new Error(result.error||'تعذر إضافة المشرف.');
+      $('cloudCreateAdminForm').reset();await loadWorkerAdminData();toast('تم إنشاء حساب المشرف.');
+    }catch(error){toast(error.message)}
+  }
+  async function toggleWorkerAdmin(event){
+    const button=event.target.closest('[data-user-toggle]');if(!button)return;
+    try{
+      const response=await workerRequest('/admin/users',{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:button.dataset.userToggle,disabled:button.dataset.disabled==='true'})});
+      const result=await response.json();if(!response.ok)throw new Error(result.error||'تعذر تحديث الحساب.');
+      await loadWorkerAdminData();toast('تم تحديث حالة الحساب.');
+    }catch(error){toast(error.message)}
   }
   async function connect(event){
     event.preventDefault();
@@ -226,11 +281,10 @@
     }
   }
   function signOut(){
-    githubToken='';
+    githubToken='';workerToken='';workerUser=null;
+    ['hubaish_worker_session','hubaish_worker_user'].forEach(k=>{localStorage.removeItem(k);sessionStorage.removeItem(k)});
     if($('cloudAdminPassword'))$('cloudAdminPassword').value='';
-    adminStatus();
-    status('تم تسجيل الخروج. لا يبقى رمز GitHub في ذاكرة الصفحة.',false);
-    renderAdminList();
+    adminStatus();status('تم تسجيل الخروج ومسح جلسة المشرف من هذا الجهاز.',false);renderAdminList();
   }
   function allLocales(row,key){
     return {ar:row?.[key+'_ar']||'',en:row?.[key+'_en']||'',tr:row?.[key+'_tr']||'',fr:row?.[key+'_fr']||''};
@@ -437,10 +491,17 @@
   }
   function collectionForType(type){return TABLES[type]}
   async function mutateRepository(mutator,message){
-    if(!isAdmin())throw new Error('سجّل الدخول إلى GitHub أولاً.');
+    if(!isAdmin())throw new Error('سجّل الدخول إلى GitHub أو Cloudflare Worker أولاً.');
     if(saving)throw new Error('هناك عملية نشر أخرى قيد التنفيذ.');
     saving=true;
     try{
+      if(workerToken){
+        const draft=deepCopy(documentData);mutator(draft);draft.updatedAt=new Date().toISOString();
+        const response=await workerRequest('/content',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(draft)});
+        const result=await response.json();if(!response.ok){if(response.status===401)signOut();throw new Error(result.error||'تعذر نشر المحتوى عبر Worker.')}
+        documentData=normalizeDocument({...draft,updatedAt:result.updatedAt});saveCache();applyCached();renderAdminList();window.HubaishRuntime?.renderAll?.();
+        return result;
+      }
       for(let attempt=0;attempt<2;attempt++){
         const latest=await readRepositoryFile(githubToken);
         const draft=deepCopy(latest.data);
@@ -511,6 +572,10 @@
   }
   function bind(){
     $('cloudAdminForm')?.addEventListener('submit',connect);
+    $('workerLoginForm')?.addEventListener('submit',workerLogin);
+    if($('workerEndpoint'))$('workerEndpoint').value=workerUrl;
+    $('cloudCreateAdminForm')?.addEventListener('submit',createWorkerAdmin);
+    $('cloudAdminUsersList')?.addEventListener('click',toggleWorkerAdmin);
     $('cloudAdminLogoutBtn')?.addEventListener('click',signOut);
     $('cloudContentForm')?.addEventListener('submit',saveEditor);
     $('cloudContentClearBtn')?.addEventListener('click',()=>{
@@ -519,9 +584,10 @@
       put('cloudRecordType',type);
     });
     $('cloudRefreshBtn')?.addEventListener('click',async()=>{
-      if(isAdmin()){
-        try{const latest=await readRepositoryFile(githubToken);documentData=latest.data;saveCache();applyCached();renderAdminList();status('تم تحديث لوحة المشرف من main.',false)}
-        catch(error){status(error.message,true)}
+      if(workerToken){
+        try{documentData=await publicFetch();saveCache();applyCached();renderAdminList();await loadWorkerAdminData();status('تم تحديث لوحة المشرف.',false)}catch(error){status(error.message,true)}
+      }else if(githubToken){
+        try{const latest=await readRepositoryFile(githubToken);documentData=latest.data;saveCache();applyCached();renderAdminList();status('تم تحديث لوحة المشرف من main.',false)}catch(error){status(error.message,true)}
       }else await sync(false);
     });
     $('cloudTranslateBtn')?.addEventListener('click',async()=>{
@@ -557,6 +623,8 @@
     window.addEventListener('online',()=>sync(true));
     document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')sync(true)});
     renderAdminList();
+    if(workerToken&&workerUrl){workerRequest('/auth/me').then(r=>{if(!r.ok)throw Error('session expired');return r.json()}).then(x=>{workerUser=x.user;adminStatus();loadWorkerAdminData()}).catch(()=>signOut())}
+    adminStatus();
   }
   window.HubaishCloud={
     start,isAdmin,applyCached,sync,signOut,
