@@ -20,7 +20,7 @@
   let githubToken='';
   let workerToken=sessionStorage.getItem('hubaish_worker_session')||localStorage.getItem('hubaish_worker_session')||'';
   let workerUser=(()=>{try{return JSON.parse(sessionStorage.getItem('hubaish_worker_user')||localStorage.getItem('hubaish_worker_user')||'null')}catch{return null}})();
-  const DEFAULT_WORKER_URL='https://hubaish-cms.baraag6.workers.dev';
+  const DEFAULT_WORKER_URL='https://hubaish-cms.baraagpt6.workers.dev';
   let workerUrl=localStorage.getItem('hubaish_worker_url')||DEFAULT_WORKER_URL;
   let started=false;
   let syncing=false;
