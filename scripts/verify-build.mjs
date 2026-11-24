@@ -31,7 +31,7 @@ const [html,css,app,catalog,features,cms,sw,worker,wrangler,workflow,readme,work
 const manifest=JSON.parse(await read('www/manifest.webmanifest'));
 const manifestJson=JSON.parse(await read('www/manifest.json'));
 const capacitor=JSON.parse(await read('capacitor.config.json'));
-const pkg=JSON.parse(await read('package.json'));
+const pkg=JSON.parse(await read('package.json'));\nconst readme=await read('README.md');\nconst workerReadme=await read('cloudflare-worker/README.md');
 const data=JSON.parse(await read('www/data/live-content.json'));
 const assets = {
   app: await read('www/assets/app.js'),
@@ -57,9 +57,18 @@ if (!html.includes('id="appSplash"') || !html.includes('id="offlineIndicator"') 
 const loginStart=html.indexOf('<form id="workerLoginForm"'),loginEnd=html.indexOf('</form>',loginStart);
 const login=loginStart>=0&&loginEnd>loginStart?html.slice(loginStart,loginEnd):'';
 if(!login.includes('workerUsername')||!login.includes('workerPassword')||!login.includes('workerRemember')||
-   login.includes('workerBootstrapKey')||login.includes('workerEndpoint')||html.includes('workerSetupForm')||
+   login.includes('workerBootstrapKey')||login.includes('workerEndpoint')||
    html.includes('id="adminPanelToggle"')||html.includes('id="adminAuthGate"')) {
-  throw new Error('Public admin gate must only show username, password and 30-day remember-me.');
+  throw new Error('Public login must only show username, password and 30-day remember-me.');
+}
+const setupStart=html.indexOf('<form id="workerSetupForm"');
+const setupEnd=html.indexOf('</form>',setupStart);
+const setup=setupStart>=0&&setupEnd>setupStart?html.slice(setupStart,setupEnd):'';
+if(!setup.includes('workerBootstrapKey')||!setup.includes('workerSetupUsername')||
+   !setup.includes('workerSetupPassword')||!setup.includes('minlength="12"')||
+   setup.includes('workerEndpoint')||setup.includes('GITHUB_TOKEN')||
+   !html.includes('id="workerBootstrapCleanupNotice"')) {
+  throw new Error('One-time first-admin setup form or bootstrap cleanup notice is missing.');
 }
 if(!html.includes('id="cloudAdminPanel" class="hidden"')||!html.includes('id="cloudSuperAdminPanel"')||
    !html.includes('id="cloudContentForm"')||!html.includes('id="cloudAdminUsersList"')||
@@ -68,7 +77,7 @@ if(!html.includes('id="cloudAdminPanel" class="hidden"')||!html.includes('id="cl
   throw new Error('Authenticated admin dashboard, content editor, audit or backup interface is incomplete.');
 }
 if(html.includes('class="ai-fab"')||!html.includes('id="openAiBtn"'))throw new Error('Floating AI overlay has returned or the More-tab assistant is missing.');
-if(!html.includes('id="itineraryList"')||!html.includes('id="comparePlaceA"')||
+if(!html.includes('id="cloudLatitude"')||!html.includes('id="cloudLongitude"')||!html.includes('id="cloudElevation"')||\n   !html.includes('id="cloudPreviewBtn"')||!cms.includes('function renderContentPreview()')||\n   !html.includes('id="itineraryList"')||!html.includes('id="comparePlaceA"')||
    !features.includes('function renderSmartItineraries')||!features.includes('function compareSelectedPlaces')||
    !features.includes('shareExplorerBadge')||!features.includes('quizBest')) {
   throw new Error('Smart routes, comparison or explorer gamification are incomplete.');
@@ -83,7 +92,7 @@ if (features.includes('adminUnlocked')||features.includes('ADMIN_PIN_KEY')||
   throw new Error('The legacy device-local PIN admin path must remain removed.');
 }
 if(cms.includes('githubToken')||cms.includes('API_URL')||cms.includes('readRepositoryFile')||
-   cms.includes('cloudAdminForm')||cms.includes('workerSetupForm')||
+   cms.includes('cloudAdminForm')||
    !cms.includes('function adminStatus()')||!cms.includes('async function restoreWorkerSession')||
    !cms.includes("readWorkerJson(await workerRequest('/auth/me')")||
    !cms.includes("localStorage.removeItem('hubaish_direct_github_token')")||
@@ -91,9 +100,12 @@ if(cms.includes('githubToken')||cms.includes('API_URL')||cms.includes('readRepos
   throw new Error('Admin login must use Worker sessions only and validate /auth/me.');
 }
 if(!cms.includes("fetch(DEFAULT_WORKER_URL+'/auth/login'")||!cms.includes("String($('workerUsername')?.value||'').trim()")||
+   !cms.includes("DEFAULT_WORKER_URL+'/setup/status'")||!cms.includes("DEFAULT_WORKER_URL+'/setup'")||
+   !cms.includes('async function firstAdminSetup')||!cms.includes('async function refreshSetupStatus')||
    !cms.includes("await workerRequest('/content'")||!cms.includes('data-user-role')||
-   !cms.includes('data-user-password')||!cms.includes('data-user-delete')) {
-  throw new Error('Worker login, content publishing or super-admin account controls are incomplete.');
+   !cms.includes('data-user-password')||!cms.includes('data-user-delete')||
+   !cms.includes('BOOTSTRAP_KEY')||!cms.includes('workerBootstrapCleanupNotice')) {
+  throw new Error('Worker login, one-time setup, cleanup reminder or super-admin account controls are incomplete.');
 }
 if(!worker.includes('ITER=100000')||!worker.includes('hashIterations:ITER')||
    !worker.includes('function passwordMatches')||!worker.includes('path==="/auth/login"')||
@@ -120,7 +132,7 @@ if(!app.includes('setOverlaysWebView?.({ overlay: false })')||
    !app.includes('setReaderScale')||!app.includes('languagePickerButton')) {
   throw new Error('Runtime status bar, reader settings or custom language picker wiring is missing.');
 }
-if(!sw.includes('hubaish-guide-v4.0.0')||!sw.includes("'splash.js'")||
+if(!sw.includes('hubaish-guide-v4.0.1')||!sw.includes("'splash.js'")||
    !sw.includes("'github-cms.js'")||!sw.includes("'data/live-content.json'")) {
   throw new Error('The service-worker cache does not include the updated app shell.');
 }
@@ -147,4 +159,4 @@ for(const [file,expected] of [['www/icons/icon-192.png',192],['www/icons/icon-51
   if(image.toString('hex',0,8)!=='89504e470d0a1a0a'||image.readUInt32BE(16)!==expected||image.readUInt32BE(20)!==expected)
     throw new Error(file+' must be a valid '+expected+'x'+expected+' PNG.');
 }
-console.log('Build check passed: Worker-only admin auth, RBAC, audit, privacy, four locales, offline shell, Android safe areas, APK/AAB workflow and app assets.');
+if(readme.includes('الدخول المباشر الاحتياطي باستخدام GitHub Token')||workerReadme.includes('emergency fallback')||workerReadme.includes('GitHub Personal Access Token login'))throw new Error('Documentation still advertises the removed direct-token login.');\nconsole.log('Build check passed: Worker-only login, first-admin bootstrap, RBAC, audit, privacy, four locales, geodata preview, offline shell, Android safe areas, APK/AAB workflow and app assets.');
