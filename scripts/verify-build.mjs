@@ -36,6 +36,9 @@ const manifest = JSON.parse(await read('www/manifest.webmanifest'));
 const manifestJson = JSON.parse(await read('www/manifest.json'));
 const capacitor = JSON.parse(await read('capacitor.config.json'));
 const workflow = await read('.github/workflows/build-and-deploy.yml');
+const workerHealth = await read('.github/workflows/worker-production-health.yml');
+const readme = await read('README.md');
+const workerReadme = await read('cloudflare-worker/README.md');
 const pkg = JSON.parse(await read('package.json'));
 
 for (const file of ['www/app.js', 'www/catalog.js', 'www/features.js', 'www/github-cms.js', 'www/sw.js']) {
@@ -207,6 +210,15 @@ if (!worker.includes('/setup/status') || !worker.includes('/setup') || !worker.i
     !worker.includes('super_admin') || !worker.includes('editor') || !worker.includes('updatedBy')) {
   throw new Error('Cloudflare Worker multi-admin authentication, RBAC or audit support is incomplete.');
 }
+const canonicalWorkerUrl = 'https://hubaish-cms.baraag6.workers.dev';
+if (!githubCms.includes("const DEFAULT_WORKER_URL='" + canonicalWorkerUrl + "';") ||
+    !githubCms.includes("const LEGACY_WORKER_HOST='hubaish-cms.baraagpt6.workers.dev';") ||
+    !html.includes('value="' + canonicalWorkerUrl + '"') ||
+    !workerHealth.includes("const base = '" + canonicalWorkerUrl + "';") ||
+    !readme.includes(canonicalWorkerUrl) || !workerReadme.includes(canonicalWorkerUrl)) {
+  throw new Error('The Cloudflare Worker default URL must use the canonical baraag6 hostname in frontend, documentation and health checks.');
+}
+
 const setupFormStart = html.indexOf('<form id="workerSetupForm"');
 const setupFormEnd = html.indexOf('</form>', setupFormStart);
 const setupForm = setupFormStart >= 0 && setupFormEnd > setupFormStart ? html.slice(setupFormStart, setupFormEnd) : '';
