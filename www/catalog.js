@@ -52,6 +52,27 @@
     p18:['جبل الأشعوب','Jabal Al-Ashub','Jabal Al-Ashub Dağı','Mont Jabal Al-Ashub'],
     p19:['وادي نخلة','Wadi Nakhlah','Wadi Nakhlah Vadisi','Vallée de Wadi Nakhlah']
   };
+  const PLOC={
+    p1:['موضع صهبان — يحتاج مطابقة جغرافية','Sahban site — geographic match required','Sahban mevkii — coğrafi eşleştirme gerekli','Site de Sahban — correspondance géographique à vérifier'],
+    p2:['جبل حبيش — الموقع الدقيق قيد التحقق','Mount Hubaish — exact site under verification','Hubaish Dağı — kesin konum doğrulanıyor','Mont Hubaish — emplacement exact à vérifier'],
+    p3:['مركز ظُلمة — العنوان التفصيلي قيد التوثيق','Dhulmah centre — detailed address pending documentation','Dhulmah merkezi — ayrıntılı adres belgelenecek','Centre de Dhulmah — adresse détaillée à documenter'],
+    p4:['وادي الدُّور — يحتاج تحديد حدوده','Wadi al-Dur — boundaries need mapping','Wadi al-Dur — sınırları haritalanmalı','Wadi al-Dur — limites à cartographier'],
+    p5:['عزلة العارضة — الموضع الدقيق يحتاج تحققاً','Al-Aridah sub-district — exact site needs verification','Al-Aridah bucağı — kesin konum doğrulanmalı','Sous-district d’Al-Aridah — site exact à vérifier'],
+    p6:['الموقع والعزلة بحاجة إلى تأكيد','Location and sub-district require confirmation','Konum ve bucak doğrulanmalı','Lieu et sous-district à confirmer'],
+    p7:['الموقع والعزلة بحاجة إلى تأكيد','Location and sub-district require confirmation','Konum ve bucak doğrulanmalı','Lieu et sous-district à confirmer'],
+    p8:['عميقة — يلزم تثبيت نقطة القمة','Ameqa — summit point needs confirmation','Ameqa — zirve noktası doğrulanmalı','Ameqa — point du sommet à confirmer'],
+    p9:['عزلة جبل خضراء — الارتفاع قيد التحقق','Jabal Khadra sub-district — elevation under verification','Jabal Khadra bucağı — yükseklik doğrulanıyor','Sous-district de Jabal Khadra — altitude à vérifier'],
+    p10:['محيط مركز ظُلمة','Around Dhulmah centre','Dhulmah merkezi çevresi','Autour du centre de Dhulmah'],
+    p11:['بني شبيب — يلزم التحقق من الامتداد','Bani Shabib — extent requires verification','Bani Shabib — sınırları doğrulanmalı','Bani Shabib — étendue à vérifier'],
+    p12:['الروافد العليا — المسار يحتاج مطابقة','Upper tributaries — route needs map matching','Yukarı kollar — güzergâh haritayla eşleştirilmeli','Cours supérieurs — tracé à vérifier sur carte'],
+    p13:['الموقع التفصيلي قيد التحقق','Detailed location under verification','Ayrıntılı konum doğrulanıyor','Emplacement détaillé à vérifier'],
+    p14:['مواضع متعددة — تحتاج حصر المواقع','Several sites — location inventory needed','Birden çok alan — konum envanteri gerekli','Plusieurs sites — inventaire des lieux nécessaire'],
+    p15:['صهبان — العنوان يحتاج توثيقاً','Sahban — address requires documentation','Sahban — adres belgelendirilmelidir','Sahban — adresse à documenter'],
+    p16:['بني سيف والأشعوب — المواقع الفردية غير محصورة','Bani Saif and Al-Ashub — individual sites not inventoried','Bani Saif ve Al-Ashub — tekil yerler henüz sayılmadı','Bani Saif et Al-Ashub — sites individuels non recensés'],
+    p17:['موضع ذي أشرق','Dhi Ashraq site','Dhi Ashraq mevkii','Site de Dhi Ashraq'],
+    p18:['منطقة الأشعوب','Al-Ashub area','Al-Ashub bölgesi','Région d’Al-Ashub'],
+    p19:['موضع وادي نخلة','Wadi Nakhlah site','Wadi Nakhlah mevkii','Site du Wadi Nakhlah']
+  };
   const CAT_BODY={
     EN:{fort:'A fort or castle name in the local heritage inventory. This profile invites community photographs, a mapped location and architectural records before a specific date or elevation is stated.',mountain:'A mountain name in the local landscape inventory. Field records can add mapped peaks, paths, nearby terraces and water sources.',valley:'A valley or watercourse in the local landscape record. Seasonal flow, tributaries, adjoining farms and place names should be added from verified observations.',mosque:'A religious heritage site in the local inventory. Inscriptions, waqf records, photographs and repair histories can help document its story.'},
     TR:{fort:'Yerel miras envanterinde bulunan bir kale adıdır. Belirli bir tarih veya yükseklik verilmeden önce fotoğraflar, harita konumu ve mimari kayıtlar eklenmelidir.',mountain:'Yerel coğrafya envanterindeki bir dağ adıdır. Saha kayıtları zirveleri, yolları, terasları ve su kaynaklarını haritalandırabilir.',valley:'Yerel coğrafya kaydında bulunan bir vadi veya su yatağıdır. Mevsimlik akış, kollar ve komşu tarlalar doğrulanmış gözlemlerle eklenmelidir.',mosque:'Yerel envanterdeki dinî miras alanıdır. Kitabeler, vakıf kayıtları ve fotoğraflar tarihini belgelemeye yardımcı olabilir.'},
@@ -106,7 +127,7 @@
   function itemKey(item){return JSON.stringify([item.title||'',item.body||'',item.loc||'',item.period||'',item.importance||''])}
   function localize(item,lang){
     if(!item)return item;const index=LANGS.indexOf(lang||'AR');const copy=Object.assign({},item);
-    if(PN[item.id]){copy.title=PN[item.id][index];if(lang!=='AR'){const cat=item.cat||'fort';copy.body=(CAT_BODY[lang]||CAT_BODY.EN)[cat]||CAT_BODY[lang].fort;}}
+    if(PN[item.id]){copy.title=PN[item.id][index];if(lang!=='AR'){const cat=item.cat||'fort';copy.body=(CAT_BODY[lang]||CAT_BODY.EN)[cat]||(CAT_BODY[lang]||CAT_BODY.EN).fort;}}\n    if(PLOC[item.id])copy.loc=PLOC[item.id][index];
     if(HISTORY[item.id]&&HISTORY[item.id][lang]){copy.title=HISTORY[item.id][lang][0];copy.period=HISTORY[item.id][lang][1];if(lang!=='AR'&&HISTORY_BODY[item.id])copy.body=HISTORY_BODY[item.id][lang];}
     const cached=cacheRead()[item.id];if(cached&&cached.signature===itemKey(item)&&cached.langs&&cached.langs[lang])Object.assign(copy,cached.langs[lang]);
     return copy;
