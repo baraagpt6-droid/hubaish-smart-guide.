@@ -153,7 +153,7 @@ const locationStart = catalog.indexOf('const PLOC={');
 const locationEnd = locationStart >= 0 ? catalog.indexOf('\n  };', locationStart) : -1;
 const locationBlock = locationStart >= 0 && locationEnd > locationStart ? catalog.slice(locationStart, locationEnd) : '';
 if (locationBlock.split('\n').filter(line => line.trim().startsWith('p') && line.includes(':[')).length !== 19 ||
-    !catalog.includes('if(PLOC[item.id])copy.loc=PLOC[item.id][index]')) {
+    !catalog.includes('if(!item.cmsOverride&&PLOC[item.id])copy.loc=PLOC[item.id][index]')) {
   throw new Error('All 19 landmark locations must be localized in four languages.');
 }
 const historyStart = catalog.indexOf('const HISTORY={');
