@@ -426,8 +426,8 @@
     return {id:'community-main',label_ar:'مجتمع حبيش',label_en:'Hubaish community',label_tr:'Hubaish topluluğu',label_fr:'Communauté Hubaish',url,sort_order:0};
   }
   function buildAdminRows(){
-    const places=(window.HubaishRuntime?.places||[]).filter(x=>/^p\d+$/.test(x.id)||String(x.id).startsWith('cms-landmark-'));
-    const histories=(window.HubaishRuntime?.history||[]).filter(x=>/^h\d+$/.test(x.id)||String(x.id).startsWith('cms-history_event-'));
+    const places=(window.HubaishRuntime?.places||[]).filter(x=>/^p\d+$/.test(x.id)||x.cmsOverride===true||String(x.id).startsWith('cms-landmark-'));
+    const histories=(window.HubaishRuntime?.history||[]).filter(x=>/^h\d+$/.test(x.id)||x.cmsOverride===true||String(x.id).startsWith('cms-history_event-'));
     const placeRows=places.map(item=>{
       const stored=documentData.landmarks.find(x=>x.id===item.id);
       return {row:stored||fromBasePlace(item),type:'landmark',core:/^p\d+$/.test(item.id),hasOverride:!!stored,title:(stored?.title_ar)||item.title};
