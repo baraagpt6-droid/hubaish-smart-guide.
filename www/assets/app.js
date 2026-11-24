@@ -563,6 +563,21 @@ function renderGlobalSearch(query) {
 
 function localAssistantAnswer(question) {
   const q = normalizeArabic(question);
+  if (/حصن|حصون|قلاع|قلعة|fort|castle/i.test(question)) {
+    const found=state.places.filter(item=>item.cat==='fort');
+    const title={AR:'الحصون والقلاع المسجلة في الموسوعة:',EN:'Forts and castles listed in the guide:',TR:'Rehberde kayıtlı kaleler:',FR:'Forts et châteaux répertoriés dans le guide :'}[state.lang]||'Forts:';
+    return found.length?title+'\\n'+found.map((item,i)=>(i+1)+'. '+item.title+' — '+item.loc).join('\\n'):'لا توجد حالياً بطاقات حصون في المحتوى المحلي.';
+  }
+  if (/عزل|عزله|bucak|sub.?district|districts/i.test(question)) {
+    const names=window.HubaishFeatures?.getUzal?.()||UZAL_22;
+    const title={AR:'العزل الـ22 المدرجة في الدليل:',EN:'The 22 sub-districts listed in the guide:',TR:'Rehberde listelenen 22 bucak:',FR:'Les 22 sous-districts répertoriés :'}[state.lang]||'Sub-districts:';
+    return title+'\\n'+names.map((name,i)=>(i+1)+'. '+name).join('، ');
+  }
+  if (/وادي|وديان|مدرجات|valley|wadi|terrace/i.test(question)) {
+    const found=state.places.filter(item=>item.cat==='valley');
+    const title={AR:'الأودية والمدرجات المسجلة:',EN:'Recorded wadis and terraces:',TR:'Kayıtlı vadiler ve teraslar:',FR:'Vallées et terrasses répertoriées :'}[state.lang]||'Wadis:';
+    return found.length?title+'\\n'+found.map((item,i)=>(i+1)+'. '+item.title+' — '+item.loc).join('\\n'):'لا توجد بطاقات أودية في المحتوى المحلي حالياً.';
+  }
   if (/مسار|جوله|سياح|route|itinerary|tour/i.test(question)) {
     const places=state.places.filter(item=>['fort','valley','mountain','mosque'].includes(item.cat)).slice(0,5);
     if(places.length)return 'اقتراح استكشاف من العناصر المنشورة في الموسوعة، وليس مسار ملاحة ميدانياً:\n'+places.map((item,index)=>(index+1)+'. '+item.title+' — '+item.loc).join('\n')+'\nتحقق من الطرق والوقت محلياً قبل الزيارة.';
