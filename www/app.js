@@ -783,6 +783,10 @@ function bindServiceWorkerUpdates() {
 
 function init() {
   state = normalizeState(state);
+  let baselinePlaces = [];
+  let baselineHistory = [];
+  let baselinePlaceIds = new Set();
+  let baselineHistoryIds = new Set();
   window.HubaishRuntime = {
     get places(){ return state.places; }, get history(){ return state.history; },
     renderAll: renderAll,
@@ -796,16 +800,24 @@ function init() {
         }
         return [...merged.values()];
       };
-      const retainedPlaces = state.places.filter(item => !String(item.id || '').startsWith('cms-landmark-'));
-      const retainedHistory = state.history.filter(item => !String(item.id || '').startsWith('cms-history_event-'));
-      state.places = mergeById(retainedPlaces, incoming.landmarks || []);
-      state.history = mergeById(retainedHistory, incoming.history || []);
+      const localPlaces = state.places.filter(item =>
+        !baselinePlaceIds.has(String(item.id || '')) &&
+        !String(item.id || '').startsWith('cms-landmark-'));
+      const localHistory = state.history.filter(item =>
+        !baselineHistoryIds.has(String(item.id || '')) &&
+        !String(item.id || '').startsWith('cms-history_event-'));
+      state.places = mergeById([...baselinePlaces.map(item => ({...item})), ...localPlaces], incoming.landmarks || []);
+      state.history = mergeById([...baselineHistory.map(item => ({...item})), ...localHistory], incoming.history || []);
       state.socials = state.socials.filter(item => !item.cloudId).concat((incoming.links || []).filter(item => item?.url && item?.name));
     }
   };
   applyTheme(state.theme);
   applyLang(state.lang);
   if(window.HubaishCatalog?.seed?.(state))saveState();
+  baselinePlaces = state.places.map(item => ({...item}));
+  baselineHistory = state.history.map(item => ({...item}));
+  baselinePlaceIds = new Set(baselinePlaces.map(item => String(item.id || '')));
+  baselineHistoryIds = new Set(baselineHistory.map(item => String(item.id || '')));
   const bootReport = {
     landmarks: state.places.length, history: state.history.length,
     subDistricts: window.HubaishFeatures?.getUzal?.().length || UZAL_22.length,
