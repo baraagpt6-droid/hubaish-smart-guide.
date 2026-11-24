@@ -178,14 +178,19 @@ if(!cms.includes('safeImageSource')||!cms.includes("image_verified:!!v.imageVeri
    !cms.includes("localeFields(row,'image_caption',v.imageCaption)")) {
   throw new Error('Verified image upload, compression, attribution or locale fields are incomplete.');
 }
-if(!wrangler.includes('[[kv_namespaces]]')||!wrangler.includes('binding = "ADMINS"')||
-   !wrangler.includes('__HUBAISH_ADMINS_KV_NAMESPACE_ID__')||
-   !kvSetupScript.includes("namespaceTitle = 'hubaish-admins'")||
-   !kvSetupScript.includes('CLOUDFLARE_API_TOKEN')||
-   !cloudflareDeployWorkflow.includes('scripts/configure-cloudflare-kv.mjs')||
+const hubaishAdminsNamespaceId = 'c34ad73bd79444119bd6884856516cf2';
+if(!wrangler.includes('[[kv_namespaces]]')||
+   !wrangler.includes('binding = "ADMINS"')||
+   !wrangler.includes('id = "'+hubaishAdminsNamespaceId+'"')||
+   wrangler.includes('__HUBAISH_ADMINS_KV_NAMESPACE_ID__')||
+   !kvSetupScript.includes("const namespaceId = '"+hubaishAdminsNamespaceId+"'")||
+   kvSetupScript.includes('writeFile')||kvSetupScript.includes('CLOUDFLARE_API_TOKEN')||
+   !cloudflareDeployWorkflow.includes('Validate the fixed hubaish-admins ADMINS binding')||
+   !cloudflareDeployWorkflow.includes('run: node scripts/configure-cloudflare-kv.mjs')||
    !cloudflareDeployWorkflow.includes('wrangler-action@v3')||
+   !cloudflareDeployWorkflow.includes("env.CLOUDFLARE_API_TOKEN != ''")||
    !cloudflareDeployWorkflow.includes("check('/health')")) {
-  throw new Error('Automated Cloudflare ADMINS KV lookup, injection, deployment or production health verification is missing.');
+  throw new Error('The fixed ADMINS KV namespace, credential-independent validation, conditional deployment or production health check is incomplete.');
 }
 if(!workflow.includes('actions/deploy-pages@v4')||!workflow.includes('assembleRelease')||
    !workflow.includes('bundleRelease')||!workflow.includes('Daleel-Hubaish-v')||
