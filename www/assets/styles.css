@@ -469,3 +469,8 @@ body{padding-bottom:calc(88px + env(safe-area-inset-bottom,0px))}
 .brand-text strong,.brand-text small{overflow-wrap:anywhere;word-break:normal}
 @media(max-width:430px){.more-tab-button{padding:8px 9px;font-size:10px}.ai-fab-launcher{min-width:112px}.custom-select-sheet{max-height:80vh}}
 
+
+.cloud-row-actions .custom-select-host{flex:1 1 132px;width:auto;min-width:112px}
+.cloud-row-actions .custom-select-trigger{min-height:34px;padding:6px 9px;font-size:10px}
+.more-favorites-card .btn-primary,.more-about-card .btn-secondary{width:100%;justify-content:center}
+.custom-select-trigger:disabled{opacity:.55;cursor:not-allowed}
