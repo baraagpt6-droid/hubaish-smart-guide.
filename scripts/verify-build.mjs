@@ -102,6 +102,27 @@ const workerSource = await read('cloudflare-worker/worker.js');
 const workerSyntax = spawnSync(process.execPath, ['--input-type=module', '--check'], { input: workerSource, encoding: 'utf8' });
 if (workerSyntax.status !== 0) throw new Error('Cloudflare Worker syntax check failed: ' + (workerSyntax.stderr || workerSyntax.stdout));
 const worker = await read('cloudflare-worker/worker.js');
+const workerConfig = await read('cloudflare-worker/wrangler.toml');
+const expectedWorkerOrigins = 'ALLOWED_ORIGIN = "https://baraagpt6-droid.github.io,http://localhost"';
+if (!workerConfig.includes(expectedWorkerOrigins)) {
+  throw new Error('Cloudflare Worker CORS must allow the production GitHub Pages origin and http://localhost.');
+}
+if (!worker.includes('path==="/api/health"') || !worker.includes('githubContentsRead') ||
+    !worker.includes('sessionSecret') || !worker.includes('healthKV')) {
+  throw new Error('Cloudflare Worker health endpoint must check KV, GitHub contents and SESSION_SECRET.');
+}
+const frontendWorkerContracts = [
+  "fetch(value+'/setup/status'",
+  "fetch(endpoint+'/setup'",
+  "fetch(endpoint+'/auth/login'",
+  "workerRequest('/auth/me'",
+  "workerRequest('/admin/users'",
+  "workerRequest('/admin/audit'",
+  "workerRequest('/content'"
+];
+for (const contract of frontendWorkerContracts) {
+  if (!githubCms.includes(contract)) throw new Error('Frontend Cloudflare Worker endpoint contract is missing: ' + contract);
+}
 if (!worker.includes('/setup/status') || !worker.includes('/setup') || !worker.includes('https://baraagpt6-droid.github.io') || !worker.includes('capacitor://localhost') || !worker.includes('http://localhost') || !worker.includes('https://localhost') || !worker.includes('ALLOWED_ORIGIN') || !worker.includes('/auth/login') || !worker.includes('/admin/users') || !worker.includes('/admin/audit') ||
     !worker.includes('PBKDF2') || !worker.includes('GITHUB_TOKEN') || !worker.includes('SESSION_SECRET') ||
     !worker.includes('super_admin') || !worker.includes('editor') || !worker.includes('updatedBy')) {
