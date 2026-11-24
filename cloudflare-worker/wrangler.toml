@@ -5,7 +5,7 @@ compatibility_date = "2024-11-01"
 [vars]
 ALLOWED_ORIGIN = "https://baraagpt6-droid.github.io,http://localhost,http://localhost:4173"
 
-# The deployment workflow replaces this marker with the namespace ID from the Cloudflare API.
+# Fixed production namespace: hubaish-admins.
 [[kv_namespaces]]
 binding = "ADMINS"
-id = "__HUBAISH_ADMINS_KV_NAMESPACE_ID__"
+id = "c34ad73bd79444119bd6884856516cf2"
