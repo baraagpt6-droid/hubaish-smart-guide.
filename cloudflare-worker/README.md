@@ -40,14 +40,14 @@ Never put secret values in this repository, in frontend JavaScript, or in GitHub
 
 ## 3. Confirm the test CORS setting and deploy
 
-The current Wrangler configuration uses:
+The Wrangler configuration restricts browser access to the GitHub Pages site origin:
 
 ```toml
 [vars]
-ALLOWED_ORIGIN = "*"
+ALLOWED_ORIGIN = "https://baraagpt6-droid.github.io"
 ```
 
-This wildcard is temporary for testing. Before public production use, replace it with the exact allowed site origins. The Worker code also permits Capacitor's `capacitor://localhost` origin and localhost origins by default.
+The Worker code also permits Capacitor's `capacitor://localhost` origin and localhost origins by default. If you move the website to a custom domain, add that exact origin to `ALLOWED_ORIGIN` (comma-separated) in the Worker settings.
 
 Deploy using the Cloudflare dashboard or the deployment method already connected to this Worker. Confirm the deployed URL is:
 
@@ -80,7 +80,8 @@ The direct GitHub Personal Access Token login remains available as an emergency 
 
 ## Worker endpoints
 
-- `GET /setup/status` — check whether first-admin setup is required.
+- `GET /api/health` — safely test KV read/write/delete, GitHub CMS file read and SESSION_SECRET availability. Returns HTTP 200 only when all three checks pass; never returns secret values.
+- `GET /setup/status` — check whether first-admin setup is required and whether BOOTSTRAP_KEY is configured.
 - `POST /setup` — create the first super administrator once.
 - `POST /auth/login` — username/password login.
 - `GET /auth/me` — validate the current session.
