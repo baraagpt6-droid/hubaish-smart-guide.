@@ -566,7 +566,7 @@
         const draft=deepCopy(documentData);mutator(draft);draft.updatedAt=new Date().toISOString();
         const response=await workerRequest('/content',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(draft)});
         const result=await response.json();if(!response.ok){if(response.status===401)signOut();throw new Error(result.error||'تعذر نشر المحتوى عبر Worker.')}
-        documentData=normalizeDocument({...draft,updatedAt:result.updatedAt});saveCache();applyCached();renderAdminList();window.HubaishRuntime?.renderAll?.();
+        documentData=normalizeDocument({...draft,updatedAt:result.updatedAt,updatedBy:result.updatedBy||null});saveCache();applyCached();renderAdminList();window.HubaishRuntime?.renderAll?.();
         return result;
       }
       for(let attempt=0;attempt<2;attempt++){
