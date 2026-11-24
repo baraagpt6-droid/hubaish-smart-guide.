@@ -237,6 +237,7 @@ function heritageIcon(kind = 'fort', className = 'heritage-icon') {
     valley: 'M2 7c5 0 5 10 10 10S17 7 22 7M3 21h18M7 13h10',
     mosque: 'M3 21h18M5 21V10h14v11M9 10V7a3 3 0 0 1 6 0v3M12 4V2M8 14v3M16 14v3',
     scroll: 'M7 4h11a2 2 0 0 1 2 2v13H7a3 3 0 0 1 0-6h13M7 13V4a2 2 0 0 0-2-2',
+    bookmark: 'M6 3h12v18l-6-4-6 4V3Z',
     compass: 'm12 2 3 8-3 12-3-12 3-8ZM12 10l8-3-8 3-8-3 8 3ZM12 10v4'
   };
   const ns = 'http://www.w3.org/2000/svg';
@@ -287,7 +288,7 @@ function createContentCard(item, options = {}) {
   if (options.extraMeta) meta.append(makeTag(options.extraMeta));
   card.append(meta, element('h3', 'item-title', view.title), element('p', 'item-body', view.body));
   const actions = element('div', 'card-actions');
-  const favButton = createAction(isSaved(item.id) ? '★ محفوظ' : '☆ حفظ', 'favId', item.id);
+  const favButton = createAction(isSaved(item.id) ? 'محفوظ' : 'حفظ', 'favId', item.id);
   if (isSaved(item.id)) favButton.classList.add('saved');
   actions.append(favButton, createAction('اسأل المساعد', 'ask', view.title), createAction('التفاصيل', 'detail', item.id));
   card.append(actions);
@@ -459,7 +460,7 @@ function renderGlobalSearch(query) {
   all.forEach(item => {
     const card = element('article', 'item-card');
     card.append(element('h3', 'item-title', item.title), element('p', 'item-body', item.body));
-    card.append(createAction('✦ اسأل المساعد', 'ask', item.title));
+    card.append(createAction('اسأل المساعد', 'ask', item.title));
     target.append(card);
   });
 }
