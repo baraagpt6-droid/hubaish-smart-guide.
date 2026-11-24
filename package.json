@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "private": true,
   "description": "Hubaish District offline-first PWA and Capacitor shell",
-  "engines": { "node": ">=22" },
+  "engines": {
+    "node": ">=22"
+  },
   "scripts": {
     "build": "node scripts/verify-build.mjs",
     "cap:sync": "npx cap sync",
@@ -16,7 +18,11 @@
   "dependencies": {
     "@capacitor/android": "8.6.2",
     "@capacitor/core": "8.6.2",
-    "@capacitor/ios": "8.6.2"
+    "@capacitor/ios": "8.6.2",
+    "@capacitor/splash-screen": "8.0.2"
   },
-  "devDependencies": { "@capacitor/cli": "8.6.2" }
+  "devDependencies": {
+    "@capacitor/cli": "8.6.2",
+    "@capacitor/assets": "4.0.0"
+  }
 }
