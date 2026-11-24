@@ -36,6 +36,7 @@ const manifest = JSON.parse(await read('www/manifest.webmanifest'));
 const manifestJson = JSON.parse(await read('www/manifest.json'));
 const capacitor = JSON.parse(await read('capacitor.config.json'));
 const workflow = await read('.github/workflows/build-and-deploy.yml');
+const pkg = JSON.parse(await read('package.json'));
 
 for (const file of ['www/app.js', 'www/catalog.js', 'www/features.js', 'www/github-cms.js', 'www/sw.js']) {
   const result = spawnSync(process.execPath, ['--check', resolve(root, file)], { encoding: 'utf8' });
