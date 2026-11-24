@@ -82,6 +82,10 @@
     try{const url=new URL(String(value||''));return url.protocol==='https:'||url.protocol==='http:'}
     catch{return false}
   }
+  function safeImageSource(value){
+    const text=String(value||'');
+    return safeUrl(text)||(/^data:image\/(?:jpeg|png|webp);base64,[A-Za-z0-9+/]+={0,2}$/.test(text)&&text.length<=260000);
+  }
   function deepCopy(value){return JSON.parse(JSON.stringify(value))}
   function slug(value){
     return String(value||'').trim().toLowerCase().replace(/[^\p{L}\p{N}]+/gu,'-').replace(/^-+|-+$/g,'').slice(0,90)||'record';
@@ -120,8 +124,13 @@
       importance:localized(row,'importance',l),
       source:row.source_text||'',
       sourceUrl:row.source_url||'',
-      imageUrl:safeUrl(row.image_url)?row.image_url:'',
-      imageAlt:String(row.image_alt_ar||localized(row,'title',l)).slice(0,180),
+      imageUrl:safeImageSource(row.image_url)?row.image_url:'',
+      imageAlt:localized(row,'image_alt',l)||String(row.image_alt_ar||localized(row,'title',l)).slice(0,180),
+      imageCaption:localized(row,'image_caption',l),
+      imageCategory:['forts','valleys','villages','heritage'].includes(row.image_category)?row.image_category:'',
+      imagePhotographer:String(row.image_photographer||'').slice(0,160),
+      imageVerified:row.image_verified===true,
+      imageLicense:String(row.image_license||'').slice(0,160),
       imageCredit:String(row.image_credit||'').slice(0,160),
       imageSourceUrl:safeUrl(row.image_source_url)?row.image_source_url:'',
       status:['documented','local','unverified'].includes(row.status)?row.status:'documented'
@@ -478,7 +487,7 @@
   function updateImagePreview(value){
     const preview=$('cloudImagePreview'),link=$('cloudImagePreviewLink');
     if(!preview)return;
-    const valid=!!(value&&safeUrl(value));
+    const valid=!!(value&&safeImageSource(value));
     preview.classList.toggle('hidden',!valid);
     if(link)link.classList.toggle('hidden',!valid);
     if(valid){preview.src=value;preview.alt=val('cloudImageAlt')||'معاينة صورة المعلم';if(link)link.href=value}
@@ -497,7 +506,11 @@
       place:{ar:val('cloudPlaceAr'),en:val('cloudPlaceEn'),tr:val('cloudPlaceTr'),fr:val('cloudPlaceFr')},
       period:{ar:val('cloudPeriodAr'),en:val('cloudPeriodEn'),tr:val('cloudPeriodTr'),fr:val('cloudPeriodFr')},
       category:val('cloudCategory')||'fort',url:val('cloudUrl'),source:val('cloudSource'),sourceUrl:val('cloudSourceUrl'),
-      imageUrl:val('cloudImageUrl'),imageAlt:val('cloudImageAlt'),imageCredit:val('cloudImageCredit'),imageSourceUrl:val('cloudImageSourceUrl'),
+      imageUrl:val('cloudImageUrl'),
+      imageAlt:{ar:val('cloudImageAlt'),en:val('cloudImageAltEn'),tr:val('cloudImageAltTr'),fr:val('cloudImageAltFr')},
+      imageCaption:{ar:val('cloudImageCaptionAr'),en:val('cloudImageCaptionEn'),tr:val('cloudImageCaptionTr'),fr:val('cloudImageCaptionFr')},
+      imageCategory:val('cloudImageCategory'),imagePhotographer:val('cloudImagePhotographer'),imageVerified:!!$('cloudImageVerified')?.checked,
+      imageLicense:val('cloudImageLicense'),imageCredit:val('cloudImageCredit'),imageSourceUrl:val('cloudImageSourceUrl'),
       elevation:val('cloudElevation'),latitude:val('cloudLatitude'),longitude:val('cloudLongitude'),
       importance:{ar:val('cloudImportanceAr'),en:val('cloudImportanceEn'),tr:val('cloudImportanceTr'),fr:val('cloudImportanceFr')},sortOrder:Number(val('cloudSortOrder')||0)
     };
@@ -511,7 +524,7 @@
     return result;
   }
   async function fillTranslations(v){
-    const groups=[v.title,v.details,v.location,v.district,v.place,v.period,v.importance];
+    const groups=[v.title,v.details,v.location,v.district,v.place,v.period,v.importance,v.imageAlt,v.imageCaption];
     for(const group of groups){
       if(!group?.ar)continue;
       for(const language of ['en','tr','fr'])if(!group[language])group[language]=await translate(group.ar,language);
@@ -526,8 +539,17 @@
   function payload(v){
     const common={id:v.id||makeId(v.type),source_text:v.source||'',source_url:safeUrl(v.sourceUrl)?v.sourceUrl:'',status:'documented'};
     if(v.type==='landmark'){
-      const row=Object.assign(common,{category:v.category,elevation:v.elevation!==''?Number(v.elevation):'غير موثق ميدانياً',latitude:v.latitude!==''?Number(v.latitude):null,longitude:v.longitude!==''?Number(v.longitude):null,image_url:safeUrl(v.imageUrl)?v.imageUrl:'',image_alt_ar:v.imageAlt||v.title.ar,image_credit:v.imageCredit||'',image_source_url:safeUrl(v.imageSourceUrl)?v.imageSourceUrl:(safeUrl(v.sourceUrl)?v.sourceUrl:'')});
+      const row=Object.assign(common,{
+        category:v.category,elevation:v.elevation!==''?Number(v.elevation):'غير موثق ميدانياً',
+        latitude:v.latitude!==''?Number(v.latitude):null,longitude:v.longitude!==''?Number(v.longitude):null,
+        image_url:safeImageSource(v.imageUrl)?v.imageUrl:'',
+        image_category:['forts','valleys','villages','heritage'].includes(v.imageCategory)?v.imageCategory:'valleys',
+        image_photographer:v.imagePhotographer||'',image_credit:v.imageCredit||'',
+        image_license:v.imageLicense||'',image_source_url:safeUrl(v.imageSourceUrl)?v.imageSourceUrl:(safeUrl(v.sourceUrl)?v.sourceUrl:''),
+        image_verified:!!v.imageVerified
+      });
       localeFields(row,'title',v.title);localeFields(row,'location',v.location);localeFields(row,'description',v.details);localeFields(row,'importance',v.importance);
+      localeFields(row,'image_alt',v.imageAlt);localeFields(row,'image_caption',v.imageCaption);localeFields(row,'image_district',v.district);
       return row;
     }
     if(v.type==='history_event'){
@@ -581,7 +603,15 @@
       put('cloudDistrict'+s,district[l]);put('cloudPlace'+s,'');put('cloudPeriod'+s,period[l]);
     });
     put('cloudCategory',category);put('cloudUrl',url);put('cloudElevation',elevation);put('cloudLatitude',latitude);put('cloudLongitude',longitude);put('cloudSource',row?.source_text||'');put('cloudSourceUrl',row?.source_url||'');
-    put('cloudImageUrl',row?.image_url||'');put('cloudImageAlt',row?.image_alt_ar||'');put('cloudImageCredit',row?.image_credit||'');put('cloudImageSourceUrl',row?.image_source_url||'');
+    put('cloudImageUrl',row?.image_url||'');
+    const imageAlt=allLocales(row,'image_alt'),imageCaption=allLocales(row,'image_caption'),imageDistrict=allLocales(row,'image_district');
+    put('cloudImageAlt',imageAlt.ar);put('cloudImageAltEn',imageAlt.en);put('cloudImageAltTr',imageAlt.tr);put('cloudImageAltFr',imageAlt.fr);
+    put('cloudImageCaptionAr',imageCaption.ar);put('cloudImageCaptionEn',imageCaption.en);put('cloudImageCaptionTr',imageCaption.tr);put('cloudImageCaptionFr',imageCaption.fr);
+    put('cloudDistrictAr',imageDistrict.ar||district.ar);put('cloudDistrictEn',imageDistrict.en||district.en);put('cloudDistrictTr',imageDistrict.tr||district.tr);put('cloudDistrictFr',imageDistrict.fr||district.fr);
+    put('cloudImageCategory',row?.image_category||'valleys');put('cloudImagePhotographer',row?.image_photographer||'');
+    put('cloudImageCredit',row?.image_credit||'');put('cloudImageLicense',row?.image_license||'');put('cloudImageSourceUrl',row?.image_source_url||'');
+    if($('cloudImageVerified'))$('cloudImageVerified').checked=row?.image_verified===true;
+    if($('cloudImageFile'))$('cloudImageFile').value='';
     updateImagePreview(row?.image_url||'');
     put('cloudImportanceAr',importance.ar);put('cloudImportanceEn',importance.en);put('cloudImportanceTr',importance.tr);put('cloudImportanceFr',importance.fr);put('cloudSortOrder',row?.sort_order||0);
     $('cloudContentEditor')?.scrollIntoView({behavior:'smooth',block:'start'});
@@ -613,7 +643,8 @@
     if(v.type==='sub_district'&&!v.district.ar){toast('اختر العزلة الأصلية المراد تعديلها.');return}
     if(v.type==='community_link'&&!safeUrl(v.url)){toast('أدخل رابط HTTPS أو HTTP صحيحاً.');return}
     if(v.sourceUrl&&!safeUrl(v.sourceUrl)){toast('رابط المصدر غير صالح.');return}
-    if(v.imageUrl&&!safeUrl(v.imageUrl)){toast('رابط الصورة يجب أن يبدأ بـ HTTP أو HTTPS.');return}
+    if(v.imageUrl&&!safeImageSource(v.imageUrl)){toast('ملف الصورة أو رابطها غير صالح أو أكبر من الحد المسموح.');return}
+    if(v.imageUrl&&(!v.imageVerified||!v.imagePhotographer||!v.imageCredit||!safeUrl(v.imageSourceUrl||v.sourceUrl)||!v.imageLicense)){toast('لتوثيق صورة المعرض، أكّد انتماءها لحبيش وأدخل المصور والنسبة والرخصة ورابط المصدر.');return}
     if(v.type==='landmark'){
       const hasLat=v.latitude!==''&&v.latitude!==null,hasLon=v.longitude!==''&&v.longitude!==null;
       if(hasLat!==hasLon){toast('أدخل خط العرض وخط الطول معاً أو اتركهما فارغين.');return}
@@ -669,7 +700,7 @@
     if(values.elevation)facts.push(String(values.elevation)+' m');
     if(values.latitude!==''&&values.longitude!=='')facts.push(String(values.latitude)+', '+String(values.longitude));
     const metadata=document.createElement('p');metadata.className='small muted';metadata.textContent=facts.join(' · ')||'—';root.append(metadata);
-    if(values.imageUrl&&safeUrl(values.imageUrl)){
+    if(values.imageUrl&&safeImageSource(values.imageUrl)){
       const image=document.createElement('img');image.src=values.imageUrl;image.alt=values.imageAlt||values.title.ar||'';image.loading='lazy';image.className='cloud-image-preview';root.append(image);
       if(values.imageCredit){const credit=document.createElement('p');credit.className='small muted';credit.textContent=values.imageCredit;root.append(credit)}
     }
@@ -684,14 +715,37 @@
     $('cloudContentSearch')?.addEventListener('input',renderAdminList);
     $('cloudContentFilter')?.addEventListener('change',renderAdminList);
     $('cloudImageUrl')?.addEventListener('input',()=>updateImagePreview(val('cloudImageUrl')));
+    $('cloudImageFile')?.addEventListener('change',async event=>{
+      const file=event.target.files?.[0];if(!file)return;
+      if(!/^image\/(jpeg|png|webp)$/i.test(file.type)||file.size>15*1024*1024){toast('اختر صورة JPEG أو PNG أو WebP لا تتجاوز 15 ميغابايت.');event.target.value='';return}
+      const statusNode=$('cloudImageCompressionStatus');if(statusNode)statusNode.textContent='جارٍ ضغط الصورة...';
+      let bitmap;
+      try{
+        if(typeof createImageBitmap!=='function')throw new Error('هذا الجهاز لا يدعم ضغط الصور المحلي.');
+        bitmap=await createImageBitmap(file);
+        const canvas=document.createElement('canvas');let scale=Math.min(1,1600/Math.max(bitmap.width,bitmap.height)),blob=null;
+        for(let pass=0;pass<9;pass++){
+          canvas.width=Math.max(1,Math.round(bitmap.width*scale));canvas.height=Math.max(1,Math.round(bitmap.height*scale));
+          const context=canvas.getContext('2d',{alpha:false});if(!context)throw new Error('Canvas unavailable');
+          context.fillStyle='#fff';context.fillRect(0,0,canvas.width,canvas.height);context.drawImage(bitmap,0,0,canvas.width,canvas.height);
+          for(const quality of [.82,.72,.62,.52]){blob=await new Promise(resolve=>canvas.toBlob(resolve,'image/webp',quality));if(blob&&blob.size<=180*1024)break}
+          if(blob&&blob.size<=180*1024)break;scale*=.82;
+        }
+        if(!blob||blob.size>180*1024)throw new Error('تعذر ضغط الصورة إلى أقل من 180 كيلوبايت.');
+        const dataUrl=await new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>resolve(String(reader.result||''));reader.onerror=()=>reject(new Error('تعذر قراءة ملف الصورة.'));reader.readAsDataURL(blob)});
+        put('cloudImageUrl',dataUrl);updateImagePreview(dataUrl);
+        if(statusNode)statusNode.textContent='تم ضغط الصورة إلى '+Math.round(blob.size/1024)+' KB · '+canvas.width+'×'+canvas.height;
+      }catch(error){if(statusNode)statusNode.textContent=error.message;toast(error.message)}
+      finally{bitmap?.close?.()}
+    });
     $('cloudImageAlt')?.addEventListener('input',()=>{if($('cloudImagePreview'))$('cloudImagePreview').alt=val('cloudImageAlt')||'معاينة صورة المعلم'});
     $('cloudAdminLogoutBtn')?.addEventListener('click',signOut);
     $('cloudContentForm')?.addEventListener('submit',saveEditor);
     $('cloudPreviewBtn')?.addEventListener('click',renderContentPreview);
     $('cloudContentClearBtn')?.addEventListener('click',()=>{
       const type=val('cloudRecordType');['cloudRecordId','cloudContributionId'].forEach(id=>put(id,''));
-      ['cloudTitleAr','cloudTitleEn','cloudTitleTr','cloudTitleFr','cloudDetailsAr','cloudDetailsEn','cloudDetailsTr','cloudDetailsFr','cloudLocationAr','cloudLocationEn','cloudLocationTr','cloudLocationFr','cloudDistrictAr','cloudDistrictEn','cloudDistrictTr','cloudDistrictFr','cloudPlaceAr','cloudPlaceEn','cloudPlaceTr','cloudPlaceFr','cloudPeriodAr','cloudPeriodEn','cloudPeriodTr','cloudPeriodFr','cloudCategory','cloudUrl','cloudSource','cloudSourceUrl','cloudImportanceAr','cloudImportanceEn','cloudImportanceTr','cloudImportanceFr','cloudImageUrl','cloudImageAlt','cloudImageCredit','cloudImageSourceUrl','cloudElevation','cloudLatitude','cloudLongitude'].forEach(id=>put(id,''));
-      put('cloudRecordType',type);updateImagePreview('');$('cloudPreviewContent')?.replaceChildren();$('cloudPreviewPanel')?.classList.add('hidden');
+      ['cloudTitleAr','cloudTitleEn','cloudTitleTr','cloudTitleFr','cloudDetailsAr','cloudDetailsEn','cloudDetailsTr','cloudDetailsFr','cloudLocationAr','cloudLocationEn','cloudLocationTr','cloudLocationFr','cloudDistrictAr','cloudDistrictEn','cloudDistrictTr','cloudDistrictFr','cloudPlaceAr','cloudPlaceEn','cloudPlaceTr','cloudPlaceFr','cloudPeriodAr','cloudPeriodEn','cloudPeriodTr','cloudPeriodFr','cloudCategory','cloudUrl','cloudSource','cloudSourceUrl','cloudImportanceAr','cloudImportanceEn','cloudImportanceTr','cloudImportanceFr','cloudImageUrl','cloudImageAlt','cloudImageAltEn','cloudImageAltTr','cloudImageAltFr','cloudImageCaptionAr','cloudImageCaptionEn','cloudImageCaptionTr','cloudImageCaptionFr','cloudImageCategory','cloudImagePhotographer','cloudImageCredit','cloudImageLicense','cloudImageSourceUrl','cloudElevation','cloudLatitude','cloudLongitude'].forEach(id=>put(id,''));
+      put('cloudRecordType',type);if($('cloudImageVerified'))$('cloudImageVerified').checked=false;if($('cloudImageFile'))$('cloudImageFile').value='';updateImagePreview('');$('cloudImageCompressionStatus')?.replaceChildren();$('cloudPreviewContent')?.replaceChildren();$('cloudPreviewPanel')?.classList.add('hidden');
     });
     $('cloudRefreshBtn')?.addEventListener('click',async()=>{
       if(workerToken){
