@@ -84,6 +84,7 @@ if (/\.innerHTML\s*=/.test(app + features + catalog + githubCms)) throw new Erro
 for (const key of ['landmarks','historyEvents','subDistrictUpdates','subDistricts','historicalFigures','communityLinks']) {
   if (!Array.isArray(data[key])) throw new Error('GitHub live-content.json is missing collection: ' + key);
 }
+if (data.subDistricts.length !== 22) throw new Error('GitHub live-content.json must include 22 translated sub-district profiles.');
 if (data.schemaVersion !== 1) throw new Error('Unsupported GitHub live-content.json schema version.');
 if (!githubCms.includes('raw.githubusercontent.com') || !githubCms.includes('api.github.com/repos/') ||
     !githubCms.includes("method:'PUT'") || !githubCms.includes('/contents/') || !githubCms.includes("cache:'no-store'")) {
@@ -101,8 +102,11 @@ if (!githubCms.includes('function fillTranslations') || !githubCms.includes('api
   throw new Error('Four-language translation workflow is missing.');
 }
 if (!features.includes('function exportAllBackup') || !features.includes('function importAllBackup') ||
+    !features.includes('liveContent:window.HubaishCloud?.exportData?.()') ||
+    !features.includes('window.HubaishCloud.importBackup(parsed.liveContent)') ||
+    !githubCms.includes('exportData:()=>deepCopy(documentData)') || !githubCms.includes('async function importBackup(value)') ||
     !html.includes('id="exportJsonBtn"') || !html.includes('id="importJsonInput"')) {
-  throw new Error('JSON backup export/import controls are missing.');
+  throw new Error('Complete local and GitHub CMS JSON backup/restore is missing.');
 }
 if (!app.includes('window.HubaishRuntime.bootReport') || !app.includes('landmarks < 19') ||
     !app.includes('history < 7') || !app.includes('subDistricts < 22') ||
