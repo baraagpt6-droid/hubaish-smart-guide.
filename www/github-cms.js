@@ -20,16 +20,10 @@
   let githubToken='';
   let workerToken=sessionStorage.getItem('hubaish_worker_session')||localStorage.getItem('hubaish_worker_session')||'';
   let workerUser=(()=>{try{return JSON.parse(sessionStorage.getItem('hubaish_worker_user')||localStorage.getItem('hubaish_worker_user')||'null')}catch{return null}})();
-  const DEFAULT_WORKER_URL='https://hubaish-cms.baraag6.workers.dev';
-  const SAVED_WORKER_URL=localStorage.getItem('hubaish_worker_url')||'';
-  const LEGACY_WORKER_HOST='hubaish-cms.baraagpt6.workers.dev';
-  let workerUrl=SAVED_WORKER_URL||DEFAULT_WORKER_URL;
-  try{
-    if(new URL(workerUrl).hostname===LEGACY_WORKER_HOST){
-      workerUrl=DEFAULT_WORKER_URL;
-      localStorage.setItem('hubaish_worker_url',workerUrl);
-    }
-  }catch{workerUrl=DEFAULT_WORKER_URL}
+  const DEFAULT_WORKER_URL='https://hubaish-cms.baraagpt6.workers.dev';
+  // Remove any previously persisted endpoint. Production now has one canonical Worker URL.
+  localStorage.removeItem('hubaish_worker_url');
+  let workerUrl=DEFAULT_WORKER_URL;
   let started=false;
   let syncing=false;
   let saving=false;
@@ -251,7 +245,7 @@
     const response=await fetch(endpoint+'/auth/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username,password,remember:!!remember}),cache:'no-store'});
     const result=await response.json();
     if(!response.ok)throw new Error(result.error||'تعذر تسجيل الدخول.');
-    workerUrl=endpoint;localStorage.setItem('hubaish_worker_url',workerUrl);
+    workerUrl=endpoint;
     workerToken=result.token;workerUser=result.user;
     const store=remember?localStorage:sessionStorage,other=remember?sessionStorage:localStorage;
     store.setItem('hubaish_worker_session',workerToken);store.setItem('hubaish_worker_user',JSON.stringify(workerUser));
@@ -263,9 +257,9 @@
   }
   async function workerLogin(event){
     event.preventDefault();
-    workerUrl=String($('workerEndpoint')?.value||'').trim().replace(/\/$/,'');
+    workerUrl=String($('workerEndpoint')?.value||DEFAULT_WORKER_URL).trim().replace(/\/$/,'')||DEFAULT_WORKER_URL;
     const username=String($('workerUsername')?.value||'').trim(),password=String($('workerPassword')?.value||'');
-    if(!workerUrl||!username||!password){status('أكمل رابط Worker واسم المستخدم وكلمة المرور.',true);return}
+    if(!username||!password){status('أدخل اسم المستخدم وكلمة المرور.',true);return}
     try{
       status('جارٍ التحقق من حساب المشرف...',false);
       await finishWorkerLogin(workerUrl,username,password,!!$('workerRemember')?.checked);
@@ -274,11 +268,11 @@
   }
   async function firstAdminSetup(event){
     event.preventDefault();
-    const endpoint=String($('workerSetupEndpoint')?.value||'').trim().replace(/\/$/,'');
+    const endpoint=String($('workerSetupEndpoint')?.value||DEFAULT_WORKER_URL).trim().replace(/\/$/,'')||DEFAULT_WORKER_URL;
     const bootstrapKey=String($('workerBootstrapKey')?.value||'');
     const username=String($('workerSetupUsername')?.value||'').trim();
     const password=String($('workerSetupPassword')?.value||'');
-    if(!endpoint||!bootstrapKey||!username||password.length<12){status('أكمل الحقول الأربعة. كلمة المرور يجب أن تكون 12 حرفاً على الأقل.',true);return}
+    if(!bootstrapKey||!username||password.length<12){status('أكمل مفتاح التأسيس واسم المستخدم وكلمة المرور. كلمة المرور يجب أن تكون 12 حرفاً على الأقل.',true);return}
     let base;
     try{base=new URL(endpoint);if(base.protocol!=='https:')throw new Error('رابط Worker يجب أن يستخدم HTTPS.')}
     catch(error){status(error.message,true);return}
@@ -287,7 +281,6 @@
       const response=await fetch(endpoint+'/setup',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({bootstrapKey,username,password,displayName:username}),cache:'no-store'});
       const result=await response.json();
       if(!response.ok)throw new Error(result.error||'فشل تأسيس النظام.');
-      localStorage.setItem('hubaish_worker_url',endpoint);
       if($('workerEndpoint'))$('workerEndpoint').value=endpoint;
       if($('workerSetupForm'))$('workerSetupForm').reset();
       const remember=!!$('workerRemember')?.checked;
@@ -694,10 +687,12 @@
     $('workerSetupForm')?.addEventListener('submit',firstAdminSetup);
     if($('workerSetupEndpoint'))$('workerSetupEndpoint').value=workerUrl;
     if($('workerEndpoint'))$('workerEndpoint').value=workerUrl;
+    checkWorkerSetup(workerUrl,true);
     const setupUrl=$('workerSetupEndpoint');
     setupUrl?.addEventListener('change',()=>checkWorkerSetup(setupUrl.value));
     setupUrl?.addEventListener('blur',()=>checkWorkerSetup(setupUrl.value,true));
-    $('workerEndpoint')?.addEventListener('change',()=>{if($('workerSetupEndpoint'))$('workerSetupEndpoint').value=$('workerEndpoint').value;checkWorkerSetup($('workerEndpoint').value,true)});
+    $('workerEndpoint')?.addEventListener('change',()=>{workerUrl=String($('workerEndpoint').value||DEFAULT_WORKER_URL).trim().replace(/\/$/,'')||DEFAULT_WORKER_URL;if($('workerSetupEndpoint'))$('workerSetupEndpoint').value=workerUrl;checkWorkerSetup(workerUrl,true)});
+    $('workerSetupEndpoint')?.addEventListener('change',()=>{workerUrl=String($('workerSetupEndpoint').value||DEFAULT_WORKER_URL).trim().replace(/\/$/,'')||DEFAULT_WORKER_URL;if($('workerEndpoint'))$('workerEndpoint').value=workerUrl;checkWorkerSetup(workerUrl,true)});
     if($('cloudTokenRemember')&&localStorage.getItem('hubaish_direct_github_token'))$('cloudTokenRemember').checked=true;
     $('cloudCreateAdminForm')?.addEventListener('submit',createWorkerAdmin);
     $('cloudAdminUsersList')?.addEventListener('click',toggleWorkerAdmin);
