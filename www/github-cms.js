@@ -535,6 +535,13 @@
       else if(button.dataset.cloudAction==='reset')deleteRecord(id,entry.type,true);
     });
   }
+  async function importBackup(value){
+    if(!isAdmin())throw new Error('سجّل الدخول إلى GitHub قبل استيراد النسخة السحابية.');
+    const imported=normalizeDocument(value);
+    await mutateRepository(draft=>{
+      for(const key of Object.values(TABLES))draft[key]=deepCopy(imported[key]||[]);
+    },'Restore Hubaish live content backup');
+  }
   function start(){
     if(started)return;started=true;
     applyCached();bind();setTimeout(applyCached,0);
@@ -548,6 +555,8 @@
     start,isAdmin,applyCached,sync,signOut,
     getDistrictUpdates:districtUpdates,
     getDistrictProfile:districtProfile,
+    exportData:()=>deepCopy(documentData),
+    importBackup,
     isConfigured:()=>true
   };
 })();
