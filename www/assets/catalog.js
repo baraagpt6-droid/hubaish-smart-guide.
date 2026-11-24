@@ -127,9 +127,9 @@
   function itemKey(item){return JSON.stringify([item.title||'',item.body||'',item.loc||'',item.period||'',item.importance||''])}
   function localize(item,lang){
     if(!item)return item;const index=LANGS.indexOf(lang||'AR');const copy=Object.assign({},item);
-    if(PN[item.id]){copy.title=PN[item.id][index];if(lang!=='AR'){const cat=item.cat||'fort';copy.body=(CAT_BODY[lang]||CAT_BODY.EN)[cat]||(CAT_BODY[lang]||CAT_BODY.EN).fort;}}
-    if(PLOC[item.id])copy.loc=PLOC[item.id][index];
-    if(HISTORY[item.id]&&HISTORY[item.id][lang]){copy.title=HISTORY[item.id][lang][0];copy.period=HISTORY[item.id][lang][1];if(lang!=='AR'&&HISTORY_BODY[item.id])copy.body=HISTORY_BODY[item.id][lang];}
+    if(!item.cmsOverride&&PN[item.id]){copy.title=PN[item.id][index];if(lang!=='AR'){const cat=item.cat||'fort';copy.body=(CAT_BODY[lang]||CAT_BODY.EN)[cat]||(CAT_BODY[lang]||CAT_BODY.EN).fort;}}
+    if(!item.cmsOverride&&PLOC[item.id])copy.loc=PLOC[item.id][index];
+    if(!item.cmsOverride&&HISTORY[item.id]&&HISTORY[item.id][lang]){copy.title=HISTORY[item.id][lang][0];copy.period=HISTORY[item.id][lang][1];if(lang!=='AR'&&HISTORY_BODY[item.id])copy.body=HISTORY_BODY[item.id][lang];}
     const cached=cacheRead()[item.id];if(cached&&cached.signature===itemKey(item)&&cached.langs&&cached.langs[lang])Object.assign(copy,cached.langs[lang]);
     return copy;
   }
