@@ -237,9 +237,26 @@
     const users=await usersResponse.json(),audit=await auditResponse.json();
     if(!usersResponse.ok||!auditResponse.ok)throw new Error(users.error||audit.error||'تعذر تحميل إدارة المشرفين.');
     const list=$('cloudAdminUsersList');
-    if(list)list.innerHTML=(users.users||[]).map(u=>'<div class="cloud-list-row"><strong>'+escapeHtml(u.displayName||u.username)+'</strong><span>@'+escapeHtml(u.username)+' · '+escapeHtml(u.role)+' · '+(u.disabled?'معطل':'نشط')+'</span><button class="btn-sm" data-user-toggle="'+escapeHtml(u.username)+'" data-disabled="'+(!u.disabled)+'">'+(u.disabled?'تفعيل':'تعطيل')+'</button></div>').join('')||'<p class="muted">لا يوجد مشرفون.</p>';
+    if(list){
+      list.replaceChildren();
+      for(const user of users.users||[]){
+        const row=document.createElement('div'),name=document.createElement('strong'),meta=document.createElement('span'),button=document.createElement('button');
+        row.className='cloud-list-row';name.textContent=user.displayName||user.username;
+        meta.textContent='@'+user.username+' · '+user.role+' · '+(user.disabled?'معطل':'نشط');
+        button.className='btn-sm';button.type='button';button.dataset.userToggle=user.username;button.dataset.disabled=String(!user.disabled);button.textContent=user.disabled?'تفعيل':'تعطيل';
+        row.append(name,meta,button);list.append(row);
+      }
+      if(!users.users?.length){const empty=document.createElement('p');empty.className='muted';empty.textContent='لا يوجد مشرفون.';list.append(empty)}
+    }
     const log=$('cloudAuditList');
-    if(log)log.innerHTML=(audit.events||[]).map(e=>'<div class="cloud-list-row"><strong>'+escapeHtml(e.actor||'')+'</strong><span>'+escapeHtml(e.action||'')+' · '+escapeHtml(e.at||'')+'</span></div>').join('')||'<p class="muted">لا توجد تعديلات مسجلة.</p>';
+    if(log){
+      log.replaceChildren();
+      for(const event of audit.events||[]){
+        const row=document.createElement('div'),name=document.createElement('strong'),meta=document.createElement('span');
+        row.className='cloud-list-row';name.textContent=event.actor||'';meta.textContent=(event.action||'')+' · '+(event.at||'');row.append(name,meta);log.append(row);
+      }
+      if(!audit.events?.length){const empty=document.createElement('p');empty.className='muted';empty.textContent='لا توجد تعديلات مسجلة.';log.append(empty)}
+    }
   }
   async function createWorkerAdmin(event){
     event.preventDefault();
