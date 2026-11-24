@@ -98,6 +98,9 @@ if (data.landmarks.length < 22 || data.historyEvents.length < 7 || data.historic
 }
 if (!data.landmarks.some(x=>x.id==='khudad-fort') || !data.landmarks.some(x=>x.id==='wuhaza-fortress') ||
     !data.landmarks.some(x=>x.id==='nahrah-mosque') || !data.landmarks.some(x=>x.id==='zawahi-islamic-school') ||
+    !data.landmarks.some(x=>x.id==='qubbat-al-zum'&&x.source_url.includes('goam.gov.ye')) ||
+    !data.landmarks.some(x=>x.id==='jabal-dhi-harran') ||
+    !data.landmarks.some(x=>x.id==='hubaish-weekly-market'&&x.category==='market') ||
     !data.landmarks.some(x=>x.id==='bayn-al-dur-dome') || !data.landmarks.some(x=>x.id==='marwaha-mosque') ||
     !data.landmarks.some(x=>x.id==='al-farawi-mosque-dome') ||
     !data.landmarks.some(x=>x.id==='kareef-dardaa-wuhaza') ||
