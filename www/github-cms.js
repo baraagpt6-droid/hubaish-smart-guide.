@@ -227,7 +227,12 @@
       const response=await fetch(value+'/setup/status',{cache:'no-store',headers:{Accept:'application/json'}});
       const result=await response.json();
       if(!response.ok)throw new Error(result.error||'تعذر فحص حالة Worker.');
-      setSetupVisibility(!!result.setupRequired,result.setupRequired?'لم يتم إنشاء المشرف الأول بعد. أكمل الحقول الأربعة للتأسيس.':'تم تأسيس النظام مسبقاً. استخدم نموذج دخول المشرف.');
+      const setupMessage=!result.setupRequired
+        ?'تم تأسيس النظام مسبقاً. استخدم نموذج دخول المشرف.'
+        :result.bootstrapKeyConfigured===false
+          ?'لم يتم إنشاء المشرف الأول، لكن BOOTSTRAP_KEY غير مضبوط في Cloudflare Secrets. أضف المفتاح ثم أعد الفحص.'
+          :'لم يتم إنشاء المشرف الأول بعد. أكمل الحقول الأربعة للتأسيس.';
+      setSetupVisibility(!!result.setupRequired,setupMessage);
       if($('workerSetupEndpoint'))$('workerSetupEndpoint').value=value;
       if($('workerEndpoint'))$('workerEndpoint').value=value;
       return !!result.setupRequired;
