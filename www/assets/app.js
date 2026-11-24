@@ -1,0 +1,26 @@
+'use strict';
+const UZAL=['ظُلمة (المركز)','صهبان','بني شبيب','بني معوض','بني عمار','بني سيف العالي','بني سيف السافل','بني أحمد','بني الضبيبي','بني ربيعة','بني سليمان','بني قيس','الأشعوب','المخادر السافل','جبل خضراء','الراهدة حبيش','وادي الدور','الشعيب','الحرث','المشاعبة','العدين الأسفل','حبيش الأعلى'];
+const PLACES=[
+{title:'حصن صهبان التاريخي',loc:'عزلة صهبان',body:'أحد أبرز الحصون الواردة في مواد دليل حبيش.'},
+{title:'حصن حبيش',loc:'مرتفعات حبيش',body:'معلم جبلي ارتبط اسمه بالمديرية.'},
+{title:'الجامع الكبير في ظلمة',loc:'مركز ظلمة',body:'مسجد في مركز المديرية.'},
+{title:'وادي الدور ومدرجات البن',loc:'المنحدرات الغربية',body:'وادي زراعي ومدرجات للبن والحبوب.'}
+];
+const HISTORY=[
+{title:'الاستيطان الحميري وبناء الحصون',period:'العصر الحميري',body:'تربط الرواية المحلية مرتفعات حبيش بمملكة حمير.'},
+{title:'العهد الصليحي والرسولي',period:'القرن 5–8 هـ',body:'تذكر مواد الدليل أهمية جبال حبيش وحصن صهبان.'},
+{title:'مركز المديرية في ظلمة',period:'التاريخ الحديث',body:'تُعرف ظلمة بوصفها مركز مديرية حبيش الإداري.'}
+];
+const $=id=>document.getElementById(id);
+function node(tag,cls,txt){const n=document.createElement(tag);if(cls)n.className=cls;if(txt!==undefined)n.textContent=txt;return n;}
+function card(item){const a=node('article','item-card');a.append(node('h3','item-title',item.title),node('p','item-body',item.body));return a;}
+function fill(id,items){const t=$(id);if(!t)return;t.replaceChildren();if(!items.length){t.append(node('p','empty-state','لا توجد نتائج مطابقة.'));return;}items.forEach(x=>t.append(card(x)));}
+function renderUzal(q=''){const s=q.trim().toLocaleLowerCase();const t=$('uzalList');if(!t)return;t.replaceChildren();const xs=UZAL.filter(x=>x.toLocaleLowerCase().includes(s));if(!xs.length)t.append(node('p','empty-state','لا توجد نتائج مطابقة.'));xs.forEach((x,i)=>{const c=node('article','item-card');c.append(node('h3','item-title',`عزلة ${x}`),node('p','item-body',`العزلة رقم ${i+1} ضمن قائمة العزل في مديرية حبيش.`));t.append(c);});}
+function renderPlaces(q=''){const s=q.trim().toLocaleLowerCase();fill('placesList',PLACES.filter(x=>(x.title+' '+x.loc+' '+x.body).toLocaleLowerCase().includes(s)));}
+function renderHistory(q=''){const s=q.trim().toLocaleLowerCase();fill('historyList',HISTORY.filter(x=>(x.title+' '+x.period+' '+x.body).toLocaleLowerCase().includes(s)));}
+function renderSpotlight(){const t=$('spotlightContainer');if(t){t.replaceChildren(card(PLACES[0]));}}
+function switchTab(tab){document.querySelectorAll('.view-section').forEach(x=>x.classList.toggle('active',x.id==='view-'+tab));document.querySelectorAll('.nav-btn').forEach(x=>x.classList.toggle('active',x.dataset.tab===tab));try{localStorage.setItem('hubaish_tab',tab);}catch{}}
+function applyTheme(){const dark=document.documentElement.dataset.theme!=='light';document.documentElement.dataset.theme=dark?'light':'dark';$('themeToggleBtn').textContent=dark?'🌙':'☀️';try{localStorage.setItem('hubaish_theme',dark?'light':'dark');}catch{}}
+function prayer(){const names=['الفجر','الظهر','العصر','المغرب','العشاء'];const times=['04:45','12:05','15:20','18:10','19:25'];const g=$('prayerGrid');if(!g)return;g.replaceChildren();names.forEach((n,i)=>{const x=node('div','p-item');x.append(node('div','p-name',n),node('div','p-time',times[i]));g.append(x);});$('prayerDate').textContent='أوقات إرشادية تجريبية — تحقق من تقويم المسجد المحلي.';}
+function init(){try{const th=localStorage.getItem('hubaish_theme');if(th)document.documentElement.dataset.theme=th;}catch{}renderSpotlight();renderPlaces();renderHistory();renderUzal();prayer();document.querySelectorAll('.nav-btn').forEach(b=>b.addEventListener('click',()=>switchTab(b.dataset.tab)));$('homeLogoBtn')?.addEventListener('click',()=>switchTab('home'));$('themeToggleBtn')?.addEventListener('click',applyTheme);$('globalSearchInput')?.addEventListener('input',e=>{const q=e.target.value;const found=[...PLACES,...HISTORY].filter(x=>(x.title+' '+x.body).toLocaleLowerCase().includes(q.toLocaleLowerCase()));fill('globalSearchResults',found);});$('placeSearchInput')?.addEventListener('input',e=>renderPlaces(e.target.value));$('histSearchInput')?.addEventListener('input',e=>renderHistory(e.target.value));$('uzalSearchInput')?.addEventListener('input',e=>renderUzal(e.target.value));$('langToggleBtn')?.addEventListener('click',()=>{const l=$('langCode');l.textContent=l.textContent==='AR'?'EN':'AR';});$('openAiBtn')?.addEventListener('click',()=>{$('aiModal')?.classList.add('open');$('aiModal')?.setAttribute('aria-hidden','false');});$('favOpenBtn')?.addEventListener('click',()=>{$('favModal')?.classList.add('open');$('favModal')?.setAttribute('aria-hidden','false');});document.querySelectorAll('[data-close]').forEach(b=>b.addEventListener('click',()=>{const m=$(b.dataset.close);m?.classList.remove('open');m?.setAttribute('aria-hidden','true');}));$('aiForm')?.addEventListener('submit',e=>{e.preventDefault();const q=$('aiInput').value.trim();if(!q)return;const log=$('aiChatLog');log.append(node('div','chat-msg user',q),node('div','chat-msg assistant','هذا المساعد المحلي يبحث ضمن بيانات النسخة المتاحة.'));$('aiInput').value='';});if('serviceWorker'in navigator&&location.protocol==='https:')navigator.serviceWorker.register(new URL('sw.js',document.baseURI)).catch(()=>{});}
+document.addEventListener('DOMContentLoaded',init,{once:true});
