@@ -9,7 +9,7 @@ const required = [
   'www/github-cms.js', 'www/data/live-content.json', 'www/sw.js', 'cloudflare-worker/worker.js', 'cloudflare-worker/wrangler.toml', 'cloudflare-worker/README.md',
   'www/assets/styles.css', 'www/assets/app.js', 'www/assets/catalog.js', 'www/assets/features.js',
   'www/manifest.json', 'www/manifest.webmanifest', 'www/icons/icon.svg',
-  'www/icons/icon-192.png', 'www/icons/icon-512.png', 'www/icons/apple-touch-icon.png', 'www/icons/favicon-32.png', 'capacitor.config.json',
+  'www/icons/icon-192.png', 'www/icons/icon-512.png', 'www/icons/apple-touch-icon.png', 'www/icons/favicon-32.png', 'www/icons/photo-fallback.svg', 'capacitor.config.json',
   'scripts/generate-icons.py', 'scripts/apply-android-icons.py', 'scripts/serve.mjs', 'cloudflare-worker/worker.js', 'cloudflare-worker/wrangler.toml', '.github/workflows/build-and-deploy.yml'
 ];
 for (const file of required) await access(resolve(root, file));
@@ -229,7 +229,7 @@ if (!css.includes('--bg:#08100d') || !css.includes('--gold:#d4af37') || !css.inc
 if (!css.includes('left:16px!important') || !css.includes('width:46px!important') || !css.includes('right:auto!important')) {
   throw new Error('The assistant button must remain fixed at left:16px.');
 }
-if (!sw.includes('hubaish-guide-v3.6.0') || !sw.includes("'github-cms.js'") ||
+if (!sw.includes('hubaish-guide-v3.7.0') || !sw.includes("'github-cms.js'") ||
     !sw.includes("'data/live-content.json'") || !sw.includes("event.data?.type === 'SKIP_WAITING'") ||
     sw.includes('supabase')) throw new Error('Offline app shell does not include the GitHub CMS or live JSON file.');
 if (!workflow.includes('actions/deploy-pages@v4') || !workflow.includes('assembleDebug') ||
