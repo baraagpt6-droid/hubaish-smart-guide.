@@ -453,7 +453,8 @@
           return result;
         }
         if((response.status===409||response.status===422)&&attempt===0)continue;
-        if(response.status===401){githubToken='';adminStatus();if($('cloudAdminPassword'))$('cloudAdminPassword').value='';throw new Error('انتهت صلاحية GitHub Token أو أُلغي. سجّل الدخول برمز جديد.')}\n        if(response.status===403)throw new Error('رفض GitHub النشر. تحقق من صلاحية Contents Read and write ومن صلاحية المستودع.');
+        if(response.status===401){githubToken='';adminStatus();if($('cloudAdminPassword'))$('cloudAdminPassword').value='';throw new Error('انتهت صلاحية GitHub Token أو أُلغي. سجّل الدخول برمز جديد.')}
+        if(response.status===403)throw new Error('رفض GitHub النشر. تحقق من صلاحية Contents Read and write ومن صلاحية المستودع.');
         throw new Error(result.message||'فشل تحديث ملف JSON في GitHub (HTTP '+response.status+').');
       }
       throw new Error('تغير الملف بالتزامن مع النشر. أعد المحاولة لتفادي الكتابة فوق تعديل آخر.');
