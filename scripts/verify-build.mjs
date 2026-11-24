@@ -85,6 +85,19 @@ for (const key of ['landmarks','historyEvents','subDistrictUpdates','subDistrict
   if (!Array.isArray(data[key])) throw new Error('GitHub live-content.json is missing collection: ' + key);
 }
 if (data.subDistricts.length !== 22) throw new Error('GitHub live-content.json must include 22 translated sub-district profiles.');
+if (data.landmarks.length < 9 || data.historyEvents.length < 7 || data.historicalFigures.length < 5 || data.subDistrictUpdates.length < 8) {
+  throw new Error('Sourced Hubaish landmarks, historical events, figures or village profiles are incomplete.');
+}
+if (!data.landmarks.some(x=>x.id==='khudad-fort') || !data.landmarks.some(x=>x.id==='wuhaza-fortress') ||
+    !data.landmarks.some(x=>x.id==='nahrah-mosque') || !data.landmarks.some(x=>x.id==='zawahi-islamic-school') ||
+    !data.historyEvents.some(x=>x.id==='hubaish-uprising-final-battle-17-may-1919')) {
+  throw new Error('Key Hubaish heritage or historical records are missing.');
+}
+if (!data.subDistrictUpdates.some(x=>x.id==='villages-jabal-khadra') ||
+    !data.subDistrictUpdates.some(x=>x.id==='villages-al-salaq') ||
+    !data.subDistrictUpdates.some(x=>x.id==='village-al-shawafi')) {
+  throw new Error('Village references are missing from the district directory.');
+}
 if (data.schemaVersion !== 1) throw new Error('Unsupported GitHub live-content.json schema version.');
 if (!githubCms.includes('raw.githubusercontent.com') || !githubCms.includes('api.github.com/repos/') ||
     !githubCms.includes("method:'PUT'") || !githubCms.includes('/contents/') || !githubCms.includes("cache:'no-store'")) {
@@ -121,7 +134,8 @@ if (!githubCms.includes('imageUrl:val(\'cloudImageUrl\')') ||
 }
 if (!html.includes('id="imageLightbox"') || !html.includes('data-lightbox-src') ||
     !app.includes('photo.loading') || !sw.includes('REMOTE_IMAGE_HOSTS') ||
-    !sw.includes('icons/apple-touch-icon.png')) {
+    !sw.includes('icons/apple-touch-icon.png') || !sw.includes('icons/photo-fallback.svg') ||
+    !sw.includes('hubaish-guide-v3.7.0')) {
   throw new Error('Image lazy loading, lightbox or offline image caching is incomplete.');
 }
 if (!html.includes('id="cloudAdminStats"') || !html.includes('id="cloudContentSearch"') ||
