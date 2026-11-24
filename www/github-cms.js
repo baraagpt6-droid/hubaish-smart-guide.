@@ -212,17 +212,19 @@
       applyCached();
       adminStatus();
       renderAdminList();
-      if(input)input.value='';
       status('تم الاتصال بالمستودع. الرمز محفوظ في ذاكرة الجلسة فقط.',false);
       toast('تم فتح لوحة GitHub CMS.');
     }catch(error){
       githubToken='';
       adminStatus();
       status(error.message,true);
+    }finally{
+      if(input)input.value='';
     }
   }
   function signOut(){
     githubToken='';
+    if($('cloudAdminPassword'))$('cloudAdminPassword').value='';
     adminStatus();
     status('تم تسجيل الخروج. لا يبقى رمز GitHub في ذاكرة الصفحة.',false);
     renderAdminList();
@@ -482,6 +484,7 @@
         if(index>=0)draft[collection][index]=row;
         else draft[collection].push(row);
       },'Update Hubaish live content: '+v.type);
+      put('cloudRecordId','');
       fillEditor(null,v.type);
       toast('تم نشر المحتوى على GitHub. ستصل النسخة الجديدة للزوار عند المزامنة.');
       status('اكتمل Commit في GitHub · '+new Date().toLocaleTimeString('ar'),false);
