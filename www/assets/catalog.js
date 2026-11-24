@@ -159,7 +159,13 @@
         const entry=document.createElement('div');entry.className='cloud-district-update';
         const label=document.createElement('strong');label.textContent=update.place||'معلومة محلية';
         const detail=document.createElement('p');detail.className='small muted';detail.textContent=update.description||'';
-        entry.append(label,detail);card.append(entry);
+        entry.append(label,detail);
+        if(update.sourceUrl&&/^https?:\/\//i.test(update.sourceUrl)){
+          const source=document.createElement('a');source.className='photo-credit-link small';source.href=update.sourceUrl;source.target='_blank';source.rel='noopener noreferrer';source.referrerPolicy='no-referrer';
+          source.textContent=lang==='AR'?'مرجع المعلومة':lang==='EN'?'Information source':lang==='TR'?'Bilgi kaynağı':'Source de l’information';
+          entry.append(source);
+        }
+        card.append(entry);
       });
       target.append(card);
     });
