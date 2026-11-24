@@ -12,7 +12,19 @@
   function save(key,value){try{localStorage.setItem(key,JSON.stringify(value));return true}catch{return false}}
   function status(message,error){const el=$('cloudStatus');if(el){el.textContent=message;el.classList.toggle('cloud-error',!!error);el.classList.toggle('cloud-ok',!error)}}
   function toast(message){if(typeof window.showToast==='function')window.showToast(message);else{const el=$('toast');if(el){el.textContent=message;el.classList.add('show')}}}
-  function configReady(){return !!(config.url&&config.anonKey)}
+  function isPublicApiKey(value){
+    const key=String(value||'').trim();
+    if(key.startsWith('sb_publishable_'))return key.length>20;
+    if(key.startsWith('sb_secret_'))return false;
+    const parts=key.split('.');
+    if(parts.length!==3)return false;
+    try{
+      const segment=parts[1].replace(/-/g,'+').replace(/_/g,'/');
+      const payload=JSON.parse(atob(segment.padEnd(Math.ceil(segment.length/4)*4,'=')));
+      return payload.role==='anon';
+    }catch{return false}
+  }
+  function configReady(){return !!(config.url&&isPublicApiKey(config.anonKey))}
   function admin(){return !!(session?.access_token&&session?.user?.app_metadata?.role==='hubaish_admin')}
   function lang(){const l=String(document.documentElement.lang||'ar').toUpperCase();return ['AR','EN','TR','FR'].includes(l)?l:'AR'}
   function loc(row,key,l){return row[key+'_'+String(l||lang()).toLowerCase()]||row[key+'_ar']||row[key+'_en']||''}
@@ -27,10 +39,12 @@
     return session.access_token;
   }
   async function request(path,opts){
-    if(!configReady())throw new Error('احفظ Project URL وanon public key أولاً.');
+    if(!configReady())throw new Error('احفظ Project URL وPublishable key أو Legacy anon public key أولاً.');
     opts=opts||{};
     const token=opts.admin?await getToken():opts.anon?config.anonKey:(session?.access_token||config.anonKey);
-    const headers={apikey:config.anonKey,Authorization:'Bearer '+token,Accept:'application/json'};
+    const publishable=config.anonKey.startsWith('sb_publishable_');
+    const headers={apikey:config.anonKey,Accept:'application/json'};
+    if(!publishable||opts.admin||(!opts.anon&&!!session?.access_token))headers.Authorization='Bearer '+token;
     if(opts.body!==undefined)headers['Content-Type']='application/json';
     if(opts.prefer)headers.Prefer=opts.prefer;
     const response=await fetch(config.url+path,{method:opts.method||'GET',headers,body:opts.body===undefined?undefined:JSON.stringify(opts.body),cache:'no-store'});
@@ -188,7 +202,7 @@
   function bind(){
     $('cloudConfigForm')?.addEventListener('submit',async event=>{event.preventDefault();try{
       const url=String(val('cloudProjectUrl')).trim().replace(/\/+$/,'');if(!/^https:\/\/[a-z0-9.-]+$/i.test(url))throw new Error('Project URL يجب أن يبدأ بـ https://');
-      config={url:url,anonKey:val('cloudAnonKey')};if(config.anonKey.length<20)throw new Error('تحقق من anon public key.');save(CONFIG_KEY,config);status('تم حفظ الإعدادات. جارٍ الاتصال...',false);await sync(false)
+      config={url:url,anonKey:val('cloudAnonKey')};if(!isPublicApiKey(config.anonKey))throw new Error('استخدم sb_publishable_ من لوحة Supabase أو Legacy anon public key. لا تستخدم sb_secret_ أو service_role.');save(CONFIG_KEY,config);status('تم حفظ الإعدادات. جارٍ الاتصال...',false);await sync(false)
     }catch(error){status(error.message,true)}});
     $('cloudAdminForm')?.addEventListener('submit',async event=>{event.preventDefault();try{await signIn(val('cloudAdminEmail'),$('cloudAdminPassword')?.value||'');showAdmin(true);await refreshAdmin()}catch(error){showAdmin(false);status(error.message,true)}});
     $('cloudAdminLogoutBtn')?.addEventListener('click',signOut);
