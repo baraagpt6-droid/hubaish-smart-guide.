@@ -135,18 +135,24 @@
   }
   function renderDistricts(target,names,query,lang){
     const q=norm(query);target.replaceChildren();
-    const items=names.map((name,i)=>({name,i,d:D.find(x=>x[0]===name)})).filter(x=>!q||norm((x.d||[x.name,x.name,x.name,x.name]).join(' ')).includes(q));
+    const items=names.map((name,i)=>{
+      const profile=window.HubaishCloud?.getDistrictProfile?.(name,lang)||null;
+      const d=D.find(x=>x[0]===name)||[name,name,name,name,'الريف','Rural landscape','Kırsal görünüm','Paysage rural'];
+      return {name,i,d,profile};
+    }).filter(x=>!q||norm([x.name,x.profile?.name||'',...(x.d||[])].join(' ')).includes(q));
     if(!items.length){const p=document.createElement('p');p.className='empty-state';p.textContent=lang==='EN'?'No matching sub-district.':lang==='TR'?'Eşleşen bucak yok.':lang==='FR'?'Aucun sous-district correspondant.':'لا توجد عزلة مطابقة.';target.append(p);return;}
     items.forEach(x=>{
-      const d=x.d||[x.name,x.name,x.name,x.name,'الريف','Rural landscape','Kırsal görünüm','Paysage rural'];
+      const d=x.d;
+      const visibleName=x.profile?.name||d[LANGS.indexOf(lang)];
       const card=document.createElement('article');card.className='item-card uzal-card';card.dataset.exploreId=x.name;card.dataset.exploreKind='uzal';
       const meta=document.createElement('div');meta.className='item-meta';
       const count=document.createElement('span');count.className='tag tag-gold';count.textContent=(x.i+1)+' / 22';
       const tag=document.createElement('span');tag.className='tag';tag.textContent=d[indexTheme(lang)];meta.append(count,tag);
-      const h=document.createElement('h3');h.className='item-title';h.textContent=(lang==='AR'?'عزلة ':lang==='EN'?'Sub-district ':lang==='TR'?'Bucak ':'Sous-district ')+d[LANGS.indexOf(lang)];
+      const h=document.createElement('h3');h.className='item-title';h.textContent=(lang==='AR'?'عزلة ':lang==='EN'?'Sub-district ':lang==='TR'?'Bucak ':'Sous-district ')+visibleName;
       const origin=document.createElement('small');origin.className='uzal-original';origin.textContent=lang==='AR'?'':x.name;origin.hidden=lang==='AR';
-      const body=document.createElement('p');body.className='item-body uzal-note';body.textContent=lang==='AR'?'ملف لاستكشاف المشهد الجبلي والريفي، والمدرجات والحقول ومسارات المياه والمواضع المرتبطة بالعزلة.':lang==='EN'?'Explore this sub-district’s highland and rural setting, terraces, fields, water routes and associated place names.':lang==='TR'?'Bu bucağın dağlık çevresini, teraslarını, tarlalarını, su yollarını ve yer adlarını keşfedin.':'Découvrez les reliefs, terrasses, champs, voies d’eau et noms de lieux de ce sous-district.';
-      const btn=document.createElement('button');btn.className='btn-sm';btn.type='button';btn.dataset.ask=(lang==='AR'?'عرفني على عزلة ':lang==='EN'?'Tell me about sub-district ':lang==='TR'?'Bana şu bucağı anlat: ':'Présentez-moi le sous-district ')+d[LANGS.indexOf(lang)];btn.textContent=txt('ask',lang);
+      const defaultBody=lang==='AR'?'ملف لاستكشاف المشهد الجبلي والريفي، والمدرجات والحقول ومسارات المياه والمواضع المرتبطة بالعزلة.':lang==='EN'?'Explore this sub-district’s highland and rural setting, terraces, fields, water routes and associated place names.':lang==='TR'?'Bu bucağın dağlık çevresini, teraslarını, tarlalarını, su yollarını ve yer adlarını keşfedin.':'Découvrez les reliefs, terrasses, champs, voies d’eau et noms de lieux de ce sous-district.';
+      const body=document.createElement('p');body.className='item-body uzal-note';body.textContent=x.profile?.description||defaultBody;
+      const btn=document.createElement('button');btn.className='btn-sm';btn.type='button';btn.dataset.ask=(lang==='AR'?'عرفني على عزلة ':lang==='EN'?'Tell me about sub-district ':lang==='TR'?'Bana şu bucağı anlat: ':'Présentez-moi le sous-district ')+visibleName;btn.textContent=txt('ask',lang);
       card.append(meta,h,origin,body,btn);
       const updates=window.HubaishCloud?.getDistrictUpdates?.(x.name,lang)||[];
       updates.forEach(update=>{
@@ -161,14 +167,28 @@
   function indexTheme(lang){return lang==='AR'?4:LANGS.indexOf(lang)+4;}
   function renderPeople(target,extra,lang){
     if(!target)return;target.replaceChildren();
-    PEOPLE.forEach(p=>{const card=document.createElement('article');card.className='person-card';
-      const h=document.createElement('h4');h.className='item-title';h.textContent=p.n[LANGS.indexOf(lang)];
-      const tag=document.createElement('span');tag.className='tag tag-gold';tag.textContent=p.r[LANGS.indexOf(lang)];
-      const body=document.createElement('p');body.className='item-body';body.textContent=p.b[LANGS.indexOf(lang)];
-      const link=document.createElement('a');link.className='btn-sm';link.href=p.u;link.target='_blank';link.rel='noopener noreferrer';link.textContent=(lang==='AR'?'قراءة المصدر':lang==='EN'?'Read source':lang==='TR'?'Kaynağı oku':'Lire la source')+' ↗';
-      card.append(h,tag,body,link);target.append(card);
+    const extras=Array.isArray(extra)?extra:[];
+    const byId=new Map(extras.filter(p=>p&&p.id).map(p=>[p.id,p]));
+    PEOPLE.forEach((p,index)=>{
+      const override=byId.get('person-'+(index+1));
+      const card=document.createElement('article');card.className='person-card';
+      const h=document.createElement('h4');h.className='item-title';h.textContent=override?.title||p.n[LANGS.indexOf(lang)];
+      const tag=document.createElement('span');tag.className='tag tag-gold';tag.textContent=override?.role||p.r[LANGS.indexOf(lang)];
+      const body=document.createElement('p');body.className='item-body';body.textContent=override?.body||p.b[LANGS.indexOf(lang)];
+      card.append(h,tag,body);
+      const sourceUrl=override?.sourceUrl||p.u;
+      if(sourceUrl){const link=document.createElement('a');link.className='btn-sm';link.href=sourceUrl;link.target='_blank';link.rel='noopener noreferrer';link.textContent=(lang==='AR'?'قراءة المصدر':lang==='EN'?'Read source':lang==='TR'?'Kaynağı oku':'Lire la source')+' ↗';card.append(link)}
+      target.append(card);
     });
-    (extra||[]).forEach(p=>{const card=document.createElement('article');card.className='person-card';const h=document.createElement('h4');h.className='item-title';h.textContent=p.title||'';const body=document.createElement('p');body.className='item-body';body.textContent=p.body||'';card.append(h,body);target.append(card)});
+    extras.filter(p=>p&&!/^person-[1-4]$/.test(String(p.id||''))).forEach(p=>{
+      const card=document.createElement('article');card.className='person-card';
+      const h=document.createElement('h4');h.className='item-title';h.textContent=p.title||'';
+      const tag=document.createElement('span');tag.className='tag tag-gold';tag.textContent=p.role||'';
+      const body=document.createElement('p');body.className='item-body';body.textContent=p.body||'';
+      card.append(h,tag,body);
+      if(p.sourceUrl){const link=document.createElement('a');link.className='btn-sm';link.href=p.sourceUrl;link.target='_blank';link.rel='noopener noreferrer';link.textContent=(lang==='AR'?'قراءة المصدر':lang==='EN'?'Read source':lang==='TR'?'Kaynağı oku':'Lire la source')+' ↗';card.append(link)}
+      target.append(card);
+    });
   }
   function renderRefs(target,lang){
     if(!target)return;target.replaceChildren();
