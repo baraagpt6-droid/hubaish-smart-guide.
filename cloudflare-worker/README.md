@@ -78,6 +78,8 @@ Administrators sign in with their Worker username and password. The Worker URL i
 - `super_admin`: publish content, create, update or delete administrator accounts, view the audit log and restore the shared content backup.
 - `editor`: publish CMS content but cannot manage administrator accounts.
 
+Changing an administrator's password, role, or enabled state rotates that account's session version and invalidates its previously issued login tokens. Existing sessions for other accounts remain unaffected.
+
 The frontend uses Worker sessions only. GitHub credentials remain in Cloudflare Worker Secrets and are never entered in the browser.
 
 ## Worker endpoints
