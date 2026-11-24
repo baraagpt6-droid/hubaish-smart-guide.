@@ -140,6 +140,18 @@
       <article class="item-card cloud-admin-card hub-panel" id="cloudAdminCard">
         <div class="cloud-card-heading"><div><span class="tag tag-gold">GITHUB JSON CMS</span><h3 class="item-title">إدارة الموسوعة المنشورة</h3><p class="item-body">يُحفظ المحتوى في ملف JSON داخل المستودع، ويُحمّل للزوار دون تسجيل دخول. الكتابة متاحة للمشرف فقط.</p></div><span class="cloud-status-pill" id="cloudStatus">يجري تحميل آخر نسخة من GitHub...</span></div>
         <div id="cloudAdminLoginArea" class="cloud-login-area">
+          <section id="workerSetupArea" class="cloud-editor">
+            <h4 class="item-title">تأسيس النظام لأول مرة (Setup)</h4>
+            <p class="small muted">يظهر هذا النموذج فقط قبل إنشاء أول حساب مشرف في Worker. بعد التأسيس سيختفي تلقائياً.</p>
+            <form id="workerSetupForm" class="cloud-login-grid">
+              <input id="workerSetupEndpoint" class="input-field" type="url" placeholder="رابط Worker URL" autocomplete="url" required>
+              <input id="workerBootstrapKey" class="input-field" type="password" placeholder="مفتاح التأسيس Bootstrap Key" autocomplete="off" required>
+              <input id="workerSetupUsername" class="input-field" type="text" placeholder="اسم المشرف العام Username" autocomplete="username" required>
+              <input id="workerSetupPassword" class="input-field" type="password" placeholder="كلمة المرور الجديدة (12 حرفاً على الأقل)" minlength="12" autocomplete="new-password" required>
+              <button class="btn-primary" type="submit">إنشاء حساب المشرف العام وتفعيل الربط</button>
+            </form>
+            <p id="workerSetupStatus" class="small muted">أدخل رابط Worker للتحقق من حالة التأسيس.</p>
+          </section>
           <h4 class="item-title">دخول المشرفين عبر الوسيط الآمن</h4>
           <p class="small muted">أدخل رابط Cloudflare Worker ثم اسم المستخدم وكلمة المرور. لا يحتاج كل مشرف إلى GitHub Token.</p>
           <form id="workerLoginForm" class="cloud-login-grid">
@@ -152,6 +164,7 @@
           <details class="cloud-editor"><summary>الدخول المباشر الاحتياطي باستخدام GitHub Token</summary>
             <form id="cloudAdminForm" class="cloud-login-grid">
               <input id="cloudAdminPassword" class="input-field" type="password" placeholder="GitHub Personal Access Token" autocomplete="off" autocapitalize="off" spellcheck="false" required>
+              <label class="small"><input id="cloudTokenRemember" type="checkbox"> تذكر GitHub Token على هذا الجهاز في localStorage</label>
               <button class="btn-primary" type="submit">التحقق وفتح اللوحة مباشرة</button>
             </form>
             <p class="small muted">يظل الرمز في ذاكرة الصفحة فقط ولا يُحفظ على الجهاز.</p>
