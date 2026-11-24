@@ -30,7 +30,7 @@
 
 يستخدم التطبيق عنوان Worker الافتراضي التالي في لوحة الإدارة:
 
-`https://hubaish-cms.baraag6.workers.dev`
+`https://hubaish-cms.baraagpt6.workers.dev`
 
 تملأ الواجهة العنوان تلقائياً وتتحقق من `/setup/status`. لا يعمل تسجيل دخول المشرفين عبر Worker حتى تنشر الخدمة وتربط KV وتضيف الأسرار المطلوبة. اتبع الخطوات في [دليل Cloudflare Worker](cloudflare-worker/README.md).
 
