@@ -84,7 +84,7 @@ The frontend uses Worker sessions only. GitHub credentials remain in Cloudflare 
 
 ## Worker endpoints
 
-- `GET /api/health` — safely test KV read/write/delete, GitHub CMS file read and SESSION_SECRET availability. Returns HTTP 200 only when all three checks pass; never returns secret values.
+- `GET /health` and `GET /api/health` — safely test KV read/write/delete, GitHub CMS file read and SESSION_SECRET availability. Both return HTTP 200 only when all three checks pass and never return secret values. Returns HTTP 200 only when all three checks pass; never returns secret values.
 - `GET /setup/status` — check whether first-admin setup is required and whether BOOTSTRAP_KEY is configured.
 - `POST /setup` — create the first super administrator once.
 - `POST /auth/login` — username/password login.

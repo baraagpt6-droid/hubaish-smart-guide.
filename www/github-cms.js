@@ -15,6 +15,11 @@
     community_link:'communityLinks'
   };
   const $=id=>document.getElementById(id);
+  function fetchWithTimeout(url,options={},timeoutMs=15000){
+    const controller=new AbortController();
+    const timeout=window.setTimeout(()=>controller.abort(),timeoutMs);
+    return fetch(url,{...options,signal:controller.signal}).finally(()=>window.clearTimeout(timeout));
+  }
   let documentData=readCache();
   let workerToken=sessionStorage.getItem('hubaish_worker_session')||localStorage.getItem('hubaish_worker_session')||'';
   let workerUser=(()=>{try{return JSON.parse(sessionStorage.getItem('hubaish_worker_user')||localStorage.getItem('hubaish_worker_user')||'null')}catch{return null}})();
@@ -89,7 +94,7 @@
     let lastError=null;
     for(const url of candidates){
       try{
-        const response=await fetch(url,{cache:'no-store',headers:{Accept:'application/json','Cache-Control':'no-cache'}});
+        const response=await fetchWithTimeout(url,{cache:'no-store',headers:{Accept:'application/json','Cache-Control':'no-cache'}},12000);
         if(!response.ok)throw new Error('HTTP '+response.status);
         const parsed=normalizeDocument(await response.json());
         const incomingTime=parsed.updatedAt?Date.parse(parsed.updatedAt):0;
@@ -194,7 +199,7 @@
   function isAdmin(){return !!workerToken&&!!workerUser?.username}
   function workerRequest(path,options={}){
     workerUrl=DEFAULT_WORKER_URL;
-    return fetch(workerUrl+path,{...options,headers:{...(options.headers||{}),...(workerToken?{Authorization:'Bearer '+workerToken}:{})},cache:'no-store'});
+    return fetchWithTimeout(workerUrl+path,{...options,headers:{...(options.headers||{}),...(workerToken?{Authorization:'Bearer '+workerToken}:{})},cache:'no-store'},15000);
   }
   async function readWorkerJson(response,fallback){
     const raw=await response.text();let result={};try{result=raw?JSON.parse(raw):{}}catch{throw new Error('أعاد الخادم استجابة غير صالحة.')}
@@ -203,7 +208,7 @@
   }
   async function refreshSetupStatus(){
     try{
-      const response=await fetch(DEFAULT_WORKER_URL+'/setup/status',{headers:{Accept:'application/json'},cache:'no-store'});
+      const response=await fetchWithTimeout(DEFAULT_WORKER_URL+'/setup/status',{headers:{Accept:'application/json'},cache:'no-store'},10000);
       const result=await readWorkerJson(response,'تعذر فحص حالة تأسيس المشرفين.');
       if(typeof result.setupRequired!=='boolean')throw new Error('استجابة حالة التأسيس غير مكتملة.');
       setupState={checked:true,setupRequired:result.setupRequired,bootstrapKeyConfigured:result.bootstrapKeyConfigured===true,error:''};
@@ -237,10 +242,10 @@
     if(submit){submit.disabled=true;submit.dataset.originalText=submit.textContent;submit.textContent='جارٍ إنشاء المشرف...'}
     status('جارٍ إنشاء أول حساب مشرف داخل Cloudflare KV...',false);
     try{
-      const response=await fetch(DEFAULT_WORKER_URL+'/setup',{
+      const response=await fetchWithTimeout(DEFAULT_WORKER_URL+'/setup',{
         method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},
         body:JSON.stringify({bootstrapKey,username,password,displayName:username}),cache:'no-store'
-      });
+      },20000);
       const result=await readWorkerJson(response,'تعذر إنشاء حساب المشرف الأول.');
       if($('workerBootstrapKey'))$('workerBootstrapKey').value='';
       setupState={checked:true,setupRequired:false,bootstrapKeyConfigured:true,error:''};
@@ -251,14 +256,14 @@
       status('تم إنشاء المشرف وتسجيل الدخول. احذف BOOTSTRAP_KEY من أسرار Cloudflare Worker فوراً.',true);
       toast(result.message||'تم إنشاء حساب المشرف الأول.');
     }catch(error){
-      status(error.message||'تعذر إكمال تأسيس المشرف الأول.',true);
+      status(error?.name==='AbortError'?'انتهت مهلة الاتصال بخادم الإدارة أثناء التأسيس. تحقق من إعداد Worker وحاول مجدداً.':error.message||'تعذر إكمال تأسيس المشرف الأول.',true);
       toast('لم يكتمل تأسيس حساب المشرف. راجع إعدادات Worker.');
     }finally{
       if(submit){submit.disabled=false;submit.textContent=submit.dataset.originalText||'إنشاء المشرف الأول';delete submit.dataset.originalText}
     }
   }
   async function finishWorkerLogin(username,password,remember){
-    const response=await fetch(DEFAULT_WORKER_URL+'/auth/login',{method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},body:JSON.stringify({username:String(username||'').trim(),password,remember:!!remember}),cache:'no-store'});
+    const response=await fetchWithTimeout(DEFAULT_WORKER_URL+'/auth/login',{method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},body:JSON.stringify({username:String(username||'').trim(),password,remember:!!remember}),cache:'no-store'},15000);
     const result=await readWorkerJson(response,'اسم المستخدم أو كلمة المرور غير صحيحة.');
     if(!result.token||!result.user?.username)throw new Error('لم يرسل خادم الإدارة بيانات جلسة صالحة.');
     workerUrl=DEFAULT_WORKER_URL;workerToken=result.token;workerUser=result.user;
@@ -282,7 +287,7 @@
     status('جارٍ التحقق من حساب المشرف...',false);
     try{await finishWorkerLogin(username,password,!!$('workerRemember')?.checked);if($('workerPassword'))$('workerPassword').value=''}catch(error){
       workerToken='';workerUser=null;['hubaish_worker_session','hubaish_worker_user'].forEach(key=>{localStorage.removeItem(key);sessionStorage.removeItem(key)});
-      adminStatus();status(error.message||'تعذر تسجيل الدخول. حاول مرة أخرى.',true);
+      adminStatus();status(error?.name==='AbortError'?'انتهت مهلة الاتصال بخادم الإدارة. تحقق من اتصال الشبكة وربط KV باسم ADMINS ثم حاول مجدداً.':error.message||'تعذر تسجيل الدخول. حاول مرة أخرى.',true);
     }finally{if(submit){submit.disabled=false;submit.textContent=submit.dataset.originalText||'دخول آمن';delete submit.dataset.originalText}}
   }
   async function restoreWorkerSession(){

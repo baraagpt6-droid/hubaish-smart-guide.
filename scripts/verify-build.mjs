@@ -122,6 +122,9 @@ if(!worker.includes('ITER=100000')||!worker.includes('hashIterations:ITER')||
    !worker.includes('user.sessionVersion=sessionVersion()')) {
   throw new Error('Worker authentication, RBAC, audit log or security headers are incomplete.');
 }
+if(!cms.includes('function fetchWithTimeout(')||!cms.includes("'/auth/login'")||!worker.includes('path==="/health"')) {
+  throw new Error('Worker login timeouts or the public production health endpoint are missing.');
+}
 if(!css.includes('env(safe-area-inset-top')||!css.includes('var(--status-bar-height')||
    !css.includes('env(safe-area-inset-bottom')||!css.includes('.ai-fab{display:none!important}')) {
   throw new Error('Safe-area CSS or floating assistant removal is missing.');

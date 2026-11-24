@@ -50,7 +50,7 @@ jobs:
           }
 
           (async () => {
-            const healthResult = await getJson('/api/health');
+            const healthResult = await getJson('/health');
             const setupResult = await getJson('/setup/status');
             const failures = [];
 

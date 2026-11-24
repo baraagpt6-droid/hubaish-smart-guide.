@@ -1,7 +1,7 @@
 /**
  * Hubaish Smart Guide — Cloudflare Worker
- * Bind KV namespace as ADMINS. Add secrets GITHUB_TOKEN, SESSION_SECRET, BOOTSTRAP_KEY.
- * First setup: POST /setup {bootstrapKey,username,password,displayName}; then remove BOOTSTRAP_KEY.
+ * Bind the production KV namespace as ADMINS. Required secrets: GITHUB_TOKEN and SESSION_SECRET.
+ * BOOTSTRAP_KEY is required only for first-admin setup and must be removed afterward.
  */
 const OWNER="baraagpt6-droid",REPO="hubaish-smart-guide.",BRANCH="main",FILE="www/data/live-content.json";
 const ROLES=new Set(["super_admin","editor"]),ITER=100000,UP="user:",AUDIT="audit:latest";
@@ -68,7 +68,7 @@ async function healthStatus(env){
 async function route(req,env){
  const u=new URL(req.url),path=u.pathname;
  if(req.method==="OPTIONS")return new Response(null,{status:204});
- if(req.method==="GET"&&path==="/api/health")return healthStatus(env);
+ if(req.method==="GET"&&(path==="/health"||path==="/api/health"))return healthStatus(env);
  if(!env.ADMINS||!env.GITHUB_TOKEN||!env.SESSION_SECRET) return json({error:"Configure ADMINS KV, GITHUB_TOKEN and SESSION_SECRET."},500);
  if(req.method==="GET"&&path==="/setup/status"){
   const keys=await env.ADMINS.list({prefix:UP,limit:1});
