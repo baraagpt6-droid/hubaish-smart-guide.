@@ -15,17 +15,31 @@ const UZAL_22 = [
 ];
 
 const DEFAULT_HISTORY = [
-  { id: 'h1', era: 'ancient', period: 'العصر الحميري', title: 'الاستيطان الحميري وبناء الحصون', body: 'تربط الرواية المحلية مرتفعات حبيش بمملكة حمير، وتشير إلى الحصون الصخرية والصهاريج المائية والمدرجات الزراعية في المنطقة.' },
-  { id: 'h2', era: 'ancient', period: 'القرن 5–8 هـ', title: 'العهد الصليحي والرسولي', body: 'تذكر مواد الدليل أهمية جبال حبيش وحصن صهبان في الفترات الصليحية والرسولية، إلى جانب المساجد والمدارس العلمية.' },
-  { id: 'h3', era: 'modern', period: 'التاريخ الحديث', title: 'مركز المديرية في ظُلمة والتقسيم الإداري', body: 'تُعرف ظُلمة بوصفها مركز مديرية حبيش الإداري، وتضم المديرية عزلًا وقرى زراعية تشتهر بالمدرجات والبن والحبوب.' },
-  { id: 'h4', era: 'modern', period: '1919م • رواية تحتاج إلى توثيق', title: 'رواية عن تحرك شعبي في حبيش', body: 'تتداول بعض الروايات المحلية حديثاً عن انتفاضة أو تحرك شعبي سنة 1919م. لم يتوفر في المصادر المفتوحة التي تمت مراجعتها توثيق مستقل كافٍ، لذلك لا تُعرض هذه الرواية كواقعة مؤكدة حتى العثور على مصدر تاريخي أولي.' }
+  { id: 'h1', era: 'ancient', period: 'قبل الإسلام • رواية تحتاج تدقيقاً أثرياً', title: 'الجذور القديمة والحصون والصهاريج', body: 'تربط بعض الكتابات المحلية اسم حبيش بأصول حميرية أو سبئية، وتتناقل روايات عن حصون وصهاريج ومدرجات قديمة. لا يتوفر حتى الآن مسح أثري منشور يؤرخ هذه المنشآت في كل مواقع المديرية؛ لذلك يعرض هذا الربط بوصفه فرضية بحثية لا حقيقة محسومة.', status: 'local', source: 'كتاب نفيس الثمن في أسباب مسميات مديريات ومحافظات اليمن، مع الحاجة إلى تحقق أثري مستقل', sourceUrl: 'https://www.nafsam.org/ar/wp-content/uploads/2022/05/2022-05-28_01-12-25_532941-nafsam.pdf' },
+  { id: 'h2', era: 'ancient', period: 'القرن الرابع الهجري وما بعده • نص محقق وحاشية', title: 'حبيش في شروح كتب الهمداني', body: 'يقدم كتاب صفة جزيرة العرب إطاراً مهماً لجغرافية اليمن القديمة. وفي حاشية تحقيق محمد الأكوع ترد إحالات إلى اسم حبيش وجبل حبيش ضمن ضبط المواضع. ينبغي التمييز بين نص الهمداني نفسه وبين تعليقات المحقق، وعدم اعتبار الإحالة وحدها دليلاً على حدود المديرية الحديثة.', status: 'documented', source: 'صفة جزيرة العرب، حاشية التحقيق، صفحة 197 في النسخة الرقمية', sourceUrl: 'https://ablibrary.net/book_content/b/9942/205' },
+  { id: 'h3', era: 'ancient', period: 'القرن الثامن الهجري', title: 'صهبان في العصر الرسولي', body: 'تذكر حاشية طبعة صفة جزيرة العرب أن تسمية مخلاف صهبان ارتبطت في القرن الثامن الهجري بالأمير الصهباني في عهد الدولة الرسولية، وتشير إلى حصن في المنطقة. لا تثبت هذه الإحالة وحدها صلة كل الحصون المنسوبة اليوم إلى حبيش بالعهد الصليحي؛ لذلك يقتصر العرض على ما تقوله الحاشية.', status: 'documented', source: 'حاشية تحقيق صفة جزيرة العرب، صفحة 197', sourceUrl: 'https://ablibrary.net/book_content/b/9942/205' },
+  { id: 'h4', era: 'ancient', period: 'العصور الإسلامية • رواية محلية', title: 'المساجد والمدارس والحركة العلمية', body: 'تتداول الذاكرة المحلية أخبار مساجد قديمة ومجالس تعليم في ظُلمة وصهبان وبني سيف والأشعوب. لم تتوفر فهارس منشورة أو تواريخ تأسيس موثقة لهذه المواقع أثناء إعداد هذه النسخة؛ ويحتاج هذا المحور إلى مقابلات مع الأهالي، وتصوير النقوش والوثائق الوقفية إن وجدت.', status: 'local', source: 'روايات محلية أولية تحتاج جمع وثائق ومقابلات ميدانية' },
+  { id: 'h5', era: 'modern', period: 'أبريل–مايو 1919م', title: 'انتفاضة حبيش ضد الحكم الإمامي', body: 'تورد دراسات صحفية تاريخية ومقتطفات من مذكرات وتقارير معاصرة مقاومة أبناء حبيش للحملة الإمامية سنة 1919م، وتذكر الشيخ محمد عائض العقاب ومواجهات في محيط حبيش. تختلف الروايات في بعض تفاصيل المعارك ومدتها؛ لذا يعرض الحدث مع إحالاته، لا بوصف كل رقم متداول حقيقة متفقاً عليها.', status: 'documented', source: 'دراسة الساحل الغربي عن انتفاضات إب، ومقال نشوان نيوز عن حبيش', sourceUrl: 'https://www.alsahil.net/news20987.html' },
+  { id: 'h6', era: 'modern', period: '1357هـ / نحو 1938م وما بعده', title: 'التحول الإداري وظُلمة والعزل', body: 'تذكر مادة تاريخية عن مخلاف الحبيشية تغييرات إدارية سنة 1357هـ وربط المنطقة بلواء إب بعد أن كانت تتبع قضاء رداع. وتُعرّف البيانات الإدارية الحديثة ظُلمة مركزاً للمديرية، بينما تسجل قائمة الدليل 22 عزلة. أما حدود كل عزلة وقراها فتحتاج إلى مطابقة مع سجل رسمي حديث.', status: 'documented', source: 'مادة تاريخية عن مخلاف الحبيشية والتقسيم الإداري', sourceUrl: 'https://www.thu-raein.com/index.php/ar/makhaleef-ar/hubaish-district-ar' }
 ];
 
 const DEFAULT_PLACES = [
-  { id: 'p1', cat: 'fort', title: 'حصن صهبان التاريخي', loc: 'عزلة صهبان • 2,420 م', distKm: 4.5, dir: 'شمال شرق', body: 'أحد أبرز الحصون الواردة في مواد دليل حبيش. يقع على قمة جبلية ويطل على أجزاء من المديرية ومخلاف جعفر.' },
-  { id: 'p2', cat: 'fort', title: 'حصن حَبِيش (جبل حبيش)', loc: 'مرتفعات حبيش • 2,350 م', distKm: 3.2, dir: 'شمال', body: 'معلم جبلي ارتبط اسمه بالمديرية. تذكر بيانات الدليل بقايا أسوار حجرية وصهاريج ومخازن حبوب في محيطه.' },
-  { id: 'p3', cat: 'mosque', title: 'الجامع الكبير في ظُلمة', loc: 'مركز ظُلمة • 1,890 م', distKm: 0.4, dir: 'المركز', body: 'مسجد في مركز المديرية، وتصفه مواد الدليل بالعمارة الحجرية التقليدية والسقف الخشبي.' },
-  { id: 'p4', cat: 'valley', title: 'وادي الدُّور ومدرجات البن', loc: 'المنحدرات الغربية • 1,580 م', distKm: 7.8, dir: 'غرب', body: 'وادي زراعي تذكر بيانات الدليل وجود مدرجات للبن والذرة الرفيعة وغيول موسمية فيه.' }
+  { id: 'p1', cat: 'fort', title: 'حصن صهبان التاريخي', loc: 'موضع صهبان — يحتاج مطابقة جغرافية', elevation: 'غير موثق ميدانياً', importance: 'إرث حصني وارد في حاشية تاريخية؛ موقعه الدقيق بالنسبة لحدود المديرية يحتاج تحققاً.', status: 'documented', source: 'حاشية تحقيق صفة جزيرة العرب، صفحة 197', sourceUrl: 'https://ablibrary.net/book_content/b/9942/205', body: 'تذكر حاشية طبعة صفة جزيرة العرب مخلاف صهبان والأمير الصهباني في القرن الثامن الهجري وعهده الرسولي، وتشير إلى حصن في المنطقة. لا تكفي هذه الإحالة وحدها لتأكيد أن كل موضع يشار إليه محلياً باسم حصن صهبان هو الحصن نفسه؛ لذلك لا نعتمد ارتفاعاً أو إحداثيات قبل المسح الميداني.' },
+  { id: 'p2', cat: 'fort', title: 'حصن حبيش (جبل حبيش)', loc: 'جبل حبيش — الموقع الدقيق قيد التحقق', elevation: 'غير موثق ميدانياً', importance: 'معلم مرتبط باسم الجبل والمديرية في الرواية المحلية.', status: 'local', body: 'يرتبط اسم الحصن بجبل حبيش في الذاكرة المحلية. يحتاج وصف الأسوار والصهاريج، وتحديد موضعها وحدودها، إلى تصوير ميداني ومقارنة بالخرائط والسجلات الأثرية قبل اعتماد تفاصيل معمارية أو تاريخ بناء.' },
+  { id: 'p3', cat: 'mosque', title: 'الجامع الكبير في ظُلمة', loc: 'مركز ظُلمة — العنوان التفصيلي قيد التوثيق', elevation: 'غير موثق ميدانياً', importance: 'معلم ديني واجتماعي في مركز المديرية.', status: 'local', body: 'يمثل الجامع الكبير نقطة مهمة في الحياة الدينية والاجتماعية في مركز ظُلمة. لا تتوفر في هذه النسخة وثيقة منشورة تثبت تاريخ البناء أو مراحل الترميم؛ يمكن إثراء البطاقة بصور الواجهة والنقوش وسجل الوقف بعد التحقق.' },
+  { id: 'p4', cat: 'valley', title: 'وادي الدُّور ومدرجات البن', loc: 'وادي الدُّور — يحتاج تحديد حدوده', elevation: 'غير موثق ميدانياً', importance: 'مشهد زراعي مرتبط بالمدرجات والبن في الرواية المحلية.', status: 'local', body: 'تصف الروايات المحلية الوادي بمدرجاته الزراعية ومحاصيل البن والحبوب. تعتمد قيمة المكان على شبكة المدرجات ومصادر المياه والعمل الزراعي؛ وتحتاج أسماء القرى والروافد والارتفاعات إلى توثيق ميداني.' },
+  { id: 'p5', cat: 'fort', title: 'حصن العارضة', loc: 'عزلة العارضة — الموضع الدقيق يحتاج تحققاً', elevation: 'غير موثق ميدانياً', importance: 'موقع حصني ضمن قائمة المعالم المقترحة للتوثيق.', status: 'local', body: 'يُدرج حصن العارضة ضمن أسماء المواقع التي يتداولها أبناء المنطقة. لم تتوفر إحداثيات أو دراسة منشورة تثبت تاريخ البناء أو مكوناته؛ ويستحسن توثيق مدخله وجدرانه وأي نقوش أو روايات مرتبطة به قبل كتابة تاريخ تفصيلي.' },
+  { id: 'p6', cat: 'fort', title: 'حصن المنار', loc: 'الموقع والعزلة بحاجة إلى تأكيد', elevation: 'غير موثق ميدانياً', importance: 'موقع تراثي مقترح ضمن سجل الحصون.', status: 'local', body: 'تحتاج بطاقة حصن المنار إلى تحديد موضعه بالاسم المحلي والإحداثيات، ثم توثيق ما بقي من منشآته. لا تنسب إليه هذه النسخة تاريخاً أو ارتفاعاً غير مسند.' },
+  { id: 'p7', cat: 'fort', title: 'حصن الشرف', loc: 'الموقع والعزلة بحاجة إلى تأكيد', elevation: 'غير موثق ميدانياً', importance: 'اسم حصن وارد في قائمة المواقع المقترحة.', status: 'local', body: 'يضاف حصن الشرف إلى سجل التراث المحلي بوصفه موقعاً يحتاج إلى التحقق. يمكن استكمال البطاقة بصور ميدانية ووصف التضاريس ومواد البناء وشهادات الأهالي.' },
+  { id: 'p8', cat: 'mountain', title: 'جبل عميقة', loc: 'عميقة — يلزم تثبيت نقطة القمة', elevation: 'غير موثق ميدانياً', importance: 'مرتفع جبلي مرتبط بالذاكرة المحلية والمشهد الريفي.', status: 'local', body: 'يُعرف جبل عميقة ضمن أسماء المرتفعات المتداولة في حبيش. لا تعتمد هذه النسخة ارتفاعاً رقمياً أو مسار وصول؛ إذ يتطلب ذلك قياساً جغرافياً وتحديد نقطة القمة ومداخل الجبل.' },
+  { id: 'p9', cat: 'mountain', title: 'جبل خضراء', loc: 'عزلة جبل خضراء — الارتفاع قيد التحقق', elevation: 'غير موثق ميدانياً', importance: 'مرتفع يحمل اسم إحدى العزل الواردة في قائمة الدليل.', status: 'local', body: 'يرتبط اسم جبل خضراء بالتقسيم المحلي وبالطبيعة الجبلية للمديرية. يمكن أن توثق البطاقة المدرجات والقرى القريبة ومصادر المياه بعد مراجعة الخرائط والزيارات الميدانية.' },
+  { id: 'p10', cat: 'mountain', title: 'مرتفعات ظُلمة', loc: 'محيط مركز ظُلمة', elevation: 'غير موثق ميدانياً', importance: 'تطل على مركز المديرية ومحيطه العمراني والزراعي.', status: 'local', body: 'تجمع مرتفعات ظُلمة بين المشهد العمراني والحقول والمنحدرات. لا تعني التسمية قمة واحدة محددة؛ ويحتاج تحديد نطاقها وارتفاعاتها إلى طبقة تضاريس أو مسح GPS.' },
+  { id: 'p11', cat: 'mountain', title: 'جبل بني شبيب', loc: 'بني شبيب — يلزم التحقق من الامتداد', elevation: 'غير موثق ميدانياً', importance: 'مرتفع مرتبط باسم عزلة بني شبيب.', status: 'local', body: 'يرتبط الجبل باسم بني شبيب في القائمة المحلية. توثق البطاقة حالياً الاسم فقط، وتنتظر تحديد القمم والقرى والطرق الزراعية ومصادر المياه من مصادر محلية معتمدة.' },
+  { id: 'p12', cat: 'valley', title: 'وادي بناء (الروافد العليا)', loc: 'الروافد العليا — المسار يحتاج مطابقة', elevation: 'غير موثق ميدانياً', importance: 'مجرى مائي ومشهد زراعي يحتاج رسم حوضه وروافده.', status: 'local', body: 'يُدرج الجزء الأعلى من وادي بناء بوصفه نطاقاً طبيعياً يحتاج إلى رسم مجراه وروافده ومواقع الغيول. لا تعرض البطاقة مسافة أو اتجاه تدفق من دون قياس ميداني.' },
+  { id: 'p13', cat: 'valley', title: 'وادي الشعيب', loc: 'الموقع التفصيلي قيد التحقق', elevation: 'غير موثق ميدانياً', importance: 'وادي محلي مقترح للتوثيق الطبيعي والزراعي.', status: 'local', body: 'تحتاج هذه البطاقة إلى تعيين حدود الوادي والقرى المحاذية وموسمية جريانه. يمكن إكمالها بصور للمنحدرات والمدرجات ومواقع عبور السيول.' },
+  { id: 'p14', cat: 'valley', title: 'غيول حبيش الموسمية', loc: 'مواضع متعددة — تحتاج حصر مواقع', elevation: 'غير موثق ميدانياً', importance: 'مصادر مياه موسمية ذات صلة بالزراعة والغطاء النباتي.', status: 'local', body: 'تشير التسمية إلى عيون ومجاري مياه موسمية متفرقة. لا تمثل البطاقة غيلاً واحداً بإحداثيات معتمدة؛ وينبغي تسجيل كل موقع على حدة وقياس استمرارية جريانه وموسم ظهوره.' },
+  { id: 'p15', cat: 'mosque', title: 'مسجد صهبان الأثري', loc: 'صهبان — العنوان يحتاج توثيقاً', elevation: 'غير موثق ميدانياً', importance: 'موقع ديني تراثي مقترح لتوثيق العمارة والوقف.', status: 'local', body: 'يُذكر المسجد ضمن قائمة المواقع التراثية المحلية. لا تتوفر في هذه النسخة وثيقة تثبت سنة بنائه أو وصفاً أثرياً مستقلاً؛ ويمكن التحقق من ذلك عبر النقوش وسجلات الأوقاف وروايات أئمة المسجد.' },
+  { id: 'p16', cat: 'mosque', title: 'المساجد العلمية القديمة في بني سيف والأشعوب', loc: 'بني سيف والأشعوب — المواقع الفردية غير محصورة', elevation: 'غير موثق ميدانياً', importance: 'ذاكرة التعليم الديني ومجالس القراءة في القرى.', status: 'local', body: 'تتداول الذاكرة المحلية وجود مساجد ومجالس تعليم قديمة في بني سيف والأشعوب. هذه بطاقة تجميعية لا تمثل مسجداً واحداً، ويجب فصل كل مبنى في سجل مستقل بعد حصر الاسم والوقف والنقوش وتاريخ الترميم.' }
 ];
 
 const DEFAULT_SOCIALS = [{ name: 'مديرية حبيش HUBAISH DISTRICT', url: 'https://www.facebook.com/share/g/1JMCzDUsdZ/' }, { name: 'المركز الوطني للمعلومات اليمني', url: 'https://yemen-nic.info/contents/Brief/detail.php?ID=7617&phrase_id=1191776&print=Y' }];
@@ -64,14 +78,19 @@ function validatePlace(item, index = 0) {
   if (!item || typeof item !== 'object' || Array.isArray(item)) return null;
   const title = cleanText(item.title, 90);
   const body = cleanText(item.body, 700);
-  const loc = cleanText(item.loc, 90);
+  const loc = cleanText(item.loc, 120);
   const cat = ['fort', 'mosque', 'valley', 'mountain'].includes(item.cat) ? item.cat : 'fort';
   if (!title || !body) return null;
-  const distance = Number(item.distKm);
+  const sourceUrl = validHttpUrl(item.sourceUrl) ? cleanText(item.sourceUrl, 500) : '';
   return {
-    id: /^[a-zA-Z0-9_-]{1,100}$/.test(String(item.id || '')) ? String(item.id) : makeId(`p${index}`),
+    id: /^[a-zA-Z0-9_-]{1,100}$/.test(String(item.id || '')) ? String(item.id) : makeId('p' + index),
     cat, title, body, loc: loc || 'مديرية حبيش',
-    ...(Number.isFinite(distance) && distance >= 0 && distance <= 1000 ? { distKm: distance } : {}),
+    elevation: cleanText(item.elevation, 60) || 'غير موثق ميدانياً',
+    importance: cleanText(item.importance, 300),
+    source: cleanText(item.source, 300),
+    sourceUrl,
+    status: ['documented', 'local', 'unverified'].includes(item.status) ? item.status : 'unverified',
+    ...(Number.isFinite(Number(item.distKm)) && Number(item.distKm) >= 0 && Number(item.distKm) <= 1000 ? { distKm: Number(item.distKm) } : {}),
     dir: cleanText(item.dir, 40)
   };
 }
@@ -82,16 +101,26 @@ function validateHistory(item, index = 0) {
   const body = cleanText(item.body, 700);
   if (!title || !body) return null;
   return {
-    id: /^[a-zA-Z0-9_-]{1,100}$/.test(String(item.id || '')) ? String(item.id) : makeId(`h${index}`),
+    id: /^[a-zA-Z0-9_-]{1,100}$/.test(String(item.id || '')) ? String(item.id) : makeId('h' + index),
     era: item.era === 'modern' ? 'modern' : 'ancient',
-    period: cleanText(item.period, 70), title, body
+    period: cleanText(item.period, 70), title, body,
+    status: ['documented', 'local', 'unverified'].includes(item.status) ? item.status : 'unverified',
+    source: cleanText(item.source, 300),
+    sourceUrl: validHttpUrl(item.sourceUrl) ? cleanText(item.sourceUrl, 500) : ''
   };
 }
 
 function normalizeState(value) {
   const source = value && typeof value === 'object' && !Array.isArray(value) ? value : {};
-  const places = Array.isArray(source.places) ? source.places.slice(0, 200).map(validatePlace).filter(Boolean) : DEFAULT_PLACES.map(item => ({ ...item }));
-  const history = Array.isArray(source.history) ? source.history.slice(0, 100).map(validateHistory).filter(Boolean) : DEFAULT_HISTORY.map(item => ({ ...item }));
+  const migrateContent = Number(source.contentVersion || 1) < 3;
+  let places = Array.isArray(source.places) ? source.places.slice(0, 200).map(validatePlace).filter(Boolean) : DEFAULT_PLACES.map(item => ({ ...item }));
+  let history = Array.isArray(source.history) ? source.history.slice(0, 100).map(validateHistory).filter(Boolean) : DEFAULT_HISTORY.map(item => ({ ...item }));
+  if (migrateContent) {
+    const customPlaces = places.filter(item => !DEFAULT_PLACES.some(base => base.id === item.id));
+    const customHistory = history.filter(item => !DEFAULT_HISTORY.some(base => base.id === item.id));
+    places = [...DEFAULT_PLACES.map(item => ({ ...item })), ...customPlaces];
+    history = [...DEFAULT_HISTORY.map(item => ({ ...item })), ...customHistory];
+  }
   const socials = Array.isArray(source.socials) ? source.socials.slice(0, 50).map(item => {
     if (!item || typeof item !== 'object') return null;
     const name = cleanText(item.name, 70);
@@ -101,6 +130,7 @@ function normalizeState(value) {
   const ids = new Set([...places, ...history].map(item => item.id));
   const favs = Array.isArray(source.favs) ? source.favs.filter(id => typeof id === 'string' && ids.has(id)).slice(0, 300) : [];
   return {
+    contentVersion: 3,
     theme: source.theme === 'light' ? 'light' : 'dark',
     lang: I18N[source.lang] ? source.lang : 'AR',
     tab: ['home', 'history', 'places', 'uzal', 'more'].includes(source.tab) ? source.tab : 'home',
@@ -148,7 +178,8 @@ function applyLang(lang) {
   const dictionary = I18N[state.lang];
   document.documentElement.lang = state.lang.toLowerCase();
   document.documentElement.dir = dictionary.dir;
-  document.getElementById('langCode').textContent = state.lang;
+  const languageCode = document.getElementById('langCode');
+  if (languageCode) languageCode.textContent = state.lang;
   const languageSelect = document.getElementById('langSelect');
   if (languageSelect) languageSelect.value = state.lang;
   document.querySelectorAll('[data-i18n]').forEach(element => {
@@ -194,20 +225,58 @@ function isSaved(id) {
   return state.favs.includes(id);
 }
 
+function heritageIcon(kind = 'fort', className = 'heritage-icon') {
+  const paths = {
+    fort: 'M3 21h18M5 21V9l3-2 4 2 4-2 3 2v12M9 21v-5h6v5M8 11h.01M16 11h.01',
+    mountain: 'm2 20 7-12 4 7 3-5 6 10H2ZM9 8l2-4 3 5',
+    valley: 'M2 7c5 0 5 10 10 10S17 7 22 7M3 21h18M7 13h10',
+    mosque: 'M3 21h18M5 21V10h14v11M9 10V7a3 3 0 0 1 6 0v3M12 4V2M8 14v3M16 14v3',
+    scroll: 'M7 4h11a2 2 0 0 1 2 2v13H7a3 3 0 0 1 0-6h13M7 13V4a2 2 0 0 0-2-2',
+    compass: 'm12 2 3 8-3 12-3-12 3-8ZM12 10l8-3-8 3-8-3 8 3ZM12 10v4'
+  };
+  const ns = 'http://www.w3.org/2000/svg';
+  const svg = document.createElementNS(ns, 'svg');
+  svg.setAttribute('viewBox', '0 0 24 24');
+  svg.setAttribute('class', className);
+  svg.setAttribute('aria-hidden', 'true');
+  svg.setAttribute('fill', 'none');
+  svg.setAttribute('stroke', 'currentColor');
+  svg.setAttribute('stroke-width', '1.65');
+  svg.setAttribute('stroke-linecap', 'round');
+  svg.setAttribute('stroke-linejoin', 'round');
+  const path = document.createElementNS(ns, 'path');
+  path.setAttribute('d', paths[kind] || paths.fort);
+  svg.append(path);
+  return svg;
+}
+
+function localizedDirectoryItem(item) {
+  const lang = state.lang || 'AR';
+  return {
+    ...item,
+    title: item.titleI18n?.[lang] || item.title,
+    body: item.bodyI18n?.[lang] || item.body,
+    loc: item.locI18n?.[lang] || item.loc
+  };
+}
+
 function createContentCard(item, options = {}) {
+  const view = localizedDirectoryItem(item);
+  const isHistory = state.history.some(entry => entry.id === item.id);
   const card = element('article', 'item-card');
-  if (options.meta) {
-    const meta = element('div', 'item-meta');
-    meta.append(makeTag(options.meta, true));
-    if (options.extraMeta) meta.append(makeTag(options.extraMeta));
-    card.append(meta);
-  }
-  card.append(element('h3', 'item-title', item.title));
-  card.append(element('p', 'item-body', item.body));
+  card.dataset.exploreId = item.id;
+  card.dataset.exploreKind = isHistory ? 'history' : 'place';
+  const category = { fort: 'حصون وقلاع', mountain: 'جبال ومرتفعات', valley: 'أودية ومياه', mosque: 'مساجد' }[item.cat] || (isHistory ? 'محطة تاريخية' : 'معلم');
+  card.classList.add(item.cat ? ('category-' + item.cat) : 'category-history');
+  const meta = element('div', 'item-meta');
+  meta.append(heritageIcon(isHistory ? 'scroll' : (item.cat || 'fort')), makeTag(options.meta || (isHistory ? 'محطة تاريخية' : 'معلم'), true));
+  meta.append(makeTag(category, false));
+  if (options.extraMeta) meta.append(makeTag(options.extraMeta));
+  card.append(meta, element('h3', 'item-title', view.title), element('p', 'item-body', view.body));
   const actions = element('div', 'card-actions');
   const favButton = createAction(isSaved(item.id) ? '★ محفوظ' : '☆ حفظ', 'favId', item.id);
   if (isSaved(item.id)) favButton.classList.add('saved');
-  actions.append(favButton, createAction('✦ اسأل المساعد', 'ask', item.title), createAction('التفاصيل', 'detail', item.id));
+  actions.append(favButton, createAction('اسأل المساعد', 'ask', view.title), createAction('التفاصيل', 'detail', item.id));
   card.append(actions);
   return card;
 }
@@ -236,7 +305,7 @@ function renderPlaces(category = currentPlaceCategory, query = '') {
   target.replaceChildren();
   if (!items.length) return appendEmpty(target, 'لا توجد معالم مطابقة.');
   items.forEach(item => {
-    const extra = Number.isFinite(item.distKm) ? `🧭 ${item.distKm} كم • ${item.dir || ''}` : '';
+    const extra = Number.isFinite(item.distKm) ? `مسافة تقديرية ${item.distKm} كم • ${item.dir || ''}` : '';
     target.append(createContentCard(item, { meta: item.loc, extraMeta: extra }));
   });
 }
@@ -252,7 +321,9 @@ function renderUzal(query = '') {
     const card = element('article', 'item-card');
     const row = element('div', 'item-meta');
     row.append(makeTag(`عزلة #${item.number}`, true));
-    card.append(row, element('h3', 'item-title', `عزلة ${item.name}`), createAction('✦ استكشف', 'ask', `عزلة ${item.name} في مديرية حبيش`));
+    card.dataset.exploreId = item.name;
+    card.dataset.exploreKind = 'uzal';
+    card.append(heritageIcon('mountain'), row, element('h3', 'item-title', `عزلة ${item.name}`), createAction('استكشف', 'ask', `عزلة ${item.name} في مديرية حبيش`));
     target.append(card);
   });
 }
@@ -584,8 +655,8 @@ function bindEvents() {
   document.querySelectorAll('.nav-btn').forEach(button => button.addEventListener('click', () => switchTab(button.dataset.tab)));
   document.getElementById('homeLogoBtn').addEventListener('click', () => { switchTab('home'); window.scrollTo({ top: 0, behavior: 'smooth' }); });
   document.getElementById('themeToggleBtn').addEventListener('click', () => applyTheme(state.theme === 'dark' ? 'light' : 'dark'));
-  const languages = ['AR', 'EN', 'TR', 'FR'];
-  document.getElementById('langToggleBtn').addEventListener('click', () => applyLang(languages[(languages.indexOf(state.lang) + 1) % languages.length]));
+  const languageSelect = document.getElementById('langSelect');
+  languageSelect?.addEventListener('change', () => applyLang(languageSelect.value));
   document.getElementById('globalSearchInput').addEventListener('input', event => renderGlobalSearch(event.target.value));
   document.getElementById('histSearchInput').addEventListener('input', event => renderHistory(currentEra, event.target.value));
   document.getElementById('placeSearchInput').addEventListener('input', event => renderPlaces(currentPlaceCategory, event.target.value));
@@ -616,6 +687,8 @@ function bindEvents() {
   // Full-state JSON import is handled by the extended feature layer.
   document.getElementById('resetLocalBtn').addEventListener('click', resetLocalData);
   document.body.addEventListener('click', event => {
+    const explored = event.target.closest('[data-explore-id]');
+    if (explored) window.HubaishFeatures?.markExplored?.(explored.dataset.exploreId, explored.dataset.exploreKind);
     const fav = event.target.closest('[data-fav-id]');
     if (fav) toggleFavorite(fav.dataset.favId);
     const detail = event.target.closest('[data-detail]');
@@ -641,6 +714,38 @@ function bindEvents() {
   window.addEventListener('offline', () => showToast('أنت الآن دون اتصال. المحتوى المحفوظ متاح.'));
 }
 
+function bindServiceWorkerUpdates() {
+  if (!('serviceWorker' in navigator) || !(location.protocol === 'https:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1')) return;
+  const banner = document.getElementById('swUpdateBanner');
+  const updateButton = document.getElementById('swUpdateBtn');
+  let registrationRef = null;
+  let reloading = false;
+  const offerUpdate = registration => {
+    if (!registration?.waiting || !navigator.serviceWorker.controller || !banner) return;
+    banner.classList.remove('hidden');
+    updateButton?.addEventListener('click', () => registration.waiting?.postMessage({ type: 'SKIP_WAITING' }), { once: true });
+  };
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    if (reloading) return;
+    reloading = true;
+    window.location.reload();
+  });
+  navigator.serviceWorker.register(new URL('./sw.js', document.baseURI).href)
+    .then(registration => {
+      registrationRef = registration;
+      offerUpdate(registration);
+      registration.addEventListener('updatefound', () => {
+        const installing = registration.installing;
+        installing?.addEventListener('statechange', () => {
+          if (installing.state === 'installed') offerUpdate(registration);
+        });
+      });
+      registration.update().catch(() => {});
+    })
+    .catch(() => showToast('تعذر تفعيل وضع العمل دون إنترنت.'));
+  window.addEventListener('online', () => registrationRef?.update?.().catch(() => {}));
+}
+
 function init() {
   applyTheme(state.theme);
   applyLang(state.lang);
@@ -650,9 +755,7 @@ function init() {
   updatePrayerUI();
   switchTab(state.tab || 'home');
   window.setInterval(updatePrayerUI, 1000);
-  if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1')) {
-    navigator.serviceWorker.register(new URL('./sw.js', document.baseURI).href).catch(() => showToast('تعذر تفعيل وضع العمل دون إنترنت.'));
-  }
+  bindServiceWorkerUpdates();
 }
 
 document.addEventListener('DOMContentLoaded', init, { once: true });
