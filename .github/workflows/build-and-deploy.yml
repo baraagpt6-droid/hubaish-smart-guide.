@@ -81,7 +81,9 @@ jobs:
         run: npm run build
       - name: Add Android platform
         run: npx cap add android
-      - name: Apply Hubaish launcher icons
+      - name: Generate native icons and splash screens
+        run: npx capacitor-assets generate --android
+      - name: Apply Hubaish adaptive launcher icons
         run: python3 scripts/apply-android-icons.py
       - name: Sync Capacitor
         run: npx cap sync android
