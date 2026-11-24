@@ -1,0 +1,10 @@
+name = "hubaish-smart-guide-cms"
+main = "worker.js"
+compatibility_date = "2026-11-24"
+
+[[kv_namespaces]]
+binding = "ADMINS"
+id = "REPLACE_WITH_KV_NAMESPACE_ID"
+
+[vars]
+ALLOWED_ORIGIN = "https://baraag6-droid.github.io"
