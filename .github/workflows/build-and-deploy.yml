@@ -113,6 +113,7 @@ jobs:
               signingConfigs {
                   hubaishRelease {
                       storeFile file(System.getenv("ANDROID_KEYSTORE_PATH"))
+                      storeType "JKS"
                       storePassword System.getenv("KEYSTORE_PASSWORD")
                       keyAlias System.getenv("KEY_ALIAS")
                       keyPassword System.getenv("KEY_PASSWORD")
