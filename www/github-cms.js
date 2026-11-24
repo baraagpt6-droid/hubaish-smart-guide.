@@ -113,6 +113,7 @@
   function mapPlace(row,l){
     return {
       id:String(row.id||makeId('landmark')),
+      cmsOverride:true,
       cat:['fort','mosque','valley','mountain'].includes(row.category)?row.category:'fort',
       title:localized(row,'title',l),
       loc:localized(row,'location',l)||'مديرية حبيش',
@@ -127,6 +128,7 @@
   function mapHistory(row,l){
     return {
       id:String(row.id||makeId('history')),
+      cmsOverride:true,
       era:row.era==='modern'?'modern':'ancient',
       title:localized(row,'title',l),
       period:localized(row,'period',l),
