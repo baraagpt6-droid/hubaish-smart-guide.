@@ -183,88 +183,51 @@
       return false;
     }finally{syncing=false}
   }
-  function isAdmin(){return !!githubToken||!!workerToken}
+  function isAdmin(){return !!workerToken&&!!workerUser?.username}
   function workerRequest(path,options={}){
-    if(!workerUrl)throw new Error('أدخل رابط Cloudflare Worker أولاً.');
-    return fetch(workerUrl.replace(/\/$/,'')+path,{...options,headers:{...(options.headers||{}),...(workerToken?{Authorization:'Bearer '+workerToken}:{})},cache:'no-store'});
+    workerUrl=DEFAULT_WORKER_URL;
+    return fetch(workerUrl+path,{...options,headers:{...(options.headers||{}),...(workerToken?{Authorization:'Bearer '+workerToken}:{})},cache:'no-store'});
   }
-  function setSetupVisibility(required,message){
-    const area=$('workerSetupArea');if(area)area.classList.toggle('hidden',required===false);
-    const hint=$('workerSetupStatus');if(hint&&message)hint.textContent=message;
+  async function readWorkerJson(response,fallback){
+    const raw=await response.text();let result={};try{result=raw?JSON.parse(raw):{}}catch{throw new Error('أعاد الخادم استجابة غير صالحة.')}
+    if(!response.ok)throw new Error(result.error||fallback||('تعذر تنفيذ الطلب (HTTP '+response.status+').'));
+    return result;
   }
-  async function checkWorkerSetup(endpoint,quiet=false){
-    const value=String(endpoint||'').trim().replace(/\/$/,'');
-    if(!value){setSetupVisibility(true,'أدخل رابط Worker للتحقق من حالة التأسيس.');return null}
-    let url;
-    try{url=new URL(value);if(url.protocol!=='https:')throw new Error('يجب أن يبدأ رابط Worker بـ https://')}
-    catch(error){setSetupVisibility(true,error.message||'رابط Worker غير صالح.');if(!quiet)status(error.message,true);return null}
-    try{
-      const response=await fetch(value+'/setup/status',{cache:'no-store',headers:{Accept:'application/json'}});
-      const result=await response.json();
-      if(!response.ok)throw new Error(result.error||'تعذر فحص حالة Worker.');
-      const setupMessage=!result.setupRequired
-        ?'تم تأسيس النظام مسبقاً. استخدم نموذج دخول المشرف.'
-        :result.bootstrapKeyConfigured===false
-          ?'لم يتم إنشاء المشرف الأول، لكن BOOTSTRAP_KEY غير مضبوط في Cloudflare Secrets. أضف المفتاح ثم أعد الفحص.'
-          :'لم يتم إنشاء المشرف الأول بعد. أكمل الحقول الأربعة للتأسيس.';
-      setSetupVisibility(!!result.setupRequired,setupMessage);
-      if($('workerSetupEndpoint'))$('workerSetupEndpoint').value=value;
-      if($('workerEndpoint'))$('workerEndpoint').value=value;
-      return !!result.setupRequired;
-    }catch(error){
-      setSetupVisibility(true,'تعذر الاتصال بـ Worker: '+error.message);
-      if(!quiet)status(error.message,true);
-      return null;
-    }
-  }
-  async function finishWorkerLogin(endpoint,username,password,remember,showMessage=true){
-    const response=await fetch(endpoint+'/auth/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username,password,remember:!!remember}),cache:'no-store'});
-    const result=await response.json();
-    if(!response.ok)throw new Error(result.error||'تعذر تسجيل الدخول.');
-    workerUrl=endpoint;
-    workerToken=result.token;workerUser=result.user;
+  async function finishWorkerLogin(username,password,remember){
+    const response=await fetch(DEFAULT_WORKER_URL+'/auth/login',{method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},body:JSON.stringify({username:String(username||'').trim(),password,remember:!!remember}),cache:'no-store'});
+    const result=await readWorkerJson(response,'اسم المستخدم أو كلمة المرور غير صحيحة.');
+    if(!result.token||!result.user?.username)throw new Error('لم يرسل خادم الإدارة بيانات جلسة صالحة.');
+    workerUrl=DEFAULT_WORKER_URL;workerToken=result.token;workerUser=result.user;
     const store=remember?localStorage:sessionStorage,other=remember?sessionStorage:localStorage;
-    store.setItem('hubaish_worker_session',workerToken);store.setItem('hubaish_worker_user',JSON.stringify(workerUser));
-    other.removeItem('hubaish_worker_session');other.removeItem('hubaish_worker_user');
-    const latest=await publicFetch();documentData=latest;saveCache();applyCached();adminStatus();renderAdminList();
-    await loadWorkerAdminData();
-    adminStatus();setSetupVisibility(false,'تم تأسيس النظام وتسجيل الدخول.');
-    if(showMessage){status('تم تسجيل الدخول عبر Cloudflare Worker.',false);toast('مرحباً '+(workerUser.displayName||workerUser.username))}
+    store.setItem('hubaish_worker_session',workerToken);store.setItem('hubaish_worker_user',JSON.stringify(workerUser));other.removeItem('hubaish_worker_session');other.removeItem('hubaish_worker_user');
+    const verified=await readWorkerJson(await workerRequest('/auth/me'),'تعذر تأكيد جلسة المشرف.');
+    if(!verified.user?.username)throw new Error('جلسة المصادقة غير مكتملة.');
+    workerUser=verified.user;store.setItem('hubaish_worker_user',JSON.stringify(workerUser));
+    adminStatus();
+    try{documentData=await publicFetch();saveCache();applyCached()}catch{applyCached()}
+    renderAdminList();
+    if(workerUser.role==='super_admin'){try{await loadWorkerAdminData()}catch(error){status('تم الدخول، لكن تعذر تحميل إدارة الحسابات: '+error.message,true)}}
+    adminStatus();status('تم تسجيل الدخول والتحقق من الصلاحيات.',false);toast('مرحباً '+(workerUser.displayName||workerUser.username));
   }
   async function workerLogin(event){
-    event.preventDefault();
-    workerUrl=String($('workerEndpoint')?.value||DEFAULT_WORKER_URL).trim().replace(/\/$/,'')||DEFAULT_WORKER_URL;
+    event.preventDefault();workerUrl=DEFAULT_WORKER_URL;
+    const submit=$('workerLoginForm')?.querySelector('button[type="submit"]');
     const username=String($('workerUsername')?.value||'').trim(),password=String($('workerPassword')?.value||'');
     if(!username||!password){status('أدخل اسم المستخدم وكلمة المرور.',true);return}
-    try{
-      status('جارٍ التحقق من حساب المشرف...',false);
-      await finishWorkerLogin(workerUrl,username,password,!!$('workerRemember')?.checked);
-    }catch(error){workerToken='';workerUser=null;sessionStorage.removeItem('hubaish_worker_session');localStorage.removeItem('hubaish_worker_session');adminStatus();status(error.message,true)}
-    finally{if($('workerPassword'))$('workerPassword').value=''}
+    if(submit){submit.disabled=true;submit.dataset.originalText=submit.textContent;submit.textContent='جارٍ التحقق...'}
+    status('جارٍ التحقق من حساب المشرف...',false);
+    try{await finishWorkerLogin(username,password,!!$('workerRemember')?.checked);if($('workerPassword'))$('workerPassword').value=''}catch(error){
+      workerToken='';workerUser=null;['hubaish_worker_session','hubaish_worker_user'].forEach(key=>{localStorage.removeItem(key);sessionStorage.removeItem(key)});
+      adminStatus();status(error.message||'تعذر تسجيل الدخول. حاول مرة أخرى.',true);
+    }finally{if(submit){submit.disabled=false;submit.textContent=submit.dataset.originalText||'دخول آمن';delete submit.dataset.originalText}}
   }
-  async function firstAdminSetup(event){
-    event.preventDefault();
-    const endpoint=String($('workerSetupEndpoint')?.value||DEFAULT_WORKER_URL).trim().replace(/\/$/,'')||DEFAULT_WORKER_URL;
-    const bootstrapKey=String($('workerBootstrapKey')?.value||'');
-    const username=String($('workerSetupUsername')?.value||'').trim();
-    const password=String($('workerSetupPassword')?.value||'');
-    if(!bootstrapKey||!username||password.length<12){status('أكمل مفتاح التأسيس واسم المستخدم وكلمة المرور. كلمة المرور يجب أن تكون 12 حرفاً على الأقل.',true);return}
-    let base;
-    try{base=new URL(endpoint);if(base.protocol!=='https:')throw new Error('رابط Worker يجب أن يستخدم HTTPS.')}
-    catch(error){status(error.message,true);return}
-    try{
-      status('جارٍ إنشاء حساب المشرف العام الأول...',false);
-      const response=await fetch(endpoint+'/setup',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({bootstrapKey,username,password,displayName:username}),cache:'no-store'});
-      const result=await response.json();
-      if(!response.ok)throw new Error(result.error||'فشل تأسيس النظام.');
-      if($('workerEndpoint'))$('workerEndpoint').value=endpoint;
-      if($('workerSetupForm'))$('workerSetupForm').reset();
-      const remember=!!$('workerRemember')?.checked;
-      await finishWorkerLogin(endpoint,username,password,remember,false);
-      status('تم إنشاء المشرف العام وتفعيل الربط وتسجيل الدخول بنجاح. احذف BOOTSTRAP_KEY من Cloudflare Worker Secrets الآن.',false);
-      toast('تم تأسيس دليل حبيش. مرحباً بالمشرف العام.');
-    }catch(error){status(error.message,true);toast('تعذر تأسيس النظام. تحقق من Worker Secrets وBootstrap Key.')}
-    finally{if($('workerBootstrapKey'))$('workerBootstrapKey').value='';if($('workerSetupPassword'))$('workerSetupPassword').value=''}
+  async function restoreWorkerSession(){
+    if(!workerToken){adminStatus();return}
+    try{const verified=await readWorkerJson(await workerRequest('/auth/me'),'انتهت صلاحية الجلسة.');workerUser=verified.user;if(workerUser.role==='super_admin')await loadWorkerAdminData();adminStatus()}catch{signOut()}
+  }
+  function signOut(){
+    workerToken='';workerUser=null;['hubaish_worker_session','hubaish_worker_user'].forEach(key=>{localStorage.removeItem(key);sessionStorage.removeItem(key)});
+    adminStatus();status('تم تسجيل الخروج ومسح جلسة المشرف من هذا الجهاز.',false);renderAdminList();
   }
   async function loadWorkerAdminData(){
     if(workerUser?.role!=='super_admin')return;
