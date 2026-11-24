@@ -17,10 +17,10 @@ const UZAL_22 = [
 const DEFAULT_HISTORY = [
   { id: 'h1', era: 'ancient', period: 'قبل الإسلام • رواية تحتاج تدقيقاً أثرياً', title: 'الجذور القديمة والحصون والصهاريج', body: 'تربط بعض الكتابات المحلية اسم حبيش بأصول حميرية أو سبئية، وتتناقل روايات عن حصون وصهاريج ومدرجات قديمة. لا يتوفر حتى الآن مسح أثري منشور يؤرخ هذه المنشآت في كل مواقع المديرية؛ لذلك يعرض هذا الربط بوصفه فرضية بحثية لا حقيقة محسومة.', status: 'local', source: 'كتاب نفيس الثمن في أسباب مسميات مديريات ومحافظات اليمن، مع الحاجة إلى تحقق أثري مستقل', sourceUrl: 'https://www.nafsam.org/ar/wp-content/uploads/2022/05/2022-05-28_01-12-25_532941-nafsam.pdf' },
   { id: 'h2', era: 'ancient', period: 'القرن الرابع الهجري وما بعده • نص محقق وحاشية', title: 'حبيش في شروح كتب الهمداني', body: 'يقدم كتاب صفة جزيرة العرب إطاراً مهماً لجغرافية اليمن القديمة. وفي حاشية تحقيق محمد الأكوع ترد إحالات إلى اسم حبيش وجبل حبيش ضمن ضبط المواضع. ينبغي التمييز بين نص الهمداني نفسه وبين تعليقات المحقق، وعدم اعتبار الإحالة وحدها دليلاً على حدود المديرية الحديثة.', status: 'documented', source: 'صفة جزيرة العرب، حاشية التحقيق، صفحة 197 في النسخة الرقمية', sourceUrl: 'https://ablibrary.net/book_content/b/9942/205' },
-  { id: 'h3', era: 'ancient', period: 'القرن الثامن الهجري', title: 'صهبان في العصر الرسولي', body: 'تذكر حاشية طبعة صفة جزيرة العرب أن تسمية مخلاف صهبان ارتبطت في القرن الثامن الهجري بالأمير الصهباني في عهد الدولة الرسولية، وتشير إلى حصن في المنطقة. لا تثبت هذه الإحالة وحدها صلة كل الحصون المنسوبة اليوم إلى حبيش بالعهد الصليحي؛ لذلك يقتصر العرض على ما تقوله الحاشية.', status: 'documented', source: 'حاشية تحقيق صفة جزيرة العرب، صفحة 197', sourceUrl: 'https://ablibrary.net/book_content/b/9942/205' },
+  { id: 'h3', era: 'ancient', period: 'القرن الثامن الهجري', title: 'صهبان في العصر الرسولي', body: 'تتناقل بعض الروايات المحلية أن مرتفعات إب وحصونها كانت ذات أهمية في العهد الصليحي، لكن لا تتوفر هنا وثيقة تربط حصن صهبان تحديداً بدور صليحي. أما في العهد الرسولي، فتذكر حاشية طبعة صفة جزيرة العرب ارتباط مخلاف صهبان بالأمير الصهباني في القرن الثامن الهجري وتشير إلى حصن في المنطقة. هذه إحالة تاريخية مهمة، لكنها لا تثبت وحدها هوية كل موضع حصني متداول اليوم.', status: 'documented', source: 'حاشية تحقيق صفة جزيرة العرب، صفحة 197', sourceUrl: 'https://ablibrary.net/book_content/b/9942/205' },
   { id: 'h4', era: 'ancient', period: 'العصور الإسلامية • رواية محلية', title: 'المساجد والمدارس والحركة العلمية', body: 'تتداول الذاكرة المحلية أخبار مساجد قديمة ومجالس تعليم في ظُلمة وصهبان وبني سيف والأشعوب. لم تتوفر فهارس منشورة أو تواريخ تأسيس موثقة لهذه المواقع أثناء إعداد هذه النسخة؛ ويحتاج هذا المحور إلى مقابلات مع الأهالي، وتصوير النقوش والوثائق الوقفية إن وجدت.', status: 'local', source: 'روايات محلية أولية تحتاج جمع وثائق ومقابلات ميدانية' },
   { id: 'h5', era: 'modern', period: 'أبريل–مايو 1919م', title: 'انتفاضة حبيش ضد الحكم الإمامي', body: 'تورد دراسات صحفية تاريخية ومقتطفات من مذكرات وتقارير معاصرة مقاومة أبناء حبيش للحملة الإمامية سنة 1919م، وتذكر الشيخ محمد عائض العقاب ومواجهات في محيط حبيش. تختلف الروايات في بعض تفاصيل المعارك ومدتها؛ لذا يعرض الحدث مع إحالاته، لا بوصف كل رقم متداول حقيقة متفقاً عليها.', status: 'documented', source: 'دراسة الساحل الغربي عن انتفاضات إب، ومقال نشوان نيوز عن حبيش', sourceUrl: 'https://www.alsahil.net/news20987.html' },
-  { id: 'h6', era: 'modern', period: '1357هـ / نحو 1938م وما بعده', title: 'التحول الإداري وظُلمة والعزل', body: 'تذكر مادة تاريخية عن مخلاف الحبيشية تغييرات إدارية سنة 1357هـ وربط المنطقة بلواء إب بعد أن كانت تتبع قضاء رداع. وتُعرّف البيانات الإدارية الحديثة ظُلمة مركزاً للمديرية، بينما تسجل قائمة الدليل 22 عزلة. أما حدود كل عزلة وقراها فتحتاج إلى مطابقة مع سجل رسمي حديث.', status: 'documented', source: 'مادة تاريخية عن مخلاف الحبيشية والتقسيم الإداري', sourceUrl: 'https://www.thu-raein.com/index.php/ar/makhaleef-ar/hubaish-district-ar' }
+  { id: 'h6', era: 'modern', period: '1357هـ / نحو 1938م وما بعده', title: 'التحول الإداري وظُلمة والعزل', body: 'تذكر مادة تاريخية عن مخلاف الحبيشية تغييرات إدارية سنة 1357هـ وربط المنطقة بلواء إب بعد أن كانت تتبع قضاء رداع. وتُعرّف البيانات الإدارية المتاحة ظُلمة مركزاً للمديرية، بينما تسجل قائمة الدليل 22 عزلة. وظلت المدرجات والبن والحبوب جزءاً من النشاط الزراعي المحلي، لكن قياس تطور الإنتاج الزراعي يحتاج إلى سلسلة إحصائية حديثة، كما تحتاج حدود العزل وقراها إلى مطابقة مع سجل رسمي.', status: 'documented', source: 'مادة تاريخية عن مخلاف الحبيشية والتقسيم الإداري', sourceUrl: 'https://www.thu-raein.com/index.php/ar/makhaleef-ar/hubaish-district-ar' }
 ];
 
 const DEFAULT_PLACES = [
@@ -273,10 +273,16 @@ function createContentCard(item, options = {}) {
   const card = element('article', 'item-card');
   card.dataset.exploreId = item.id;
   card.dataset.exploreKind = isHistory ? 'history' : 'place';
-  const category = { fort: 'حصون وقلاع', mountain: 'جبال ومرتفعات', valley: 'أودية ومياه', mosque: 'مساجد' }[item.cat] || (isHistory ? 'محطة تاريخية' : 'معلم');
+  const category = ({
+    AR:{fort:'حصون وقلاع',mountain:'جبال ومرتفعات',valley:'أودية ومياه',mosque:'مساجد',history:'محطة تاريخية',place:'معلم'},
+    EN:{fort:'Forts and castles',mountain:'Mountains',valley:'Valleys and water',mosque:'Mosques',history:'History stop',place:'Landmark'},
+    TR:{fort:'Kaleler',mountain:'Dağlar',valley:'Vadiler ve su',mosque:'Camiler',history:'Tarih durağı',place:'Yer'},
+    FR:{fort:'Forts et châteaux',mountain:'Montagnes',valley:'Vallées et eau',mosque:'Mosquées',history:'Étape historique',place:'Monument'}
+  }[state.lang]||{})[item.cat] || (isHistory ? ({AR:'محطة تاريخية',EN:'History stop',TR:'Tarih durağı',FR:'Étape historique'}[state.lang]||'History stop') : ({AR:'معلم',EN:'Landmark',TR:'Yer',FR:'Monument'}[state.lang]||'Landmark'));
   card.classList.add(item.cat ? ('category-' + item.cat) : 'category-history');
   const meta = element('div', 'item-meta');
-  meta.append(heritageIcon(isHistory ? 'scroll' : (item.cat || 'fort')), makeTag(options.meta || (isHistory ? 'محطة تاريخية' : 'معلم'), true));
+  const genericMeta = {AR:isHistory?'محطة تاريخية':'معلم',EN:isHistory?'History stop':'Landmark',TR:isHistory?'Tarih durağı':'Yer',FR:isHistory?'Étape historique':'Monument'}[state.lang] || 'Landmark';
+  meta.append(heritageIcon(isHistory ? 'scroll' : (item.cat || 'fort')), makeTag(options.meta || genericMeta, true));
   meta.append(makeTag(category, false));
   if (options.extraMeta) meta.append(makeTag(options.extraMeta));
   card.append(meta, element('h3', 'item-title', view.title), element('p', 'item-body', view.body));
@@ -321,16 +327,22 @@ function renderUzal(query = '') {
   const target = document.getElementById('uzalList');
   const needle = normalizeArabic(query);
   const directoryNames = window.HubaishFeatures?.getUzal?.() || UZAL_22;
+  const labels = {
+    AR:{district:'عزلة',number:'عزلة',explore:'استكشف',question:'في مديرية حبيش'},
+    EN:{district:'Sub-district',number:'Sub-district',explore:'Explore',question:'in Hubaish District'},
+    TR:{district:'Bucak',number:'Bucak',explore:'Keşfet',question:'Hubaish ilçesinde'},
+    FR:{district:'Sous-district',number:'Sous-district',explore:'Explorer',question:'dans le district de Hubaish'}
+  }[state.lang] || {district:'Sub-district',number:'Sub-district',explore:'Explore',question:'in Hubaish District'};
   const items = directoryNames.map((name, index) => ({ name, number: index + 1 })).filter(item => !needle || normalizeArabic(item.name).includes(needle));
   target.replaceChildren();
-  if (!items.length) return appendEmpty(target, 'لا توجد عزلة مطابقة.');
+  if (!items.length) return appendEmpty(target, state.lang==='EN'?'No matching sub-district.':state.lang==='TR'?'Eşleşen bucak yok.':state.lang==='FR'?'Aucun sous-district correspondant.':'لا توجد عزلة مطابقة.');
   items.forEach(item => {
     const card = element('article', 'item-card');
     const row = element('div', 'item-meta');
-    row.append(makeTag(`عزلة #${item.number}`, true));
+    row.append(makeTag(labels.number+' #'+item.number, true));
     card.dataset.exploreId = item.name;
     card.dataset.exploreKind = 'uzal';
-    card.append(heritageIcon('mountain'), row, element('h3', 'item-title', `عزلة ${item.name}`), createAction('استكشف', 'ask', `عزلة ${item.name} في مديرية حبيش`));
+    card.append(heritageIcon('mountain'), row, element('h3', 'item-title', labels.district+' '+item.name), createAction(labels.explore, 'ask', labels.district+' '+item.name+' '+labels.question));
     target.append(card);
   });
 }
@@ -716,7 +728,7 @@ function bindEvents() {
   bindVoiceMic('placeMicBtn', 'placeSearchInput');
   bindVoiceMic('uzalMicBtn', 'uzalSearchInput');
   bindVoiceMic('aiMicBtn', 'aiInput');
-  // Keep the legacy language cycle available to assistive or keyboard users; the select is the visible control.
+  // The single visible language selector drives all four interface locales.
   window.addEventListener('online', () => showToast('عاد الاتصال بالإنترنت.'));
   window.addEventListener('offline', () => showToast('أنت الآن دون اتصال. المحتوى المحفوظ متاح.'));
 }
