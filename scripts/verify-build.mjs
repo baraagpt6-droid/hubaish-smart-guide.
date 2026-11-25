@@ -152,7 +152,7 @@ if(!css.includes('padding-top:max(9px,env(safe-area-inset-top')||
    !css.includes('padding-bottom:max(6px,env(safe-area-inset-bottom')) {
   throw new Error('Android 15/16 top and bottom safe-area padding is missing.');
 }
-if(!sw.includes('hubaish-guide-v4.0.4')||!sw.includes("'splash.js'")||
+if(!sw.includes('hubaish-guide-v4.0.5')||!sw.includes("'splash.js'")||
    !sw.includes("'github-cms.js'")||!sw.includes("'gallery.js'")||!sw.includes("'data/live-content.json'")) {
   throw new Error('The service-worker cache does not include the updated app shell.');
 }
