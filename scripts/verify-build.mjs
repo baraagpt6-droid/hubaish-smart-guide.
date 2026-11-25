@@ -42,7 +42,7 @@ const assets = {
 if (assets.app!==app || assets.catalog!==catalog || assets.features!==features || assets.styles!==css) {
   throw new Error('Android duplicate web assets do not match the current web sources.');
 }
-for (const file of ['www/app.js','www/catalog.js','www/features.js','www/github-cms.js','www/gallery.js','www/sw.js','cloudflare-worker/worker.js']) {
+for (const file of ['www/app.js','www/catalog.js','www/features.js','www/github-cms.js','www/gallery.js','www/sw.js','www/upgrade-400.js','cloudflare-worker/worker.js']) {
   const result=spawnSync(process.execPath,['--check',resolve(root,file)],{encoding:'utf8'});
   if(result.status!==0)throw new Error('JavaScript syntax error in '+file+': '+(result.stderr||result.stdout));
 }
@@ -219,5 +219,5 @@ for(const [file,expected] of [['www/icons/icon-192.png',192],['www/icons/icon-51
     throw new Error(file+' must be a valid '+expected+'x'+expected+' PNG.');
 }
 if(readme.includes('الدخول المباشر الاحتياطي باستخدام GitHub Token')||workerReadme.includes('emergency fallback')||workerReadme.includes('GitHub Personal Access Token login'))throw new Error('Documentation still advertises the removed direct-token login.');
-if(!html.includes('upgrade-400.js')||!css.includes('F7F5EE')||!css.includes('0D2B22')||!app.includes("['review','adminTabReview',false]")||!worker.includes('/public/photo-submissions')||!worker.includes('/review/photo-submissions')||!html.includes('cloudPhotoReviewPanel'))throw new Error('v1.0.400 theme, locale extensions or visitor photo moderation queue is incomplete.');
+if(!html.includes('upgrade-400.js')||!css.includes('F7F5EE')||!css.includes('0D2B22')||!app.includes("['review','adminTabReview',false]")||!worker.includes('/public/photo-submissions')||!worker.includes('/review/photo-submissions')||!html.includes('cloudPhotoReviewPanel')||!sw.includes("'upgrade-400.js'"))throw new Error('v1.0.400 theme, locale extensions, offline app shell or visitor photo moderation queue is incomplete.');
 console.log('Build check passed: Worker-only login, visitor photo moderation, four locales, ivory/emerald daytime theme, offline shell, Android assets and APK/AAB workflow.');
