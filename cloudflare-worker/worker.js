@@ -69,10 +69,10 @@ async function route(req,env){
  const u=new URL(req.url),path=u.pathname;
  if(req.method==="OPTIONS")return new Response(null,{status:204});
  if(req.method==="GET"&&(path==="/health"||path==="/api/health"))return healthStatus(env);
- if(!env.ADMINS||!env.GITHUB_TOKEN||!env.SESSION_SECRET) return json({error:"Configure ADMINS KV, GITHUB_TOKEN and SESSION_SECRET."},500);
  if(req.method==="POST"&&path==="/public/photo-submissions"){
   return json({ok:false,error:"Visitor photo submissions are temporarily disabled."},410);
  }
+ if(!env.ADMINS||!env.GITHUB_TOKEN||!env.SESSION_SECRET) return json({error:"Configure ADMINS KV, GITHUB_TOKEN and SESSION_SECRET."},500);
  if(req.method==="GET"&&path==="/setup/status"){
   const keys=await env.ADMINS.list({prefix:UP,limit:1});
   return json({setupRequired:keys.keys.length===0,configured:true,bootstrapKeyConfigured:!!env.BOOTSTRAP_KEY});
