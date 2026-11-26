@@ -71,17 +71,7 @@ async function route(req,env){
  if(req.method==="GET"&&(path==="/health"||path==="/api/health"))return healthStatus(env);
  if(!env.ADMINS||!env.GITHUB_TOKEN||!env.SESSION_SECRET) return json({error:"Configure ADMINS KV, GITHUB_TOKEN and SESSION_SECRET."},500);
  if(req.method==="POST"&&path==="/public/photo-submissions"){
-  const ip=req.headers.get("CF-Connecting-IP")||"unknown",rateKey="photo-rate:"+ip,rate=await env.ADMINS.get(rateKey,"json")||{count:0};
-  if(rate.count>=6)return json({error:"Submission limit reached. Please try again later."},429);
-  const length=Number(req.headers.get("Content-Length")||0);if(length>320000)return json({error:"Image submission is too large."},413);
-  const b=await req.json(),title=String(b.title||"").trim().slice(0,100),location=String(b.location||"").trim().slice(0,100),photographer=String(b.photographer||"").trim().slice(0,70),imageData=String(b.imageData||"");
-  if(!b.consent||!title||!location||!photographer)return json({error:"Photo title, location, photographer and consent are required."},400);
-  if(!/^data:image\/webp;base64,[A-Za-z0-9+/]+={0,2}$/.test(imageData)||imageData.length>260000)return json({error:"Only compressed WebP up to 180 KB is accepted."},400);
-  const queued=await env.ADMINS.list({prefix:"photo-submission:",limit:100});if(queued.keys.length>=80)return json({error:"The review queue is full."},429);
-  const id=crypto.randomUUID(),submission={id,title,location,placeType:String(b.placeType||"other").slice(0,24),photographer,imageData,consent:true,status:"pending",submittedAt:new Date().toISOString()};
-  await env.ADMINS.put("photo-submission:"+id,JSON.stringify(submission),{expirationTtl:60*60*24*45});
-  await env.ADMINS.put(rateKey,JSON.stringify({count:rate.count+1}),{expirationTtl:3600});
-  return json({ok:true,id,status:"pending"},201)
+  return json({ok:false,error:"Visitor photo submissions are temporarily disabled."},410);
  }
  if(req.method==="GET"&&path==="/setup/status"){
   const keys=await env.ADMINS.list({prefix:UP,limit:1});
