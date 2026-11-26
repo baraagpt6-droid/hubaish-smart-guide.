@@ -108,6 +108,21 @@ jobs:
 
             console.log('PASS: production /health and /setup/status both returned HTTP 200.');
             console.log('PASS: health, ADMINS KV, GitHub CMS read, and SESSION_SECRET checks passed.');
+            const photoUpload = await fetch(base + '/public/photo-submissions', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+              body: JSON.stringify({}),
+              cache: 'no-store',
+              signal: AbortSignal.timeout(15000)
+            });
+            const photoRaw = await photoUpload.text();
+            let photoBody = {};
+            try { photoBody = photoRaw ? JSON.parse(photoRaw) : {}; } catch {}
+            console.log('POST /public/photo-submissions — HTTP ' + photoUpload.status);
+            if (photoUpload.status !== 410 || photoBody.ok !== false) {
+              throw new Error('Visitor photo route must reject submissions with HTTP 410.');
+            }
+            console.log('PASS: visitor photo submissions are disabled (HTTP 410).');
           })().catch(error => {
             console.error('FAIL: ' + error.message);
             process.exitCode = 1;
