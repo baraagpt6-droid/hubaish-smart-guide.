@@ -130,7 +130,7 @@ def main():
         created_track = True
         print(f"Created custom Closed testing track '{selected_track}' without uploading or releasing an app bundle.")
 
-    release_status = "completed" if has_reviewed_release else "draft"
+    release_status = "draft"
     version_name = open("release-version.txt", encoding="utf-8").read().strip()
     if not re.fullmatch(r"[0-9]+\.[0-9]+\.[0-9]+", version_name):
         fail("release-version.txt must contain a semantic version in x.y.z format.")
@@ -151,7 +151,7 @@ def main():
         "nextVersionCode": version_code,
         "versionName": version_name,
         "releaseStatus": release_status,
-        "reason": "A previously reviewed release exists." if has_reviewed_release else "No previously reviewed release exists; keep the first submission draft.",
+        "reason": "Automated uploads are draft-only. Manual approval is a separate workflow_dispatch action.",
     }, ensure_ascii=False))
 
 
