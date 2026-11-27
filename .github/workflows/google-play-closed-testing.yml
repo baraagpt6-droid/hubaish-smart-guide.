@@ -178,12 +178,20 @@ jobs:
           python3 - <<'PY'
           import base64, os, re
           from pathlib import Path
-          raw = re.sub(r"\s+", "", os.environ["KEYSTORE_BASE64"].strip())
+          raw = os.environ["KEYSTORE_BASE64"].strip()
+          lines = raw.splitlines()
+          matches = [line for line in lines if line.split("=", 1)[0].strip() == "KEYSTORE_BASE64" and "=" in line]
+          if matches:
+              raw = matches[0].split("=", 1)[1]
+          elif raw.split("=", 1)[0].strip() == "KEYSTORE_BASE64" and "=" in raw:
+              raw = raw.split("=", 1)[1]
+          raw = raw.strip().strip('"').strip("'")
+          raw = re.sub(r"\\s+", "", raw)
           raw += "=" * (-len(raw) % 4)
           try:
               data = base64.b64decode(raw, validate=True)
           except Exception as exc:
-              raise SystemExit("KEYSTORE_BASE64 is not valid Base64.") from exc
+              raise SystemExit("KEYSTORE_BASE64 is not valid Base64 after normalizing an optional variable prefix and quotes.") from exc
           if not data.startswith(bytes.fromhex("feedfeed")):
               raise SystemExit("Expected the existing JKS upload keystore.")
           path = Path(os.environ["ANDROID_KEYSTORE_PATH"])
