@@ -11,7 +11,7 @@ This repository uses GitHub Actions, Google Cloud Workload Identity Federation (
 5. Builds a signed Android App Bundle using the existing upload-keystore secrets.
 6. Uploads the AAB, metadata, graphics and screenshots to Closed testing using Fastlane.
 
-The dispatch default is `verify_only`. Select `publish_closed_testing` only when ready to upload. `PLAY_TRACK` defaults to the custom track name you supplied: `Hubaish Closed Test`. Google Play identifies custom closed tracks by their track name; if the name shown in the Play Console differs, set the exact identifier in the repository variable. `production` is rejected.
+The dispatch default is `verify_only`. Select `publish_closed_testing` only when ready to upload. `PLAY_TRACK` defaults to the custom track name you supplied: `Hubaish Closed Test`. Google Play closed-testing tracks are created manually and use their custom track name as the API track identifier. The default here is the exact name you supplied, `Hubaish Closed Test`. If Play Console shows a different name, update `PLAY_TRACK` to that exact name. The workflow blocks `production` and `*:production`.
 
 ## 1. Google Cloud setup in a mobile browser
 
@@ -43,7 +43,7 @@ The dispatch default is `verify_only`. Select `publish_closed_testing` only when
 1. Open [Google Play Console](https://play.google.com/console/) and select **Hubaish Smart Guide**.
 2. Open **Users and permissions → Invite new users**.
 3. Enter the service-account email from Google Cloud.
-4. Choose **App permissions**, select only Hubaish Smart Guide, and grant store-listing management and release-to-testing-track permissions. Do not grant Production release permissions.
+4. Choose **App permissions**, select only Hubaish Smart Guide, then enable these three permissions: **View app information (read-only)**, **Manage store presence**, and **Release apps to testing tracks**. These cover Play API reads, listing text/images and AAB releases to testing tracks. Do not enable **Release to production, exclude devices, and use Play App Signing**. Google documents the testing-track permission as unable to publish to Production.
 5. Send the invitation and confirm the account is accepted. Cloud IAM alone does not grant Play Console access.
 
 ## 3. Add GitHub repository variables
@@ -51,10 +51,11 @@ The dispatch default is `verify_only`. Select `publish_closed_testing` only when
 On GitHub mobile, open [the repository](https://github.com/baraagpt6-droid/hubaish-smart-guide.) → **Settings**. If repository settings are not shown in the app, open GitHub in Chrome and choose **Request desktop site**.
 
 Go to **Secrets and variables → Actions → Variables → New repository variable** and add:
+- `PLAY_TRACK`: defaults in code to `Hubaish Closed Test`; set this only if the actual custom track name in Play Console differs.
 - `GCP_PROJECT_ID`: Cloud project ID (not the numeric project number).
 - `GCP_WIF_PROVIDER`: full provider resource name.
 - `GCP_SERVICE_ACCOUNT`: service-account email.
-- Optional `PLAY_TRACK`: defaults to `Hubaish Closed Test`. Use the exact custom closed-track identifier shown in the Play Console / Developer API if it differs.
+- `PLAY_TRACK`: the exact custom closed-track name shown in Play Console. Defaults to `Hubaish Closed Test`.
 
 Do not add a `PLAY_JSON_KEY` secret. WIF replaces the service-account key.
 
