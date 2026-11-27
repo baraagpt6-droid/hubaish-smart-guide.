@@ -33,6 +33,8 @@ jobs:
         run: sudo apt-get update && sudo apt-get install -y python3-cairosvg python3-pil fonts-noto-core
       - name: Install app dependencies
         run: npm install --no-audit --no-fund
+      - name: Generate PWA and Capacitor icon source images
+        run: python3 scripts/generate-icons.py
       - name: Generate Google Play listing graphics
         run: python3 scripts/prepare-play-store-assets.py
       - name: Run npm build
@@ -47,6 +49,8 @@ jobs:
         run: npx playwright install --with-deps chromium
       - name: Capture actual app screens in Arabic and English
         run: node scripts/capture-play-screenshots.mjs
+      - name: Normalize screenshots to RGB PNG without alpha
+        run: python3 scripts/normalize-play-screenshots.py
       - name: Validate Play screenshots
         run: node scripts/verify-play-store.mjs --require-screenshots
       - name: Set up Ruby and Fastlane
@@ -127,7 +131,7 @@ jobs:
         run: |
           set -euo pipefail
           VERSION_NAME="$(tr -d '[:space:]' < release-version.txt)"
-          if [[ ! "$VERSION_NAME" =~ ^[0-9]+.[0-9]+.[0-9]+$ ]]; then
+          if [[ ! "$VERSION_NAME" =~ ^[0-9]+\\.[0-9]+\\.[0-9]+$ ]]; then
             echo "::error::release-version.txt must be semantic version x.y.z"
             exit 1
           fi

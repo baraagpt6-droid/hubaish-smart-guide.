@@ -6,7 +6,7 @@ platform :android do
     package = ENV.fetch("PLAY_PACKAGE_NAME", "com.hubaish.guide")
     credentials = ENV.fetch("GOOGLE_APPLICATION_CREDENTIALS")
     requested_track = ENV.fetch("PLAY_TRACK", "alpha")
-    tracks = (%w[internal alpha beta production] + [requested_track]).uniq
+    tracks = (%w[internal alpha beta] + [requested_track]).uniq
     codes = tracks.flat_map do |track|
       UI.message("Reading Google Play version codes from track: #{track}")
       google_play_track_version_codes(package_name: package, track: track, json_key: credentials)

@@ -28,7 +28,7 @@ try {
       await mkdir(outputDir, { recursive: true });
       const context = await browser.newContext({ viewport: { width: 1080, height: 1920 }, deviceScaleFactor: 1, isMobile: true, hasTouch: true, reducedMotion: 'reduce' });
       const page = await context.newPage();
-      await page.goto(baseUrl, { waitUntil: 'networkidle', timeout: 45000 });
+      await page.goto(baseUrl, { waitUntil: 'domcontentloaded', timeout: 45000 });
       await page.locator('#view-home').waitFor({ state: 'visible', timeout: 15000 });
       await page.evaluate(() => document.fonts.ready);
       if (lang === 'EN') {
