@@ -1075,13 +1075,10 @@ function localizeHomeStaticContent() {
   const note = document.getElementById('dataSourceNote');
   if (note) {
     const notes = {
-      AR: 'المساحة الإدارية 228 كم² وفق المركز الوطني للمعلومات ومنصة الحكم المحلي/OCHA. السكان: 105,998 في تعداد 2004؛ وتقدير HNRP/OCHA لعام 2025 هو 162,023 ويشمل المقيمين والنازحين. لا تجمع الرقمين ولا تعرض تقدير 2025 كتعداد. يوم السوق الأسبوعي المذكور لحبيش هو الجمعة، مع ضرورة التأكيد محلياً.',
-      EN: 'Administrative area: 228 km², reported by the National Information Centre and OCHA/local governance. Population: 105,998 in the 2004 census; the 2025 HNRP/OCHA estimate is 162,023 and includes residents and IDPs. Keep the two years and methods separate. Friday is listed for Hubaish weekly market; confirm the current schedule locally.',
-      TR: 'İdari alan 228 km². Nüfus: 2004 sayımında 105.998; 2025 HNRP/OCHA tahmini 162.023 olup yerleşikler ve ülke içinde yerinden edilmiş kişileri kapsar. İki veri ayrı yıllar ve yöntemlerle gösterilir. Hubaish haftalık pazarı için Cuma belirtilir; güncel saat yerelden doğrulanmalıdır.',
-      FR: 'Superficie administrative : 228 km². Population : 105 998 au recensement de 2004; estimation HNRP/OCHA 2025 : 162 023, incluant résidents et déplacés internes. Les deux chiffres restent séparés par année et méthode. Le vendredi est indiqué pour le marché hebdomadaire; le calendrier actuel doit être confirmé localement.'
-      EN: 'Population uses the 2004 census. The OCHA/Local Governance dataset lists 228 km², while another local reference lists 330 km², so the area still needs official confirmation. Elevations are approximate ranges, not survey measurements.',
-      TR: 'Nüfus için 2004 sayımı kullanılmıştır. OCHA/Yerel Yönetim verileri 228 km², başka bir yerel kaynak ise 330 km² bildirir; bu nedenle alanın resmî olarak doğrulanması gerekir. Yükseklikler ölçüm değil, yaklaşık aralıklardır.',
-      FR: 'La population indiquée provient du recensement de 2004. Les données OCHA/administration locale indiquent 228 km², tandis qu’une autre référence locale mentionne 330 km² ; la superficie doit donc être confirmée officiellement. Les altitudes sont approximatives et non issues d’un relevé.'
+      AR: 'المساحة الإدارية 228 كم² وفق المركز الوطني للمعلومات ومنصة الحكم المحلي/OCHA. السكان: 105,998 في تعداد 2004؛ وتقدير HNRP/OCHA لعام 2025 هو 162,023 ويشمل المقيمين والنازحين. لا تجمع الرقمين ولا تعرض تقدير 2025 كتعداد. سوق حبيش الأسبوعي يوم الجمعة بحسب الجدول المنشور، مع ضرورة التأكيد محلياً.',
+      EN: 'Administrative area: 228 km², reported by the National Information Centre and OCHA/local governance. Population: 105,998 in the 2004 census; the 2025 HNRP/OCHA estimate is 162,023 and includes residents and IDPs. Keep the two years and methods separate. Friday is listed for Hubaish weekly market; confirm locally.',
+      TR: 'İdari alan 228 km². Nüfus: 2004 sayımında 105.998; 2025 HNRP/OCHA tahmini 162.023 olup yerleşikleri ve ülke içinde yerinden edilmiş kişileri kapsar. İki veri ayrı tutulur. Haftalık Hubaish pazarı için Cuma belirtilir; yerelden doğrulayın.',
+      FR: 'Superficie administrative : 228 km². Population : 105 998 au recensement de 2004; estimation HNRP/OCHA 2025 : 162 023, résidents et déplacés internes compris. Les deux chiffres restent séparés. Le vendredi est indiqué pour le marché hebdomadaire; confirmez localement.'
     };
     note.textContent = notes[state.lang] || notes.AR;
   }
