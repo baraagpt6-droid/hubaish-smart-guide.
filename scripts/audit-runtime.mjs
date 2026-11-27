@@ -7,7 +7,7 @@ import { chromium } from 'playwright';
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const port = 4174;
 const baseUrl = 'http://127.0.0.1:' + port;
-const workerUrl = 'https://hubaish-cms.baraag6.workers.dev';
+const workerUrl = 'https://hubaish-cms.baraagpt6.workers.dev';
 const server = spawn(process.execPath, [resolve(root, 'scripts/serve.mjs')], {
   cwd: root,
   env: { ...process.env, PORT: String(port) },
