@@ -326,13 +326,13 @@ if (!playMonitorScript.includes('EXPECTED_PACKAGE = "com.hubaish.guide"') ||
 if (!runtimeAudit.includes('context.setOffline(true)') ||
     !runtimeAudit.includes('navigator.serviceWorker.ready') ||
     !runtimeAudit.includes('[360, 390, 768, 1024]') ||
-    !runtimeAudit.includes('https://hubaish-cms.baraag6.workers.dev') ||
+    !runtimeAudit.includes('https://hubaish-cms.baraagpt6.workers.dev') ||
     !runtimeAudit.includes('/health') ||
     !runtimeAudit.includes('/setup/status')) {
   throw new Error('Runtime audit must check responsive layouts, offline cache and the production Worker.');
 }
 
-if (!cms.includes("https://hubaish-cms.baraag6.workers.dev") ||
+if (!cms.includes("https://hubaish-cms.baraagpt6.workers.dev") ||
     !runtimeAudit.includes('attempt <= 6') ||
     !workerUrlResolver.includes('/workers/subdomain') ||
     !workerUrlResolver.includes('/workers/scripts/') ||
