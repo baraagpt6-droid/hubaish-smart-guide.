@@ -24,7 +24,7 @@ Persistent project reference for future maintenance. It records project identity
 
 ## Connected application services
 - GitHub Pages serves the public PWA.
-- Cloudflare Worker provides the CMS/admin API. Project endpoint: https://hubaish-cms.baraag6.workers.dev.
+- Cloudflare Worker provides the CMS/admin API. Project endpoint: https://hubaish-cms.baraagpt6.workers.dev.
 - The account subdomain is discovered from Cloudflare API by `scripts/resolve-cloudflare-worker-url.mjs`; the script verifies the `hubaish-cms` workers.dev route is enabled and ensures the app and runtime audit use the same hostname.
 - Shared live-content source: www/data/live-content.json.
 - Admin content publication uses the Cloudflare Worker. Public visitors read published content without admin credentials.
