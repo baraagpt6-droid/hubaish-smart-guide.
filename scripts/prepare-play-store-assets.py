@@ -8,9 +8,15 @@ ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / "fastlane/metadata/android"
 
 icon_data = cairosvg.svg2png(url=str(ROOT / "www/icons/icon.svg"), output_width=512, output_height=512)
-icon = Image.open(BytesIO(icon_data)).convert("RGBA")
-if icon.size != (512, 512) or icon.getchannel("A").getextrema() != (255, 255):
-    raise SystemExit("Play icon must be a 512x512 RGBA PNG with an opaque background.")
+icon_layer = Image.open(BytesIO(icon_data)).convert("RGBA")
+if icon_layer.size != (512, 512):
+    raise SystemExit("Source app icon must be 512x512.")
+# The source logo has rounded transparent SVG corners. Google Play expects a
+# square icon; composite it over the app's dark green brand background.
+icon_background = Image.new("RGBA", (512, 512), (5, 45, 36, 255))
+icon = Image.alpha_composite(icon_background, icon_layer)
+if icon.getchannel("A").getextrema() != (255, 255):
+    raise SystemExit("Play icon must be a fully opaque 32-bit RGBA PNG.")
 
 feature_path = ROOT / "play-store/feature-graphic.png"
 if not feature_path.is_file():
