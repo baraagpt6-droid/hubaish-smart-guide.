@@ -293,7 +293,7 @@ if(!catalog.includes('162,023')||!catalog.includes('Engineer Sadiq Mohammed')||!
 const zawahiRecord=data.landmarks.find(x=>x.id==='zawahi-islamic-school');
 const sadiq=data.historicalFigures.find(x=>x.id==='sadiq-mohammed-al-nahi');
 if(!zawahiRecord?.description_ar.includes('عبد الرحمن بن عمران')||!zawahiRecord?.description_ar.includes('يوسف بن علي بن عبيد الله بن الهيثم'))throw new Error('Al-Zawahi student evidence is incomplete.');
-if(!sadiq?.biography_ar.includes('أبي العتيق أبو بكر العنسي الوعلي')||!sadiq?.biography_ar.includes('بيت الناهي السعيدي في ريمة')||sadiq.lineage_research_status!=='unverified_separate_research_thread')throw new Error('Sadiq al-Nahi lineage hypotheses must remain separate and unverified.');
+if(!sadiq?.biography_ar.includes('أبو العتيق أبو بكر العنسي الوعلي')||!sadiq?.biography_ar.includes('بيت الناهي السعيدي بريمة')||sadiq.lineage_research_status!=='unverified_separate_research_thread')throw new Error('Sadiq al-Nahi lineage hypotheses must remain separate and unverified.');
 
 if(!html.includes('id="geoAdminContext"')||!html.includes('id="geoTribalContext"')||!app.includes('geoAdminContext')||!app.includes('geoTribalContext'))throw new Error('Administrative and tribal profile panels are missing.');
 
