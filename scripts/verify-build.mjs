@@ -290,6 +290,11 @@ if(!wuhaza||wuhaza.category!=='school'||wuhaza.status!=='documented'||wuhaza.sco
 if(!Array.isArray(data.educationalRecords)||data.educationalRecords.length<7)throw new Error('Educational evidence catalogue is incomplete.');
 for(const id of ['isa-al-rubai-wuhazi','ismail-al-wuhazi','zayd-al-faishi','asad-ibn-wa-il','qasim-ibn-humayr-al-waili','sadiq-mohammed-al-nahi'])if(!data.historicalFigures.some(x=>x.id===id))throw new Error('A required historical figure profile is missing: '+id);
 if(!catalog.includes('162,023')||!catalog.includes('Engineer Sadiq Mohammed')||!catalog.includes('Shaykh Qasim ibn Humayr'))throw new Error('Assistant answers or additional profiles were not added to the catalog.');
+const zawahi=data.landmarks.find(x=>x.id==='zawahi-islamic-school');
+const sadiq=data.historicalFigures.find(x=>x.id==='sadiq-mohammed-al-nahi');
+if(!zawahi?.description_ar.includes('عبد الرحمن بن عمران')||!zawahi?.description_ar.includes('يوسف بن علي بن عبيد الله بن الهيثم'))throw new Error('Al-Zawahi student evidence is incomplete.');
+if(!sadiq?.biography_ar.includes('أبي العتيق أبو بكر العنسي الوعلي')||!sadiq?.biography_ar.includes('بيت الناهي السعيدي في ريمة')||sadiq.lineage_research_status!=='unverified_separate_research_thread')throw new Error('Sadiq al-Nahi lineage hypotheses must remain separate and unverified.');
+
 if(!html.includes('id="geoAdminContext"')||!html.includes('id="geoTribalContext"')||!app.includes('geoAdminContext')||!app.includes('geoTribalContext'))throw new Error('Administrative and tribal profile panels are missing.');
 
 console.log('Build check passed: Worker-only login, visitor photo moderation, four locales, ivory/emerald daytime theme, offline shell, Android assets and APK/AAB workflow.');
