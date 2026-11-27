@@ -1,0 +1,188 @@
+name: Google Play Closed Testing
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: Verify and build only, or publish to Closed testing
+        type: choice
+        options: [verify_only, publish_closed_testing]
+        default: verify_only
+        required: true
+permissions:
+  contents: read
+  id-token: write
+concurrency:
+  group: hubaish-google-play-closed-testing
+  cancel-in-progress: false
+jobs:
+  build-and-publish:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    env:
+      PLAY_PACKAGE_NAME: com.hubaish.guide
+      PLAY_TRACK: ${{ vars.PLAY_TRACK || 'alpha' }}
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install icon rendering dependencies
+        run: sudo apt-get update && sudo apt-get install -y python3-cairosvg python3-pil fonts-noto-core
+      - name: Install app dependencies
+        run: npm install --no-audit --no-fund
+      - name: Generate Google Play listing graphics
+        run: python3 scripts/prepare-play-store-assets.py
+      - name: Run npm build
+        run: npm run build
+      - name: Run build verification explicitly
+        run: node scripts/verify-build.mjs
+      - name: Verify Play listing text and graphics
+        run: node scripts/verify-play-store.mjs
+      - name: Install Playwright for app screenshots
+        run: npm install --no-save --package-lock=false playwright@1.56.1
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Capture actual app screens in Arabic and English
+        run: node scripts/capture-play-screenshots.mjs
+      - name: Validate Play screenshots
+        run: node scripts/verify-play-store.mjs --require-screenshots
+      - name: Set up Ruby and Fastlane
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.3'
+          bundler-cache: true
+      - name: Authenticate to Google Cloud with WIF
+        id: google-auth
+        if: inputs.mode == 'publish_closed_testing'
+        uses: google-github-actions/auth@v3
+        with:
+          project_id: ${{ vars.GCP_PROJECT_ID }}
+          workload_identity_provider: ${{ vars.GCP_WIF_PROVIDER }}
+          service_account: ${{ vars.GCP_SERVICE_ACCOUNT }}
+          create_credentials_file: true
+          export_environment_variables: true
+          access_token_scopes: https://www.googleapis.com/auth/androidpublisher
+      - name: Confirm target and signing setup
+        if: inputs.mode == 'publish_closed_testing'
+        shell: bash
+        env:
+          GCP_PROJECT_ID: ${{ vars.GCP_PROJECT_ID }}
+          GCP_WIF_PROVIDER: ${{ vars.GCP_WIF_PROVIDER }}
+          GCP_SERVICE_ACCOUNT: ${{ vars.GCP_SERVICE_ACCOUNT }}
+          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+        run: |
+          set -euo pipefail
+          if [[ -z "$GCP_PROJECT_ID" || -z "$GCP_WIF_PROVIDER" || -z "$GCP_SERVICE_ACCOUNT" ]]; then
+            echo "::error::Set GCP_PROJECT_ID, GCP_WIF_PROVIDER and GCP_SERVICE_ACCOUNT repository variables."
+            exit 1
+          fi
+          if [[ "${PLAY_TRACK,,}" == "production" ]]; then
+            echo "::error::Production publishing is blocked in this workflow."
+            exit 1
+          fi
+          for name in KEYSTORE_BASE64 KEYSTORE_PASSWORD KEY_ALIAS KEY_PASSWORD; do
+            if [[ -z "${!name:-}" ]]; then
+              echo "::error::Required Android upload signing secret is missing: $name"
+              exit 1
+            fi
+          done
+      - name: Read next available Play versionCode
+        id: play-version
+        if: inputs.mode == 'publish_closed_testing'
+        run: bundle exec fastlane android calculate_next_version_code
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v4
+        with:
+          packages: 'platform-tools'
+      - name: Create the Capacitor Android project
+        run: npx cap add android
+      - name: Generate native launcher and splash assets
+        run: npx capacitor-assets generate --android
+      - name: Sync Capacitor Android
+        run: npx cap sync android
+      - name: Patch Android app label and system bars
+        run: python3 scripts/patch-android-config.py
+      - name: Apply generated app launcher icons
+        run: python3 scripts/apply-android-icons.py
+      - name: Build signed Android App Bundle for Closed testing
+        if: inputs.mode == 'publish_closed_testing'
+        shell: bash
+        env:
+          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+          ANDROID_VERSION_CODE: ${{ steps.play-version.outputs.version_code }}
+        run: |
+          set -euo pipefail
+          VERSION_NAME="$(tr -d '[:space:]' < release-version.txt)"
+          if [[ ! "$VERSION_NAME" =~ ^[0-9]+.[0-9]+.[0-9]+$ ]]; then
+            echo "::error::release-version.txt must be semantic version x.y.z"
+            exit 1
+          fi
+          export ANDROID_VERSION_NAME="$VERSION_NAME"
+          export ANDROID_KEYSTORE_PATH="$GITHUB_WORKSPACE/android/keystore/hubaish-upload.jks"
+          python3 - <<'PY'
+          import base64, os, re
+          from pathlib import Path
+          raw = re.sub(r"\s+", "", os.environ["KEYSTORE_BASE64"].strip())
+          raw += "=" * (-len(raw) % 4)
+          try:
+              data = base64.b64decode(raw, validate=True)
+          except Exception as exc:
+              raise SystemExit("KEYSTORE_BASE64 is not valid Base64.") from exc
+          if not data.startswith(bytes.fromhex("feedfeed")):
+              raise SystemExit("Expected the existing JKS upload keystore.")
+          path = Path(os.environ["ANDROID_KEYSTORE_PATH"])
+          path.parent.mkdir(parents=True, exist_ok=True)
+          path.write_bytes(data)
+          PY
+          keytool -list -keystore "$ANDROID_KEYSTORE_PATH" -storetype JKS -storepass "$KEYSTORE_PASSWORD" -alias "$KEY_ALIAS" >/dev/null
+          python3 scripts/prepare-android-release.py
+          (cd android && ./gradlew --no-daemon bundleRelease)
+          mkdir -p release-out
+          cp android/app/build/outputs/bundle/release/app-release.aab "release-out/Hubaish-Smart-Guide-v${VERSION_NAME}.aab"
+          cp android/app/build/outputs/bundle/release/app-release.aab release-out/hubaish-smart-guide.aab
+      - name: Build debug APK for verify-only run
+        if: inputs.mode == 'verify_only'
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          path = Path("android/app/build.gradle")
+          source = path.read_text()
+          source, count = re.subn(r"(?m)^(\s*versionCode\s*(?:=\s*)?).+$", r"\g<1>1", source, count=1)
+          if count != 1:
+              raise SystemExit("Generated Android versionCode was not found.")
+          path.write_text(source)
+          PY
+          (cd android && ./gradlew --no-daemon assembleDebug)
+          mkdir -p release-out
+          cp android/app/build/outputs/apk/debug/app-debug.apk release-out/hubaish-smart-guide-debug.apk
+      - name: Upload AAB or debug APK and Play assets as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: hubaish-play-closed-testing
+          path: |
+            release-out/*
+            fastlane/metadata/android/ar/images/
+            fastlane/metadata/android/en-US/images/
+          if-no-files-found: error
+          retention-days: 30
+      - name: Upload listing, screenshots and AAB to Closed testing
+        if: inputs.mode == 'publish_closed_testing'
+        env:
+          AAB_PATH: release-out/hubaish-smart-guide.aab
+        run: bundle exec fastlane android upload_closed_testing

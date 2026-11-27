@@ -1,0 +1,44 @@
+default_platform(:android)
+
+platform :android do
+  desc "Calculate a versionCode greater than every version currently present on Play tracks"
+  lane :calculate_next_version_code do
+    package = ENV.fetch("PLAY_PACKAGE_NAME", "com.hubaish.guide")
+    credentials = ENV.fetch("GOOGLE_APPLICATION_CREDENTIALS")
+    requested_track = ENV.fetch("PLAY_TRACK", "alpha")
+    tracks = (%w[internal alpha beta production] + [requested_track]).uniq
+    codes = tracks.flat_map do |track|
+      UI.message("Reading Google Play version codes from track: #{track}")
+      google_play_track_version_codes(package_name: package, track: track, json_key: credentials)
+    end.map(&:to_i)
+    latest = codes.max
+    UI.user_error!("No existing Play version code was found. Confirm the app and tracks before publishing.") unless latest && latest.positive?
+    next_code = latest + 1
+    UI.user_error!("Next versionCode exceeds Android's supported range.") if next_code > 2_100_000_000
+    File.open(ENV.fetch("GITHUB_OUTPUT"), "a") { |file| file.puts("version_code=#{next_code}") }
+    UI.success("Next Google Play versionCode: #{next_code}")
+  end
+
+  desc "Upload the signed app bundle, bilingual listing and generated screenshots to Closed testing only"
+  lane :upload_closed_testing do
+    package = ENV.fetch("PLAY_PACKAGE_NAME", "com.hubaish.guide")
+    track = ENV.fetch("PLAY_TRACK", "alpha").strip
+    UI.user_error!("Production is blocked. Choose a closed-testing track.") if track.downcase == "production"
+    upload_to_play_store(
+      package_name: package,
+      json_key: ENV.fetch("GOOGLE_APPLICATION_CREDENTIALS"),
+      aab: ENV.fetch("AAB_PATH"),
+      track: track,
+      release_status: "completed",
+      metadata_path: "fastlane/metadata/android",
+      skip_upload_apk: true,
+      skip_upload_aab: false,
+      skip_upload_metadata: false,
+      skip_upload_images: false,
+      skip_upload_screenshots: false,
+      skip_upload_changelogs: false,
+      validate_only: false,
+      timeout: 900
+    )
+  end
+end
