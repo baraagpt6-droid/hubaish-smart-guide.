@@ -79,6 +79,9 @@ body{font-family:'IBM Plex Sans Arabic',Tahoma,Arial,sans-serif}.hero-title,.bra
 .category-mountain{border-inline-start:3px solid #34d399}
 .category-valley{border-inline-start:3px solid #5da9e9}
 .category-mosque{border-inline-start:3px solid #b69be8}
+.category-school{border-inline-start:3px solid #d6a84b}
+.related-region-panel{border-inline-start:3px solid var(--gold)}
+.scope-note{padding:8px 10px;border-inline-start:2px solid var(--gold);background:var(--surface);border-radius:8px}
 .category-history{border-inline-start:3px solid var(--gold)}
 .item-card .tag{white-space:normal}
 .explorer-progress,.season-card{

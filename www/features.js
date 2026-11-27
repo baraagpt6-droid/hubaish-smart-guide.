@@ -23,21 +23,21 @@
       {q:'What is named as the administrative centre?',a:['Yarim','Dhulmah','Jiblah'],why:'The available administrative listing names Dhulmah.'},
       {q:'What population was recorded in the 2004 census?',a:['105,998','85,300','228,000'],why:'The National Information Center lists 105,998 residents.'},
       {q:'Which area figure is used in the OCHA/local governance table?',a:['330 km²','228 km²','480 km²'],why:'The OCHA/local governance district table lists 228 km².'},
-      {q:'Which fort is highlighted in this guide?',a:['Sahban Fort','Cairo Fort','Hab Fort'],why:'The guide highlights Sahban Fort.'}
+      {q:'Which historic school is documented in Kuman, Hubaish?',a:['Al-Zawahi School','Dhulmah Mosque','Al-Aridah Fort'],why:'Al-Jundi records Al-Zawahi School and Yusuf’s study there (al-Suluk, p. 431).'}
     ],
     TR: [
       {q:'Hubaish ilçesi hangi valilikte bulunur?',a:['İbb','Taiz','Zamar'],why:'Hubaish, İbb Valiliği sınırları içindedir.'},
       {q:'İdari merkez olarak hangi yer belirtilir?',a:['Yarim','Dhulmah','Jiblah'],why:'Mevcut idari listede merkez Dhulmah olarak belirtilir.'},
       {q:'2004 nüfus sayımında kaç kişi kaydedildi?',a:['105.998','85.300','228.000'],why:'Ulusal Bilgi Merkezi 105.998 kişi kaydeder.'},
       {q:'OCHA/yerel yönetişim tablosundaki yüzölçümü nedir?',a:['330 km²','228 km²','480 km²'],why:'Tabloda 228 km² bilgisi yer alır.'},
-      {q:'Bu rehberde hangi kale öne çıkarılır?',a:['Sahban Kalesi','Kahire Kalesi','Hab Kalesi'],why:'Rehber Sahban Kalesi’ni öne çıkarır.'}
+      {q:'Hubaish’in Kuman bölgesinde hangi tarihî okul belgelenmiştir?',a:['Al-Zawahi Okulu','Dhulmah Camii','Al-Aridah Kalesi'],why:'Al-Jundi, Al-Zawahi Okulu’nu ve Yusuf’un burada eğitim gördüğünü kaydeder (al-Suluk, s. 431).'}
     ],
     FR: [
       {q:'Dans quel gouvernorat se trouve Hubaish ?',a:['Ibb','Taëz','Dhamar'],why:'Hubaish fait partie du gouvernorat d’Ibb.'},
       {q:'Quel lieu est indiqué comme centre administratif ?',a:['Yarim','Dhulmah','Jiblah'],why:'La liste administrative disponible indique Dhulmah.'},
       {q:'Quelle population a été recensée en 2004 ?',a:['105 998','85 300','228 000'],why:'Le Centre national d’information indique 105 998 habitants.'},
       {q:'Quelle superficie figure dans le tableau OCHA/gouvernance locale ?',a:['330 km²','228 km²','480 km²'],why:'Le tableau indique 228 km².'},
-      {q:'Quel fort est mis en avant dans ce guide ?',a:['Fort de Sahban','Fort du Caire','Fort Hab'],why:'Le guide met en avant le fort de Sahban.'}
+      {q:'Quelle école historique est documentée à Kuman, dans Hubaish ?',a:['École d’al-Zawahi','Mosquée de Dhulmah','Fort d’al-Aridah'],why:'Al-Jundi mentionne l’école d’al-Zawahi et les études de Yusuf (al-Suluk, p. 431).'}
     ]
   };
   const QUIZ = window.HubaishCatalog?.quiz || [];
@@ -119,7 +119,7 @@
   }
   function renderSmartItineraries(){
     const root=document.getElementById('itineraryList');if(!root)return;root.replaceChildren();
-    const places=Array.isArray(state.places)?state.places:[];const lang=state.lang||'AR';
+    const places=(Array.isArray(state.places)?state.places:[]).filter(place=>place.scope==='hubaish_district');const lang=state.lang||'AR';
     const labels={
       AR:[['جولة الحصون التاريخية','محطات من الحصون والمعالم التاريخية المنشورة.','fort'],['جولة الوديان والمدرجات الخضراء','معالم طبيعية من الوديان والجبال المنشورة.','nature'],['جولة المعالم الأثرية والدينية','مواقع تراثية ودينية من بيانات الموسوعة.','heritage']],
       EN:[['Historic forts route','Published forts and historic landmarks.','fort'],['Valleys and green terraces','Published valleys and mountain landmarks.','nature'],['Heritage and religious sites','Heritage and religious places in the catalogue.','heritage']],
@@ -137,14 +137,14 @@
   }
   function renderSmartCompare(){
     const first=document.getElementById('comparePlaceA'),second=document.getElementById('comparePlaceB');if(!first||!second)return;
-    const places=Array.isArray(state.places)?state.places:[],oldA=first.value,oldB=second.value;
+    const places=(Array.isArray(state.places)?state.places:[]).filter(place=>place.scope==='hubaish_district'),oldA=first.value,oldB=second.value;
     [first,second].forEach(select=>{select.replaceChildren();places.forEach(place=>{const option=document.createElement('option');option.value=String(place.id);option.textContent=String(place.title||place.id);select.append(option)})});
     if(places.some(place=>String(place.id)===oldA))first.value=oldA;
     if(places.some(place=>String(place.id)===oldB))second.value=oldB;
     if(places.length>1&&first.value===second.value)second.selectedIndex=1;
   }
   function compareSelectedPlaces(){
-    const places=Array.isArray(state.places)?state.places:[];
+    const places=(Array.isArray(state.places)?state.places:[]).filter(place=>place.scope==='hubaish_district');
     const a=places.find(place=>String(place.id)===document.getElementById('comparePlaceA')?.value);
     const b=places.find(place=>String(place.id)===document.getElementById('comparePlaceB')?.value);
     const root=document.getElementById('compareResult');if(!root)return;root.replaceChildren();
@@ -279,8 +279,8 @@
   function renderStories() {
     const box=document.getElementById('visualStories'); if(!box)return;
     const lang=state.lang||'AR'; const labels=(D[lang]||D.AR).stories;
-    const titles={AR:['حصن صهبان','العزل الـ22','محطات التاريخ','مجتمع حبيش'],EN:['Sahban Fort','22 Sub-districts','History timeline','Hubaish community'],TR:['Sahban Kalesi','22 Bucak','Tarih çizelgesi','Hubaish topluluğu'],FR:['Fort de Sahban','22 sous-districts','Chronologie','Communauté de Hubaish']}[lang]||['حصن صهبان','العزل الـ22','محطات التاريخ','مجتمع حبيش'];
-    const data=[['fort',titles[0],labels[0],'places'],['mountain',titles[1],labels[1],'uzal'],['scroll',titles[2],labels[2],'history'],['compass',titles[3],labels[3],'more']];
+    const titles={AR:['بلاد أو مخلاف صهبان','العزل الـ22','محطات التاريخ','مجتمع حبيش'],EN:['Bilad / Mikhlaf Sahban','22 Sub-districts','History timeline','Hubaish community'],TR:['Bilad / Mikhlaf Sahban','22 Bucak','Tarih çizelgesi','Hubaish topluluğu'],FR:['Bilad / Mikhlaf Sahban','22 sous-districts','Chronologie','Communauté de Hubaish']}[lang]||['بلاد أو مخلاف صهبان','العزل الـ22','محطات التاريخ','مجتمع حبيش'];
+    const data=[['scroll',titles[0],labels[0],'more'],['mountain',titles[1],labels[1],'uzal'],['scroll',titles[2],labels[2],'history'],['compass',titles[3],labels[3],'more']];
     box.replaceChildren();
     data.forEach(([icon,title,sub,tab])=>{
       const card=node('button','story-card');card.type='button';card.dataset.storyTab=tab;
