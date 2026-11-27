@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-27T17:00:00+08:00",
+  "updatedAt": "2026-11-27T17:10:00+08:00",
   "landmarks": [
     {
       "id": "khudad-fort",
@@ -744,19 +744,19 @@
     {
       "id": "hijra-wuhaza-learning-centre",
       "category": "school",
-      "status": "https://www.thu-raein.com/index.php/ar/makhaleef-ar/hubaish-district-ar?id=17&view=category",
-      "scope": "documented",
-      "evidence_level": "hubaish_district",
+      "status": "documented",
+      "scope": "hubaish_district",
+      "evidence_level": "historical_biographical_references",
       "title_ar": "هجرة وحاظة – مركز علمي",
       "title_en": "Hijrat Wuhaza Learning Centre",
       "location_ar": "عزلة شباع – مصنعة وحاظة، القرنان الخامس والسادس الهجريان",
-      "location_en": "عزلة شباع – مصنعة وحاظة، القرنان الخامس والسادس الهجريان",
+      "location_en": "Shaba'a sub-district, Hubaish District",
       "description_ar": "تُوثق هجرة وحاظة بوصفها مركزاً علمياً في القرنين الخامس والسادس الهجريين. وتربط التراجم بها عيسى بن إبراهيم الربعي الوحاظي وكتاب «نظام الغريب» في اللغة وغريب الألفاظ، والفقيه زيد بن الحسن الفائشي وكتابه «التهذيب» في الفقه. وتذكر الرواية خزانة للفقيه ضمت نحو 500 كتاب فقه؛ وهذه خزانة منسوبة إلى العالم وليست إثباتاً أن جميع الكتب كانت وقفاً عاماً للهجرة. كما ترد إشارات إلى الأدب وتأديب أبناء الملوك الصليحيين.",
-      "description_en": "تُوثق هجرة وحاظة بوصفها مركزاً علمياً في القرنين الخامس والسادس الهجريين. وتربط التراجم بها عيسى بن إبراهيم الربعي الوحاظي وكتاب «نظام الغريب» في اللغة وغريب الألفاظ، والفقيه زيد بن الحسن الفائشي وكتابه «التهذيب» في الفقه. وتذكر الرواية خزانة للفقيه ضمت نحو 500 كتاب فقه؛ وهذه خزانة منسوبة إلى العالم وليست إثباتاً أن جميع الكتب كانت وقفاً عاماً للهجرة. كما ترد إشارات إلى الأدب وتأديب أبناء الملوك الصليحيين.",
-      "importance_ar": "سجل تراثي يحتاج إلى مطابقة ميدانية بحسب حدود الدليل المتاحة.",
-      "importance_en": "A heritage record that should be checked against field evidence.",
-      "source_text": "Hujrat Wuhaza is documented as a learning centre in the fifth and sixth Hijri centuries. Biographical accounts link it with Isa al-Rub'i al-Wuhazi and his language work Nizam al-Gharib, and jurist Zayd al-Fa'ishi and his legal work al-Tahdhib. A collection of about 500 legal books is attributed to the jurist; it is not presented as a verified public school library.",
-      "source_url": "الأكوع، هجر العلم ومعاقله في اليمن، ج4، ص 2329–2331؛ الجندي، السلوك؛ الأفضل العباس الرسولي، العطايا السنية والمواهب الهنية؛ إحالات التراجم المحلية."
+      "description_en": "Hujrat Wuhaza is documented as a learning centre in the fifth and sixth Hijri centuries. Biographical accounts link it with Isa al-Rub'i al-Wuhazi and his language work Nizam al-Gharib, and jurist Zayd al-Fa'ishi and his legal work al-Tahdhib. A collection of about 500 legal books is attributed to the jurist; it is not presented as a verified public school library.",
+      "importance_ar": "مركز علمي تاريخي موثق بإحالات كتب التراجم وهجر العلم؛ تبقى حدود المباني الأثرية بحاجة إلى مسح.",
+      "importance_en": "A historic learning centre documented in biographical and educational references; the physical remains still need survey.",
+      "source_text": "الأكوع، هجر العلم ومعاقله في اليمن، ج4، ص 2329–2331؛ الجندي، السلوك؛ الأفضل العباس الرسولي، العطايا السنية والمواهب الهنية؛ إحالات التراجم المحلية.",
+      "source_url": "https://www.thu-raein.com/index.php/ar/makhaleef-ar/hubaish-district-ar?id=17&view=category"
     },
     {
       "id": "al-kh-mosque-reading-circle",
