@@ -26,7 +26,7 @@ try {
       const lang = locale === 'ar' ? 'AR' : 'EN';
       const outputDir = resolve(root, `fastlane/metadata/android/${locale}/images/phoneScreenshots`);
       await mkdir(outputDir, { recursive: true });
-      const context = await browser.newContext({ viewport: { width: 1080, height: 1920 }, deviceScaleFactor: 1, isMobile: true, hasTouch: true, reducedMotion: 'reduce' });
+      const context = await browser.newContext({ viewport: { width: 432, height: 768 }, deviceScaleFactor: 2.5, isMobile: true, hasTouch: true, reducedMotion: 'reduce' });
       const page = await context.newPage();
       await page.goto(baseUrl, { waitUntil: 'domcontentloaded', timeout: 45000 });
       await page.locator('#view-home').waitFor({ state: 'visible', timeout: 15000 });
@@ -44,7 +44,7 @@ try {
           await page.locator(`#view-${tab.id}.active`).waitFor({ state: 'visible', timeout: 10000 });
         }
         await page.waitForTimeout(350);
-        await page.screenshot({ path: resolve(outputDir, tab.file), type: 'png', fullPage: false, animations: 'disabled' });
+        await page.screenshot({ path: resolve(outputDir, tab.file), type: 'png', scale: 'device', fullPage: false, animations: 'disabled' });
       }
       await context.close();
     }

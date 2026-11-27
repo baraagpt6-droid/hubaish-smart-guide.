@@ -30,7 +30,7 @@ if (process.argv.includes('--require-screenshots')) {
     for (const name of ['01-home.png','02-history.png','03-landmarks.png','04-sub-districts.png']) {
       const file = resolve(dir, name); await stat(file);
       const data = await readFile(file); const w = data.readUInt32BE(16), h = data.readUInt32BE(20);
-      if (data.toString('hex', 0, 8) !== '89504e470d0a1a0a' || data[25] !== 2 || w < 320 || h < 320 || Math.max(w,h) > Math.min(w,h)*2 || Math.max(w,h) > 3840) throw new Error(`Invalid screenshot: ${locale}/${name}`);
+      if (data.toString('hex', 0, 8) !== '89504e470d0a1a0a' || data[25] !== 2 || w !== 1080 || h !== 1920) throw new Error(`Invalid screenshot: ${locale}/${name}`);
     }
   }
 }
