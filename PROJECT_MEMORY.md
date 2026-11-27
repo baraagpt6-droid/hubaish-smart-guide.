@@ -65,7 +65,7 @@ Never auto-convert draft to completed. Never add production as a fallback.
 - Preserve historical/geographic scope. Suhban must not be moved into the current 22 Hubaish sub-districts. Do not present unverified locations as facts. Follow README provenance rules.
 
 ## Connected services
-- Cloudflare Worker CMS URL documented in README: https://hubaish-cms.baraag6.workers.dev (verify exact live configuration before changing).
+- Cloudflare Worker CMS URL documented in README: https://hubaish-cms.baraagpt6.workers.dev (verify exact live configuration before changing).
 - GitHub Pages hosts public web/store content.
 - GitHub Releases distributes signed Android artifacts when signing secrets exist.
 - Keep Worker and Android signing secrets outside the repository. Never print their values.
