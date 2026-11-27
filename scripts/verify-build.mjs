@@ -224,6 +224,8 @@ if(!app.includes("item.scope === 'hubaish_district'")||!app.includes('function r
 if(!app.includes("'market', 'school'")||!cms.includes("'market','school'")||!html.includes('data-pcat="school"'))throw new Error('The school category is not supported consistently by the app, CMS and filter.');
 if(!html.includes('id="relatedHistoricalRegionsList"')||!html.includes('بلاد أو مخلاف صهبان')||!cms.includes('cloudScope')||!cms.includes('source_page'))throw new Error('Related-region UI or CMS evidence metadata is missing.');
 if(!features.includes('Al-Zawahi School')||features.includes('Which fort is highlighted in this guide?'))throw new Error('School quiz wording is not updated.');
+for(const label of ['بلاد أو مخلاف صهبان','Bilad or Mikhlaf Sahban','Bilad veya Mikhlaf Sahban','Bilad ou Mikhlaf Sahban'])if(!features.includes(label))throw new Error('The translated quick-search label for Sahban is incorrect: '+label);
+if(!cms.includes("['p1','p15'].includes(String(row.id||''))")||!cms.includes("String(row.id||'')==='h3'"))throw new Error('CMS mapping must preserve the legacy Sahban scope for p1, p15 and h3 when scope is absent.');
 if(!sw.includes("hubaish-guide-v4.0.6"))throw new Error('Service Worker cache version was not advanced.');
 for(const [file,expected] of [['www/icons/icon-192.png',192],['www/icons/icon-512.png',512]]) {
   const image=await readFile(resolve(root,file));

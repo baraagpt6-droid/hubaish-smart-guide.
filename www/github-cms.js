@@ -115,7 +115,7 @@
       id:String(row.id||makeId('landmark')),
       cmsOverride:true,
       cat:['fort','mosque','valley','mountain','market','school'].includes(row.category)?row.category:'fort',
-      scope:['hubaish_district','related_historical_region','adjacent_area','unverified_location'].includes(row.scope)?row.scope:'hubaish_district',
+      scope:['hubaish_district','related_historical_region','adjacent_area','unverified_location'].includes(row.scope)?row.scope:(['p1','p15'].includes(String(row.id||''))?'related_historical_region':'hubaish_district'),
       title:localized(row,'title',l),
       loc:localized(row,'location',l)||'مديرية حبيش',
       body:localized(row,'description',l),
@@ -145,7 +145,7 @@
     return {
       id:String(row.id||makeId('history')),
       cmsOverride:true,
-      scope:['hubaish_district','related_historical_region','adjacent_area','unverified_location'].includes(row.scope)?row.scope:'hubaish_district',
+      scope:['hubaish_district','related_historical_region','adjacent_area','unverified_location'].includes(row.scope)?row.scope:(String(row.id||'')==='h3'?'related_historical_region':'hubaish_district'),
       era:row.era==='modern'?'modern':'ancient',
       title:localized(row,'title',l),
       period:localized(row,'period',l),
