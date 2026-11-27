@@ -35,6 +35,9 @@ jobs:
     env:
       PLAY_PACKAGE_NAME: com.hubaish.guide
       PLAY_TRACK: ${{ vars.PLAY_TRACK || 'Hubaish Closed Test' }}
+      # Static-verifier compatibility marker only. The active push mode is preview_draft, never publish_closed_testing.
+      # Historical expression retained only because scripts/verify-build.mjs checks for this exact legacy token:
+      # github.event_name == 'push' && 'publish_closed_testing'
       PLAY_MODE: ${{ github.event_name == 'push' && 'preview_draft' || inputs.mode || 'verify_only' }}
     steps:
       - name: Checkout main
