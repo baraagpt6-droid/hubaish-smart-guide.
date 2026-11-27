@@ -235,7 +235,7 @@ if(!cms.includes("['p1','p15'].includes(String(row.id||''))")||!cms.includes("St
 if(!app.includes("item.cat==='fort'&&item.scope==='hubaish_district'")||!app.includes("item.cat==='valley'&&item.scope==='hubaish_district'")||!app.includes("item.scope==='hubaish_district'&&['fort','valley','mountain','mosque']"))throw new Error('Assistant and compass suggestions must exclude related historical regions from Hubaish itineraries.');
 if(!catalog.includes('Related historical region outside the current administrative boundaries of Hubaish District.')||!features.includes("state.places.filter(p=>p.scope==='hubaish_district')"))throw new Error('Assistant scope label or random tour scope filter is missing.');
 if(!catalog.includes("item.scope==='related_historical_region'&&!/صهبان|sahban/.test(q)"))throw new Error('Generic assistant questions must not misclassify related historical regions as Hubaish sites.');
-if(!sw.includes("hubaish-guide-v4.0.6"))throw new Error('Service Worker cache version was not advanced.');
+if(!sw.includes("hubaish-guide-v4.0.7"))throw new Error('Service Worker cache version was not advanced.');
 for(const [file,expected] of [['www/icons/icon-192.png',192],['www/icons/icon-512.png',512]]) {
   const image=await readFile(resolve(root,file));
   if(image.toString('hex',0,8)!=='89504e470d0a1a0a'||image.readUInt32BE(16)!==expected||image.readUInt32BE(20)!==expected)
@@ -263,7 +263,8 @@ if (!playWorkflow.includes('workflow_dispatch:') ||
 }
 if (!playFastfile.includes('google_play_track_version_codes') ||
     !playFastfile.includes('release_status: "completed"') ||
-    !playFastfile.includes('track.downcase == "production"') ||
+    !playFastfile.includes('closed_testing_track!') ||
+    !playFastfile.includes('Only a custom Closed testing track is allowed') ||
     !playFastfile.includes('metadata_path: "fastlane/metadata/android"')) {
   throw new Error('Fastlane Play upload lane or closed-testing-only safeguards are incomplete.');
 }
@@ -272,4 +273,23 @@ if (!playStoreVerifier.includes('512, 512, 6') ||
     !playStoreVerifier.includes('data[25] !== 2')) {
   throw new Error('Google Play asset verifier must enforce RGBA icon, RGB feature graphic and RGB phone screenshots.');
 }
+
+const profile=data.districtProfile;
+if(!profile||profile.area_km2?.value!==228||profile.population?.find(x=>x.year===2004)?.value!==105998||profile.population?.find(x=>x.year===2025)?.value!==162023)throw new Error('District area and year-specific population values are missing.');
+if(!profile.population.find(x=>x.year===2025).type.includes('HNRP'))throw new Error('2025 population must remain an HNRP estimate, not a census.');
+if(profile.weekly_market?.day_ar!=='الجمعة'||!profile.weekly_market?.verification_note_ar)throw new Error('Weekly market day or local confirmation note is missing.');
+if(profile.subdistrict_count!==22||data.subDistricts.length!==22)throw new Error('Hubaish must retain exactly 22 administrative sub-districts.');
+if(!profile.tribal_context?.named_branches_ar?.includes('آل راجح')||!profile.geographic_disambiguation?.some(x=>x.name_ar==='مخلاف الحبيشية')||profile.name_origin_hypotheses?.status!=='research_hypotheses')throw new Error('Tribal lineage, geographic distinction or name-origin caveat is missing.');
+const requiredHeritage=['khudad-fort','wuhaza-fortress','yaris-fortress','dahran-fort-bani-wail','al-dhuhrah-historic-settlement','al-udadi-fort','musaynia-fort','bayt-al-batul-fort','maghram-khair-fort','bayn-al-dur-dome','al-farawi-mosque-dome','marwaha-mosque','al-jami-mosque','dhulmah-grand-mosque','qubbat-al-zum'];
+for(const id of requiredHeritage)if(!data.landmarks.some(x=>x.id===id))throw new Error('A required historical landmark record is missing: '+id);
+for(const id of ['p1','p15'])if(!app.includes("id: '"+id+"', scope: 'related_historical_region'"))throw new Error('Legacy Sahban landmark id/scope was changed: '+id);
+if(!app.includes("id: 'h3', scope: 'related_historical_region'"))throw new Error('Legacy Sahban event h3 was changed.');
+if(!data.landmarks.some(x=>x.id==='zawahi-islamic-school'&&x.category==='school'&&x.subject_claims_pending_verification?.length===3))throw new Error('Al-Zawahi attributed curriculum claims must remain provisional.');
+const wuhaza=data.landmarks.find(x=>x.id==='hijra-wuhaza-learning-centre');
+if(!wuhaza||wuhaza.category!=='school'||wuhaza.status!=='documented'||wuhaza.scope!=='hubaish_district'||!wuhaza.source_text.includes('ص 2329'))throw new Error('Wuhaza learning centre record is invalid.');
+if(!Array.isArray(data.educationalRecords)||data.educationalRecords.length<7)throw new Error('Educational evidence catalogue is incomplete.');
+for(const id of ['isa-al-rubai-wuhazi','ismail-al-wuhazi','zayd-al-faishi','asad-ibn-wa-il','qasim-ibn-humayr-al-waili','sadiq-mohammed-al-nahi'])if(!data.historicalFigures.some(x=>x.id===id))throw new Error('A required historical figure profile is missing: '+id);
+if(!catalog.includes('162,023')||!catalog.includes('Engineer Sadiq Mohammed')||!catalog.includes('Shaykh Qasim ibn Humayr'))throw new Error('Assistant answers or additional profiles were not added to the catalog.');
+if(!html.includes('id="geoAdminContext"')||!html.includes('id="geoTribalContext"')||!app.includes('geoAdminContext')||!app.includes('geoTribalContext'))throw new Error('Administrative and tribal profile panels are missing.');
+
 console.log('Build check passed: Worker-only login, visitor photo moderation, four locales, ivory/emerald daytime theme, offline shell, Android assets and APK/AAB workflow.');
