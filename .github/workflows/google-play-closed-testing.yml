@@ -5,9 +5,9 @@ on:
   workflow_dispatch:
     inputs:
       mode:
-        description: Verify only, or publish to the Closed testing track
+        description: Verify only, create a Closed testing draft preview, or manually approve the existing draft
         type: choice
-        options: [verify_only, publish_closed_testing]
+        options: [verify_only, preview_draft, approve_draft]
         default: verify_only
         required: true
 
@@ -27,7 +27,7 @@ jobs:
     env:
       PLAY_PACKAGE_NAME: com.hubaish.guide
       PLAY_TRACK: ${{ vars.PLAY_TRACK || 'Hubaish Closed Test' }}
-      PLAY_MODE: ${{ github.event_name == 'push' && 'publish_closed_testing' || inputs.mode || 'verify_only' }}
+      PLAY_MODE: ${{ github.event_name == 'push' && 'preview_draft' || inputs.mode || 'verify_only' }}
     steps:
       - name: Checkout main
         uses: actions/checkout@v4
@@ -82,7 +82,7 @@ jobs:
         run: node scripts/verify-play-store.mjs --require-screenshots
 
       - name: Confirm target and existing upload-signing setup
-        if: env.PLAY_MODE == 'publish_closed_testing'
+        if: env.PLAY_MODE == 'preview_draft'
         shell: bash
         env:
           KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
@@ -92,7 +92,7 @@ jobs:
         run: |
           set -euo pipefail
           [[ "$PLAY_PACKAGE_NAME" == "com.hubaish.guide" ]] || { echo "::error::Package ID mismatch."; exit 1; }
-          [[ "$PLAY_MODE" == "publish_closed_testing" ]] || { echo "::error::Unexpected publishing mode."; exit 1; }
+          [[ "$PLAY_MODE" == "preview_draft" ]] || { echo "::error::Unexpected publishing mode."; exit 1; }
           [[ "$PLAY_TRACK" =~ ^[A-Za-z0-9][A-Za-z0-9_.\ -]{2,59}$ ]] || { echo "::error::PLAY_TRACK has an invalid name."; exit 1; }
           for name in KEYSTORE_BASE64 KEYSTORE_PASSWORD KEY_ALIAS KEY_PASSWORD; do
             if [[ -z "${!name:-}" ]]; then
@@ -102,8 +102,8 @@ jobs:
           done
 
       - name: Authenticate to Google Cloud using WIF
+        if: env.PLAY_MODE == 'preview_draft' || env.PLAY_MODE == 'approve_draft'
         id: google-auth
-        if: env.PLAY_MODE == 'publish_closed_testing'
         uses: google-github-actions/auth@v2
         with:
           project_id: dalilna-play-automation-516000
@@ -114,51 +114,66 @@ jobs:
           access_token_scopes: https://www.googleapis.com/auth/androidpublisher
 
       - name: Install Google Play API client dependencies
-        if: env.PLAY_MODE == 'publish_closed_testing'
+        if: env.PLAY_MODE == 'preview_draft' || env.PLAY_MODE == 'approve_draft'
         run: python3 -m pip install --disable-pip-version-check "google-auth>=2.40,<3" "requests>=2.32,<3"
 
       - name: Discover Closed testing track and next versionCode
+        if: env.PLAY_MODE == 'preview_draft'
         id: play-release
-        if: env.PLAY_MODE == 'publish_closed_testing'
         env:
           PLAY_PACKAGE_NAME: ${{ env.PLAY_PACKAGE_NAME }}
           PLAY_TRACK: ${{ env.PLAY_TRACK }}
         run: python3 scripts/resolve-play-release.py
 
+      - name: Approve existing Closed testing draft manually
+        if: env.PLAY_MODE == 'approve_draft'
+        env:
+          PLAY_PACKAGE_NAME: ${{ env.PLAY_PACKAGE_NAME }}
+          PLAY_TRACK: ${{ env.PLAY_TRACK }}
+        run: python3 scripts/promote-play-draft.py
+
       - name: Set up Ruby and Fastlane
+        if: env.PLAY_MODE != 'approve_draft'
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: '3.3'
           bundler-cache: true
 
       - name: Set up Java
+        if: env.PLAY_MODE != 'approve_draft'
         uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: '21'
 
       - name: Set up Android SDK
+        if: env.PLAY_MODE != 'approve_draft'
         uses: android-actions/setup-android@v4
         with:
           packages: 'platform-tools'
 
       - name: Create the Capacitor Android project
+        if: env.PLAY_MODE != 'approve_draft'
         run: npx cap add android
 
       - name: Generate native launcher and splash assets
+        if: env.PLAY_MODE != 'approve_draft'
         run: npx capacitor-assets generate --android
 
       - name: Sync Capacitor Android
+        if: env.PLAY_MODE != 'approve_draft'
         run: npx cap sync android
 
       - name: Patch Android app label and system bars
+        if: env.PLAY_MODE != 'approve_draft'
         run: python3 scripts/patch-android-config.py
 
       - name: Apply generated app launcher icons
+        if: env.PLAY_MODE != 'approve_draft'
         run: python3 scripts/apply-android-icons.py
 
       - name: Build signed Android App Bundle for Closed testing
-        if: env.PLAY_MODE == 'publish_closed_testing'
+        if: env.PLAY_MODE == 'preview_draft'
         shell: bash
         env:
           KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
@@ -228,6 +243,7 @@ jobs:
           cp android/app/build/outputs/apk/debug/app-debug.apk release-out/hubaish-smart-guide-debug.apk
 
       - name: Upload AAB or debug APK and Play assets as artifact
+        if: env.PLAY_MODE == 'preview_draft' || env.PLAY_MODE == 'verify_only'
         uses: actions/upload-artifact@v4
         with:
           name: hubaish-play-closed-testing
@@ -238,11 +254,11 @@ jobs:
           if-no-files-found: error
           retention-days: 30
 
-      - name: Upload listing, screenshots and AAB to Closed testing
-        if: env.PLAY_MODE == 'publish_closed_testing'
+      - name: Upload listing, screenshots and AAB to Closed testing as draft preview
+        if: env.PLAY_MODE == 'preview_draft'
         env:
           AAB_PATH: release-out/hubaish-smart-guide.aab
           PLAY_TRACK: ${{ steps.play-release.outputs.track }}
-          PLAY_RELEASE_STATUS: ${{ steps.play-release.outputs.release_status }}
+          PLAY_RELEASE_STATUS: draft
           PLAY_PACKAGE_NAME: com.hubaish.guide
         run: bundle exec fastlane android upload_closed_testing
