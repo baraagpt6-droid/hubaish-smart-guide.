@@ -228,6 +228,7 @@ for(const label of ['بلاد أو مخلاف صهبان','Bilad or Mikhlaf Sahb
 if(!cms.includes("['p1','p15'].includes(String(row.id||''))")||!cms.includes("String(row.id||'')==='h3'"))throw new Error('CMS mapping must preserve the legacy Sahban scope for p1, p15 and h3 when scope is absent.');
 if(!app.includes("item.cat==='fort'&&item.scope==='hubaish_district'")||!app.includes("item.cat==='valley'&&item.scope==='hubaish_district'")||!app.includes("item.scope==='hubaish_district'&&['fort','valley','mountain','mosque']"))throw new Error('Assistant and compass suggestions must exclude related historical regions from Hubaish itineraries.');
 if(!catalog.includes('Related historical region outside the current administrative boundaries of Hubaish District.')||!features.includes("state.places.filter(p=>p.scope==='hubaish_district')"))throw new Error('Assistant scope label or random tour scope filter is missing.');
+if(!catalog.includes("item.scope==='related_historical_region'&&!/صهبان|sahban/.test(q)"))throw new Error('Generic assistant questions must not misclassify related historical regions as Hubaish sites.');
 if(!sw.includes("hubaish-guide-v4.0.6"))throw new Error('Service Worker cache version was not advanced.');
 for(const [file,expected] of [['www/icons/icon-192.png',192],['www/icons/icon-512.png',512]]) {
   const image=await readFile(resolve(root,file));
