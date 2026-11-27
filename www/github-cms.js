@@ -23,7 +23,7 @@
   let documentData=readCache();
   let workerToken=sessionStorage.getItem('hubaish_worker_session')||localStorage.getItem('hubaish_worker_session')||'';
   let workerUser=(()=>{try{return JSON.parse(sessionStorage.getItem('hubaish_worker_user')||localStorage.getItem('hubaish_worker_user')||'null')}catch{return null}})();
-  const DEFAULT_WORKER_URL='https://hubaish-cms.baraag6.workers.dev';
+  const DEFAULT_WORKER_URL='https://hubaish-cms.baraagpt6.workers.dev';
   // Remove any previously persisted endpoint. Production now has one canonical Worker URL.
   localStorage.removeItem('hubaish_worker_url');
   let workerUrl=DEFAULT_WORKER_URL;
