@@ -1,31 +1,39 @@
 default_platform(:android)
 
+def closed_testing_track!
+  track = ENV.fetch("PLAY_TRACK", "Hubaish Closed Test").strip
+  UI.user_error!("PLAY_TRACK must be the exact custom Closed testing track name.") if track.empty?
+  reserved = %w[internal alpha beta production closed open closed-testing open-testing]
+  UI.user_error!("Only a custom Closed testing track is allowed; internal, open and Production tracks are blocked.") if reserved.include?(track.downcase)
+  UI.user_error!("Production tracks are blocked.") if track.downcase.end_with?(":production")
+  UI.user_error!("PLAY_TRACK contains unsupported characters.") unless track.match?(/\A[a-zA-Z0-9][a-zA-Z0-9 _.-]{2,59}\z/)
+  track
+end
+
 platform :android do
   desc "Calculate a versionCode greater than every version currently present on Play tracks"
   lane :calculate_next_version_code do
     package = ENV.fetch("PLAY_PACKAGE_NAME", "com.hubaish.guide")
     credentials = ENV.fetch("GOOGLE_APPLICATION_CREDENTIALS")
-    requested_track = ENV.fetch("PLAY_TRACK", "Hubaish Closed Test").strip
-    UI.user_error!("Set PLAY_TRACK to the exact custom Closed testing track name.") if requested_track.empty?
+    requested_track = closed_testing_track!
     tracks = (%w[internal alpha beta production] + [requested_track]).uniq
     codes = tracks.flat_map do |track|
       UI.message("Reading Google Play version codes from track: #{track}")
       google_play_track_version_codes(package_name: package, track: track, json_key: credentials)
     end.map(&:to_i)
     latest = codes.max
-    UI.user_error!("No existing Play version code was found. Confirm the app and tracks before publishing.") unless latest && latest.positive?
+    UI.user_error!("No existing Play version code was found. Confirm the app, service-account permissions and tracks before publishing.") unless latest && latest.positive?
     next_code = latest + 1
     UI.user_error!("Next versionCode exceeds Android's supported range.") if next_code > 2_100_000_000
     File.open(ENV.fetch("GITHUB_OUTPUT"), "a") { |file| file.puts("version_code=#{next_code}") }
     UI.success("Next Google Play versionCode: #{next_code}")
   end
 
-  desc "Upload the signed app bundle, bilingual listing and generated screenshots to Closed testing only"
+  desc "Upload the signed app bundle, bilingual listing and screenshots to a custom Closed testing track only"
   lane :upload_closed_testing do
     package = ENV.fetch("PLAY_PACKAGE_NAME", "com.hubaish.guide")
-    track = ENV.fetch("PLAY_TRACK", "Hubaish Closed Test").strip
-    UI.user_error!("Set PLAY_TRACK to the exact custom Closed testing track name.") if track.empty?
-    UI.user_error!("Production is blocked. Choose a closed-testing track.") if track.downcase == "production" || track.downcase.end_with?(":production")
+    track = closed_testing_track!
+    UI.user_error!("Package ID mismatch: expected com.hubaish.guide.") unless package == "com.hubaish.guide"
     upload_to_play_store(
       package_name: package,
       json_key: ENV.fetch("GOOGLE_APPLICATION_CREDENTIALS"),
