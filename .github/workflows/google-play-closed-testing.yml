@@ -35,18 +35,20 @@ jobs:
         run: npm install --no-audit --no-fund
       - name: Generate PWA and Capacitor icon source images
         run: python3 scripts/generate-icons.py
-      - name: Generate Google Play listing graphics
-        run: python3 scripts/prepare-play-store-assets.py
       - name: Run npm build
         run: npm run build
       - name: Run build verification explicitly
         run: node scripts/verify-build.mjs
-      - name: Verify Play listing text and graphics
-        run: node scripts/verify-play-store.mjs
-      - name: Install Playwright for app screenshots
+      - name: Install Playwright for app screenshots and feature graphic
         run: npm install --no-save --package-lock=false playwright@1.56.1
       - name: Install Chromium
         run: npx playwright install --with-deps chromium
+      - name: Render Arabic/English feature graphic with Chromium
+        run: node scripts/render-play-feature-graphic.mjs
+      - name: Generate Google Play listing graphics
+        run: python3 scripts/prepare-play-store-assets.py
+      - name: Verify Play listing text and graphics
+        run: node scripts/verify-play-store.mjs
       - name: Capture actual app screens in Arabic and English
         run: node scripts/capture-play-screenshots.mjs
       - name: Normalize screenshots to RGB PNG without alpha

@@ -21,7 +21,7 @@ const required = [
   'Gemfile','fastlane/Appfile','fastlane/Fastfile',
   'fastlane/metadata/android/ar/title.txt','fastlane/metadata/android/ar/short_description.txt','fastlane/metadata/android/ar/full_description.txt','fastlane/metadata/android/ar/changelogs/default.txt',
   'fastlane/metadata/android/en-US/title.txt','fastlane/metadata/android/en-US/short_description.txt','fastlane/metadata/android/en-US/full_description.txt','fastlane/metadata/android/en-US/changelogs/default.txt',
-  'play-store/feature-graphic.svg','scripts/prepare-play-store-assets.py','scripts/capture-play-screenshots.mjs','scripts/normalize-play-screenshots.py','scripts/verify-play-store.mjs','scripts/prepare-android-release.py',
+  'play-store/feature-graphic.svg','scripts/render-play-feature-graphic.mjs','scripts/prepare-play-store-assets.py','scripts/capture-play-screenshots.mjs','scripts/normalize-play-screenshots.py','scripts/verify-play-store.mjs','scripts/prepare-android-release.py',
   '.github/workflows/google-play-closed-testing.yml','docs/google-play-setup.md'
 ];
 for (const file of required) await access(resolve(root,file));
