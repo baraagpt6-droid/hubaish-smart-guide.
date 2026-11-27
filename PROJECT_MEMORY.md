@@ -25,9 +25,11 @@ Persistent project reference for future maintenance. It records project identity
 ## Connected application services
 - GitHub Pages serves the public PWA.
 - Cloudflare Worker provides the CMS/admin API. Project endpoint: https://hubaish-cms.baraag6.workers.dev.
+- The account subdomain is discovered from Cloudflare API by `scripts/resolve-cloudflare-worker-url.mjs`; the script verifies the `hubaish-cms` workers.dev route is enabled and ensures the app and runtime audit use the same hostname.
 - Shared live-content source: www/data/live-content.json.
 - Admin content publication uses the Cloudflare Worker. Public visitors read published content without admin credentials.
 - Cloudflare Worker bindings and deployment are defined under cloudflare-worker/ and .github/workflows/.
+- Wrangler sets `workers_dev = true`. Deployment and post-deployment health workflows resolve the active URL from Cloudflare state before checking `/health` and `/setup/status`. Runtime audit retries transient DNS/network errors up to six attempts and fails the preview build if either endpoint cannot be verified with HTTP 200.
 - Keep credentials, tokens, administrator passwords, private keys, and signing material outside source control.
 
 ## Google Cloud identity and GitHub OIDC
