@@ -96,8 +96,19 @@ jobs:
             echo "::error::Set GCP_PROJECT_ID, GCP_WIF_PROVIDER and GCP_SERVICE_ACCOUNT repository variables."
             exit 1
           fi
-          if [[ "${PLAY_TRACK,,}" == "production" ]]; then
-            echo "::error::Production publishing is blocked in this workflow."
+          TRACK_NORMALIZED="$(printf '%s' "$PLAY_TRACK" | tr '[:upper:]' '[:lower:]')"
+          case "$TRACK_NORMALIZED" in
+            internal|alpha|beta|production|closed|open|closed-testing|open-testing|*:production)
+              echo "::error::Only a custom Closed testing track is allowed. Standard, open and Production tracks are blocked."
+              exit 1
+              ;;
+          esac
+          if [[ ! "$PLAY_TRACK" =~ ^[A-Za-z0-9][A-Za-z0-9_.\ -]{2,59}$ ]]; then
+            echo "::error::PLAY_TRACK must match the exact custom Closed testing track name."
+            exit 1
+          fi
+          if [[ "${PLAY_PACKAGE_NAME:-com.hubaish.guide}" != "com.hubaish.guide" ]]; then
+            echo "::error::This workflow is locked to com.hubaish.guide."
             exit 1
           fi
           for name in KEYSTORE_BASE64 KEYSTORE_PASSWORD KEY_ALIAS KEY_PASSWORD; do
