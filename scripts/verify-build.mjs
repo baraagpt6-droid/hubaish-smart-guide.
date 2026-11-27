@@ -215,6 +215,8 @@ const liveKeys=['landmarks','historyEvents','subDistrictUpdates','subDistricts',
 if(data.schemaVersion!==1||!liveKeys.every(key=>Array.isArray(data[key])))throw new Error('The live content JSON schema is invalid.');
 const zawahi=data.landmarks.find(item=>item.id==='zawahi-islamic-school');
 if(!zawahi||zawahi.category!=='school'||zawahi.scope!=='hubaish_district'||zawahi.source_page!==431||zawahi.source_author!=='بهاء الدين الجندي')throw new Error('Al-Zawahi school record is missing its classification, scope or page-level source.');
+if(!cms.includes("scope:item.scope||'hubaish_district'")||!cms.includes('source_title:item.sourceTitle||'))throw new Error('CMS conversion of local base landmarks must preserve geographic scope and source metadata.');
+if(!cms.includes('Number.isInteger(Number(v.sourcePage))')||!cms.includes('Number(v.sourcePage)<=0'))throw new Error('Historical school source-page validation is too permissive.');
 const uzalStart=app.indexOf('const UZAL_22 = ['),uzalEnd=app.indexOf('];',uzalStart),uzalBlock=uzalStart>=0&&uzalEnd>uzalStart?app.slice(uzalStart,uzalEnd):'';
 if(!uzalBlock||[...uzalBlock.matchAll(/'[^']+'/g)].length!==22||uzalBlock.includes('صهبان'))throw new Error('Sahban must not be added to Hubaish’s 22 sub-districts.');
 for(const id of ["id: 'p1', scope: 'related_historical_region'","id: 'p15', scope: 'related_historical_region'","id: 'h3', scope: 'related_historical_region'"])if(!app.includes(id))throw new Error('A legacy Sahban record or scope was lost: '+id);

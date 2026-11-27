@@ -373,7 +373,7 @@
     return {ar:row?.[key+'_ar']||'',en:row?.[key+'_en']||'',tr:row?.[key+'_tr']||'',fr:row?.[key+'_fr']||''};
   }
   function fromBasePlace(item){
-    const result={id:item.id,category:item.cat||'fort',source_text:item.source||'',source_url:item.sourceUrl||'',elevation:item.elevation||'',image_url:item.imageUrl||'',image_alt_ar:item.imageAlt||'',image_credit:item.imageCredit||'',image_source_url:item.imageSourceUrl||'',status:item.status||'documented'};
+    const result={id:item.id,category:item.cat||'fort',scope:item.scope||'hubaish_district',source_text:item.source||'',source_url:item.sourceUrl||'',source_title:item.sourceTitle||'',source_author:item.sourceAuthor||'',source_page:item.sourcePage||null,evidence_level:item.evidenceLevel||'',elevation:item.elevation||'',image_url:item.imageUrl||'',image_alt_ar:item.imageAlt||'',image_credit:item.imageCredit||'',image_source_url:item.imageSourceUrl||'',status:item.status||'documented'};
     for(const l of ['AR','EN','TR','FR']){
       const x=window.HubaishCatalog?.localizeItem?.(item,l)||item;
       const suffix=l.toLowerCase();
@@ -385,7 +385,7 @@
     return result;
   }
   function fromBaseHistory(item){
-    const result={id:item.id,era:item.era||'ancient',source_text:item.source||'',source_url:item.sourceUrl||'',status:item.status||'documented'};
+    const result={id:item.id,era:item.era||'ancient',scope:item.scope||'hubaish_district',source_text:item.source||'',source_url:item.sourceUrl||'',status:item.status||'documented'};
     for(const l of ['AR','EN','TR','FR']){
       const x=window.HubaishCatalog?.localizeItem?.(item,l)||item;
       const suffix=l.toLowerCase();
@@ -654,7 +654,7 @@
     if(v.type==='sub_district'&&!v.district.ar){toast('اختر العزلة الأصلية المراد تعديلها.');return}
     if(v.type==='community_link'&&!safeUrl(v.url)){toast('أدخل رابط HTTPS أو HTTP صحيحاً.');return}
     if(v.sourceUrl&&!safeUrl(v.sourceUrl)){toast('رابط المصدر غير صالح.');return}
-    if(v.type==='landmark'&&v.category==='school'&&(!v.source||!v.sourceUrl||!v.sourceTitle||!v.sourceAuthor||!v.sourcePage)){toast('يتطلب سجل المدرسة التاريخية عنوان المصدر ومؤلفه ورقم الصفحة ورابطه.');return}
+    if(v.type==='landmark'&&v.category==='school'&&(!v.source||!safeUrl(v.sourceUrl)||!v.sourceTitle||!v.sourceAuthor||!Number.isInteger(Number(v.sourcePage))||Number(v.sourcePage)<=0)){toast('يتطلب سجل المدرسة التاريخية عنوان المصدر ومؤلفه ورقم الصفحة الصحيحة ورابطه.');return}
     if(v.imageUrl&&!safeImageSource(v.imageUrl)){toast('ملف الصورة أو رابطها غير صالح أو أكبر من الحد المسموح.');return}
     if(v.imageUrl&&(!v.imageVerified||!v.imagePhotographer||!v.imageCredit||!safeUrl(v.imageSourceUrl||v.sourceUrl)||!v.imageLicense)){toast('لتوثيق صورة المعرض، أكّد انتماءها لحبيش وأدخل المصور والنسبة والرخصة ورابط المصدر.');return}
     if(v.type==='landmark'){
