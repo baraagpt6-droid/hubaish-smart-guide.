@@ -74,7 +74,7 @@ jobs:
           CLOUDFLARE_WORKER_URL: ${{ steps.worker-url.outputs.base_url }}
         run: |
           node <<'NODE'
-          const base = process.env.CLOUDFLARE_WORKER_URL || 'https://hubaish-cms.baraag6.workers.dev';
+          const base = process.env.CLOUDFLARE_WORKER_URL || 'https://hubaish-cms.baraagpt6.workers.dev';
           const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 
           async function check(path) {
