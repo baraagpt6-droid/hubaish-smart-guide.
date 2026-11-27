@@ -114,7 +114,8 @@
     return {
       id:String(row.id||makeId('landmark')),
       cmsOverride:true,
-      cat:['fort','mosque','valley','mountain','market'].includes(row.category)?row.category:'fort',
+      cat:['fort','mosque','valley','mountain','market','school'].includes(row.category)?row.category:'fort',
+      scope:['hubaish_district','related_historical_region','adjacent_area','unverified_location'].includes(row.scope)?row.scope:'hubaish_district',
       title:localized(row,'title',l),
       loc:localized(row,'location',l)||'مديرية حبيش',
       body:localized(row,'description',l),
@@ -124,6 +125,10 @@
       importance:localized(row,'importance',l),
       source:row.source_text||'',
       sourceUrl:row.source_url||'',
+      sourceTitle:String(row.source_title||''),
+      sourceAuthor:String(row.source_author||''),
+      sourcePage:Number.isInteger(Number(row.source_page))&&Number(row.source_page)>0?Number(row.source_page):null,
+      evidenceLevel:String(row.evidence_level||''),
       imageUrl:safeImageSource(row.image_url)?row.image_url:'',
       imageAlt:localized(row,'image_alt',l)||String(row.image_alt_ar||localized(row,'title',l)).slice(0,180),
       imageCaption:localized(row,'image_caption',l),
@@ -140,6 +145,7 @@
     return {
       id:String(row.id||makeId('history')),
       cmsOverride:true,
+      scope:['hubaish_district','related_historical_region','adjacent_area','unverified_location'].includes(row.scope)?row.scope:'hubaish_district',
       era:row.era==='modern'?'modern':'ancient',
       title:localized(row,'title',l),
       period:localized(row,'period',l),
@@ -505,7 +511,8 @@
       district:{ar:val('cloudDistrictAr'),en:val('cloudDistrictEn'),tr:val('cloudDistrictTr'),fr:val('cloudDistrictFr')},
       place:{ar:val('cloudPlaceAr'),en:val('cloudPlaceEn'),tr:val('cloudPlaceTr'),fr:val('cloudPlaceFr')},
       period:{ar:val('cloudPeriodAr'),en:val('cloudPeriodEn'),tr:val('cloudPeriodTr'),fr:val('cloudPeriodFr')},
-      category:val('cloudCategory')||'fort',url:val('cloudUrl'),source:val('cloudSource'),sourceUrl:val('cloudSourceUrl'),
+      category:val('cloudCategory')||'fort',scope:val('cloudScope')||'hubaish_district',url:val('cloudUrl'),source:val('cloudSource'),sourceUrl:val('cloudSourceUrl'),
+      sourceTitle:val('cloudSourceTitle'),sourceAuthor:val('cloudSourceAuthor'),sourcePage:val('cloudSourcePage'),evidenceLevel:val('cloudEvidenceLevel'),
       imageUrl:val('cloudImageUrl'),
       imageAlt:{ar:val('cloudImageAlt'),en:val('cloudImageAltEn'),tr:val('cloudImageAltTr'),fr:val('cloudImageAltFr')},
       imageCaption:{ar:val('cloudImageCaptionAr'),en:val('cloudImageCaptionEn'),tr:val('cloudImageCaptionTr'),fr:val('cloudImageCaptionFr')},
@@ -541,7 +548,10 @@
     const common={id:v.id||makeId(v.type),source_text:v.source||'',source_url:safeUrl(v.sourceUrl)?v.sourceUrl:'',status:'documented'};
     if(v.type==='landmark'){
       const row=Object.assign(common,{
-        category:v.category,elevation:v.elevation!==''?Number(v.elevation):'غير موثق ميدانياً',
+        category:['fort','mosque','valley','mountain','market','school'].includes(v.category)?v.category:'fort',
+        scope:['hubaish_district','related_historical_region','adjacent_area','unverified_location'].includes(v.scope)?v.scope:'hubaish_district',
+        source_title:String(v.sourceTitle||''),source_author:String(v.sourceAuthor||''),source_page:Number.isInteger(Number(v.sourcePage))&&Number(v.sourcePage)>0?Number(v.sourcePage):null,evidence_level:String(v.evidenceLevel||''),
+        elevation:v.elevation!==''?Number(v.elevation):'غير موثق ميدانياً',
         latitude:v.latitude!==''?Number(v.latitude):null,longitude:v.longitude!==''?Number(v.longitude):null,
         image_url:safeImageSource(v.imageUrl)?v.imageUrl:'',
         image_category:['forts','valleys','villages','heritage'].includes(v.imageCategory)?v.imageCategory:'valleys',
@@ -554,7 +564,7 @@
       return row;
     }
     if(v.type==='history_event'){
-      const row=Object.assign(common,{era:v.category==='modern'?'modern':'ancient'});
+      const row=Object.assign(common,{scope:['hubaish_district','related_historical_region','adjacent_area','unverified_location'].includes(v.scope)?v.scope:'hubaish_district',era:v.category==='modern'?'modern':'ancient'});
       localeFields(row,'title',v.title);localeFields(row,'period',v.period);localeFields(row,'body',v.details);return row;
     }
     if(v.type==='sub_district_update'){
@@ -603,7 +613,7 @@
       put('cloudTitle'+s,title[l]);put('cloudDetails'+s,details[l]);put('cloudLocation'+s,location[l]);
       put('cloudDistrict'+s,district[l]);put('cloudPlace'+s,'');put('cloudPeriod'+s,period[l]);
     });
-    put('cloudCategory',category);put('cloudUrl',url);put('cloudElevation',elevation);put('cloudLatitude',latitude);put('cloudLongitude',longitude);put('cloudSource',row?.source_text||'');put('cloudSourceUrl',row?.source_url||'');
+    put('cloudCategory',category);put('cloudScope',row?.scope||'hubaish_district');put('cloudSourceTitle',row?.source_title||'');put('cloudSourceAuthor',row?.source_author||'');put('cloudSourcePage',row?.source_page||'');put('cloudEvidenceLevel',row?.evidence_level||'');put('cloudUrl',url);put('cloudElevation',elevation);put('cloudLatitude',latitude);put('cloudLongitude',longitude);put('cloudSource',row?.source_text||'');put('cloudSourceUrl',row?.source_url||'');
     put('cloudImageUrl',row?.image_url||'');
     const imageAlt=allLocales(row,'image_alt'),imageCaption=allLocales(row,'image_caption'),imageDistrict=allLocales(row,'image_district');
     put('cloudImageAlt',imageAlt.ar);put('cloudImageAltEn',imageAlt.en);put('cloudImageAltTr',imageAlt.tr);put('cloudImageAltFr',imageAlt.fr);
@@ -644,6 +654,7 @@
     if(v.type==='sub_district'&&!v.district.ar){toast('اختر العزلة الأصلية المراد تعديلها.');return}
     if(v.type==='community_link'&&!safeUrl(v.url)){toast('أدخل رابط HTTPS أو HTTP صحيحاً.');return}
     if(v.sourceUrl&&!safeUrl(v.sourceUrl)){toast('رابط المصدر غير صالح.');return}
+    if(v.type==='landmark'&&v.category==='school'&&(!v.source||!v.sourceUrl||!v.sourceTitle||!v.sourceAuthor||!v.sourcePage)){toast('يتطلب سجل المدرسة التاريخية عنوان المصدر ومؤلفه ورقم الصفحة ورابطه.');return}
     if(v.imageUrl&&!safeImageSource(v.imageUrl)){toast('ملف الصورة أو رابطها غير صالح أو أكبر من الحد المسموح.');return}
     if(v.imageUrl&&(!v.imageVerified||!v.imagePhotographer||!v.imageCredit||!safeUrl(v.imageSourceUrl||v.sourceUrl)||!v.imageLicense)){toast('لتوثيق صورة المعرض، أكّد انتماءها لحبيش وأدخل المصور والنسبة والرخصة ورابط المصدر.');return}
     if(v.type==='landmark'){
@@ -745,7 +756,7 @@
     $('cloudPreviewBtn')?.addEventListener('click',renderContentPreview);
     $('cloudContentClearBtn')?.addEventListener('click',()=>{
       const type=val('cloudRecordType');['cloudRecordId','cloudContributionId'].forEach(id=>put(id,''));
-      ['cloudTitleAr','cloudTitleEn','cloudTitleTr','cloudTitleFr','cloudDetailsAr','cloudDetailsEn','cloudDetailsTr','cloudDetailsFr','cloudLocationAr','cloudLocationEn','cloudLocationTr','cloudLocationFr','cloudDistrictAr','cloudDistrictEn','cloudDistrictTr','cloudDistrictFr','cloudPlaceAr','cloudPlaceEn','cloudPlaceTr','cloudPlaceFr','cloudPeriodAr','cloudPeriodEn','cloudPeriodTr','cloudPeriodFr','cloudCategory','cloudUrl','cloudSource','cloudSourceUrl','cloudImportanceAr','cloudImportanceEn','cloudImportanceTr','cloudImportanceFr','cloudImageUrl','cloudImageAlt','cloudImageAltEn','cloudImageAltTr','cloudImageAltFr','cloudImageCaptionAr','cloudImageCaptionEn','cloudImageCaptionTr','cloudImageCaptionFr','cloudImageCategory','cloudImagePhotographer','cloudImageCredit','cloudImageLicense','cloudImageSourceUrl','cloudLinkPlacement','cloudSocialPlatform','cloudElevation','cloudLatitude','cloudLongitude'].forEach(id=>put(id,''));
+      ['cloudTitleAr','cloudTitleEn','cloudTitleTr','cloudTitleFr','cloudDetailsAr','cloudDetailsEn','cloudDetailsTr','cloudDetailsFr','cloudLocationAr','cloudLocationEn','cloudLocationTr','cloudLocationFr','cloudDistrictAr','cloudDistrictEn','cloudDistrictTr','cloudDistrictFr','cloudPlaceAr','cloudPlaceEn','cloudPlaceTr','cloudPlaceFr','cloudPeriodAr','cloudPeriodEn','cloudPeriodTr','cloudPeriodFr','cloudCategory','cloudScope','cloudSourceTitle','cloudSourceAuthor','cloudSourcePage','cloudEvidenceLevel','cloudUrl','cloudSource','cloudSourceUrl','cloudImportanceAr','cloudImportanceEn','cloudImportanceTr','cloudImportanceFr','cloudImageUrl','cloudImageAlt','cloudImageAltEn','cloudImageAltTr','cloudImageAltFr','cloudImageCaptionAr','cloudImageCaptionEn','cloudImageCaptionTr','cloudImageCaptionFr','cloudImageCategory','cloudImagePhotographer','cloudImageCredit','cloudImageLicense','cloudImageSourceUrl','cloudLinkPlacement','cloudSocialPlatform','cloudElevation','cloudLatitude','cloudLongitude'].forEach(id=>put(id,''));
       put('cloudRecordType',type);if($('cloudImageVerified'))$('cloudImageVerified').checked=false;if($('cloudImageFile'))$('cloudImageFile').value='';updateImagePreview('');$('cloudImageCompressionStatus')?.replaceChildren();$('cloudPreviewContent')?.replaceChildren();$('cloudPreviewPanel')?.classList.add('hidden');
     });
     $('cloudRefreshBtn')?.addEventListener('click',async()=>{
