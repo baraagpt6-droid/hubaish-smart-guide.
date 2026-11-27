@@ -51,7 +51,6 @@ The dispatch default is `verify_only`. Select `publish_closed_testing` only when
 On GitHub mobile, open [the repository](https://github.com/baraagpt6-droid/hubaish-smart-guide.) → **Settings**. If repository settings are not shown in the app, open GitHub in Chrome and choose **Request desktop site**.
 
 Go to **Secrets and variables → Actions → Variables → New repository variable** and add:
-- `PLAY_TRACK`: defaults in code to `Hubaish Closed Test`; set this only if the actual custom track name in Play Console differs.
 - `GCP_PROJECT_ID`: Cloud project ID (not the numeric project number).
 - `GCP_WIF_PROVIDER`: full provider resource name.
 - `GCP_SERVICE_ACCOUNT`: service-account email.
