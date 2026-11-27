@@ -255,6 +255,15 @@ jobs:
           if-no-files-found: error
           retention-days: 30
 
+      - name: Upload listing, screenshots and AAB to Closed testing as draft preview
+        if: env.PLAY_MODE == 'preview_draft'
+        env:
+          AAB_PATH: release-out/hubaish-smart-guide.aab
+          PLAY_TRACK: ${{ steps.play-release.outputs.track }}
+          PLAY_RELEASE_STATUS: draft
+          PLAY_PACKAGE_NAME: com.hubaish.guide
+        run: bundle exec fastlane android upload_closed_testing
+
       - name: Publish draft preview report
         if: env.PLAY_MODE == 'preview_draft'
         env:
@@ -294,11 +303,3 @@ jobs:
             done
           } >> "$GITHUB_STEP_SUMMARY"
 
-      - name: Upload listing, screenshots and AAB to Closed testing as draft preview
-        if: env.PLAY_MODE == 'preview_draft'
-        env:
-          AAB_PATH: release-out/hubaish-smart-guide.aab
-          PLAY_TRACK: ${{ steps.play-release.outputs.track }}
-          PLAY_RELEASE_STATUS: draft
-          PLAY_PACKAGE_NAME: com.hubaish.guide
-        run: bundle exec fastlane android upload_closed_testing
