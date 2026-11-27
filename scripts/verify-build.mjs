@@ -213,6 +213,16 @@ const quizBlock=quizStart>=0&&quizEnd>quizStart?catalog.slice(quizStart,quizEnd)
 if([...quizBlock.matchAll(/^\s*\[\[/gm)].length!==10)throw new Error('The ten-question quiz catalogue is incomplete.');
 const liveKeys=['landmarks','historyEvents','subDistrictUpdates','subDistricts','historicalFigures','communityLinks'];
 if(data.schemaVersion!==1||!liveKeys.every(key=>Array.isArray(data[key])))throw new Error('The live content JSON schema is invalid.');
+const zawahi=data.landmarks.find(item=>item.id==='zawahi-islamic-school');
+if(!zawahi||zawahi.category!=='school'||zawahi.scope!=='hubaish_district'||zawahi.source_page!==431||zawahi.source_author!=='بهاء الدين الجندي')throw new Error('Al-Zawahi school record is missing its classification, scope or page-level source.');
+const uzalStart=app.indexOf('const UZAL_22 = ['),uzalEnd=app.indexOf('];',uzalStart),uzalBlock=uzalStart>=0&&uzalEnd>uzalStart?app.slice(uzalStart,uzalEnd):'';
+if(!uzalBlock||[...uzalBlock.matchAll(/'[^']+'/g)].length!==22||uzalBlock.includes('صهبان'))throw new Error('Sahban must not be added to Hubaish’s 22 sub-districts.');
+for(const id of ["id: 'p1', scope: 'related_historical_region'","id: 'p15', scope: 'related_historical_region'","id: 'h3', scope: 'related_historical_region'"])if(!app.includes(id))throw new Error('A legacy Sahban record or scope was lost: '+id);
+if(!app.includes("item.scope === 'hubaish_district'")||!app.includes('function renderRelatedHistoricalRegions'))throw new Error('District filtering or the related-historical-region display is missing.');
+if(!app.includes("'market', 'school'")||!cms.includes("'market','school'")||!html.includes('data-pcat="school"'))throw new Error('The school category is not supported consistently by the app, CMS and filter.');
+if(!html.includes('id="relatedHistoricalRegionsList"')||!html.includes('بلاد أو مخلاف صهبان')||!cms.includes('cloudScope')||!cms.includes('source_page'))throw new Error('Related-region UI or CMS evidence metadata is missing.');
+if(!features.includes('Al-Zawahi School')||features.includes('Which fort is highlighted in this guide?'))throw new Error('School quiz wording is not updated.');
+if(!sw.includes("hubaish-guide-v4.0.6"))throw new Error('Service Worker cache version was not advanced.');
 for(const [file,expected] of [['www/icons/icon-192.png',192],['www/icons/icon-512.png',512]]) {
   const image=await readFile(resolve(root,file));
   if(image.toString('hex',0,8)!=='89504e470d0a1a0a'||image.readUInt32BE(16)!==expected||image.readUInt32BE(20)!==expected)
