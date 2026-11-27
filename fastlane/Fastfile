@@ -5,8 +5,9 @@ platform :android do
   lane :calculate_next_version_code do
     package = ENV.fetch("PLAY_PACKAGE_NAME", "com.hubaish.guide")
     credentials = ENV.fetch("GOOGLE_APPLICATION_CREDENTIALS")
-    requested_track = ENV.fetch("PLAY_TRACK", "alpha")
-    tracks = (%w[internal alpha beta] + [requested_track]).uniq
+    requested_track = ENV.fetch("PLAY_TRACK", "Hubaish Closed Test").strip
+    UI.user_error!("Set PLAY_TRACK to the exact custom Closed testing track name.") if requested_track.empty?
+    tracks = (%w[internal alpha beta production] + [requested_track]).uniq
     codes = tracks.flat_map do |track|
       UI.message("Reading Google Play version codes from track: #{track}")
       google_play_track_version_codes(package_name: package, track: track, json_key: credentials)
@@ -22,8 +23,9 @@ platform :android do
   desc "Upload the signed app bundle, bilingual listing and generated screenshots to Closed testing only"
   lane :upload_closed_testing do
     package = ENV.fetch("PLAY_PACKAGE_NAME", "com.hubaish.guide")
-    track = ENV.fetch("PLAY_TRACK", "alpha").strip
-    UI.user_error!("Production is blocked. Choose a closed-testing track.") if track.downcase == "production"
+    track = ENV.fetch("PLAY_TRACK", "Hubaish Closed Test").strip
+    UI.user_error!("Set PLAY_TRACK to the exact custom Closed testing track name.") if track.empty?
+    UI.user_error!("Production is blocked. Choose a closed-testing track.") if track.downcase == "production" || track.downcase.end_with?(":production")
     upload_to_play_store(
       package_name: package,
       json_key: ENV.fetch("GOOGLE_APPLICATION_CREDENTIALS"),

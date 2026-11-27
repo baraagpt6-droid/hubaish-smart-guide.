@@ -11,7 +11,7 @@ This repository uses GitHub Actions, Google Cloud Workload Identity Federation (
 5. Builds a signed Android App Bundle using the existing upload-keystore secrets.
 6. Uploads the AAB, metadata, graphics and screenshots to Closed testing using Fastlane.
 
-The dispatch default is `verify_only`. Select `publish_closed_testing` only when ready to upload. `PLAY_TRACK` defaults to `alpha`, the standard Fastlane Closed testing identifier. For a custom closed track, set this repository variable to the exact Play API track ID. `production` is rejected.
+The dispatch default is `verify_only`. Select `publish_closed_testing` only when ready to upload. `PLAY_TRACK` defaults to the custom track name you supplied: `Hubaish Closed Test`. Google Play identifies custom closed tracks by their track name; if the name shown in the Play Console differs, set the exact identifier in the repository variable. `production` is rejected.
 
 ## 1. Google Cloud setup in a mobile browser
 
@@ -54,7 +54,7 @@ Go to **Secrets and variables → Actions → Variables → New repository varia
 - `GCP_PROJECT_ID`: Cloud project ID (not the numeric project number).
 - `GCP_WIF_PROVIDER`: full provider resource name.
 - `GCP_SERVICE_ACCOUNT`: service-account email.
-- Optional `PLAY_TRACK`: `alpha` or the exact custom closed-track API ID.
+- Optional `PLAY_TRACK`: defaults to `Hubaish Closed Test`. Use the exact custom closed-track identifier shown in the Play Console / Developer API if it differs.
 
 Do not add a `PLAY_JSON_KEY` secret. WIF replaces the service-account key.
 
@@ -66,7 +66,7 @@ Under **Settings → Secrets and variables → Actions → Secrets**, ensure the
 
 ## 5. Run the workflow
 
-After this PR and the historical-scope PR are reviewed and merged to `main`:
+PR #2 is stacked on `feat/hubaish-historical-schools-scope` so it contains only the Play automation changes. Merge PR #1 first. Then change PR #2's base branch to `main`, review its resulting diff, and merge it only after approval:
 
 1. Open the repository on GitHub.
 2. Tap **Actions → Google Play Closed Testing → Run workflow**.

@@ -21,7 +21,7 @@ const required = [
   'Gemfile','fastlane/Appfile','fastlane/Fastfile',
   'fastlane/metadata/android/ar/title.txt','fastlane/metadata/android/ar/short_description.txt','fastlane/metadata/android/ar/full_description.txt','fastlane/metadata/android/ar/changelogs/default.txt',
   'fastlane/metadata/android/en-US/title.txt','fastlane/metadata/android/en-US/short_description.txt','fastlane/metadata/android/en-US/full_description.txt','fastlane/metadata/android/en-US/changelogs/default.txt',
-  'play-store/feature-graphic.svg','scripts/render-play-feature-graphic.mjs','scripts/prepare-play-store-assets.py','scripts/capture-play-screenshots.mjs','scripts/normalize-play-screenshots.py','scripts/verify-play-store.mjs','scripts/prepare-android-release.py',
+  'play-store/feature-graphic.svg','scripts/render-play-feature-graphic.mjs','scripts/prepare-play-store-assets.py','scripts/normalize-play-screenshots.py','scripts/capture-play-screenshots.mjs','scripts/normalize-play-screenshots.py','scripts/verify-play-store.mjs','scripts/prepare-android-release.py',
   '.github/workflows/google-play-closed-testing.yml','docs/google-play-setup.md'
 ];
 for (const file of required) await access(resolve(root,file));
@@ -258,7 +258,7 @@ if (!playWorkflow.includes('workflow_dispatch:') ||
     !playWorkflow.includes('node scripts/verify-build.mjs') ||
     !playWorkflow.includes('node scripts/verify-play-store.mjs --require-screenshots') ||
     !playWorkflow.includes('bundle exec fastlane android upload_closed_testing') ||
-    !playWorkflow.includes("PLAY_TRACK: \${{ vars.PLAY_TRACK || 'alpha' }}")) {
+    !playWorkflow.includes("PLAY_TRACK: \${{ vars.PLAY_TRACK || 'Hubaish Closed Test' }}")) {
   throw new Error('Google Play workflow must be manual, main-only, WIF-authenticated and gated behind build verification.');
 }
 if (!playFastfile.includes('google_play_track_version_codes') ||

@@ -1,0 +1,122 @@
+name: Validate Google Play Automation
+
+on:
+  push:
+    branches: [feat/google-play-closed-testing-wif]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: validate-hubaish-play-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-and-verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install icon and font dependencies
+        run: sudo apt-get update && sudo apt-get install -y python3-cairosvg python3-pil fonts-noto-core
+
+      - name: Install app dependencies
+        run: npm install --no-audit --no-fund
+
+      - name: Generate Capacitor source assets
+        run: python3 scripts/generate-icons.py
+
+      - name: Run project build
+        run: npm run build
+
+      - name: Run project verification explicitly
+        run: node scripts/verify-build.mjs
+
+      - name: Install Playwright
+        run: npm install --no-save --package-lock=false playwright@1.56.1
+
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Render Google Play feature graphic
+        run: node scripts/render-play-feature-graphic.mjs
+
+      - name: Generate Play listing images
+        run: python3 scripts/prepare-play-store-assets.py
+
+      - name: Verify bilingual Play listing and graphics
+        run: node scripts/verify-play-store.mjs
+
+      - name: Capture the application in Arabic and English
+        run: node scripts/capture-play-screenshots.mjs
+
+      - name: Normalize phone screenshots
+        run: python3 scripts/normalize-play-screenshots.py
+
+      - name: Validate phone screenshots
+        run: node scripts/verify-play-store.mjs --require-screenshots
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v4
+        with:
+          packages: 'platform-tools'
+
+      - name: Generate Android project
+        run: npx cap add android
+
+      - name: Generate native Android resources
+        run: npx capacitor-assets generate --android
+
+      - name: Sync Capacitor
+        run: npx cap sync android
+
+      - name: Patch native application label and status bars
+        run: python3 scripts/patch-android-config.py
+
+      - name: Apply generated launcher icons
+        run: python3 scripts/apply-android-icons.py
+
+      - name: Create temporary CI-only signing key
+        run: |
+          keytool -genkeypair -noprompt -alias hubaish-ci-validation -keyalg RSA -keysize 2048 -validity 2 \
+            -keystore "$GITHUB_WORKSPACE/ci-validation.jks" -storetype JKS \
+            -storepass ci-validation-only -keypass ci-validation-only \
+            -dname "CN=Hubaish CI Validation"
+
+      - name: Configure a non-publishable CI signing build
+        env:
+          ANDROID_VERSION_CODE: '1'
+          ANDROID_VERSION_NAME: 1.0.401
+          ANDROID_KEYSTORE_PATH: ${{ github.workspace }}/ci-validation.jks
+          KEYSTORE_PASSWORD: ci-validation-only
+          KEY_ALIAS: hubaish-ci-validation
+          KEY_PASSWORD: ci-validation-only
+        run: python3 scripts/prepare-android-release.py
+
+      - name: Build a validation-only Android App Bundle
+        run: (cd android && ./gradlew --no-daemon bundleRelease)
+
+      - name: Upload build and store-asset validation artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: hubaish-play-validation-only
+          path: |
+            android/app/build/outputs/bundle/release/app-release.aab
+            fastlane/metadata/android/ar/images/
+            fastlane/metadata/android/en-US/images/
+          if-no-files-found: error
+          retention-days: 14

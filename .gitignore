@@ -1,0 +1,12 @@
+# Google GitHub Actions authentication credentials
+gha-creds-*.json
+
+# Locally generated Capacitor / Android output
+android/
+node_modules/
+release-out/
+ci-validation.jks
+
+# Generated Play listing PNGs and screenshots (created in CI from tracked source assets)
+play-store/feature-graphic.png
+fastlane/metadata/android/*/images/

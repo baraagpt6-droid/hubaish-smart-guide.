@@ -17,6 +17,7 @@ for (const locale of ['ar', 'en-US']) {
 async function checkPng(path, w, h, colorType) {
   const data = await readFile(resolve(root, path));
   if (data.toString('hex', 0, 8) !== '89504e470d0a1a0a' || data.readUInt32BE(16) !== w || data.readUInt32BE(20) !== h || data[25] !== colorType) throw new Error(`Invalid Google Play graphic: ${path}`);
+  if (path.endsWith('/icon.png') && data.length > 1024 * 1024) throw new Error(`${path} exceeds Google Play's 1 MB icon limit.`);
 }
 for (const locale of ['ar','en-US']) {
   const base = `fastlane/metadata/android/${locale}/images`;

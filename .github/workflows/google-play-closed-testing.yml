@@ -21,7 +21,7 @@ jobs:
     timeout-minutes: 60
     env:
       PLAY_PACKAGE_NAME: com.hubaish.guide
-      PLAY_TRACK: ${{ vars.PLAY_TRACK || 'alpha' }}
+      PLAY_TRACK: ${{ vars.PLAY_TRACK || 'Hubaish Closed Test' }}
     steps:
       - name: Checkout main
         uses: actions/checkout@v4
