@@ -260,7 +260,7 @@ if (!playWorkflow.includes('workflow_dispatch:') ||
     !playWorkflow.includes('npm run build') ||
     !playWorkflow.includes('node scripts/verify-play-store.mjs --require-screenshots') ||
     !playWorkflow.includes('scripts/resolve-play-release.py') ||
-    !playWorkflow.includes('PLAY_RELEASE_STATUS: ${{ steps.play-release.outputs.release_status }}') ||
+    !playWorkflow.includes('PLAY_RELEASE_STATUS: draft') ||
     !playWorkflow.includes('python3 scripts/resolve-play-release.py --verify-upload') ||
     !playWorkflow.includes('bundle exec fastlane android upload_closed_testing') ||
     !playWorkflow.includes("PLAY_TRACK: Hubaish Closed Test") ||
@@ -276,7 +276,8 @@ if (!playFastfile.includes('google_play_track_version_codes') ||
     !playFastfile.includes('PLAY_RELEASE_STATUS') ||
     !playFastfile.includes('release_status: release_status') ||
     !playFastfile.includes('closed_testing_track!') ||
-    !playFastfile.includes('Production tracks are blocked') ||
+    !playFastfile.includes('Only the exact Hubaish Closed Test track is allowed') ||
+    !playFastfile.includes('Automated uploads to Hubaish Closed Test must always use draft status.') ||
     !playFastfile.includes('metadata_path: "fastlane/metadata/android"')) {
   throw new Error('Fastlane Play upload lane or Closed-testing-only safeguards are incomplete.');
 }
