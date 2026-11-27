@@ -14,7 +14,7 @@ const required = [
   'cloudflare-worker/worker.js','cloudflare-worker/wrangler.toml',
   'capacitor.config.json','package.json','scripts/generate-icons.py',
   'scripts/apply-android-icons.py','scripts/patch-android-config.py',
-  'scripts/serve.mjs','scripts/configure-cloudflare-kv.mjs','.github/workflows/deploy-cloudflare-worker.yml','.github/workflows/build-and-deploy.yml',
+  'scripts/serve.mjs','scripts/configure-cloudflare-kv.mjs','scripts/resolve-cloudflare-worker-url.mjs','.github/workflows/deploy-cloudflare-worker.yml','.github/workflows/build-and-deploy.yml',
   '.github/workflows/worker-production-health.yml','.github/workflows/deploy-cloudflare-worker.yml','scripts/configure-cloudflare-kv.mjs','README.md','cloudflare-worker/README.md',
   'assets/icon-only.png','assets/icon-foreground.png','assets/icon-background.png',
   'assets/splash.png','assets/splash-dark.png',
@@ -27,13 +27,14 @@ const required = [
 ];
 for (const file of required) await access(resolve(root,file));
 const read = file => readFile(resolve(root,file),'utf8');
-const [html,css,app,catalog,features,cms,sw,worker,wrangler,workflow,readme,workerReadme,androidPatch,cloudflareDeployWorkflow,kvSetupScript,gallery,playMonitorWorkflow,playMonitorScript,runtimeAudit] = await Promise.all([
+const [html,css,app,catalog,features,cms,sw,worker,wrangler,workflow,readme,workerReadme,androidPatch,cloudflareDeployWorkflow,kvSetupScript,gallery,playMonitorWorkflow,playMonitorScript,runtimeAudit,workerHealthWorkflow,workerUrlResolver] = await Promise.all([
   read('www/index.html'),read('www/styles.css'),read('www/app.js'),read('www/catalog.js'),
   read('www/features.js'),read('www/github-cms.js'),read('www/sw.js'),
   read('cloudflare-worker/worker.js'),read('cloudflare-worker/wrangler.toml'),
   read('.github/workflows/build-and-deploy.yml'),read('README.md'),
   read('cloudflare-worker/README.md'),read('scripts/patch-android-config.py'),read('.github/workflows/deploy-cloudflare-worker.yml'),read('scripts/configure-cloudflare-kv.mjs'),read('www/gallery.js'),
-  read('.github/workflows/play-status-monitor.yml'),read('scripts/monitor-play-status.py'),read('scripts/audit-runtime.mjs')
+  read('.github/workflows/play-status-monitor.yml'),read('scripts/monitor-play-status.py'),read('scripts/audit-runtime.mjs'),
+  read('.github/workflows/worker-production-health.yml'),read('scripts/resolve-cloudflare-worker-url.mjs')
 ]);
 const manifest=JSON.parse(await read('www/manifest.webmanifest'));
 const manifestJson=JSON.parse(await read('www/manifest.json'));
@@ -49,7 +50,7 @@ const assets = {
 if (assets.app!==app || assets.catalog!==catalog || assets.features!==features || assets.styles!==css) {
   throw new Error('Android duplicate web assets do not match the current web sources.');
 }
-for (const file of ['www/app.js','www/catalog.js','www/features.js','www/github-cms.js','www/gallery.js','www/sw.js','www/upgrade-400.js','cloudflare-worker/worker.js','scripts/audit-runtime.mjs']) {
+for (const file of ['www/app.js','www/catalog.js','www/features.js','www/github-cms.js','www/gallery.js','www/sw.js','www/upgrade-400.js','cloudflare-worker/worker.js','scripts/audit-runtime.mjs','scripts/resolve-cloudflare-worker-url.mjs']) {
   const result=spawnSync(process.execPath,['--check',resolve(root,file)],{encoding:'utf8'});
   if(result.status!==0)throw new Error('JavaScript syntax error in '+file+': '+(result.stderr||result.stdout));
 }
@@ -159,7 +160,7 @@ if(!css.includes('padding-top:max(9px,env(safe-area-inset-top')||
    !css.includes('padding-bottom:max(6px,env(safe-area-inset-bottom')) {
   throw new Error('Android 15/16 top and bottom safe-area padding is missing.');
 }
-if(!sw.includes('hubaish-guide-v4.0.7')||!sw.includes("'splash.js'")||
+if(!sw.includes('hubaish-guide-v4.0.8')||!sw.includes("'splash.js'")||
    !sw.includes("'github-cms.js'")||!sw.includes("'gallery.js'")||!sw.includes("'data/live-content.json'")) {
   throw new Error('The service-worker cache does not include the updated app shell.');
 }
@@ -186,7 +187,8 @@ if(!cms.includes('safeImageSource')||!cms.includes("image_verified:!!v.imageVeri
   throw new Error('Verified image upload, compression, attribution or locale fields are incomplete.');
 }
 const hubaishAdminsNamespaceId = 'c34ad73bd79444119bd6884856516cf2';
-if(!wrangler.includes('[[kv_namespaces]]')||
+if(!wrangler.includes('workers_dev = true')||
+   !wrangler.includes('[[kv_namespaces]]')||
    !wrangler.includes('binding = "ADMINS"')||
    !wrangler.includes('id = "'+hubaishAdminsNamespaceId+'"')||
    wrangler.includes('__HUBAISH_ADMINS_KV_NAMESPACE_ID__')||
@@ -237,7 +239,7 @@ if(!cms.includes("['p1','p15'].includes(String(row.id||''))")||!cms.includes("St
 if(!app.includes("item.cat==='fort'&&item.scope==='hubaish_district'")||!app.includes("item.cat==='valley'&&item.scope==='hubaish_district'")||!app.includes("item.scope==='hubaish_district'&&['fort','valley','mountain','mosque']"))throw new Error('Assistant and compass suggestions must exclude related historical regions from Hubaish itineraries.');
 if(!catalog.includes('Related historical region outside the current administrative boundaries of Hubaish District.')||!features.includes("state.places.filter(p=>p.scope==='hubaish_district')"))throw new Error('Assistant scope label or random tour scope filter is missing.');
 if(!catalog.includes("item.scope==='related_historical_region'&&!/صهبان|sahban/.test(q)"))throw new Error('Generic assistant questions must not misclassify related historical regions as Hubaish sites.');
-if(!sw.includes("hubaish-guide-v4.0.7"))throw new Error('Service Worker cache version was not advanced.');
+if(!sw.includes("hubaish-guide-v4.0.8"))throw new Error('Service Worker cache version was not advanced.');
 for(const [file,expected] of [['www/icons/icon-192.png',192],['www/icons/icon-512.png',512]]) {
   const image=await readFile(resolve(root,file));
   if(image.toString('hex',0,8)!=='89504e470d0a1a0a'||image.readUInt32BE(16)!==expected||image.readUInt32BE(20)!==expected)
@@ -328,6 +330,19 @@ if (!runtimeAudit.includes('context.setOffline(true)') ||
     !runtimeAudit.includes('/health') ||
     !runtimeAudit.includes('/setup/status')) {
   throw new Error('Runtime audit must check responsive layouts, offline cache and the production Worker.');
+}
+
+if (!cms.includes("https://hubaish-cms.baraag6.workers.dev") ||
+    !runtimeAudit.includes('attempt <= 6') ||
+    !workerUrlResolver.includes('/workers/subdomain') ||
+    !workerUrlResolver.includes('/workers/scripts/') ||
+    !workerUrlResolver.includes("method: 'POST'") ||
+    !workerUrlResolver.includes('process.env.GITHUB_OUTPUT') ||
+    !cloudflareDeployWorkflow.includes('scripts/resolve-cloudflare-worker-url.mjs') ||
+    !cloudflareDeployWorkflow.includes('steps.worker-url.outputs.base_url') ||
+    !workerHealthWorkflow.includes('scripts/resolve-cloudflare-worker-url.mjs') ||
+    !workerHealthWorkflow.includes('steps.worker-url.outputs.base_url')) {
+  throw new Error('Cloudflare endpoint source, account-subdomain discovery, workers.dev activation or retry safeguards are incomplete.');
 }
 
 const profile=data.districtProfile;
