@@ -243,6 +243,7 @@ jobs:
           cp android/app/build/outputs/apk/debug/app-debug.apk release-out/hubaish-smart-guide-debug.apk
 
       - name: Upload AAB or debug APK and Play assets as artifact
+        id: play-artifact
         if: env.PLAY_MODE == 'preview_draft' || env.PLAY_MODE == 'verify_only'
         uses: actions/upload-artifact@v4
         with:
@@ -253,6 +254,45 @@ jobs:
             fastlane/metadata/android/en-US/images/
           if-no-files-found: error
           retention-days: 30
+
+      - name: Publish draft preview report
+        if: env.PLAY_MODE == 'preview_draft'
+        env:
+          ARTIFACT_URL: ${{ steps.play-artifact.outputs.artifact-url }}
+          VERSION_NAME: ${{ steps.play-release.outputs.version_name }}
+          VERSION_CODE: ${{ steps.play-release.outputs.version_code }}
+          TARGET_TRACK: ${{ steps.play-release.outputs.track }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          {
+            echo '# Google Play draft preview report'
+            echo
+            echo "- Commit: $GITHUB_SHA"
+            echo "- Package: $PLAY_PACKAGE_NAME"
+            echo "- Version: $VERSION_NAME (versionCode $VERSION_CODE)"
+            echo "- Track: $TARGET_TRACK"
+            echo '- Release status: **DRAFT — not approved and not public**'
+            echo "- AAB and generated listing assets: $ARTIFACT_URL"
+            echo
+            echo '## Code changes'
+            git show --stat --oneline --no-renames "$GITHUB_SHA"
+            echo
+            for locale in ar en-US; do
+              echo "## Store listing — $locale"
+              for field in title short_description full_description; do
+                file="fastlane/metadata/android/$locale/$field.txt"
+                if [[ -f "$file" ]]; then
+                  echo "### $field"
+                  cat "$file"
+                  echo
+                fi
+              done
+              echo '### Generated image assets'
+              find "fastlane/metadata/android/$locale/images" -maxdepth 2 -type f -print 2>/dev/null | sort || true
+              echo
+            done
+          } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Upload listing, screenshots and AAB to Closed testing as draft preview
         if: env.PLAY_MODE == 'preview_draft'
