@@ -31,17 +31,20 @@ Read this file before changing the project. Keep it identical to PROJECT_MEMORY.
 - Draft is not a published release. API commit is not proof Google review has completed.
 
 ## Mandatory Preview Before Publish
-Every push to main must:
+Every push to main (which runs in `preview_draft` mode) must:
 1. Check out the exact main commit.
 2. Install dependencies and run npm run build.
 3. Generate app icons, Play listing graphics, and actual Arabic/English app screenshots.
 4. Validate Arabic and English listing text and all screenshots.
-5. Authenticate with WIF/OIDC only.
-6. Build and sign the AAB using existing upload-keystore secrets without exposing them.
-7. Upload AAB and bilingual metadata to Hubaish Closed Test with status draft only.
-8. Preserve AAB and listing assets as workflow artifacts.
-9. Provide a review report with commit SHA, version name/code, code changes, Arabic/English listing text, image asset names/links, AAB artifact link, track, and explicit draft status.
-Never auto-convert draft to completed. Never add production as a fallback.
+5. Authenticate to Google Cloud with WIF/OIDC only.
+6. Build both the signed AAB and signed Release APK from the same Android Release variant, using the existing upload-keystore secrets without exposing them.
+7. Verify the APK signature and confirm its SHA-256 certificate fingerprint matches the certificate exported from the configured upload keystore.
+8. Upload the AAB and bilingual listing assets to Hubaish Closed Test with status draft only.
+9. Preserve the AAB, signed APK, and listing assets as a workflow artifact.
+10. Publish the signed APK to GitHub Releases as a prerelease, using a version-and-commit-specific tag. Re-running the same commit/version updates the same prerelease and overwrites the identically named APK asset.
+11. Put the direct APK download URL at the top of the Preview Report and the GitHub Actions job summary, followed by commit, version, track, AAB artifact, listing text, and generated image details.
+
+The GitHub APK prerelease is a direct installation preview. It is not a Google Play publication or approval. The Google Play AAB remains draft-only. Never auto-convert a Play draft to completed. Never add production as a fallback.
 
 ## Release implementation
 - Workflow: .github/workflows/google-play-closed-testing.yml.
@@ -54,6 +57,16 @@ Never auto-convert draft to completed. Never add production as a fallback.
 - Version codes must exceed every existing Play version code. Never reuse a code.
 - Block reserved tracks internal, beta, production, qa, open, and form-factor tracks.
 - Validate workflow YAML and Python scripts before release changes.
+
+## Signed Release APK preview in GitHub Releases
+- The workflow runs both `bundleRelease` and `assembleRelease` for `preview_draft` using the same `hubaishPlayRelease` signing configuration and existing `KEYSTORE_BASE64`, `KEYSTORE_PASSWORD`, `KEY_ALIAS`, and `KEY_PASSWORD` secrets.
+- The APK is signature-verified with Android `apksigner`. CI compares its signer certificate SHA-256 fingerprint with the certificate exported from the configured upload keystore and fails closed on mismatch.
+- APK filename: `Hubaish-Smart-Guide-v<version>-<12-character-commit>-release.apk`.
+- GitHub Release tag: `preview-v<version>-<full-commit-SHA>`. The release name includes the version and short commit SHA.
+- GitHub Releases must mark this item as `prerelease: true`; `overwrite_files: true` makes a rerun of the same version/commit replace the existing asset instead of failing on duplicate asset names.
+- The APK publishing job alone receives `contents: write` and `actions: read`. The Google Play build/publish job retains its existing read-only Contents permission and WIF `id-token: write` permission.
+- The Preview Report and GitHub Actions job summary show the actual `browser_download_url` returned by GitHub for the uploaded APK, near the top of the report.
+- This GitHub prerelease does not change the Google Play gate. The AAB upload remains `draft` on `Hubaish Closed Test`; only the separate manual `approve_draft` mode may promote exactly one existing draft. The APK job does not run for `verify_only` or `approve_draft`.
 
 ## App architecture and capabilities
 - Stack: HTML/CSS/JavaScript PWA plus Capacitor 8.6.2 shell.

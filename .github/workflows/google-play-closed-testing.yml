@@ -22,6 +22,14 @@ concurrency:
 jobs:
   build-and-publish:
     if: github.ref == 'refs/heads/main'
+    outputs:
+      version_name: ${{ steps.play-release.outputs.version_name }}
+      version_code: ${{ steps.play-release.outputs.version_code }}
+      track: ${{ steps.play-release.outputs.track }}
+      artifact_url: ${{ steps.play-artifact.outputs.artifact-url }}
+      apk_filename: ${{ steps.signed-release.outputs.apk_filename }}
+      preview_tag: ${{ steps.signed-release.outputs.preview_tag }}
+      preview_name: ${{ steps.signed-release.outputs.preview_name }}
     runs-on: ubuntu-24.04
     timeout-minutes: 75
     env:
@@ -172,7 +180,8 @@ jobs:
         if: env.PLAY_MODE != 'approve_draft'
         run: python3 scripts/apply-android-icons.py
 
-      - name: Build signed Android App Bundle for Closed testing
+      - name: Build signed Android App Bundle and Release APK for preview
+        id: signed-release
         if: env.PLAY_MODE == 'preview_draft'
         shell: bash
         env:
@@ -215,13 +224,43 @@ jobs:
           PY
           keytool -list -keystore "$ANDROID_KEYSTORE_PATH" -storetype JKS -storepass "$KEYSTORE_PASSWORD" -alias "$KEY_ALIAS" >/dev/null
           python3 scripts/prepare-android-release.py
-          (cd android && ./gradlew --no-daemon bundleRelease)
+          (cd android && ./gradlew --no-daemon bundleRelease assembleRelease)
           mkdir -p release-out
-          cp android/app/build/outputs/bundle/release/app-release.aab "release-out/Hubaish-Smart-Guide-v${VERSION_NAME}.aab"
-          cp android/app/build/outputs/bundle/release/app-release.aab release-out/hubaish-smart-guide.aab
+          AAB_SOURCE="android/app/build/outputs/bundle/release/app-release.aab"
+          APK_SOURCE="android/app/build/outputs/apk/release/app-release.apk"
+          [[ -s "$AAB_SOURCE" ]] || { echo "::error::Signed Release AAB was not produced."; exit 1; }
+          [[ -s "$APK_SOURCE" ]] || { echo "::error::Signed Release APK was not produced."; exit 1; }
+
+          COMMIT_SHORT="${GITHUB_SHA:0:12}"
+          APK_FILENAME="Hubaish-Smart-Guide-v${VERSION_NAME}-${COMMIT_SHORT}-release.apk"
+          PREVIEW_TAG="preview-v${VERSION_NAME}-${GITHUB_SHA}"
+          PREVIEW_NAME="Hubaish Smart Guide v${VERSION_NAME} Preview (${COMMIT_SHORT})"
+          APK_DESTINATION="release-out/${APK_FILENAME}"
+
+          cp "$AAB_SOURCE" "release-out/Hubaish-Smart-Guide-v${VERSION_NAME}.aab"
+          cp "$AAB_SOURCE" release-out/hubaish-smart-guide.aab
+          cp "$APK_SOURCE" "$APK_DESTINATION"
+
           jarsigner -verify release-out/hubaish-smart-guide.aab >/dev/null
           keytool -printcert -jarfile release-out/hubaish-smart-guide.aab >/dev/null
-          echo "Signed AAB built and signature verification passed."
+
+          SDK_ROOT="${ANDROID_HOME:-${ANDROID_SDK_ROOT:-}}"
+          [[ -n "$SDK_ROOT" ]] || { echo "::error::Android SDK path is not available."; exit 1; }
+          APKSIGNER="$(find "$SDK_ROOT/build-tools" -type f -name apksigner -print | sort -V | tail -n 1)"
+          [[ -n "$APKSIGNER" && -x "$APKSIGNER" ]] || { echo "::error::Android apksigner was not found."; exit 1; }
+          APK_SIGNATURE_REPORT="$("$APKSIGNER" verify --verbose --print-certs "$APK_DESTINATION")"
+          printf '%s\n' "$APK_SIGNATURE_REPORT"
+          APK_CERT_SHA256="$(printf '%s\n' "$APK_SIGNATURE_REPORT" | awk -F': ' '/Signer #1 certificate SHA-256 digest:/ {print tolower($2); exit}')"
+          KEYSTORE_CERT_SHA256="$(keytool -exportcert -alias "$KEY_ALIAS" -keystore "$ANDROID_KEYSTORE_PATH" -storetype JKS -storepass "$KEYSTORE_PASSWORD" | sha256sum | awk '{print tolower($1)}')"
+          [[ -n "$APK_CERT_SHA256" && "$APK_CERT_SHA256" == "$KEYSTORE_CERT_SHA256" ]] || {
+            echo "::error::Release APK signer does not match the configured official upload keystore certificate."
+            exit 1
+          }
+
+          echo "apk_filename=$APK_FILENAME" >> "$GITHUB_OUTPUT"
+          echo "preview_tag=$PREVIEW_TAG" >> "$GITHUB_OUTPUT"
+          echo "preview_name=$PREVIEW_NAME" >> "$GITHUB_OUTPUT"
+          echo "Signed AAB and Release APK built. APK signature matches the configured upload keystore certificate."
 
       - name: Build debug APK for verify-only run
         if: env.PLAY_MODE == 'verify_only'
@@ -264,21 +303,97 @@ jobs:
           PLAY_PACKAGE_NAME: com.hubaish.guide
         run: bundle exec fastlane android upload_closed_testing
 
-      - name: Publish draft preview report
-        if: env.PLAY_MODE == 'preview_draft'
+
+  publish-apk-preview:
+    name: Publish signed APK preview to GitHub Releases
+    needs: build-and-publish
+    if: github.ref == 'refs/heads/main' && (github.event_name == 'push' || inputs.mode == 'preview_draft')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      contents: write
+      actions: read
+    steps:
+      - name: Checkout exact preview commit
+        uses: actions/checkout@v4
+
+      - name: Download signed APK and Play listing artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: hubaish-play-closed-testing
+          path: preview-artifact
+
+      - name: Create or update signed APK prerelease
+        id: github-release
+        uses: softprops/action-gh-release@v3
+        with:
+          tag_name: ${{ needs.build-and-publish.outputs.preview_tag }}
+          name: ${{ needs.build-and-publish.outputs.preview_name }}
+          target_commitish: ${{ github.sha }}
+          body: |
+            Hubaish Smart Guide Android preview.
+
+            - Version: ${{ needs.build-and-publish.outputs.version_name }}
+            - Commit: ${{ github.sha }}
+            - Package: com.hubaish.guide
+            - APK is signed with the same official upload keystore certificate as the Closed testing AAB.
+            - This GitHub prerelease is a direct installation preview. It does not approve or publish the Google Play draft.
+          files: preview-artifact/release-out/${{ needs.build-and-publish.outputs.apk_filename }}
+          prerelease: true
+          overwrite_files: true
+          fail_on_unmatched_files: true
+          make_latest: false
+
+      - name: Resolve direct APK download URL
+        id: apk-links
         env:
-          ARTIFACT_URL: ${{ steps.play-artifact.outputs.artifact-url }}
-          VERSION_NAME: ${{ steps.play-release.outputs.version_name }}
-          VERSION_CODE: ${{ steps.play-release.outputs.version_code }}
-          TARGET_TRACK: ${{ steps.play-release.outputs.track }}
+          RELEASE_ASSETS_JSON: ${{ steps.github-release.outputs.assets }}
+          APK_FILENAME: ${{ needs.build-and-publish.outputs.apk_filename }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          import os
+
+          assets = json.loads(os.environ["RELEASE_ASSETS_JSON"])
+          filename = os.environ["APK_FILENAME"]
+          matches = [asset for asset in assets if asset.get("name") == filename]
+          if len(matches) != 1:
+              raise SystemExit(f"Expected exactly one uploaded APK asset named {filename!r}; found {len(matches)}.")
+          url = matches[0].get("browser_download_url", "")
+          if not url.startswith("https://github.com/"):
+              raise SystemExit("GitHub did not return a valid direct APK download URL.")
+          with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as output:
+              output.write(f"apk_download_url={url}\\n")
+          PY
+
+      - name: Publish preview report and direct APK link
+        env:
+          APK_DOWNLOAD_URL: ${{ steps.apk-links.outputs.apk_download_url }}
+          APK_RELEASE_URL: ${{ steps.github-release.outputs.url }}
+          APK_FILENAME: ${{ needs.build-and-publish.outputs.apk_filename }}
+          PREVIEW_TAG: ${{ needs.build-and-publish.outputs.preview_tag }}
+          VERSION_NAME: ${{ needs.build-and-publish.outputs.version_name }}
+          VERSION_CODE: ${{ needs.build-and-publish.outputs.version_code }}
+          TARGET_TRACK: ${{ needs.build-and-publish.outputs.track }}
+          ARTIFACT_URL: ${{ needs.build-and-publish.outputs.artifact_url }}
         shell: bash
         run: |
           set -euo pipefail
           {
-            echo '# Google Play draft preview report'
+            echo '# Hubaish Smart Guide — Preview Report'
             echo
+            echo '## Download signed Release APK'
+            echo "[Download APK directly]($APK_DOWNLOAD_URL)"
+            echo
+            echo "- APK file: `$APK_FILENAME`"
+            echo "- GitHub prerelease: $APK_RELEASE_URL"
+            echo "- Release tag: `$PREVIEW_TAG`"
+            echo
+            echo '## Google Play draft preview'
             echo "- Commit: $GITHUB_SHA"
-            echo "- Package: $PLAY_PACKAGE_NAME"
+            echo "- Package: com.hubaish.guide"
             echo "- Version: $VERSION_NAME (versionCode $VERSION_CODE)"
             echo "- Track: $TARGET_TRACK"
             echo '- Release status: **DRAFT — not approved and not public**'
@@ -290,7 +405,7 @@ jobs:
             for locale in ar en-US; do
               echo "## Store listing — $locale"
               for field in title short_description full_description; do
-                file="fastlane/metadata/android/$locale/$field.txt"
+                file="preview-artifact/fastlane/metadata/android/$locale/$field.txt"
                 if [[ -f "$file" ]]; then
                   echo "### $field"
                   cat "$file"
@@ -298,8 +413,7 @@ jobs:
                 fi
               done
               echo '### Generated image assets'
-              find "fastlane/metadata/android/$locale/images" -maxdepth 2 -type f -print 2>/dev/null | sort || true
+              find "preview-artifact/fastlane/metadata/android/$locale/images" -maxdepth 2 -type f -print 2>/dev/null | sort || true
               echo
             done
           } >> "$GITHUB_STEP_SUMMARY"
-
