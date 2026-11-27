@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-27T17:20:00+08:00",
+  "updatedAt": "2026-11-27T17:40:00+08:00",
   "landmarks": [
     {
       "id": "khudad-fort",
@@ -121,9 +121,9 @@
       "location_ar": "قرية الزواحي – عزلة كومان – مديرية حبيش",
       "location_en": "Al-Zawahi village, Kuman sub-district, Hubaish District",
       "description_ar": "يذكر الجندي في السلوك ص 431 دراسة يوسف بن علي بمدرسة الزواحي، وينسب إحداث المدرسة إلى بعض مشايخ بني وائل. وينسب الأكوع في «المدارس الإسلامية في اليمن» و«هجر العلم ومعاقله» بناء المدرسة وأوقافها إلى الشيخ قاسم بن حمير الوائلي ويترجم لأربعة من علمائها. تُحفظ الروايتان منفصلتين لا كقول واحد. أما نسبة مواد «التنبيه» في الفقه الشافعي و«صحيح البخاري» و«نظام الغريب» إلى المدرسة فهي رواية محلية قيد مطابقة النسخة المطبوعة، وليست منهجاً مثبتاً في نص الجندي المتاح.",
-      "description_en": "The historian Baha al-Din al-Jundi records that the jurist Yusuf ibn Ali studied at Al-Zawahi School and that some shaykhs of Bani Wa'il established the school. The editor's note locates Al-Zawahi village below Musna'at Khudad, north of Dhulmah. The passage documents the school's existence and its educational role, but gives no foundation year, building description or complete curriculum. The note also mentions al-Qasim ibn Humayr al-Wa'ili al-Himyari in connection with building the village mosque; it does not identify him as the school's founder.",
+      "description_en": "Al-Jundi, al-Suluk p. 431, records that Yusuf ibn Ali studied at Al-Zawahi School and says it was established by some Bani Wa'il shaykhs without naming one founder. Al-Akwa'i, in al-Madaris al-Islamiyya fi al-Yaman and Hujr al-Ilm wa Ma'aqiluhu, separately attributes the school's construction and endowments to Shaykh Qasim ibn Humayr al-Wa'ili and records biographies of four scholars associated with it. These are distinct source claims and should not be collapsed into one account. Locally attributed subjects — al-Tanbih in Shafi'i jurisprudence, Sahih al-Bukhari and Nizam al-Gharib — remain provisional until matched against the printed editions; they are not presented as a confirmed curriculum. The available al-Jundi passage gives no founding year or full building description.",
       "importance_ar": "شاهد نصي تاريخي على وجود مدرسة في قرية الزواحي ونشاطها التعليمي؛ وتبقى تفاصيل المبنى وسنة التأسيس والمنهج الكامل غير محددة في النص المتاح.",
-      "importance_en": "A historical textual witness to a school and educational activity in Al-Zawahi village. The available passage does not specify the building, foundation year or full curriculum.",
+      "importance_en": "A documented historic school with a direct al-Jundi reference and a separate al-Akwa'i account of construction, endowments and four associated scholars. Its full curriculum remains under source collation.",
       "source_text": "بهاء الدين الجندي، السلوك، ص 431 وهامش المحقق؛ محمد علي الأكوع، المدارس الإسلامية في اليمن، وهجر العلم ومعاقله؛ رواية محلية عن المواد الدراسية قيد المطابقة.",
       "source_url": "https://ablibrary.net/book_content/b/13555/431?lang=ar",
       "scope": "hubaish_district",
@@ -394,8 +394,8 @@
       "title_en": "Jabal Dhi Harran",
       "location_ar": "مديرية حبيش – الموضع التفصيلي بحاجة إلى إحداثيات",
       "location_en": "Hubaish District – precise location needs coordinates",
-      "description_ar": "يذكر المركز الوطني للمعلومات اليمني جبل ذي هرّان ضمن قائمة الآثار والمعالم السياحية في مديرية حبيش. لا تحدد الصفحة عزلة الجبل أو إحداثياته أو وصفاً ميدانياً مفصلاً؛ لذلك يسجل الدليل الاسم كما ورد في القائمة الرسمية ولا يخمن موقعه داخل العزل.",
-      "description_en": "The Yemen National Information Centre lists Jabal Dhi Harran among Hubaish District's historic and tourism landmarks. The page does not specify its sub-district, coordinates or detailed field description, so this record retains the published name without guessing its precise location.",
+      "description_ar": "يذكر المركز الوطني للمعلومات الاسم بصيغته المنشورة «جبل ذي هرّان» ضمن قائمة معالم مديرية حبيش. يحافظ الدليل على هذه التسمية كما وردت في المصدر، ولا يضيف جبلاً مستقلاً باسم «جبل هران»؛ إذ ينقل التقرير البحثي إنكار القاضي محمد الغرباني وجود جبل بهذا الاسم في حبيش. لا تحدد الصفحة العزلة أو الإحداثيات.",
+      "description_en": "The Yemen National Information Centre lists the name as Jabal Dhi Harran in its Hubaish landmarks inventory. This guide preserves that exact published form and does not add a separate Jabal Harran site; the supplied research report cites judge Muhammad al-Gharbani disputing the existence of a mountain by that shorter name in Hubaish. The official listing does not specify a sub-district or coordinates.",
       "importance_ar": "معلم جبلي مدرج في قائمة المركز الوطني للمعلومات، وينتظر تحديد موضعه ميدانياً.",
       "importance_en": "A mountain landmark listed by the National Information Centre; its precise location needs field verification.",
       "source_text": "المركز الوطني للمعلومات – «السياحة في محافظة إب»، قائمة آثار ومعالم مديرية حبيش.",
@@ -1617,7 +1617,7 @@
         "عميد الداخل",
         "عميد الخارج"
       ],
-      "naming_note_ar": "تذكر بعض كتب الأنساب بطن صهبان بن سعد بن مالك بن النخع؛ وهذه نسبة قبلية لا تثبت وحدها أن تسمية مخلاف صهبان مشتقة من هذا البطن. تحفظ العلاقة كمسار بحثي منفصل.",
+      "naming_note_ar": "يرد في التقرير البحثي ضبط النسب بصيغة «صهبان بن أسعد بن مالك بن النخع». تحفظ هذه الصيغة بوصفها إحالة نسبية منقولة تحتاج إلى مقابلة نصوص الأنساب والنسخ المحققة، ولا تثبت وحدها أن اسم مخلاف صهبان مشتق من هذا البطن. ولا يخلط الدليل بين اسم الموضع اليمني والنسب القبلي.",
       "source_text": "حاشية محمد علي الأكوع على صفة جزيرة العرب، ص 197؛ ومواد تاريخية عن عزلة صهبان ومصنعة سير.",
       "source_url": "https://ablibrary.net/book_content/b/9942/205",
       "status": "documented_with_scope_note"
