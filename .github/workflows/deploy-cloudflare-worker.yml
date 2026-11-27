@@ -54,6 +54,14 @@ jobs:
           accountId: ${{ env.CLOUDFLARE_ACCOUNT_ID }}
           command: deploy --config cloudflare-worker/wrangler.toml
 
+      - name: Resolve and enable the actual Cloudflare workers.dev hostname
+        id: worker-url
+        if: ${{ env.CLOUDFLARE_API_TOKEN != '' && env.CLOUDFLARE_ACCOUNT_ID != '' }}
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ env.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ env.CLOUDFLARE_ACCOUNT_ID }}
+        run: node scripts/resolve-cloudflare-worker-url.mjs
+
       - name: Skip deployment because Cloudflare credentials are not configured
         if: ${{ env.CLOUDFLARE_API_TOKEN == '' || env.CLOUDFLARE_ACCOUNT_ID == '' }}
         run: |
@@ -62,9 +70,11 @@ jobs:
 
       - name: Verify live production /health and /setup/status
         shell: bash
+        env:
+          CLOUDFLARE_WORKER_URL: ${{ steps.worker-url.outputs.base_url }}
         run: |
           node <<'NODE'
-          const base = 'https://hubaish-cms.baraagpt6.workers.dev';
+          const base = process.env.CLOUDFLARE_WORKER_URL || 'https://hubaish-cms.baraag6.workers.dev';
           const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 
           async function check(path) {
