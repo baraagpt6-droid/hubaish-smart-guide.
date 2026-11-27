@@ -3,7 +3,8 @@
 This Worker protects the administration endpoints for the GitHub JSON CMS at `www/data/live-content.json`.
 
 - Worker name: `hubaish-cms`
-- Worker URL: `https://hubaish-cms.baraagpt6.workers.dev`
+- Worker URL: `https://hubaish-cms.baraag6.workers.dev`
+- Wrangler explicitly sets `workers_dev = true`; the deployment workflow resolves the account subdomain through Cloudflare's Workers API, verifies that the script route is enabled, and checks both CMS status endpoints against that resolved URL.
 - KV namespace: `hubaish-admins`
 - KV binding name expected by the code: `ADMINS`
 
@@ -52,7 +53,7 @@ The Worker code also permits Capacitor's `capacitor://localhost` and `https://lo
 Push changes to `main` to deploy through GitHub Actions. Confirm the deployed URL is:
 
 ```
-https://hubaish-cms.baraagpt6.workers.dev
+https://hubaish-cms.baraag6.workers.dev
 ```
 
 ## 4. Create the first super administrator
