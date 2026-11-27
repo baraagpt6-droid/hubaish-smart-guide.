@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-27T17:40:00+08:00",
+  "updatedAt": "2026-11-27T18:00:00+08:00",
   "landmarks": [
     {
       "id": "khudad-fort",
@@ -120,8 +120,8 @@
       "title_en": "Al-Zawahi Historic School",
       "location_ar": "قرية الزواحي – عزلة كومان – مديرية حبيش",
       "location_en": "Al-Zawahi village, Kuman sub-district, Hubaish District",
-      "description_ar": "يذكر الجندي في السلوك ص 431 دراسة يوسف بن علي بمدرسة الزواحي، وينسب إحداث المدرسة إلى بعض مشايخ بني وائل. وينسب الأكوع في «المدارس الإسلامية في اليمن» و«هجر العلم ومعاقله» بناء المدرسة وأوقافها إلى الشيخ قاسم بن حمير الوائلي ويترجم لأربعة من علمائها. تُحفظ الروايتان منفصلتين لا كقول واحد. أما نسبة مواد «التنبيه» في الفقه الشافعي و«صحيح البخاري» و«نظام الغريب» إلى المدرسة فهي رواية محلية قيد مطابقة النسخة المطبوعة، وليست منهجاً مثبتاً في نص الجندي المتاح.",
-      "description_en": "Al-Jundi, al-Suluk p. 431, records that Yusuf ibn Ali studied at Al-Zawahi School and says it was established by some Bani Wa'il shaykhs without naming one founder. Al-Akwa'i, in al-Madaris al-Islamiyya fi al-Yaman and Hujr al-Ilm wa Ma'aqiluhu, separately attributes the school's construction and endowments to Shaykh Qasim ibn Humayr al-Wa'ili and records biographies of four scholars associated with it. These are distinct source claims and should not be collapsed into one account. Locally attributed subjects — al-Tanbih in Shafi'i jurisprudence, Sahih al-Bukhari and Nizam al-Gharib — remain provisional until matched against the printed editions; they are not presented as a confirmed curriculum. The available al-Jundi passage gives no founding year or full building description.",
+      "description_ar": "يذكر الجندي في السلوك ص 431 أن يوسف بن علي بن عبيد الله بن الهيثم درس بمدرسة الزواحي، ويذكر تلميذه عبد الرحمن بن عمران، وينسب إحداث المدرسة إلى بعض مشايخ بني وائل من غير تسمية مؤسس بعينه. وينسب الأكوع في «المدارس الإسلامية في اليمن» و«هجر العلم ومعاقله» بناء المدرسة وأوقافها إلى الشيخ قاسم بن حمير الوائلي ويترجم لأربعة من علمائها. تُحفظ الروايتان منفصلتين لا كقول واحد. أما نسبة مواد «التنبيه» في الفقه الشافعي و«صحيح البخاري» و«نظام الغريب» إلى المدرسة فهي رواية محلية قيد مطابقة النسخة المطبوعة، وليست منهجاً مثبتاً في نص الجندي المتاح.",
+      "description_en": "Al-Jundi, al-Suluk p. 431, records that Yusuf ibn Ali ibn Ubayd Allah ibn al-Haytham studied at Al-Zawahi School, mentions his student Abd al-Rahman ibn Imran, and says the school was established by some Bani Wa'il shaykhs without naming one founder. Al-Akwa'i, in al-Madaris al-Islamiyya fi al-Yaman and Hujr al-Ilm wa Ma'aqiluhu, separately attributes the school's construction and endowments to Shaykh Qasim ibn Humayr al-Wa'ili and records biographies of four scholars associated with it. These are distinct source claims and should not be collapsed into one account. Locally attributed subjects — al-Tanbih in Shafi'i jurisprudence, Sahih al-Bukhari and Nizam al-Gharib — remain provisional until matched against the printed editions; they are not presented as a confirmed curriculum. The available al-Jundi passage gives no founding year or full building description.",
       "importance_ar": "شاهد نصي تاريخي على وجود مدرسة في قرية الزواحي ونشاطها التعليمي؛ وتبقى تفاصيل المبنى وسنة التأسيس والمنهج الكامل غير محددة في النص المتاح.",
       "importance_en": "A documented historic school with a direct al-Jundi reference and a separate al-Akwa'i account of construction, endowments and four associated scholars. Its full curriculum remains under source collation.",
       "source_text": "بهاء الدين الجندي، السلوك، ص 431 وهامش المحقق؛ محمد علي الأكوع، المدارس الإسلامية في اليمن، وهجر العلم ومعاقله؛ رواية محلية عن المواد الدراسية قيد المطابقة.",
@@ -144,12 +144,13 @@
       "mosque_builder_note": "يذكر هامش التحقيق القاسم بن حمير الوائلي الحميري في سياق عمارة مسجد القرية، ولا ينص على أنه مؤسس المدرسة.",
       "subjects_documented": [],
       "curriculum_note": "المواد الثلاث رواية محلية قيد مطابقة النسخة المطبوعة؛ لا تعرض كمنهج قطعي.",
-      "activity_evidence": "يذكر الجندي أن يوسف بن علي درس بالمدرسة.",
+      "activity_evidence": "يذكر الجندي دراسة يوسف بن علي بن عبيد الله بن الهيثم بمدرسة الزواحي، ويذكر تلميذه عبد الرحمن بن عمران (السلوك، ص 431).",
       "subject_claims_pending_verification": [
         "التنبيه في الفقه الشافعي",
         "صحيح البخاري",
         "نظام الغريب"
-      ]
+      ],
+      "activity_evidence_en": "Al-Jundi records Yusuf ibn Ali ibn Ubayd Allah ibn al-Haytham studying at the school and mentions his student Abd al-Rahman ibn Imran (al-Suluk, p. 431)."
     },
     {
       "id": "shafa-fort",
@@ -1225,9 +1226,11 @@
       "name_en": "Engineer Sadiq Mohammed Mohammed al-Nahi",
       "role_ar": "مهندس بترول ومؤسس مبادرة «مديرية حبيش الطبيعة والإنسان»",
       "role_en": "Petroleum engineer and founder of the Hubaish Nature and People initiative",
-      "biography_ar": "من أبناء قرية حضار في جبل عميقة بمديرية حبيش، ويعرفه التقرير بوصفه مهندس بترول ومؤسس مبادرة «مديرية حبيش الطبيعة والإنسان». ينسب التقرير الصحفي الخبر إلى صحيفة عدن الغد سنة 2020م، لكن رابط المقال وتفاصيله الببليوغرافية لم تتوفر في النسخة الحالية؛ لذلك يبقى التوثيق بحاجة إلى استرجاع المقال الأصلي. لا يثبت هذا السجل أي نسب تاريخي للأسرة.",
-      "biography_en": "Reportedly from Hadhar village in Jabal Amiqa, Hubaish, he is described as a petroleum engineer and founder of the 'Hubaish Nature and People' initiative. The supplied report attributes this to Aden Al-Ghad in 2020, but the exact article URL and bibliographic details have not yet been recovered. No historical family lineage is inferred.",
-      "source_text": "تقرير المستخدم عن خبر صحيفة عدن الغد 2020م؛ يلزم استرجاع المقال الأصلي للتحقق."
+      "biography_ar": "من أبناء قرية حضار في جبل عميقة بمديرية حبيش، ويعرفه التقرير بوصفه مهندس بترول ومؤسس مبادرة «مديرية حبيش الطبيعة والإنسان». ينسب التقرير الصحفي الخبر إلى صحيفة عدن الغد سنة 2020م، لكن رابط المقال وتفاصيله الببليوغرافية لم تتوفر في النسخة الحالية؛ لذلك يبقى التوثيق بحاجة إلى استرجاع المقال الأصلي. أما النسب القديم فترد فيه فرضيتان منفصلتان في التقرير: الانتساب إلى أبي العتيق أبي بكر العنسي الوعلي، أو إلى بيت الناهي السعيدي في ريمة. كلا القولين غير مثبت، ولا يعتمد الدليل أياً منهما تعريفاً لنسب الشخصية.",
+      "biography_en": "Reportedly from Hadhar village in Jabal Amiqa, Hubaish, he is described as a petroleum engineer and founder of the 'Hubaish Nature and People' initiative. The supplied report attributes this to Aden Al-Ghad in 2020, but the exact article URL and bibliographic details have not yet been recovered. Two separate lineage hypotheses are mentioned in the report: a link to Abu al-Atiq Abu Bakr al-Ansi al-Wa'li, or to the al-Nahi al-Saidi house in Raymah. Neither claim is verified, and the guide does not adopt either as an established lineage.",
+      "source_text": "تقرير المستخدم عن خبر صحيفة عدن الغد 2020م؛ يلزم استرجاع المقال الأصلي للتحقق.",
+      "lineage_research_note_ar": "فرضيتان منفصلتان غير مثبتتين في التقرير: أبو العتيق أبو بكر العنسي الوعلي؛ أو بيت الناهي السعيدي في ريمة.",
+      "lineage_research_status": "unverified_separate_research_thread"
     }
   ],
   "communityLinks": [],
@@ -1654,7 +1657,9 @@
         "صحيح البخاري",
         "نظام الغريب"
       ],
-      "source_conflict_ar": "الجندي يذكر أنها من إحداث بعض مشايخ بني وائل؛ الأكوع ينسب البناء والأوقاف إلى قاسم بن حمير الوائلي. يجب فصل الروايتين ومقابلة الطبعات."
+      "source_conflict_ar": "الجندي يذكر أنها من إحداث بعض مشايخ بني وائل؛ الأكوع ينسب البناء والأوقاف إلى قاسم بن حمير الوائلي. يجب فصل الروايتين ومقابلة الطبعات.",
+      "activity_ar": "ذكر الجندي في السلوك ص 431 أن يوسف بن علي بن عبيد الله بن الهيثم درس بالمدرسة، وذكر تلميذه عبد الرحمن بن عمران؛ ويذكر أن المدرسة من إحداث بعض مشايخ بني وائل.",
+      "activity_en": "Al-Jundi, al-Suluk p. 431, records Yusuf ibn Ali ibn Ubayd Allah ibn al-Haytham studying at the school, mentions his student Abd al-Rahman ibn Imran, and says the school was established by some Bani Wa'il shaykhs."
     },
     {
       "id": "al-mushriq-al-kh-reading",
