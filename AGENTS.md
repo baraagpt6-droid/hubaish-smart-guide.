@@ -78,7 +78,7 @@ Do not generate or rotate an upload key without an explicit migration plan. Vali
 - UI languages currently include Arabic, English, Turkish, and French.
 
 ## Connected services and credentials
-- Cloudflare Worker CMS endpoint documented by the project: https://hubaish-cms.baraag6.workers.dev. Verify live configuration before changing it.
+- Cloudflare Worker CMS endpoint documented by the project: https://hubaish-cms.baraagpt6.workers.dev. Verify live configuration before changing it.
 - Resolve the active account subdomain and script route using `scripts/resolve-cloudflare-worker-url.mjs`; it reads Cloudflare API state, enables the named workers.dev route when disabled, and rejects any mismatch with the app and runtime-audit URL. Never infer the account subdomain from the Worker name.
 - GitHub Pages serves the public web app.
 - Do not expose Cloudflare credentials, administrator passwords, GitHub tokens, or Android signing secrets.
