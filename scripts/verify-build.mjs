@@ -21,7 +21,7 @@ const required = [
   'Gemfile','fastlane/Appfile','fastlane/Fastfile',
   'fastlane/metadata/android/ar/title.txt','fastlane/metadata/android/ar/short_description.txt','fastlane/metadata/android/ar/full_description.txt','fastlane/metadata/android/ar/changelogs/default.txt',
   'fastlane/metadata/android/en-US/title.txt','fastlane/metadata/android/en-US/short_description.txt','fastlane/metadata/android/en-US/full_description.txt','fastlane/metadata/android/en-US/changelogs/default.txt',
-  'play-store/feature-graphic.svg','scripts/render-play-feature-graphic.mjs','scripts/prepare-play-store-assets.py','scripts/normalize-play-screenshots.py','scripts/capture-play-screenshots.mjs','scripts/normalize-play-screenshots.py','scripts/verify-play-store.mjs','scripts/prepare-android-release.py',
+  'play-store/feature-graphic.svg','scripts/render-play-feature-graphic.mjs','scripts/prepare-play-store-assets.py','scripts/normalize-play-screenshots.py','scripts/capture-play-screenshots.mjs','scripts/normalize-play-screenshots.py','scripts/verify-play-store.mjs','scripts/prepare-android-release.py','scripts/resolve-play-release.py',
   '.github/workflows/google-play-closed-testing.yml','docs/google-play-setup.md'
 ];
 for (const file of required) await access(resolve(root,file));
@@ -246,32 +246,38 @@ if(!html.includes('upgrade-400.js')||!css.includes('F7F5EE')||!css.includes('0D2
 
 const playWorkflow = await read('.github/workflows/google-play-closed-testing.yml');
 const playFastfile = await read('fastlane/Fastfile');
+const playResolver = await read('scripts/resolve-play-release.py');
 const playStoreVerifier = await read('scripts/verify-play-store.mjs');
 if (!playWorkflow.includes('workflow_dispatch:') ||
     playWorkflow.includes('pull_request:') ||
-    playWorkflow.includes('push:') ||
+    !playWorkflow.includes('push:\\n    branches: [main]') ||
     !playWorkflow.includes("if: github.ref == 'refs/heads/main'") ||
-    !playWorkflow.includes("inputs.mode == 'publish_closed_testing'") ||
-    !playWorkflow.includes('google-github-actions/auth@v3') ||
-    !playWorkflow.includes('workload_identity_provider:') ||
+    !playWorkflow.includes("github.event_name == 'push' && 'publish_closed_testing'") ||
+    !playWorkflow.includes("inputs.mode || 'verify_only'") ||
+    !playWorkflow.includes('google-github-actions/auth@v2') ||
+    !playWorkflow.includes('projects/28058491662/locations/global/workloadIdentityPools/github-pool/providers/github-provider') ||
+    !playWorkflow.includes('dalilna-play-automation@dalilna-play-automation-516000.iam.gserviceaccount.com') ||
     !playWorkflow.includes('npm run build') ||
-    !playWorkflow.includes('node scripts/verify-build.mjs') ||
     !playWorkflow.includes('node scripts/verify-play-store.mjs --require-screenshots') ||
+    !playWorkflow.includes('scripts/resolve-play-release.py') ||
     !playWorkflow.includes('bundle exec fastlane android upload_closed_testing') ||
-    !playWorkflow.includes("PLAY_TRACK: \${{ vars.PLAY_TRACK || 'Hubaish Closed Test' }}")) {
-  throw new Error('Google Play workflow must be manual, main-only, WIF-authenticated and gated behind build verification.');
+    !playWorkflow.includes("PLAY_TRACK: ${{ vars.PLAY_TRACK || 'Hubaish Closed Test' }}")) {
+  throw new Error('Google Play workflow must auto-publish only on main pushes, remain manually runnable, use WIF and verify assets before upload.');
 }
 if (!playFastfile.includes('google_play_track_version_codes') ||
-    !playFastfile.includes('release_status: "completed"') ||
+    !playFastfile.includes('PLAY_RELEASE_STATUS') ||
+    !playFastfile.includes('release_status: release_status') ||
     !playFastfile.includes('closed_testing_track!') ||
-    !playFastfile.includes('Only a custom Closed testing track is allowed') ||
+    !playFastfile.includes('Production tracks are blocked') ||
     !playFastfile.includes('metadata_path: "fastlane/metadata/android"')) {
-  throw new Error('Fastlane Play upload lane or closed-testing-only safeguards are incomplete.');
+  throw new Error('Fastlane Play upload lane or Closed-testing-only safeguards are incomplete.');
 }
-if (!playStoreVerifier.includes('512, 512, 6') ||
-    !playStoreVerifier.includes('1024, 500, 2') ||
-    !playStoreVerifier.includes('data[25] !== 2')) {
-  throw new Error('Google Play asset verifier must enforce RGBA icon, RGB feature graphic and RGB phone screenshots.');
+if (!playResolver.includes('/tracks') ||
+    !playResolver.includes('/bundles') ||
+    !playResolver.includes('nextVersionCode') ||
+    !playResolver.includes('selectedClosedTestingTrack') ||
+    !playResolver.includes('RELEASED_STATUSES')) {
+  throw new Error('Google Play track discovery and versionCode resolver is incomplete.');
 }
 
 const profile=data.districtProfile;

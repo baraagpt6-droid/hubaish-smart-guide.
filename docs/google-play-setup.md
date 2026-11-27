@@ -1,50 +1,65 @@
 # Google Play Closed Testing automation
 
-The repository is configured for GitHub Actions, Google Cloud Workload Identity Federation (WIF) and Fastlane. Publishing is manual, restricted to `main`, and locked to application ID `com.hubaish.guide`. The workflow accepts a custom Closed testing track only; internal, open and Production tracks are rejected.
+This repository deploys the Android app `com.hubaish.guide` to Google Play Closed testing from GitHub Actions. Every push to `main` runs a signed build and attempts a Closed-testing upload. A manual `workflow_dispatch` remains available for verification-only or publishing runs.
 
-## Configuration contract
+## Fixed Google Cloud identity
 
-Required repository variables:
+The workflow uses GitHub OIDC and Workload Identity Federation. It does not use a service-account JSON key.
 
-- `GCP_PROJECT_ID`: Google Cloud project ID.
-- `GCP_WIF_PROVIDER`: full Workload Identity Provider resource name.
-- `GCP_SERVICE_ACCOUNT`: service-account email.
+- Google Cloud project ID: `dalilna-play-automation-516000`
+- Workload Identity Provider: `projects/28058491662/locations/global/workloadIdentityPools/github-pool/providers/github-provider`
+- Service account: `dalilna-play-automation@dalilna-play-automation-516000.iam.gserviceaccount.com`
+- GitHub repository ID: `1469488424`
+- GitHub repository: `baraagpt6-droid/hubaish-smart-guide.`
+- Allowed ref: `refs/heads/main`
+- Workflow: `.github/workflows/google-play-closed-testing.yml`
 
-Optional repository variable:
+The provider's attribute condition must permit this repository and this main-branch workflow. The Cloud IAM binding must grant `roles/iam.workloadIdentityUser` to the repository principal set for repository ID `1469488424`. The Play service account must have app-scoped access to package `com.hubaish.guide`.
 
-- `PLAY_TRACK`: exact custom Closed testing track name shown in Play Console. Defaults to `Hubaish Closed Test`. Set it only when the actual track name differs.
+## Repository configuration
 
-Existing Android upload-signing secrets:
+Existing Android upload-signing secrets used by the main-branch Android release build:
 
 - `KEYSTORE_BASE64`
 - `KEYSTORE_PASSWORD`
 - `KEY_ALIAS`
 - `KEY_PASSWORD`
 
-No service-account JSON key is used. Do not add `PLAY_JSON_KEY`; WIF creates a short-lived external-account credential file during publishing.
+The workflow reuses this persistent JKS upload key. It validates the Base64 JKS header, password and alias with `keytool` before signing. Do not generate a replacement upload key when the existing Play App Signing upload key is available.
 
-## Trust boundary
+Optional repository variable:
 
-The Google Cloud OIDC provider must allow only:
+- `PLAY_TRACK`: preferred custom Closed-testing track identifier. Defaults to `Hubaish Closed Test`.
 
-- Repository ID `1469488424`.
-- Ref `refs/heads/main`.
-- Workflow `baraagpt6-droid/hubaish-smart-guide./.github/workflows/google-play-closed-testing.yml@refs/heads/main`.
+Google Cloud project, provider and service-account identifiers are fixed in the workflow to avoid dependency on unverified repository variables.
 
-The publishing job uses `id-token: write` only for a manual main-branch run. The validation workflow has `contents: read` only, does not authenticate to Google Cloud and cannot upload.
+## Track and version resolution
 
-The Play service account needs app-scoped read access, store presence management and release to testing tracks. It must not receive Production release permission. Cloud IAM trust and Play Console app permission are separate checks.
+Before building, `scripts/resolve-play-release.py` opens a temporary Google Play edit and reads `edits.tracks.list` and `edits.bundles.list`.
 
-## Run sequence
+- It prefers the exact `PLAY_TRACK` track.
+- If that identifier is absent and only one custom default-form-factor testing track exists, it selects that track.
+- If no named custom track exists, it accepts the legacy closed-testing `alpha` track.
+- If no closed track exists, it creates the configured custom Closed-testing track through the Android Publisher API. The edit is committed without a release.
+- It refuses internal, open/beta, QA and Production tracks. It also refuses to guess when multiple custom tracks exist.
+- It computes the next `versionCode` as one greater than the highest code found in all track releases and uploaded bundles.
+- It uses release status `draft` when no prior reviewed release exists. Once a previously reviewed release is present, the status becomes `completed`.
 
-1. Review and merge the development PRs to `main` only when you decide.
-2. Run **Actions → Google Play Closed Testing → Run workflow** on `main`.
-3. Select `verify_only` first. It builds and validates without uploading.
-4. Only after that succeeds, select `publish_closed_testing` to upload the signed AAB and bilingual listing to the custom Closed testing track.
-5. Complete any tester rollout or Play review step shown in Play Console.
+The discovery edit is not committed unless it needs to create the empty Closed-testing track. Fastlane creates and commits the upload edit after the signed AAB and listing assets pass validation.
 
-The workflow does not run on pull requests or branch pushes. It cannot publish to Production. A successful upload to Closed testing is not a public Production release.
+## Workflow behavior
+
+- A push to `main` automatically runs in `publish_closed_testing` mode.
+- Manual workflow dispatch supports `verify_only` and `publish_closed_testing`.
+- Verification-only builds a debug APK and does not authenticate or upload.
+- Publishing authenticates using `google-github-actions/auth@v2`, builds a signed AAB, validates the bilingual listing and screenshots, then uploads the AAB, metadata, graphics and screenshots to the discovered Closed-testing track.
+- Only the Closed-testing track is passed to Fastlane. Internal, beta/open, QA and Production targets are rejected.
+- No workflow step publishes to the Google Play Production track.
+
+## First review
+
+For the initial app submission, the workflow uses a draft release if Google Play does not show any prior reviewed release. Google Play may still require the initial changes to be sent for review. If Play Console presents a first-submission review action that the API does not permit, that single review action remains a Play Console step. Later uploads use `completed` on the existing Closed-testing track.
 
 ## Store listing
 
-Text is stored in `fastlane/metadata/android/ar` and `fastlane/metadata/android/en-US`. The workflow generates store graphics and actual Chromium phone screenshots before upload. The CI-only validation AAB uses a temporary signing key and must never be uploaded to Play.
+Arabic and English listing text lives under `fastlane/metadata/android/ar` and `fastlane/metadata/android/en-US`. The workflow generates the feature graphic and real Chromium screenshots before upload and validates all eight phone screenshots.

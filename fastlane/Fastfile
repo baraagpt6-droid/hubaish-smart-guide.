@@ -3,8 +3,8 @@ default_platform(:android)
 def closed_testing_track!
   track = ENV.fetch("PLAY_TRACK", "Hubaish Closed Test").strip
   UI.user_error!("PLAY_TRACK must be the exact custom Closed testing track name.") if track.empty?
-  reserved = %w[internal alpha beta production closed open closed-testing open-testing]
-  UI.user_error!("Only a custom Closed testing track is allowed; internal, open and Production tracks are blocked.") if reserved.include?(track.downcase)
+  reserved = %w[internal beta production qa closed open closed-testing open-testing]
+  UI.user_error!("Only a Closed testing track is allowed; internal, open, beta and Production tracks are blocked.") if reserved.include?(track.downcase) || track.downcase.end_with?(":production", ":beta", ":qa", ":internal")
   UI.user_error!("Production tracks are blocked.") if track.downcase.end_with?(":production")
   UI.user_error!("PLAY_TRACK contains unsupported characters.") unless track.match?(/\A[a-zA-Z0-9][a-zA-Z0-9 _.-]{2,59}\z/)
   track
@@ -34,12 +34,14 @@ platform :android do
     package = ENV.fetch("PLAY_PACKAGE_NAME", "com.hubaish.guide")
     track = closed_testing_track!
     UI.user_error!("Package ID mismatch: expected com.hubaish.guide.") unless package == "com.hubaish.guide"
+    release_status = ENV.fetch("PLAY_RELEASE_STATUS", "completed")
+    UI.user_error!("PLAY_RELEASE_STATUS must be draft or completed.") unless %w[draft completed].include?(release_status)
     upload_to_play_store(
       package_name: package,
       json_key: ENV.fetch("GOOGLE_APPLICATION_CREDENTIALS"),
       aab: ENV.fetch("AAB_PATH"),
       track: track,
-      release_status: "completed",
+      release_status: release_status,
       metadata_path: "fastlane/metadata/android",
       skip_upload_apk: true,
       skip_upload_aab: false,
