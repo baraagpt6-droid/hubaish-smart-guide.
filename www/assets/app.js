@@ -594,7 +594,7 @@ function renderGlobalSearch(query) {
 function localAssistantAnswer(question) {
   const q = normalizeArabic(question);
   if (/حصن|حصون|قلاع|قلعة|fort|castle/i.test(question)) {
-    const found=state.places.filter(item=>item.cat==='fort');
+    const found=state.places.filter(item=>item.cat==='fort'&&item.scope==='hubaish_district');
     const title={AR:'الحصون والقلاع المسجلة في الموسوعة:',EN:'Forts and castles listed in the guide:',TR:'Rehberde kayıtlı kaleler:',FR:'Forts et châteaux répertoriés dans le guide :'}[state.lang]||'Forts:';
     return found.length?title+'\\n'+found.map((item,i)=>(i+1)+'. '+item.title+' — '+item.loc).join('\\n'):'لا توجد حالياً بطاقات حصون في المحتوى المحلي.';
   }
@@ -604,16 +604,16 @@ function localAssistantAnswer(question) {
     return title+'\\n'+names.map((name,i)=>(i+1)+'. '+name).join('، ');
   }
   if (/وادي|وديان|مدرجات|valley|wadi|terrace/i.test(question)) {
-    const found=state.places.filter(item=>item.cat==='valley');
+    const found=state.places.filter(item=>item.cat==='valley'&&item.scope==='hubaish_district');
     const title={AR:'الأودية والمدرجات المسجلة:',EN:'Recorded wadis and terraces:',TR:'Kayıtlı vadiler ve teraslar:',FR:'Vallées et terrasses répertoriées :'}[state.lang]||'Wadis:';
     return found.length?title+'\\n'+found.map((item,i)=>(i+1)+'. '+item.title+' — '+item.loc).join('\\n'):'لا توجد بطاقات أودية في المحتوى المحلي حالياً.';
   }
   if (/مسار|جوله|سياح|route|itinerary|tour/i.test(question)) {
-    const places=state.places.filter(item=>['fort','valley','mountain','mosque'].includes(item.cat)).slice(0,5);
+    const places=state.places.filter(item=>item.scope==='hubaish_district'&&['fort','valley','mountain','mosque'].includes(item.cat)).slice(0,5);
     if(places.length)return 'اقتراح استكشاف من العناصر المنشورة في الموسوعة، وليس مسار ملاحة ميدانياً:\n'+places.map((item,index)=>(index+1)+'. '+item.title+' — '+item.loc).join('\n')+'\nتحقق من الطرق والوقت محلياً قبل الزيارة.';
   }
   if (/تاريخ|history|الحضاره|الانتفاضه/i.test(question)) {
-    const events=state.history.slice(0,4);
+    const events=state.history.filter(item=>item.scope==='hubaish_district').slice(0,4);
     if(events.length)return events.map(item=>item.title+' — '+item.period+'\n'+item.body).join('\n\n');
   }
   if (/صلاه|الفجر|الظهر|العصر|المغرب|العشاء|مواقيت/.test(q)) {
@@ -624,12 +624,12 @@ function localAssistantAnswer(question) {
     const terms = normalizeArabic(`${item.title} ${item.loc}`).split(/\s+/).filter(term => term.length > 2);
     return terms.some(term => q.includes(term));
   });
-  if (place) return `${place.title}\n${place.loc}\n${place.body}`;
+  if (place) return `${place.title}\n${place.loc}\n${place.body}${place.scope==='related_historical_region'?'\nنطاق تاريخي مرتبط خارج الحدود الإدارية الحالية لمديرية حبيش.':''}`;
   const directoryNames = window.HubaishFeatures?.getUzal?.() || UZAL_22;
   const uzla = directoryNames.find(name => q.includes(normalizeArabic(name)));
   if (uzla) return `عزلة ${uzla} مدرجة ضمن قائمة العزل الـ22 في بيانات هذا الدليل. لا تتوفر في النسخة الحالية تفاصيل مستقلة موثقة عن كل قرية أو حدود العزلة.`;
   const history = state.history.find(item => q.includes(normalizeArabic(item.title)) || normalizeArabic(item.title).split(/\s+/).some(term => term.length > 3 && q.includes(term)));
-  if (history) return `${history.title} — ${history.period}\n${history.body}`;
+  if (history) return `${history.title} — ${history.period}\n${history.body}${history.scope==='related_historical_region'?'\nنطاق تاريخي مرتبط خارج الحدود الإدارية الحالية لمديرية حبيش.':''}`;
   return 'لم أعثر على إجابة في المحتوى المحلي المتاح. جرّب اسم عزلة أو حصن أو استخدم البحث في الأقسام. هذا المساعد لا يتصل حالياً بخدمة ذكاء اصطناعي خارجية.';
 }
 
@@ -735,7 +735,7 @@ function updatePrayerUI() {
 
 function renderRadar() {
   const box = document.getElementById('radarBox');
-  if (window.HubaishCatalog?.renderCompass) return window.HubaishCatalog.renderCompass(box, state.places, state.lang);
+  if (window.HubaishCatalog?.renderCompass) return window.HubaishCatalog.renderCompass(box, state.places.filter(item => item.scope === 'hubaish_district'), state.lang);
   const items = state.places.filter(item => Number.isFinite(item.distKm));
   box.replaceChildren(element('h3', 'item-title', 'المسافات والاتجاهات التقديرية من مركز ظُلمة'), element('p', 'small muted', 'القيم تقديرية من بيانات النسخة وليست قياسات مسارات أو إحداثيات GPS مؤكدة.'));
   const list = element('div', 'radar-list');
