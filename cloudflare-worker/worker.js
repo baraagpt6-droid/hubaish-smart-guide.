@@ -1,3 +1,4 @@
+// 2026-11-28: redeploy and revalidate the canonical workers.dev route.
 /**
  * Hubaish Smart Guide — Cloudflare Worker
  * Bind the production KV namespace as ADMINS. Required secrets: GITHUB_TOKEN and SESSION_SECRET.

@@ -14,6 +14,8 @@ on:
       - 'scripts/audit-runtime.mjs'
       - 'scripts/verify-build.mjs'
       - 'scripts/promote-play-draft.py'
+      - 'scripts/resolve-cloudflare-worker-url.mjs'
+      - 'cloudflare-worker/**'
   workflow_dispatch:
 
 permissions:
@@ -67,6 +69,7 @@ jobs:
         uses: actions/deploy-pages@v4
 
   build-android:
+    if: ${{ !contains(github.event.head_commit.message, '[pages-only]') }}
     runs-on: ubuntu-latest
     outputs:
       signed: ${{ steps.apk.outputs.signed }}

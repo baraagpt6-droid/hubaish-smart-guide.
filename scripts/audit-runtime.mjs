@@ -29,23 +29,49 @@ async function waitForServer() {
 }
 
 async function checkWorker(path) {
-  try {
-    const response = await fetch(workerUrl + path, {
-      headers: { Accept: 'application/json' },
-      cache: 'no-store',
-      signal: AbortSignal.timeout(12000)
-    });
-    const body = await response.json();
-    if (!response.ok) throw new Error('HTTP ' + response.status + ': ' + JSON.stringify(body).slice(0, 300));
-    if (path === '/health' && body.ok !== true) throw new Error('Worker health checks report degraded: ' + JSON.stringify(body.checks));
-    if (path === '/setup/status' && typeof body.setupRequired !== 'boolean') throw new Error('Worker setup response is invalid.');
-    return { ok: true, status: response.status, ...(path === '/health' ? { checks: body.checks } : { setupRequired: body.setupRequired }) };
-  } catch (error) {
-    const cause = error?.cause;
-    const detail = [error?.name, error?.message, cause?.code, cause?.message].filter(Boolean).join(' | ');
-    console.warn('WARN: Cloudflare Worker ' + path + ' health check failed: ' + detail);
-    return { ok: false, error: detail };
+  let lastError;
+  for (let attempt = 1; attempt <= 6; attempt++) {
+    try {
+      const response = await fetch(workerUrl + path, {
+        headers: { Accept: 'application/json' },
+        cache: 'no-store',
+        signal: AbortSignal.timeout(10000)
+      });
+      const raw = await response.text();
+      let body;
+      try { body = raw ? JSON.parse(raw) : {}; }
+      catch { throw new Error('HTTP ' + response.status + ' returned non-JSON content.'); }
+      if (response.status !== 200) {
+        throw new Error('Expected HTTP 200, received HTTP ' + response.status + ': ' + JSON.stringify(body).slice(0, 300));
+      }
+      if (path === '/health') {
+        if (body.ok !== true) throw new Error('/health reports degraded checks: ' + JSON.stringify(body.checks));
+        for (const key of ['kv', 'githubContentsRead', 'sessionSecret']) {
+          if (body.checks?.[key]?.ok !== true) {
+            throw new Error('/health check failed for ' + key + ': ' + (body.checks?.[key]?.error || 'missing or not ok'));
+          }
+        }
+      }
+      if (path === '/setup/status' && typeof body.setupRequired !== 'boolean') {
+        throw new Error('/setup/status returned an invalid setupRequired field.');
+      }
+      return {
+        ok: true,
+        status: response.status,
+        attempts: attempt,
+        ...(path === '/health' ? { checks: body.checks } : { setupRequired: body.setupRequired })
+      };
+    } catch (error) {
+      lastError = error;
+      const cause = error?.cause;
+      const detail = [error?.name, error?.message, cause?.code, cause?.message].filter(Boolean).join(' | ');
+      console.warn('WARN: Cloudflare Worker ' + path + ' attempt ' + attempt + '/6 failed: ' + detail);
+      if (attempt < 6) await delay(Math.min(1000 * (2 ** (attempt - 1)), 10000));
+    }
   }
+  const cause = lastError?.cause;
+  const detail = [lastError?.name, lastError?.message, cause?.code, cause?.message].filter(Boolean).join(' | ');
+  return { ok: false, attempts: 6, error: detail || 'Unknown Worker request failure.' };
 }
 
 let browser;
@@ -161,5 +187,6 @@ try {
 const workerChecks = await Promise.all([checkWorker('/health'), checkWorker('/setup/status')]);
 console.log('CLOUDFLARE_WORKER_CHECKS=' + JSON.stringify(workerChecks));
 if (!workerChecks.every(check => check.ok)) {
-  console.warn('::warning::Cloudflare Worker is degraded or unreachable. The local/offline content fallback remains available.');
+  throw new Error('Cloudflare Worker verification failed after bounded DNS/network retries: ' +
+    JSON.stringify(workerChecks));
 }
