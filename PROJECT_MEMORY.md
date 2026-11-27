@@ -128,3 +128,11 @@ That result is historical context only. It does not authorize future automatic c
 - 2026-11-27: Changed every future main push to draft-only preview.
 - 2026-11-27: Added the separate publish_approved_release manual action and exact-track guardrails in resolver, Fastlane, and promoter.
 - 2026-11-27: Added static build checks and prevented documentation-only changes from running Pages/Cloudflare deployments.
+
+## Google Play status monitoring and app audit
+- .github/workflows/play-status-monitor.yml supports manual dispatch, a daily 09:00 Asia/Kuala_Lumpur schedule (01:00 UTC), and a run after each Google Play Closed Testing workflow completes.
+- scripts/monitor-play-status.py uses the fixed Hubaish WIF/OIDC configuration and Google Android Publisher API scope. It reads tracks/bundles only, discards its temporary inspection edit, and never updates, commits, promotes or deletes releases.
+- Its Arabic Actions summary and JSON artifact report the effective Hubaish Closed Test version, explicit states for 413 and 414, draft count, non-target tracks with version codes, Production state, and tester/store URL formats.
+- Important API limitation: Edits.tracks does not expose a separate Play policy-review queue or a closed-test tester email allow-list. A track status is not enough to independently assert that every tester can install.
+- scripts/audit-runtime.mjs exercises the local app with Playwright at mobile, tablet and desktop widths; checks language switching, navigation, Service Worker activation, cached app shell, offline home rendering and browser errors; and calls the Worker health/setup endpoints read-only apart from its health endpoint's temporary KV self-test.
+- The Google Play preview workflow runs this audit before AAB build/upload. Failure blocks the draft upload. Existing 413 is not modified and Production remains prohibited.

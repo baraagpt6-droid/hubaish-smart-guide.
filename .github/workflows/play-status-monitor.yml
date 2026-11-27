@@ -1,0 +1,65 @@
+name: Google Play Status Monitor
+
+on:
+  workflow_dispatch:
+  schedule:
+    # 09:00 Asia/Kuala_Lumpur (UTC+8)
+    - cron: '0 1 * * *'
+  workflow_run:
+    workflows: ["Google Play Closed Testing"]
+    types: [completed]
+    branches: [main]
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: hubaish-play-status-monitor
+  cancel-in-progress: false
+
+jobs:
+  monitor:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    env:
+      PLAY_PACKAGE_NAME: com.hubaish.guide
+      PLAY_TRACK: Hubaish Closed Test
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Authenticate to Google Cloud using GitHub OIDC and WIF
+        uses: google-github-actions/auth@v2
+        with:
+          project_id: dalilna-play-automation-516000
+          workload_identity_provider: projects/28058491662/locations/global/workloadIdentityPools/github-pool/providers/github-provider
+          service_account: dalilna-play-automation@dalilna-play-automation-516000.iam.gserviceaccount.com
+          create_credentials_file: true
+          export_environment_variables: true
+          access_token_scopes: https://www.googleapis.com/auth/androidpublisher
+
+      - name: Install Google Play API client
+        run: python3 -m pip install --disable-pip-version-check "google-auth>=2.40,<3" "requests>=2.32,<3"
+
+      - name: Validate the read-only monitor script
+        run: python3 -m py_compile scripts/monitor-play-status.py
+
+      - name: Read Hubaish Play status
+        run: python3 scripts/monitor-play-status.py
+
+      - name: Save the machine-readable status report
+        uses: actions/upload-artifact@v4
+        with:
+          name: hubaish-play-status-report
+          path: play-status-monitor.json
+          if-no-files-found: error
+          retention-days: 30

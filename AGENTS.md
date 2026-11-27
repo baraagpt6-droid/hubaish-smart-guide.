@@ -100,3 +100,14 @@ Do not generate or rotate an upload key without an explicit migration plan. Vali
 5. Upload only as draft.
 6. Read back the draft and confirm Production is unchanged.
 7. Leave publication to the separate publish_approved_release manual action.
+
+## Play status monitor and runtime audit
+- Read-only monitor workflow: .github/workflows/play-status-monitor.yml.
+- Monitor entry point: scripts/monitor-play-status.py.
+- Run it manually with workflow_dispatch or automatically every day at 09:00 Asia/Kuala_Lumpur (01:00 UTC), and after each Google Play Closed Testing workflow run completes.
+- Monitor uses the same fixed WIF provider/service account and Android Publisher scope. It must remain read-only: open a temporary Play edit, GET tracks/bundles only, then discard that temporary edit. It must never PUT a track, commit a release, or promote a draft.
+- Report package com.hubaish.guide, exact track Hubaish Closed Test, versionCodes 413 and 414, active version, draft count, alternate testing tracks containing version codes, and Production status. It must call out that Edits.tracks does not expose a separate policy-review queue state or tester email list.
+- Runtime quality check: scripts/audit-runtime.mjs. It verifies mobile/tablet overflow, language/navigation, Service Worker activation, cache contents, offline home rendering, browser errors, and read-only Cloudflare /health and /setup/status checks.
+- The Google Play preview workflow runs the runtime audit before generating/uploading its AAB. A failed app/UI/offline test must block the draft upload.
+- Do not change or remove release 413 as part of monitoring or runtime audit. Never modify Production.
+- Any app-store listing or rollout change that could affect an active review must wait until the current release status has been checked; do not claim review completion from a track status alone.

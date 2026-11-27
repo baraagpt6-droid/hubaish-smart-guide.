@@ -79,6 +79,10 @@ jobs:
         if: env.PLAY_MODE != 'publish_approved_release'
         run: npx playwright install --with-deps chromium
 
+      - name: Audit navigation, responsive layouts, offline cache and Cloudflare Worker
+        if: env.PLAY_MODE != 'publish_approved_release'
+        run: node scripts/audit-runtime.mjs
+
       - name: Render Arabic and English feature graphic
         if: env.PLAY_MODE != 'publish_approved_release'
         run: node scripts/render-play-feature-graphic.mjs

@@ -79,3 +79,20 @@ A completed release state in the Play API remains subject to Google's review and
 ## Listing assets
 
 Arabic metadata is under fastlane/metadata/android/ar and English metadata is under fastlane/metadata/android/en-US. The workflow generates the feature graphic and captures actual app screens through Chromium before uploading. Eight phone screenshots are validated before any AAB upload.
+
+## Daily Google Play status monitor
+
+.github/workflows/play-status-monitor.yml uses the same fixed GitHub OIDC/WIF configuration as the release workflow. It runs:
+- Manually via workflow_dispatch.
+- Daily at 01:00 UTC (09:00 in Malaysia, Asia/Kuala_Lumpur).
+- After every completed Google Play Closed Testing workflow run on main.
+
+scripts/monitor-play-status.py reads the com.hubaish.guide app and exact Hubaish Closed Test track. It reports versionCode 413, versionCode 414, the current active code, draft count, alternate tracks that contain release version codes, Production version codes/statuses, and the standard tester opt-in/store URL formats. It writes an Arabic GitHub Actions Step Summary and a machine-readable JSON artifact.
+
+The monitor is read-only with respect to releases. It opens a temporary Google Play edit, reads tracks and uploaded bundles, and discards the inspection edit. It never updates a track, commits an edit, or promotes a release. A track status is not a separate policy-review queue state; the Android Publisher Edits.tracks response does not provide the tester email list either. Do not claim that testers can install until the app-level publication status and closed-test tester eligibility are confirmed in Play Console.
+
+## Runtime quality audit
+
+scripts/audit-runtime.mjs is executed by the preview workflow after Chromium is installed and before the AAB is built. It checks app navigation, Arabic/English language switching, widths 360/390/768/1024, Service Worker activation, cached shell contents, offline home rendering, browser errors, and Cloudflare Worker /health and /setup/status. Worker checks are reported separately so a Worker outage does not erase the local/offline fallback result. The Worker health endpoint uses only a short-lived KV self-test key which is deleted immediately.
+
+Do not modify release 413 or Production as part of monitoring. Do not automatically promote any draft.

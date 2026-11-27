@@ -22,16 +22,18 @@ const required = [
   'fastlane/metadata/android/ar/title.txt','fastlane/metadata/android/ar/short_description.txt','fastlane/metadata/android/ar/full_description.txt','fastlane/metadata/android/ar/changelogs/default.txt',
   'fastlane/metadata/android/en-US/title.txt','fastlane/metadata/android/en-US/short_description.txt','fastlane/metadata/android/en-US/full_description.txt','fastlane/metadata/android/en-US/changelogs/default.txt',
   'play-store/feature-graphic.svg','scripts/render-play-feature-graphic.mjs','scripts/prepare-play-store-assets.py','scripts/normalize-play-screenshots.py','scripts/capture-play-screenshots.mjs','scripts/normalize-play-screenshots.py','scripts/verify-play-store.mjs','scripts/prepare-android-release.py','scripts/resolve-play-release.py',
-  '.github/workflows/google-play-closed-testing.yml','docs/google-play-setup.md'
+  '.github/workflows/google-play-closed-testing.yml','.github/workflows/play-status-monitor.yml',
+  'scripts/monitor-play-status.py','scripts/audit-runtime.mjs','docs/google-play-setup.md'
 ];
 for (const file of required) await access(resolve(root,file));
 const read = file => readFile(resolve(root,file),'utf8');
-const [html,css,app,catalog,features,cms,sw,worker,wrangler,workflow,readme,workerReadme,androidPatch,cloudflareDeployWorkflow,kvSetupScript,gallery] = await Promise.all([
+const [html,css,app,catalog,features,cms,sw,worker,wrangler,workflow,readme,workerReadme,androidPatch,cloudflareDeployWorkflow,kvSetupScript,gallery,playMonitorWorkflow,playMonitorScript,runtimeAudit] = await Promise.all([
   read('www/index.html'),read('www/styles.css'),read('www/app.js'),read('www/catalog.js'),
   read('www/features.js'),read('www/github-cms.js'),read('www/sw.js'),
   read('cloudflare-worker/worker.js'),read('cloudflare-worker/wrangler.toml'),
   read('.github/workflows/build-and-deploy.yml'),read('README.md'),
-  read('cloudflare-worker/README.md'),read('scripts/patch-android-config.py'),read('.github/workflows/deploy-cloudflare-worker.yml'),read('scripts/configure-cloudflare-kv.mjs'),read('www/gallery.js')
+  read('cloudflare-worker/README.md'),read('scripts/patch-android-config.py'),read('.github/workflows/deploy-cloudflare-worker.yml'),read('scripts/configure-cloudflare-kv.mjs'),read('www/gallery.js'),
+  read('.github/workflows/play-status-monitor.yml'),read('scripts/monitor-play-status.py'),read('scripts/audit-runtime.mjs')
 ]);
 const manifest=JSON.parse(await read('www/manifest.webmanifest'));
 const manifestJson=JSON.parse(await read('www/manifest.json'));
@@ -47,7 +49,7 @@ const assets = {
 if (assets.app!==app || assets.catalog!==catalog || assets.features!==features || assets.styles!==css) {
   throw new Error('Android duplicate web assets do not match the current web sources.');
 }
-for (const file of ['www/app.js','www/catalog.js','www/features.js','www/github-cms.js','www/gallery.js','www/sw.js','www/upgrade-400.js','cloudflare-worker/worker.js']) {
+for (const file of ['www/app.js','www/catalog.js','www/features.js','www/github-cms.js','www/gallery.js','www/sw.js','www/upgrade-400.js','cloudflare-worker/worker.js','scripts/audit-runtime.mjs']) {
   const result=spawnSync(process.execPath,['--check',resolve(root,file)],{encoding:'utf8'});
   if(result.status!==0)throw new Error('JavaScript syntax error in '+file+': '+(result.stderr||result.stdout));
 }
@@ -291,6 +293,35 @@ if (!playResolver.includes('/tracks') ||
     !playResolver.includes('--verify-upload') ||
     !playResolver.includes('production_version_codes')) {
   throw new Error('Google Play track discovery and versionCode resolver is incomplete.');
+}
+
+if (!playMonitorWorkflow.includes('workflow_dispatch:') ||
+    !playMonitorWorkflow.includes("cron: '0 1 * * *'") ||
+    !playMonitorWorkflow.includes('workflow_run:') ||
+    !playMonitorWorkflow.includes('Google Play Closed Testing') ||
+    !playMonitorWorkflow.includes('google-github-actions/auth@v2') ||
+    !playMonitorWorkflow.includes('projects/28058491662/locations/global/workloadIdentityPools/github-pool/providers/github-provider') ||
+    !playMonitorWorkflow.includes('dalilna-play-automation@dalilna-play-automation-516000.iam.gserviceaccount.com') ||
+    !playMonitorWorkflow.includes('scripts/monitor-play-status.py')) {
+  throw new Error('Google Play status monitor must be scheduled, manually runnable and WIF-authenticated.');
+}
+if (!playMonitorScript.includes('EXPECTED_PACKAGE = "com.hubaish.guide"') ||
+    !playMonitorScript.includes('EXPECTED_TRACK = "Hubaish Closed Test"') ||
+    !playMonitorScript.includes('"versionCode413"') ||
+    !playMonitorScript.includes('"versionCode414"') ||
+    !playMonitorScript.includes('"alternateTracksWithVersionCodes"') ||
+    !playMonitorScript.includes('production_codes') ||
+    playMonitorScript.includes('session.put(') ||
+    playMonitorScript.includes(':commit')) {
+  throw new Error('Google Play monitor must inspect release states and alternate tracks without modifying releases.');
+}
+if (!runtimeAudit.includes('context.setOffline(true)') ||
+    !runtimeAudit.includes('navigator.serviceWorker.ready') ||
+    !runtimeAudit.includes('[360, 390, 768, 1024]') ||
+    !runtimeAudit.includes('https://hubaish-cms.baraag6.workers.dev') ||
+    !runtimeAudit.includes('/health') ||
+    !runtimeAudit.includes('/setup/status')) {
+  throw new Error('Runtime audit must check responsive layouts, offline cache and the production Worker.');
 }
 
 const profile=data.districtProfile;
