@@ -1,51 +1,56 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-24T21:46:09.802Z",
+  "updatedAt": "2026-11-27T17:00:00+08:00",
   "landmarks": [
     {
       "id": "khudad-fort",
       "category": "fort",
       "status": "documented",
-      "source_text": "مادة حبيش في موقع ثور رأين تنقل عن الهمداني وإسماعيل الأكوع، وتورد اختلاف موضع القلعة.",
+      "source_text": "الهمداني، صفة جزيرة العرب؛ إسماعيل الأكوع؛ الثور؛ وإحالة الوقفية الغسانية كما وردت في التقرير المحلي.",
       "source_url": "https://www.thu-raein.com/index.php/ar/makhaleef-ar/hubaish-district-ar?id=17&view=category",
-      "title_ar": "قلعة خدد الأثرية",
-      "location_ar": "نطاق العارضة؛ وتذكر رواية أخرى أنها بين الصائر والصدر",
-      "description_ar": "تصف مصادر محلية قلعة خدد بأنها حصن أثري في جبل حبيش، وتربطها بصهاريج ومنشآت مائية محفورة في الصخر، مع إحالة إلى ذكر الهمداني للقلعة. تختلف المصادر في تعيين موقعها الإداري: أحدها يضعها في عزلة العارضة، وآخر يذكرها بين الصائر والصدر. لذلك تحفظ البطاقة الاختلاف ولا تعرض إحداثيات أو تفاصيل معمارية غير متحققة.",
+      "title_ar": "قلعة / حصن خدد",
+      "location_ar": "عزلة العارضة شمال سوق ظلمة بحسب إحدى الروايات؛ وتضع رواية أخرى القلعة بين الصائر والصدر",
+      "description_ar": "تصف الإحالات التاريخية خدد بأنها حصن/قصر على جبل حبيش، وترتبط بكريف محفور في الصفا الأسود ومنشآت مائية. تحفظ البطاقة اختلاف تعيين الموضع ولا تختار إحداثيات أو حدوداً للعزلة من غير مسح ميداني. تفصل الروايات بين وصف القلعة وبين الأبعاد المنقولة للكروف.",
       "importance_ar": "موضع تراثي مهم في روايات جغرافية اليمن القديمة؛ يحتاج إلى مسح أثري ومطابقة ميدانية.",
-      "title_en": "Khudad Archaeological Fort",
-      "location_en": "Al-Aridah area; another account places it between Sa'ir and Al-Sadr",
-      "description_en": "Local historical accounts describe Khudad as an old fort on Mount Hubaish and associate it with rock-cut cisterns. The sources differ on its administrative location, so this record preserves the discrepancy and does not assign unverified coordinates.",
-      "importance_en": "A heritage site in local accounts of historical Yemeni geography; archaeological survey and field identification are still needed."
+      "title_en": "Khudad Fort",
+      "location_en": "Al-Aridah, north of Dhulmah market in one account; another places the fort between Sa'ir and Al-Sadr",
+      "description_en": "Historical references describe Khudad as a fort or palace on Mount Hubaish with a cistern cut into black rock and waterworks. This record preserves differing location descriptions and does not assign coordinates without field survey.",
+      "importance_en": "A heritage site in local accounts of historical Yemeni geography; archaeological survey and field identification are still needed.",
+      "scope": "hubaish_district",
+      "evidence_level": "historic_text_with_location_variants"
     },
     {
       "id": "wuhaza-fortress",
       "category": "fort",
       "status": "documented",
-      "source_text": "مادة حبيش في موقع ثور رأين، مع إحالات إلى الهمداني وياقوت الحموي ومعجم البلدان.",
+      "source_text": "الهمداني، صفة جزيرة العرب؛ ياقوت الحموي، معجم البلدان؛ إسماعيل الأكوع؛ ومادة حبيش في ثور رأين.",
       "source_url": "https://www.thu-raein.com/index.php/ar/makhaleef-ar/hubaish-district-ar?id=17&view=category",
-      "title_ar": "مصنعة وحصن وحاظة",
-      "location_ar": "أعلى منطقة شباع من جبل حبيش",
-      "description_ar": "تذكر مادة تاريخية محلية أن حصن وحاظة يقع في أعلى منطقة شباع من جبل حبيش، وأن اسم وحاظة ارتبط بمخلاف واسع وبني وائل الحميريين، وتذكر ازدهار المنطقة في القرن السادس الهجري. ويورد المصدر وصفاً لصهاريج وكريف ومبانٍ كانت قائمة ثم طمست أجزاء منها. هذه إحالات تاريخية منقولة عن كتب تراثية؛ لا تثبت وحدها تاريخ بناء الحصن أو بقاء جميع المنشآت.",
+      "title_ar": "مصنعة وحاظة («القلعة»)",
+      "location_ar": "أعلى جبل حبيش – عزلة شباع، ويعرف الموضع محلياً باسم القلعة",
+      "description_ar": "تصف الإحالات إلى الهمداني وياقوت والأكوع وحاظة بوصفها مدينة/مصنعة تاريخية مرتبطة بالعصر الحميري، وفيها قلعة وكروف ومنشآت مائية. وتذكر الروايات بقايا صهاريج ومبانٍ طُمست أجزاء منها. لا يحدد هذا الوصف تاريخ بناء كل منشأة ولا يثبت بقاء جميع العناصر حتى اليوم؛ وتحتاج إلى مسح أثري مستقل.",
       "importance_ar": "من أبرز مواضع مخلاف وحاظة في الروايات التاريخية المحلية.",
-      "title_en": "Wuhaza Fortress and Musanna'a",
-      "location_en": "Upper Shaba'a area, Mount Hubaish",
-      "description_en": "A local historical account places Wuhaza fortress above Shaba'a on Mount Hubaish and associates the wider Wuhaza region with Bani Wa'il and the sixth Hijri century. The account cites earlier geographical and historical works; the building date and surviving structures still require archaeological verification.",
-      "importance_en": "A prominent site in local historical accounts of the Wuhaza district."
+      "title_en": "Musanna'a Wuhaza (Al-Qal'ah)",
+      "location_en": "Upper Mount Hubaish, Shaba'a sub-district; locally known as Al-Qal'ah",
+      "description_en": "References attributed to al-Hamdani, Yaqut and al-Akwa' describe Wuhaza as a historic Himyarite settlement with a fortress, cisterns and waterworks. Some structures are reported as ruined or buried. The account does not date every structure or establish that all survive today; archaeological survey is still needed.",
+      "importance_en": "A prominent site in local historical accounts of the Wuhaza district.",
+      "scope": "hubaish_district",
+      "evidence_level": "historic_geographical_text"
     },
     {
       "id": "jabal-khadra-terraces",
       "category": "mountain",
-      "status": "local",
-      "source_text": "مادة حبيش في موقع ثور رأين، وفق وصف محلي لجبل الخضراء.",
-      "source_url": "https://www.thu-raein.com/index.php/ar/makhaleef-ar/hubaish-district-ar?id=17&view=category",
-      "title_ar": "جبل خضراء ومدرجاته",
-      "location_ar": "عزلة جبل خضراء ومحيط مركز ظُلمة",
-      "description_ar": "يصف مصدر محلي جبل الخضراء بأنه مرتفع بارز في نطاق ظُلمة، ويشير إلى خضرته ومدرجاته الزراعية والتجمعات السكنية على سفوحه. لا تتوفر في المصادر المفتوحة التي راجعناها قراءة ارتفاع موثقة؛ لذلك لا ينسب الدليل إليه رقماً للارتفاع أو إحداثيات قمة.",
+      "status": "documented",
+      "source_text": "الهمداني، صفة جزيرة العرب؛ تحقيق القاضي محمد علي الأكوع؛ وإسماعيل عبدالقادر الفلاحي، نبذة تاريخية عن مديرية حبيش.",
+      "source_url": "https://kenanaonline.com/users/esmaeilalflahi/posts/280884",
+      "title_ar": "جبل الخضراء وقمة نهرة",
+      "location_ar": "أعلى قمة في نطاق ظُلمة – عزلة جبل خضراء",
+      "description_ar": "تذكر المصادر جبل الخضراء بوصفه مرتفعاً بارزاً في حبيش، وتربط قمة نهرة بمسجد في الرأس وبحصن الخضراء. تنقل مادة محلية عن الهمداني والأكوع ذكر المسجد والزيارة، لكنها لا تقدم تاريخ تأسيس أو قياس ارتفاع حديثاً. ينبغي عدم دمج مسجد نهرة وحصن الخضراء في مبنى واحد دون مسح.",
       "importance_ar": "مشهد جبلي وزراعي بارز؛ الارتفاع والإحداثيات بحاجة إلى قياس ميداني.",
-      "title_en": "Jabal Khadra and its terraces",
+      "title_en": "Jabal Khadra and Nahrah Summit",
       "location_en": "Jabal Khadra sub-district and the Dhulmah centre area",
       "description_en": "A local account describes Jabal Khadra as a prominent green highland with cultivated terraces and settlements on its slopes. No verified summit elevation is supplied.",
-      "importance_en": "A notable mountain and agricultural landscape; elevation and coordinates need field measurement."
+      "importance_en": "A notable mountain and agricultural landscape; elevation and coordinates need field measurement.",
+      "scope": "hubaish_district"
     },
     {
       "id": "farai-village-landscape",
@@ -95,30 +100,31 @@
       "id": "nahrah-mosque",
       "category": "mosque",
       "status": "documented",
-      "title_ar": "مسجد نَهْرَة على جبل الخضراء",
-      "title_en": "مسجد نَهْرَة على جبل الخضراء",
-      "location_ar": "رأس جبل الخضراء – مديرية حبيش",
+      "title_ar": "مسجد نهرة وحصن الخضراء",
+      "title_en": "Nahrah Mosque and Khadra Fort",
+      "location_ar": "قمة نهرة – أعلى جبل الخضراء في نطاق ظُلمة",
       "location_en": "رأس جبل الخضراء – مديرية حبيش",
-      "description_ar": "تذكر مادة محلية أن كتاب صفة جزيرة العرب أشار إلى مسجد نَهْرَة في رأس جبل الخضراء، وتنقل عن محقق الكتاب القاضي محمد علي الأكوع أنه زار المسجد. لا يورد المصدر تاريخ تأسيس المسجد أو وصفاً معمارياً موثقاً؛ لذلك تسجل البطاقة الإحالة والزيارة المنقولة دون تأريخ المبنى.",
-      "description_en": "تذكر مادة محلية أن كتاب صفة جزيرة العرب أشار إلى مسجد نَهْرَة في رأس جبل الخضراء، وتنقل عن محقق الكتاب القاضي محمد علي الأكوع أنه زار المسجد. لا يورد المصدر تاريخ تأسيس المسجد أو وصفاً معمارياً موثقاً؛ لذلك تسجل البطاقة الإحالة والزيارة المنقولة دون تأريخ المبنى.",
+      "description_ar": "ترتبط قمة نهرة في الإحالات المحلية بمسجد عند رأس جبل الخضراء وبحصن الخضراء. تنقل المادة عن الهمداني والأكوع ذكر المسجد والزيارة، ولا تقدم تاريخ تأسيس للمسجد أو وصفاً معمارياً كاملاً. تُحفظ الإحالة من دون تحديد تاريخ بناء أو ارتفاع غير موثق.",
+      "description_en": "Local references associate Nahrah Summit with a mosque and Khadra Fort on Mount Khadra. The cited account does not provide a foundation date or full architectural survey.",
       "importance_ar": "سجل تراثي أو طبيعي، مع الإبقاء على حدود التوثيق الواردة في المصدر.",
       "importance_en": "A heritage or natural record, retaining the verification limits stated by the source.",
-      "source_text": "إسماعيل عبدالقادر الفلاحي، نبذة تاريخية عن مديرية حبيش؛ إحالة إلى صفة جزيرة العرب وتحقيق محمد علي الأكوع.",
-      "source_url": "https://kenanaonline.com/users/esmaeilalflahi/posts/280884"
+      "source_text": "الهمداني، صفة جزيرة العرب؛ تحقيق محمد علي الأكوع؛ إسماعيل عبدالقادر الفلاحي.",
+      "source_url": "https://kenanaonline.com/users/esmaeilalflahi/posts/280884",
+      "scope": "hubaish_district"
     },
     {
       "id": "zawahi-islamic-school",
       "category": "school",
       "status": "documented",
       "title_ar": "مدرسة الزواحي",
-      "title_en": "Al-Zawahi School",
+      "title_en": "Al-Zawahi Historic School",
       "location_ar": "قرية الزواحي – عزلة كومان – مديرية حبيش",
       "location_en": "Al-Zawahi village, Kuman sub-district, Hubaish District",
-      "description_ar": "يذكر المؤرخ بهاء الدين الجندي أن الفقيه يوسف بن علي درس بمدرسة الزواحي، وأن المدرسة أحدثها بعض مشايخ بني وائل. ويعرّف هامش التحقيق قرية الزواحي بأنها أسفل مصنعة خدد، شمال قرية ظُلمة. يثبت النص وجود المدرسة وصلتها بطلب العلم، لكنه لا يحدد سنة تأسيسها أو تفاصيل مبناها أو كامل المواد التي كانت تدرّس فيها. ويذكر الهامش القاسم بن حمير الوائلي الحميري في سياق عمارة مسجد القرية، ولا ينص على أنه مؤسس المدرسة.",
+      "description_ar": "يذكر الجندي في السلوك ص 431 دراسة يوسف بن علي بمدرسة الزواحي، وينسب إحداث المدرسة إلى بعض مشايخ بني وائل. وينسب الأكوع في «المدارس الإسلامية في اليمن» و«هجر العلم ومعاقله» بناء المدرسة وأوقافها إلى الشيخ قاسم بن حمير الوائلي ويترجم لأربعة من علمائها. تُحفظ الروايتان منفصلتين لا كقول واحد. أما نسبة مواد «التنبيه» في الفقه الشافعي و«صحيح البخاري» و«نظام الغريب» إلى المدرسة فهي رواية محلية قيد مطابقة النسخة المطبوعة، وليست منهجاً مثبتاً في نص الجندي المتاح.",
       "description_en": "The historian Baha al-Din al-Jundi records that the jurist Yusuf ibn Ali studied at Al-Zawahi School and that some shaykhs of Bani Wa'il established the school. The editor's note locates Al-Zawahi village below Musna'at Khudad, north of Dhulmah. The passage documents the school's existence and its educational role, but gives no foundation year, building description or complete curriculum. The note also mentions al-Qasim ibn Humayr al-Wa'ili al-Himyari in connection with building the village mosque; it does not identify him as the school's founder.",
       "importance_ar": "شاهد نصي تاريخي على وجود مدرسة في قرية الزواحي ونشاطها التعليمي؛ وتبقى تفاصيل المبنى وسنة التأسيس والمنهج الكامل غير محددة في النص المتاح.",
       "importance_en": "A historical textual witness to a school and educational activity in Al-Zawahi village. The available passage does not specify the building, foundation year or full curriculum.",
-      "source_text": "بهاء الدين الجندي، السلوك في طبقات العلماء والملوك، ص 431، مع هامش المحقق. يذكر المتن المدرسة وبعض مشايخ بني وائل؛ ويذكر الهامش القاسم بن حمير في سياق عمارة مسجد القرية، لا تأسيس المدرسة.",
+      "source_text": "بهاء الدين الجندي، السلوك، ص 431 وهامش المحقق؛ محمد علي الأكوع، المدارس الإسلامية في اليمن، وهجر العلم ومعاقله؛ رواية محلية عن المواد الدراسية قيد المطابقة.",
       "source_url": "https://ablibrary.net/book_content/b/13555/431?lang=ar",
       "scope": "hubaish_district",
       "title_tr": "Al-Zawahi Tarihî Okulu",
@@ -132,13 +138,18 @@
       "source_title": "السلوك في طبقات العلماء والملوك",
       "source_author": "بهاء الدين الجندي",
       "source_page": 431,
-      "evidence_level": "direct_historical_text",
+      "evidence_level": "direct_historical_text_plus_attributed_secondary_account",
       "claim_status": "documented",
-      "founder_claim": "يذكر الجندي أن المدرسة أحدثها بعض مشايخ بني وائل، ولا يسمي شخصاً بعينه في هذا الموضع.",
+      "founder_claim": "الجندي: أحدثها بعض مشايخ بني وائل. الأكوع: ينسب بناءها وأوقافها إلى الشيخ قاسم بن حمير الوائلي؛ يحتاج الموضع إلى مقابلة الطبعتين.",
       "mosque_builder_note": "يذكر هامش التحقيق القاسم بن حمير الوائلي الحميري في سياق عمارة مسجد القرية، ولا ينص على أنه مؤسس المدرسة.",
       "subjects_documented": [],
-      "curriculum_note": "لا يحدد المصدر مواد منهجية كاملة للمدرسة.",
-      "activity_evidence": "يذكر الجندي أن يوسف بن علي درس بالمدرسة."
+      "curriculum_note": "المواد الثلاث رواية محلية قيد مطابقة النسخة المطبوعة؛ لا تعرض كمنهج قطعي.",
+      "activity_evidence": "يذكر الجندي أن يوسف بن علي درس بالمدرسة.",
+      "subject_claims_pending_verification": [
+        "التنبيه في الفقه الشافعي",
+        "صحيح البخاري",
+        "نظام الغريب"
+      ]
     },
     {
       "id": "shafa-fort",
@@ -178,12 +189,14 @@
       "title_en": "قبة ومسجد بين الدور",
       "location_ar": "قرية بين الدور – عزلة قحزة",
       "location_en": "قرية بين الدور – عزلة قحزة",
-      "description_ar": "تنقل مادة حبيش عن دراسة للباحث محمد علي العروسي أن القبة الضريحية في قرية بين الدور تحمل نقشاً على قطعة حجرية في الواجهة الجنوبية لبيت الصلاة يؤرخ لبنائها سنة 359هـ / 963م. وتصفها الدراسة بأنها من أقدم القباب الإسلامية المعروفة وأنها أول قبة حجرية في اليمن؛ هذا الوصف منقول عن الدراسة ويحتاج إلى مراجعة النقش والأبحاث الأثرية الأصلية قبل تعميمه.",
+      "description_ar": "تنقل دراسة العروسي عن نقش على الواجهة الجنوبية لبيت الصلاة تاريخ 359هـ / 963م. يعرض الدليل التاريخ كما نقلته الدراسة؛ ولا يجزم بوصف «أقدم قبة» قبل مراجعة صورة النقش والدراسة الأثرية الأصلية.",
       "description_en": "تنقل مادة حبيش عن دراسة للباحث محمد علي العروسي أن القبة الضريحية في قرية بين الدور تحمل نقشاً على قطعة حجرية في الواجهة الجنوبية لبيت الصلاة يؤرخ لبنائها سنة 359هـ / 963م. وتصفها الدراسة بأنها من أقدم القباب الإسلامية المعروفة وأنها أول قبة حجرية في اليمن؛ هذا الوصف منقول عن الدراسة ويحتاج إلى مراجعة النقش والأبحاث الأثرية الأصلية قبل تعميمه.",
       "importance_ar": "معلم ديني وتراثي مسجل مع الإحالة إلى الدراسة المحلية التي نقلت بيانات النقش.",
       "importance_en": "A religious heritage record with attribution to the local study reporting the inscription.",
-      "source_text": "إسماعيل عبدالقادر الفلاحي، «نبذة تاريخية عن مديرية حبيش»، ناقلاً عن دراسة المعالم التاريخية والعناصر السياحية للدكتور محمد علي العروسي وعن نقوش المباني.",
-      "source_url": "https://kenanaonline.com/users/esmaeilalflahi/posts/280884"
+      "source_text": "دراسة المعالم التاريخية وعناصر الجذب السياحي، د. محمد علي العروسي، ونقل إسماعيل عبدالقادر الفلاحي.",
+      "source_url": "https://kenanaonline.com/users/esmaeilalflahi/posts/280884",
+      "evidence_level": "inscription_reported_in_secondary_study",
+      "reported_date": "359هـ / 963م"
     },
     {
       "id": "marwaha-mosque",
@@ -193,12 +206,14 @@
       "title_en": "مسجد مروحة",
       "location_ar": "قرية مروحة – عزلة نقيل العقاب",
       "location_en": "قرية مروحة – عزلة نقيل العقاب",
-      "description_ar": "تذكر المادة أن نقشاً على لوح خشبي في سقف المسجد يؤرخ لتأسيسه سنة 811هـ / 1409م، وأن البناء الحالي يرجع إلى سنة 1183هـ / 1718م. يعرض الدليل التاريخين كما نقلهما المرجع المحلي، ولا يستنتج من ذلك تاريخ جميع أجزاء المبنى.",
+      "description_ar": "تنقل الدراسة أن نقشاً خشبياً في سقف المسجد يؤرخ لتأسيسه سنة 811هـ / 1409م، وأن البناء الحالي يرجع إلى 1183هـ / 1718م. يبقي الدليل هذين التاريخين منسوبين للدراسة ولا يعممها على كل أجزاء المبنى.",
       "description_en": "تذكر المادة أن نقشاً على لوح خشبي في سقف المسجد يؤرخ لتأسيسه سنة 811هـ / 1409م، وأن البناء الحالي يرجع إلى سنة 1183هـ / 1718م. يعرض الدليل التاريخين كما نقلهما المرجع المحلي، ولا يستنتج من ذلك تاريخ جميع أجزاء المبنى.",
       "importance_ar": "معلم ديني وتراثي مسجل مع الإحالة إلى الدراسة المحلية التي نقلت بيانات النقش.",
       "importance_en": "A religious heritage record with attribution to the local study reporting the inscription.",
-      "source_text": "إسماعيل عبدالقادر الفلاحي، «نبذة تاريخية عن مديرية حبيش»، ناقلاً عن دراسة المعالم التاريخية والعناصر السياحية للدكتور محمد علي العروسي وعن نقوش المباني.",
-      "source_url": "https://kenanaonline.com/users/esmaeilalflahi/posts/280884"
+      "source_text": "دراسة العروسي عن المعالم ونقوش المباني، منقولة في نبذة إسماعيل عبدالقادر الفلاحي.",
+      "source_url": "https://kenanaonline.com/users/esmaeilalflahi/posts/280884",
+      "evidence_level": "wooden_inscription_reported_in_secondary_study",
+      "reported_date": "811هـ / 1409م؛ البناء الحالي بحسب الدراسة 1183هـ / 1718م"
     },
     {
       "id": "al-farawi-mosque-dome",
@@ -208,12 +223,14 @@
       "title_en": "مسجد وقبة الفراوي",
       "location_ar": "قرية الفراوي – عزلة الصدر",
       "location_en": "قرية الفراوي – عزلة الصدر",
-      "description_ar": "تذكر الدراسة المحلية أن مسجد وقبة الفراوي يعودان إلى القرن السابع الهجري / الثالث عشر الميلادي، وأن القبة الضريحية تقع جنوب بيت الصلاة. يحتاج تحديد سنة البناء الدقيقة وحالة النقوش إلى توثيق أثري ميداني.",
+      "description_ar": "تذكر دراسة العروسي أن مسجد وقبة الفراوي يرجعان إلى القرن السابع الهجري/الثالث عشر الميلادي، وأن القبة تقع جنوب بيت الصلاة. لا تتوفر سنة تأسيس محددة أو صورة نقش في السجل الحالي.",
       "description_en": "تذكر الدراسة المحلية أن مسجد وقبة الفراوي يعودان إلى القرن السابع الهجري / الثالث عشر الميلادي، وأن القبة الضريحية تقع جنوب بيت الصلاة. يحتاج تحديد سنة البناء الدقيقة وحالة النقوش إلى توثيق أثري ميداني.",
       "importance_ar": "معلم ديني وتراثي مسجل مع الإحالة إلى الدراسة المحلية التي نقلت بيانات النقش.",
       "importance_en": "A religious heritage record with attribution to the local study reporting the inscription.",
-      "source_text": "إسماعيل عبدالقادر الفلاحي، «نبذة تاريخية عن مديرية حبيش»، ناقلاً عن دراسة المعالم التاريخية والعناصر السياحية للدكتور محمد علي العروسي وعن نقوش المباني.",
-      "source_url": "https://kenanaonline.com/users/esmaeilalflahi/posts/280884"
+      "source_text": "دراسة العروسي عن المعالم ونقوش المباني، منقولة في نبذة إسماعيل عبدالقادر الفلاحي.",
+      "source_url": "https://kenanaonline.com/users/esmaeilalflahi/posts/280884",
+      "evidence_level": "secondary_study_century_range",
+      "reported_date": "القرن السابع الهجري / الثالث عشر الميلادي"
     },
     {
       "id": "qubbat-al-shihab",
@@ -238,12 +255,14 @@
       "title_en": "Al-Zum Mosque and Dome in Dhulmah",
       "location_ar": "مدينة ظُلمة – الجزء الشرقي من ظُلمة السفلى، مديرية حبيش",
       "location_en": "Dhulmah town – eastern part of lower Dhulmah, Hubaish District",
-      "description_ar": "توثق حولية الآثار اليمنية الصادرة عن الهيئة العامة للآثار والمتاحف أن قبة الزوم تقع في مدينة ظُلمة مركز مديرية حبيش، على ارتفاع يقارب 2000 متر، فوق هضبة متوسطة في الجزء الشرقي من ظُلمة السفلى. ويذكر التقرير أن المبنى لا يحمل نص تأسيس، ولا تحدد المصادر التي راجعها المؤلف تاريخ إنشائه أو اسم بانيه. يعرض التقرير أعمال ترميم القبة وملحقاتها بين 2004 و2005م، ويصف بيت الصلاة والقبة والمنارة والبركة والسواقي وخزانات المياه. وتذكر مادة الفلاحي المحلية اسمها مسجد قبة الزوم.",
+      "description_ar": "تقع القبة في الجزء الشرقي من ظُلمة السفلى. يصف تقرير حولية الآثار كتابات قرآنية بخط الثلث منها سورة الفتح، وفناءً ومئذنة وبركاً وقنوات وسواقي، ويذكر ترميمها في 2004–2005م. لا يحدد نص تأسيس تاريخ المبنى أو بانيه. ملاحظة ببليوغرافية: عنوان المقال يذكر «حيس»، بينما يحدد المتن المكان في ظُلمة/حبيش.",
       "description_en": "The Yemeni Archaeological Annual issued by the General Organization of Antiquities and Museums locates Qubbat al-Zum in Dhulmah, the centre of Hubaish District, at about 2,000 metres above sea level on a plateau in eastern lower Dhulmah. The report says the building has no foundation inscription and does not establish its construction date or builder. It documents restoration works in 2004–2005 and describes the prayer hall, dome, minaret, cisterns and water channels.",
       "importance_ar": "من أهم المعالم الدينية الموثقة أثرياً في مركز المديرية، ويجمع بين عمارة القبة والمنارة ومنشآت إدارة المياه.",
       "importance_en": "A documented religious monument in the district centre, combining a domed prayer hall, minaret and water-management structures.",
       "source_text": "علي يحيى الحبابي، «ترميم قبة الزوم بمديرية حَيْس، محافظة إب (2004–2005م)»، حولية الآثار اليمنية، العدد الأول، يناير 2008، ص 174–178. ملاحظة: عنوان الفصل يكتب «حَيْس»، لكن متن الدراسة يحدد الموقع في مدينة ظُلمة عاصمة مديرية حبيش.",
-      "source_url": "https://goam.gov.ye/assets/magz/18/0-azal_1.pdf"
+      "source_url": "https://goam.gov.ye/assets/magz/18/0-azal_1.pdf",
+      "evidence_level": "archaeological_annual_report",
+      "restoration_period": "2004–2005م"
     },
     {
       "id": "al-thumani-mosque",
@@ -354,16 +373,18 @@
       "id": "al-dhuhrah-historic-settlement",
       "category": "mountain",
       "status": "local",
-      "title_ar": "الظهرة – منطقة عمران تاريخي",
+      "title_ar": "مدينة الظاهرة – نطاق عمران تاريخي",
       "title_en": "Al-Dhuhrah Historic Settlement",
-      "location_ar": "مرتفعات السحول قرب قرية ملكان شمال غرب إب؛ التبعية الإدارية الحالية غير محسومة",
+      "location_ar": "قرب قرية ملكان شمال غرب مدينة إب؛ التبعية الإدارية الحالية بحاجة إلى مطابقة",
       "location_en": "Sahul highlands near Malkan, northwest of Ibb; current administrative affiliation is unconfirmed",
-      "description_ar": "تذكر مادة محلية أن الظهرة تقع شمال غرب مدينة إب قرب قرية ملكان، وتصف وجود دور سكنية بعضها مأهول وبعضها خرب، ونوبة حراسة تعرف بنوبة سند. ويربط المقال المنطقة بتاريخ السلطان سعد بن وائل الحميري، لكنه لا يقدم خريطة تثبت انتماءها الحالي لمديرية حبيش؛ لذلك تعرض بوصفها منطقة تاريخية مرتبطة بمحيط السحول دون الجزم بحدودها.",
+      "description_ar": "يربط مقال محلي مدينة الظاهرة بمنطقة عمران تاريخي قرب قرية ملكان وبسلطنة بني وائل. يورد وصفاً لدور سكنية ونوبة حراسة. لا تتوفر في المادة خريطة إدارية أو إحداثيات تثبت انتماء الموقع إلى مديرية حبيش المعاصرة؛ لذلك تحفظ البطاقة في السجلات قيد التحقق الجغرافي ولا تقدمها كمعلم داخل الحدود الحالية.",
       "description_en": "A local account places Al-Dhuhrah northwest of Ibb near Malkan and describes occupied and ruined houses and a watchtower known as Nubbat Sind. It associates the area with Sultan Sa'd bin Wa'il al-Himyari, but provides no map confirming its current inclusion in Hubaish District.",
       "importance_ar": "موضع عمران تاريخي يحتاج إلى مسح أثري وحدود إدارية موثقة.",
       "importance_en": "A historic settlement area requiring archaeological survey and verified administrative boundaries.",
-      "source_text": "مادة حبيش في ثور رأين، ناقلة عن وصف محلي لمنطقة الظهرة ومخلاف الشوافي وبني وائل.",
-      "source_url": "https://www.thu-raein.com/index.php/ar/makhaleef-ar/hubaish-district-ar?id=17&view=category"
+      "source_text": "العرشي؛ وإحالات مادة حبيش المحلية إلى وصف منطقة الظاهرة وبني وائل.",
+      "source_url": "https://www.thu-raein.com/index.php/ar/makhaleef-ar/hubaish-district-ar?id=17&view=category",
+      "scope": "unverified_location",
+      "evidence_level": "local_historical_account"
     },
     {
       "id": "jabal-dhi-harran",
@@ -385,15 +406,16 @@
       "category": "market",
       "status": "documented",
       "title_ar": "سوق مديرية حبيش الأسبوعي",
-      "title_en": "Hubaish District Weekly Market",
-      "location_ar": "مديرية حبيش – الموقع الدقيق للسوق غير محدد في المصدر",
+      "title_en": "Hubaish Weekly Market",
+      "location_ar": "مديرية حبيش – موضع السوق الحالي يحتاج إلى تحديد محلي",
       "location_en": "Hubaish District – exact market site not specified in the source",
-      "description_ar": "تدرج صفحة السياحة في محافظة إب التابعة للمركز الوطني للمعلومات سوق مديرية حبيش ضمن الأسواق الشعبية الأسبوعية. لكن الصفحة نفسها تورد موعداً يوم الجمعة لسوق مديرية حبيش، وتورد في سطر آخر أسواق السدة وحبيش والمخادر يوم الاثنين. لهذا لا يعتمد الدليل يوماً واحداً بوصفه مؤكداً؛ يلزم سؤال المجلس المحلي أو الأهالي عن موقع السوق ومواعيده الحالية. وتوضح الصفحة أن مادتها استندت إلى الدليل الصناعي التجاري 2005 ونتائج المسح السياحي 1996–1999م.",
+      "description_ar": "يذكر جدول الأسواق الشعبية لدى المركز الوطني للمعلومات يوم الجمعة لسوق مديرية حبيش. ويظهر في الجدول نفسه سطر آخر يضم حبيش مع أسواق مديريات أخرى ويذكر الاثنين؛ لذلك يعتمد الدليل الجمعة باعتباره الموعد الوارد لسوق حبيش منفرداً، مع تنبيه صريح إلى تأكيد اليوم وموقع السوق محلياً قبل الزيارة.",
       "description_en": "The Yemen National Information Centre's tourism page lists a weekly market for Hubaish District. The same page gives Friday for the Hubaish market in one row, but Monday for a combined listing of markets in As-Saddah, Hubaish and Al-Makhadir in another. This guide does not select one day as certain; the current market location and schedule should be confirmed locally. The page cites a 2005 industrial and commercial directory and a 1996–1999 tourism survey.",
       "importance_ar": "معلم اقتصادي واجتماعي من الموروث السوقي، ويحتاج موعده وموقعه الحاليان إلى تحقق محلي.",
       "importance_en": "A local economic and social heritage feature whose current location and schedule need local confirmation.",
-      "source_text": "المركز الوطني للمعلومات – «السياحة في محافظة إب»، جدول الأسواق الشعبية الأسبوعية؛ مصادر الجدول: الدليل الصناعي التجاري 2005 ونتائج المسح السياحي 1996–1999م.",
-      "source_url": "https://www.yemen-nic.info/gover/ibb/tursm/index.php?print=Y"
+      "source_text": "المركز الوطني للمعلومات، السياحة في محافظة إب، جدول الأسواق الشعبية الأسبوعية؛ الدليل الصناعي التجاري 2005 والمسح السياحي 1996–1999م.",
+      "source_url": "https://www.yemen-nic.info/gover/ibb/tursm/index.php?print=Y",
+      "scope": "hubaish_district"
     },
     {
       "id": "akthab-wadi-muqabab",
@@ -582,6 +604,210 @@
       "image_license_url": "https://creativecommons.org/licenses/by/4.0/",
       "image_verified": true,
       "image_date": "2026-08-05"
+    },
+    {
+      "id": "yaris-fortress",
+      "category": "fort",
+      "status": "documented",
+      "scope": "hubaish_district",
+      "evidence_level": "secondary_historical_reference",
+      "title_ar": "حصن يريس وقرية شاحط",
+      "title_en": "Yaris Fort and Shahit Village",
+      "location_ar": "عزلة/قرية يريس – يرد نطاق الزواحي/يريس في الروايات التاريخية؛ لا يحتسب اسماً إضافياً للعزل الـ22",
+      "location_en": "عزلة/قرية يريس – يرد نطاق الزواحي/يريس في الروايات التاريخية؛ لا يحتسب اسماً إضافياً للعزل الـ22",
+      "description_ar": "يرتبط حصن يريس وقرية شاحط بإمارة بني وائل بن عيسى الحميريين، وتصفهما الإحالات التاريخية بأنهما مقر الإمارة قبل القرن الخامس الهجري. يحفظ السجل العلاقة التاريخية كما وردت في عمارة اليمني والأكوع، ولا يفترض بقاء الحصن أو يحدد حدوده الحالية دون مسح.",
+      "description_en": "يرتبط حصن يريس وقرية شاحط بإمارة بني وائل بن عيسى الحميريين، وتصفهما الإحالات التاريخية بأنهما مقر الإمارة قبل القرن الخامس الهجري. يحفظ السجل العلاقة التاريخية كما وردت في عمارة اليمني والأكوع، ولا يفترض بقاء الحصن أو يحدد حدوده الحالية دون مسح.",
+      "importance_ar": "سجل تراثي يحتاج إلى مطابقة ميدانية بحسب حدود الدليل المتاحة.",
+      "importance_en": "A heritage record that should be checked against field evidence.",
+      "source_text": "عمارة اليمني؛ القاضي محمد علي الأكوع، مع إحالات محلية عن بني وائل وحصن يريس.",
+      "source_url": "https://www.thu-raein.com/index.php/ar/makhaleef-ar/hubaish-district-ar?id=17&view=category"
+    },
+    {
+      "id": "dahran-fort-bani-wail",
+      "category": "fort",
+      "status": "documented",
+      "scope": "hubaish_district",
+      "evidence_level": "secondary_historical_reference",
+      "title_ar": "حصن دهران",
+      "title_en": "Dahran Fort",
+      "location_ar": "موضع دهران في نطاق بني عواض – مديرية حبيش",
+      "location_en": "موضع دهران في نطاق بني عواض – مديرية حبيش",
+      "description_ar": "يرد حصن دهران ضمن حصون بني وائل في الروايات التاريخية. لا تتوفر في السجل الحالي تفاصيل كافية لتأريخ بنائه أو وصف حالته المعمارية؛ يحفظ الاسم والإحالة دون إضافة إحداثيات أو تاريخ إنشائي غير مثبت.",
+      "description_en": "يرد حصن دهران ضمن حصون بني وائل في الروايات التاريخية. لا تتوفر في السجل الحالي تفاصيل كافية لتأريخ بنائه أو وصف حالته المعمارية؛ يحفظ الاسم والإحالة دون إضافة إحداثيات أو تاريخ إنشائي غير مثبت.",
+      "importance_ar": "سجل تراثي يحتاج إلى مطابقة ميدانية بحسب حدود الدليل المتاحة.",
+      "importance_en": "A heritage record that should be checked against field evidence.",
+      "source_text": "عمارة اليمني، كما نقلته مادة حبيش المحلية.",
+      "source_url": "https://www.thu-raein.com/index.php/ar/makhaleef-ar/hubaish-district-ar?id=17&view=category"
+    },
+    {
+      "id": "al-udadi-fort",
+      "category": "fort",
+      "status": "local",
+      "scope": "hubaish_district",
+      "evidence_level": "preliminary_local_survey",
+      "title_ar": "حصن العضادي",
+      "title_en": "Al-Udadi Fort",
+      "location_ar": "قرية العضادي – الموقع الدقيق يحتاج مطابقة ميدانية",
+      "location_en": "قرية العضادي – الموقع الدقيق يحتاج مطابقة ميدانية",
+      "description_ar": "تتداول مادة محلية/مسح غير مكتمل وصف حصن وسد ومسجد في قرية العضادي، مع إشارات إلى نقوش بخطوط كوفية وثلث ورقعة. ولأن الإحالة المتاحة تجمع بين ويكيبيديا ومسح محلي، يصنف السجل بوصفه أولياً ويحتاج إلى صور النقوش وتوثيق ميداني قبل اعتماد التأريخ أو القراءة.",
+      "description_en": "تتداول مادة محلية/مسح غير مكتمل وصف حصن وسد ومسجد في قرية العضادي، مع إشارات إلى نقوش بخطوط كوفية وثلث ورقعة. ولأن الإحالة المتاحة تجمع بين ويكيبيديا ومسح محلي، يصنف السجل بوصفه أولياً ويحتاج إلى صور النقوش وتوثيق ميداني قبل اعتماد التأريخ أو القراءة.",
+      "importance_ar": "سجل تراثي يحتاج إلى مطابقة ميدانية بحسب حدود الدليل المتاحة.",
+      "importance_en": "A heritage record that should be checked against field evidence.",
+      "source_text": "ويكيبيديا ومسح محلي كما وردا في تقرير المعالم؛ لا تتوفر إحالة أثرية محكمة مستقلة في السجل الحالي.",
+      "source_url": ""
+    },
+    {
+      "id": "musaynia-fort",
+      "category": "fort",
+      "status": "documented",
+      "scope": "hubaish_district",
+      "evidence_level": "secondary_historical_reference",
+      "title_ar": "حصن المصينعة",
+      "title_en": "Al-Musaynia Fort",
+      "location_ar": "السعنة – عزلة الفراعي",
+      "location_en": "السعنة – عزلة الفراعي",
+      "description_ar": "يذكر التقرير المحلي حصن المصينعة في السعنة ضمن عزلة الفراعي، نقلاً عن دراسة محمد علي العروسي للمعالم التاريخية وعناصر الجذب السياحي. لا يحدد السجل تاريخ البناء أو تفاصيل النقوش؛ لذلك تبقى تلك البيانات غير مستنتجة.",
+      "description_en": "يذكر التقرير المحلي حصن المصينعة في السعنة ضمن عزلة الفراعي، نقلاً عن دراسة محمد علي العروسي للمعالم التاريخية وعناصر الجذب السياحي. لا يحدد السجل تاريخ البناء أو تفاصيل النقوش؛ لذلك تبقى تلك البيانات غير مستنتجة.",
+      "importance_ar": "سجل تراثي يحتاج إلى مطابقة ميدانية بحسب حدود الدليل المتاحة.",
+      "importance_en": "A heritage record that should be checked against field evidence.",
+      "source_text": "دراسة المعالم التاريخية وعناصر الجذب السياحي في مديرية حبيش، د. محمد علي العروسي، منقولة في نبذة إسماعيل عبدالقادر الفلاحي.",
+      "source_url": "https://kenanaonline.com/users/esmaeilalflahi/posts/280884"
+    },
+    {
+      "id": "bayt-al-batul-fort",
+      "category": "fort",
+      "status": "documented",
+      "scope": "hubaish_district",
+      "evidence_level": "secondary_historical_reference",
+      "title_ar": "حصن بيت البتول",
+      "title_en": "Bayt al-Batul Fort",
+      "location_ar": "عزلة بني معين – الموقع التفصيلي بحاجة إلى مطابقة",
+      "location_en": "عزلة بني معين – الموقع التفصيلي بحاجة إلى مطابقة",
+      "description_ar": "يرد حصن بيت البتول ضمن مواقع بني معين في الدراسة المحلية للمعالم. يحفظ الدليل نسبته إلى العزلة بحسب الدراسة، ولا يضيف تاريخ بناء أو وصفاً معمارياً قبل مراجعة الدراسة الأصلية أو إجراء مسح ميداني.",
+      "description_en": "يرد حصن بيت البتول ضمن مواقع بني معين في الدراسة المحلية للمعالم. يحفظ الدليل نسبته إلى العزلة بحسب الدراسة، ولا يضيف تاريخ بناء أو وصفاً معمارياً قبل مراجعة الدراسة الأصلية أو إجراء مسح ميداني.",
+      "importance_ar": "سجل تراثي يحتاج إلى مطابقة ميدانية بحسب حدود الدليل المتاحة.",
+      "importance_en": "A heritage record that should be checked against field evidence.",
+      "source_text": "دراسة المعالم التاريخية وعناصر الجذب السياحي في مديرية حبيش، د. محمد علي العروسي، منقولة في نبذة إسماعيل عبدالقادر الفلاحي.",
+      "source_url": "https://kenanaonline.com/users/esmaeilalflahi/posts/280884"
+    },
+    {
+      "id": "maghram-khair-fort",
+      "category": "fort",
+      "status": "documented",
+      "scope": "hubaish_district",
+      "evidence_level": "secondary_historical_reference",
+      "title_ar": "حصن مغرم خير",
+      "title_en": "Maghram Khair Fort",
+      "location_ar": "عزلة السلق – موضع مغرم خير",
+      "location_en": "عزلة السلق – موضع مغرم خير",
+      "description_ar": "يذكر التقرير حصن مغرم خير في عزلة السلق، نقلاً عن دراسة العروسي. لم يثبت السجل تاريخ البناء أو العناصر المعمارية؛ ويحتاج تحديد الموضع إلى مطابقة محلية.",
+      "description_en": "يذكر التقرير حصن مغرم خير في عزلة السلق، نقلاً عن دراسة العروسي. لم يثبت السجل تاريخ البناء أو العناصر المعمارية؛ ويحتاج تحديد الموضع إلى مطابقة محلية.",
+      "importance_ar": "سجل تراثي يحتاج إلى مطابقة ميدانية بحسب حدود الدليل المتاحة.",
+      "importance_en": "A heritage record that should be checked against field evidence.",
+      "source_text": "دراسة المعالم التاريخية وعناصر الجذب السياحي في مديرية حبيش، د. محمد علي العروسي، منقولة في نبذة إسماعيل عبدالقادر الفلاحي.",
+      "source_url": "https://kenanaonline.com/users/esmaeilalflahi/posts/280884"
+    },
+    {
+      "id": "al-jami-mosque",
+      "category": "mosque",
+      "status": "documented",
+      "scope": "hubaish_district",
+      "evidence_level": "secondary_historical_reference",
+      "title_ar": "جامع الجعامي",
+      "title_en": "Al-Jaami Mosque",
+      "location_ar": "قرية الجعامي – مديرية حبيش؛ العزلة تحتاج إلى مطابقة إدارية",
+      "location_en": "قرية الجعامي – مديرية حبيش؛ العزلة تحتاج إلى مطابقة إدارية",
+      "description_ar": "يرتبط الجامع في الروايات التاريخية بمدفن السلطان أسعد بن وائل وبمدفن اللغوي عيسى بن إبراهيم الربعي الوحاظي المتوفى سنة 528هـ. يحفظ السجل نسبة المدفن إلى الجامع بحسب الأكوع والجندي، ولا يستنتج تاريخ بناء الجامع من تواريخ وفاة المدفونين فيه.",
+      "description_en": "يرتبط الجامع في الروايات التاريخية بمدفن السلطان أسعد بن وائل وبمدفن اللغوي عيسى بن إبراهيم الربعي الوحاظي المتوفى سنة 528هـ. يحفظ السجل نسبة المدفن إلى الجامع بحسب الأكوع والجندي، ولا يستنتج تاريخ بناء الجامع من تواريخ وفاة المدفونين فيه.",
+      "importance_ar": "سجل تراثي يحتاج إلى مطابقة ميدانية بحسب حدود الدليل المتاحة.",
+      "importance_en": "A heritage record that should be checked against field evidence.",
+      "source_text": "القاضي محمد علي الأكوع؛ بهاء الدين الجندي، السلوك؛ مادة التراجم المحلية لعيسى الربعي الوحاظي.",
+      "source_url": "https://www.thu-raein.com/index.php/ar/makhaleef-ar/hubaish-district-ar?id=17&view=category"
+    },
+    {
+      "id": "dhulmah-grand-mosque",
+      "category": "mosque",
+      "status": "local",
+      "scope": "hubaish_district",
+      "evidence_level": "secondary_historical_reference",
+      "title_ar": "الجامع الكبير بظُلمة",
+      "title_en": "Great Mosque of Dhulmah",
+      "location_ar": "مدينة ظُلمة – مركز مديرية حبيش",
+      "location_en": "مدينة ظُلمة – مركز مديرية حبيش",
+      "description_ar": "يسجل الجامع الكبير في ظُلمة ضمن قائمة المباني الدينية التاريخية، لكن الدراسة المحلية المتاحة لم تؤرخ المبنى. لا ينسب الدليل تاريخاً أو بانيًا أو مراحل ترميم من دون نقش أو وثيقة وقف أو دراسة أثرية.",
+      "description_en": "يسجل الجامع الكبير في ظُلمة ضمن قائمة المباني الدينية التاريخية، لكن الدراسة المحلية المتاحة لم تؤرخ المبنى. لا ينسب الدليل تاريخاً أو بانيًا أو مراحل ترميم من دون نقش أو وثيقة وقف أو دراسة أثرية.",
+      "importance_ar": "سجل تراثي يحتاج إلى مطابقة ميدانية بحسب حدود الدليل المتاحة.",
+      "importance_en": "A heritage record that should be checked against field evidence.",
+      "source_text": "دراسة المعالم التاريخية وعناصر الجذب السياحي في مديرية حبيش، د. محمد علي العروسي، كما نقلها التقرير المحلي.",
+      "source_url": "https://kenanaonline.com/users/esmaeilalflahi/posts/280884"
+    },
+    {
+      "id": "hijra-wuhaza-learning-centre",
+      "category": "school",
+      "status": "https://www.thu-raein.com/index.php/ar/makhaleef-ar/hubaish-district-ar?id=17&view=category",
+      "scope": "documented",
+      "evidence_level": "hubaish_district",
+      "title_ar": "هجرة وحاظة – مركز علمي",
+      "title_en": "Hijrat Wuhaza Learning Centre",
+      "location_ar": "عزلة شباع – مصنعة وحاظة، القرنان الخامس والسادس الهجريان",
+      "location_en": "عزلة شباع – مصنعة وحاظة، القرنان الخامس والسادس الهجريان",
+      "description_ar": "تُوثق هجرة وحاظة بوصفها مركزاً علمياً في القرنين الخامس والسادس الهجريين. وتربط التراجم بها عيسى بن إبراهيم الربعي الوحاظي وكتاب «نظام الغريب» في اللغة وغريب الألفاظ، والفقيه زيد بن الحسن الفائشي وكتابه «التهذيب» في الفقه. وتذكر الرواية خزانة للفقيه ضمت نحو 500 كتاب فقه؛ وهذه خزانة منسوبة إلى العالم وليست إثباتاً أن جميع الكتب كانت وقفاً عاماً للهجرة. كما ترد إشارات إلى الأدب وتأديب أبناء الملوك الصليحيين.",
+      "description_en": "تُوثق هجرة وحاظة بوصفها مركزاً علمياً في القرنين الخامس والسادس الهجريين. وتربط التراجم بها عيسى بن إبراهيم الربعي الوحاظي وكتاب «نظام الغريب» في اللغة وغريب الألفاظ، والفقيه زيد بن الحسن الفائشي وكتابه «التهذيب» في الفقه. وتذكر الرواية خزانة للفقيه ضمت نحو 500 كتاب فقه؛ وهذه خزانة منسوبة إلى العالم وليست إثباتاً أن جميع الكتب كانت وقفاً عاماً للهجرة. كما ترد إشارات إلى الأدب وتأديب أبناء الملوك الصليحيين.",
+      "importance_ar": "سجل تراثي يحتاج إلى مطابقة ميدانية بحسب حدود الدليل المتاحة.",
+      "importance_en": "A heritage record that should be checked against field evidence.",
+      "source_text": "Hujrat Wuhaza is documented as a learning centre in the fifth and sixth Hijri centuries. Biographical accounts link it with Isa al-Rub'i al-Wuhazi and his language work Nizam al-Gharib, and jurist Zayd al-Fa'ishi and his legal work al-Tahdhib. A collection of about 500 legal books is attributed to the jurist; it is not presented as a verified public school library.",
+      "source_url": "الأكوع، هجر العلم ومعاقله في اليمن، ج4، ص 2329–2331؛ الجندي، السلوك؛ الأفضل العباس الرسولي، العطايا السنية والمواهب الهنية؛ إحالات التراجم المحلية."
+    },
+    {
+      "id": "al-kh-mosque-reading-circle",
+      "category": "school",
+      "status": "documented",
+      "scope": "hubaish_district",
+      "evidence_level": "direct_historical_text",
+      "title_ar": "حلقة النسخ والقراءة في جامع ألخ",
+      "title_en": "Al-Kh Mosque Copying and Reading Circle",
+      "location_ar": "ناحية المشيرق – قرية ألخ / جامع ألخ",
+      "location_en": "ناحية المشيرق – قرية ألخ / جامع ألخ",
+      "description_ar": "يذكر الجندي في السلوك ص 352 نسخ كتاب «الانتصار» للإمام يحيى في جامع ألخ سنة 561–562هـ، وذكر فقهاء من المشيرق وألخ. هذا شاهد على النسخ والقراءة والمذاكرة، وليس دليلاً على مدرسة نظامية مستقلة في القرية.",
+      "description_en": "يذكر الجندي في السلوك ص 352 نسخ كتاب «الانتصار» للإمام يحيى في جامع ألخ سنة 561–562هـ، وذكر فقهاء من المشيرق وألخ. هذا شاهد على النسخ والقراءة والمذاكرة، وليس دليلاً على مدرسة نظامية مستقلة في القرية.",
+      "importance_ar": "سجل تراثي يحتاج إلى مطابقة ميدانية بحسب حدود الدليل المتاحة.",
+      "importance_en": "A heritage record that should be checked against field evidence.",
+      "source_text": "بهاء الدين الجندي، السلوك في طبقات العلماء والملوك، ص 352.",
+      "source_url": "https://ablibrary.net/book_content/b/13555/352?lang=ar"
+    },
+    {
+      "id": "zi-ashraq-hadith-reading-570",
+      "category": "school",
+      "status": "documented",
+      "scope": "hubaish_district",
+      "evidence_level": "direct_historical_text",
+      "title_ar": "قراءة سنن الترمذي في ذي أشرق",
+      "title_en": "Hadith Reading at Dhi Ashraq",
+      "location_ar": "نطاق المشيرق – قرية ذي أشرق",
+      "location_en": "نطاق المشيرق – قرية ذي أشرق",
+      "description_ar": "يسجل الجندي قراءة سنن الترمذي في ذي أشرق سنة 570هـ. هذه إحالة إلى درس/سماع حديث في سياق علماء المنطقة، ولا تثبت إنشاء مدرسة أو منهجاً تعليمياً ثابتاً في القرية.",
+      "description_en": "يسجل الجندي قراءة سنن الترمذي في ذي أشرق سنة 570هـ. هذه إحالة إلى درس/سماع حديث في سياق علماء المنطقة، ولا تثبت إنشاء مدرسة أو منهجاً تعليمياً ثابتاً في القرية.",
+      "importance_ar": "سجل تراثي يحتاج إلى مطابقة ميدانية بحسب حدود الدليل المتاحة.",
+      "importance_en": "A heritage record that should be checked against field evidence.",
+      "source_text": "بهاء الدين الجندي، السلوك في طبقات العلماء والملوك، ص 352.",
+      "source_url": "https://ablibrary.net/book_content/b/13555/352?lang=ar"
+    },
+    {
+      "id": "sumaa-mushriq-scholars",
+      "category": "school",
+      "status": "documented",
+      "scope": "hubaish_district",
+      "evidence_level": "direct_historical_text",
+      "title_ar": "علماء قرية صمع بالمشيرق",
+      "title_en": "Scholars of Sam'a in Al-Mushriq",
+      "location_ar": "قرية صمع – ناحية المشيرق",
+      "location_en": "قرية صمع – ناحية المشيرق",
+      "description_ar": "يترجم الجندي في السلوك ص 363 لأبي عبد الله محمد بن منصور الجنيد الفتوحي وأقاربه من الفقهاء. يثبت ذلك ورود أسرة علمية في التراجم، ولا يثبت وحده وجود مدرسة رسمية باسم القرية.",
+      "description_en": "يترجم الجندي في السلوك ص 363 لأبي عبد الله محمد بن منصور الجنيد الفتوحي وأقاربه من الفقهاء. يثبت ذلك ورود أسرة علمية في التراجم، ولا يثبت وحده وجود مدرسة رسمية باسم القرية.",
+      "importance_ar": "سجل تراثي يحتاج إلى مطابقة ميدانية بحسب حدود الدليل المتاحة.",
+      "importance_en": "A heritage record that should be checked against field evidence.",
+      "source_text": "بهاء الدين الجندي، السلوك في طبقات العلماء والملوك، ص 363.",
+      "source_url": "https://ablibrary.net/book_content/b/13555/363?lang=ar"
     }
   ],
   "historyEvents": [
@@ -675,6 +901,84 @@
       "body_en": "The study dates a major attack on rebel positions on Mount Hubaish to 17 May 1919. It recounts movements toward Al-Nahiyah, Al-Mushriq and Dhulmah and reports the death of Sheikh Abdulaziz ibn Abdulkarim al-Haddad near Shafa Fort. It says the uprising was defeated in late May 1919, while historians differ on its duration.",
       "source_text": "بلال الطيب، «حبيش.. مفتتح المجد وذروته»، 21 مايو 2022.",
       "source_url": "https://hekmahyemanya.com/آثار/حُبيش-مُفتتح-المجد-وذروته/"
+    },
+    {
+      "id": "wuhaza-hijra-learning-centre",
+      "era": "ancient",
+      "status": "documented",
+      "title_ar": "هجرة وحاظة ونشاطها العلمي",
+      "title_en": "Wuhaza and its scholarly activity",
+      "period_ar": "القرنان الخامس والسادس الهجريان",
+      "period_en": "Fifth and sixth Hijri centuries",
+      "body_ar": "تذكر مراجع هجر العلم والتراجم وحاظة مركزاً لطلب العلم. ارتبطت بها اللغة وغريب الألفاظ في كتاب نظام الغريب لعيسى الربعي، والفقه في كتاب التهذيب لزيد الفائشي، ورواية خزانة الفقيه التي قيل إنها بلغت نحو 500 كتاب. كما ترد أخبار عن تأديب أبناء الملوك الصليحيين؛ ولا تنسب جميع المواد إلى منهج واحد من دون نص مباشر.",
+      "body_en": "Biographical and educational references describe Wuhaza as a learning centre. They associate it with language and rare expressions in Nizam al-Gharib by Isa al-Rub'i, jurisprudence in al-Tahdhib by Zayd al-Fa'ishi, and a reported collection of about 500 legal books. Accounts also mention tutoring Sulayhid princes; these subjects are not treated as a single verified curriculum.",
+      "source_text": "الأكوع، هجر العلم ومعاقله، ج4، ص 2329–2331؛ الجندي، السلوك؛ الأفضل العباس، العطايا السنية.",
+      "source_url": "https://www.thu-raein.com/index.php/ar/makhaleef-ar/hubaish-district-ar?id=17&view=category"
+    },
+    {
+      "id": "mushriq-al-kh-reading-561",
+      "era": "ancient",
+      "status": "documented",
+      "title_ar": "نسخ كتاب الانتصار في جامع ألخ",
+      "title_en": "Copying al-Intisar at Al-Kh Mosque",
+      "period_ar": "561–562هـ",
+      "period_en": "561–562 AH",
+      "body_ar": "يذكر الجندي في السلوك ص 352 نسخ كتاب «الانتصار» للإمام يحيى في جامع ألخ سنة 561–562هـ، ويذكر فقهاء ناحية المشيرق وألخ. هذا دليل على النسخ والقراءة والمباحثة العلمية، لا على مدرسة رسمية مسماة.",
+      "body_en": "Al-Jundi, al-Suluk p. 352, records the copying of Imam Yahya's al-Intisar at Al-Kh Mosque in 561–562 AH and names jurists from Al-Mushriq and Al-Kh. This documents scholarly copying and reading, not a named formal school.",
+      "source_text": "بهاء الدين الجندي، السلوك في طبقات العلماء والملوك، ص 352.",
+      "source_url": "https://ablibrary.net/book_content/b/13555/352?lang=ar"
+    },
+    {
+      "id": "dhi-ashraq-hadith-reading-570",
+      "era": "ancient",
+      "status": "documented",
+      "title_ar": "قراءة سنن الترمذي في ذي أشرق",
+      "title_en": "Reading Sunan al-Tirmidhi at Dhi Ashraq",
+      "period_ar": "570هـ",
+      "period_en": "570 AH",
+      "body_ar": "يذكر الجندي قراءة سنن الترمذي في ذي أشرق سنة 570هـ ضمن سياق علماء المنطقة. يحتفظ الدليل بالشاهد بوصفه قراءة/سماع حديث، ولا يحوله إلى إثبات مدرسة أو برنامج دراسي دائم.",
+      "body_en": "Al-Jundi records a reading of Sunan al-Tirmidhi at Dhi Ashraq in 570 AH in the context of regional scholars. This is presented as a hadith reading session, not proof of a permanent school curriculum.",
+      "source_text": "بهاء الدين الجندي، السلوك في طبقات العلماء والملوك، ص 352.",
+      "source_url": "https://ablibrary.net/book_content/b/13555/352?lang=ar"
+    },
+    {
+      "id": "sam-a-mushriq-fuqaha",
+      "era": "ancient",
+      "status": "documented",
+      "title_ar": "فقهاء قرية صمع بالمشيرق",
+      "title_en": "Jurists of Sam'a in Al-Mushriq",
+      "period_ar": "تراجم العلماء – القرن السادس الهجري في سياق المادة",
+      "period_en": "Biographical entries — sixth-century context",
+      "body_ar": "يترجم الجندي في السلوك ص 363 لأبي عبد الله محمد بن منصور الجنيد الفتوحي وأقاربه الفقهاء من قرية صمع بالمشيرق. يثبت ذلك وجود تراجم لعلماء وأسرة فقهية في السياق المحلي، ولا يثبت مدرسة مستقلة.",
+      "body_en": "Al-Jundi, al-Suluk p. 363, gives a biography of Abu Abd Allah Muhammad ibn Mansur al-Junayd al-Futuhi and his jurist relatives from Sam'a in Al-Mushriq. This documents a scholarly family in the local account, not a separate school.",
+      "source_text": "بهاء الدين الجندي، السلوك في طبقات العلماء والملوك، ص 363.",
+      "source_url": "https://ablibrary.net/book_content/b/13555/363?lang=ar"
+    },
+    {
+      "id": "yuhya-umrani-study-trip-wuhaza",
+      "era": "ancient",
+      "status": "documented",
+      "title_ar": "رحلة الإمام يحيى العمراني إلى وحاظة",
+      "title_en": "Imam Yahya al-Umrani's journey to Wuhaza",
+      "period_ar": "رحلة علمية من سير إلى وحاظة",
+      "period_en": "Scholarly journey from Sir to Wuhaza",
+      "body_ar": "تذكر دراسة د. علي صالح مانع العمري (2024م) رحلة الإمام يحيى بن أبي الخير العمراني من سير إلى أحاظة/وحاظة للأخذ عن زيد بن الحسن الفائشي في أصول الفقه واللغة. ينسب الخبر إلى الدراسة الحديثة، ويحتاج رقم الصفحة وبيانات النشر الكاملة عند إرفاق النسخة.",
+      "body_en": "A 2024 study by Dr Ali Saleh Manea al-Omari reports that Imam Yahya ibn Abi al-Khayr al-Umrani travelled from Sir to Ahaza/Wuhaza to study legal theory and language with Zayd al-Fa'ishi. Full publication details and page number should be added when the paper is attached.",
+      "source_text": "دراسة د. علي صالح مانع العمري، 2024م؛ بيانات النشر التفصيلية لم ترفق بعد.",
+      "source_url": ""
+    },
+    {
+      "id": "ali-ibn-abi-bakr-al-fudayli-journey",
+      "era": "ancient",
+      "status": "documented",
+      "title_ar": "رحلة المحدث علي بن أبي بكر الفضلي",
+      "title_en": "Hadith scholar Ali ibn Abi Bakr al-Fudayli's journey",
+      "period_ar": "رحلة طلب علم إلى وحاظة والمشيرق",
+      "period_en": "Scholarly journey to Wuhaza and Al-Mushriq",
+      "body_ar": "يذكر الجندي في السلوك ص 303 رحلة المحدث علي بن أبي بكر الفضلي من عرشان إلى وحاظة والمشيرق في طلب العلم. يسجل الدليل الرحلة بوصفها شاهداً على انتقال الطلاب بين مراكز العلم، ولا يضيف تفاصيل غير واردة في الإحالة.",
+      "body_en": "Al-Jundi, al-Suluk p. 303, records hadith scholar Ali ibn Abi Bakr al-Fudayli travelling from Arshan to Wuhaza and Al-Mushriq to seek knowledge. This is evidence of scholarly travel, not a basis for adding further unrecorded details.",
+      "source_text": "بهاء الدين الجندي، السلوك في طبقات العلماء والملوك، ص 303.",
+      "source_url": "https://ablibrary.net/book_content/b/13555/303?lang=ar"
     }
   ],
   "subDistrictUpdates": [
@@ -842,33 +1146,33 @@
       "id": "isa-al-rubai-wuhazi",
       "name_ar": "عيسى بن إبراهيم الربعي الوحاظي",
       "name_en": "Isa ibn Ibrahim al-Rub'i al-Wuhazi",
-      "role_ar": "لغوي وعالم • مؤلف «نظام الغريب»",
-      "role_en": "Linguist and scholar • author of Nizam al-Gharib",
-      "biography_ar": "تنسبه مادة تاريخية محلية إلى وحاظة، وتذكر أنه ولد سنة 458هـ وتوفي في رجب سنة 528هـ، وأنه ألّف كتاب «نظام الغريب» الذي كان مرجعاً لطلبة اللغة. ينقل المقال هذه الترجمة عن مراجع منها كتب القاضي محمد علي الأكوع وعبدالله الحبشي والجندي؛ وتبقى تفاصيل النسب والمكان بحاجة إلى الرجوع إلى التراجم الأصلية.",
-      "biography_en": "A local historical article associates him with Wuhaza and reports that he lived from 458 to 528 AH. It identifies him as the author of Nizam al-Gharib, a work used in Arabic language study. The biographical details are relayed through earlier Yemeni references and should be checked against the original biographical sources.",
-      "source_text": "مادة حبيش في موقع ثور رأين؛ تحيل إلى مصادر الفكر العربي والإسلامي في اليمن ومراجع القاضي محمد علي الأكوع.",
+      "role_ar": "لغوي وأديب (458–528هـ)؛ مؤلف «نظام الغريب»",
+      "role_en": "Linguist and writer (458–528 AH); author of Nizam al-Gharib",
+      "biography_ar": "ولد سنة 458هـ وتوفي سنة 528هـ بحسب الترجمة المنقولة. ينسب إلى وحاظة، وألف «نظام الغريب» في اللغة وغريب الألفاظ. تذكر الروايات دفنه في جامع الجعامي. تحفظ البطاقة التواريخ والنسبة بحسب مصادر التراجم، مع الحاجة إلى مراجعة النصوص الأصلية.",
+      "biography_en": "Biographical accounts report that he lived from 458 to 528 AH, was associated with Wuhaza and authored Nizam al-Gharib on Arabic language and unusual expressions. The accounts place his burial at Al-Jaami Mosque; original biographical sources should be checked.",
+      "source_text": "مادة حبيش في ثور رأين؛ الأكوع؛ الجندي؛ ومصادر الفكر العربي والإسلامي في اليمن.",
       "source_url": "https://www.thu-raein.com/index.php/ar/makhaleef-ar/hubaish-district-ar?id=17&view=category"
     },
     {
       "id": "ismail-al-wuhazi",
       "name_ar": "إسماعيل بن إبراهيم الوحاظي",
       "name_en": "Ismail ibn Ibrahim al-Wuhazi",
-      "role_ar": "عالم لغة وأدب",
-      "role_en": "Language and literature scholar",
-      "biography_ar": "تذكر المادة التاريخية المحلية أنه شقيق عيسى بن إبراهيم الوحاظي، وأنه عمل مؤدباً لأولاد الملوك الصليحيين، وتنسب إليه قصيدة لغوية بعنوان «الأوابد» وشرحها. هذه المعلومات منقولة عن مراجع أدبية وتراجم يمنية كما يسوقها المقال، ولا تضيف هذه البطاقة تفاصيل غير موجودة في تلك الإحالات.",
-      "biography_en": "The local historical account identifies him as the brother of Isa al-Wuhazi and says he taught the children of Sulayhid rulers. It attributes to him a linguistic poem titled al-Awābid and a commentary. These details are relayed from Yemeni biographical and literary references.",
-      "source_text": "مادة حبيش في موقع ثور رأين، مع إحالات إلى هجر العلم ومعاقله ومصادر الفكر العربي الإسلامي في اليمن.",
+      "role_ar": "لغوي وأديب ومؤدب أبناء الملوك الصليحيين",
+      "role_en": "Language scholar, writer and tutor to Sulayhid princes",
+      "biography_ar": "أخو عيسى بن إبراهيم الوحاظي. تذكر التراجم أنه عمل مؤدباً لأبناء الملوك الصليحيين، وتنسب إليه قصيدة «الأوابد» وشرحها. يرد في بعض النقل عنوان القصيدة بصيغة «قيد الأوابد»؛ تحفظ اختلاف التسمية حتى مراجعة النسخة الأصلية.",
+      "biography_en": "Brother of Isa al-Wuhazi. Biographical accounts say he tutored children of Sulayhid rulers and attribute to him the poem al-Awabid and its commentary. Some secondary quotations use the title Qayd al-Awabid; the title variation is retained pending collation.",
+      "source_text": "هجر العلم ومعاقله؛ مصادر التراجم والأدب اليمنية؛ مادة حبيش في ثور رأين.",
       "source_url": "https://www.thu-raein.com/index.php/ar/makhaleef-ar/hubaish-district-ar?id=17&view=category"
     },
     {
       "id": "zayd-al-faishi",
       "name_ar": "زيد بن الحسن الفائشي الحميري",
       "name_en": "Zayd ibn al-Hasan al-Fa'ishi al-Himyari",
-      "role_ar": "عالم وفقيه منسوب إلى وحاظة",
-      "role_en": "Scholar and jurist associated with Wuhaza",
-      "biography_ar": "تنسبه مادة حبيش المحلية إلى وحاظة، وتنقل عن كتاب «العطايا السنية» للملك الأفضل العباس الرسولي وصفه بأنه عالم بفنون متعددة وصاحب خزانة كتب فقهية كبيرة، وله كتاب بعنوان «التهذيب». هذا التعريف منقول عن المصدر الثانوي ولا يعني أن كل تفاصيل الترجمة محققة مستقلاً في هذا الدليل.",
-      "biography_en": "A local account associates him with Wuhaza and, citing al-Malik al-Afdal al-Abbas al-Rasuli's al-Ataya al-Saniyya, describes him as a learned jurist with a substantial collection of legal books and a work titled al-Tahdhib. This is a relayed biographical account rather than an independently verified profile.",
-      "source_text": "مادة حبيش في موقع ثور رأين، ناقلةً عن «العطايا السنية والمواهب الهنية في المناقب اليمنية».",
+      "role_ar": "فقيه من وحاظة؛ مؤلف «التهذيب»",
+      "role_en": "Jurist associated with Wuhaza; author of al-Tahdhib",
+      "biography_ar": "ينسب إلى وحاظة، ويذكر كتاب «التهذيب» في الفقه. وتصفه رواية منقولة عن «العطايا السنية» بأنه صاحب خزانة تضم نحو 500 كتاب في الفقه؛ يصف الدليل هذه الخزانة بأنها منسوبة إليه ولا يجزم بأنها مكتبة عامة تابعة للهجرة أو المدرسة.",
+      "biography_en": "Associated with Wuhaza and credited with al-Tahdhib on jurisprudence. A report citing al-Ataya al-Saniyya attributes a collection of about 500 legal books to him; this guide does not claim it was a public school library.",
+      "source_text": "الأفضل العباس الرسولي، العطايا السنية والمواهب الهنية؛ الأكوع، هجر العلم ومعاقله؛ مادة حبيش في ثور رأين.",
       "source_url": "https://www.thu-raein.com/index.php/ar/makhaleef-ar/hubaish-district-ar?id=17&view=category"
     },
     {
@@ -892,6 +1196,38 @@
       "biography_en": "A historical article on the Hubaish uprising names Sheikh Abdulaziz ibn Abdulkarim al-Haddad among the supporters of Muhammad Ayed al-Aqab and says he was killed during resistance in Al-Nahiyah. No birth or exact death dates are supplied here.",
       "source_text": "بلال الطيب، «حبيش.. مفتتح المجد وذروته»، 21 مايو 2022.",
       "source_url": "https://hekmahyemanya.com/آثار/حُبيش-مُفتتح-المجد-وذروته/"
+    },
+    {
+      "id": "asad-ibn-wa-il",
+      "name_ar": "السلطان أسعد بن وائل الحميري",
+      "name_en": "Sultan As'ad ibn Wa'il al-Himyari",
+      "role_ar": "زعيم إمارة بني وائل في القرن الخامس الهجري",
+      "role_en": "Leader of the Bani Wa'il emirate in the fifth Hijri century",
+      "biography_ar": "يرتبط في الرواية التاريخية بإمارة بني وائل وبحصن يريس، وتذكر مادة حبيش دفنه في جامع الجعامي. لا يحدد السجل سنة ميلاد أو وفاة دقيقة؛ ولا يخلط بينه وبين أسماء أخرى متشابهة في المصادر.",
+      "biography_en": "Historical accounts associate him with the Bani Wa'il emirate and Yaris Fort, and report his burial at Al-Jaami Mosque. No exact birth or death year is established here.",
+      "source_text": "عمارة اليمني؛ الأكوع؛ الجندي، كما تنقلها مادة حبيش المحلية.",
+      "source_url": "https://www.thu-raein.com/index.php/ar/makhaleef-ar/hubaish-district-ar?id=17&view=category"
+    },
+    {
+      "id": "qasim-ibn-humayr-al-waili",
+      "name_ar": "الشيخ قاسم بن حمير الوائلي",
+      "name_en": "Shaykh Qasim ibn Humayr al-Wa'ili",
+      "role_ar": "واقف/منشئ مدرسة الزواحي بحسب رواية الأكوع",
+      "role_en": "Patron/founder of Al-Zawahi School according to al-Akwa'i",
+      "biography_ar": "ينسب إليه الأكوع بناء مدرسة الزواحي وأوقافها في عزلة كومان. ويذكر الجندي في السلوك ص 431 أن المدرسة من إحداث بعض مشايخ بني وائل من غير تسمية شخص بعينه. لذلك تعرض البطاقة نسبة الأكوع كإفادة مستقلة ولا تدمجها مع عبارة الجندي.",
+      "biography_en": "Al-Akwa'i attributes the building and endowment of Al-Zawahi School in Kuman to him. Al-Jundi, al-Suluk p. 431, instead says the school was established by some Bani Wa'il shaykhs without naming an individual. The accounts remain separate.",
+      "source_text": "محمد علي الأكوع، المدارس الإسلامية في اليمن؛ هجر العلم ومعاقله؛ الجندي، السلوك، ص 431.",
+      "source_url": "https://ablibrary.net/book_content/b/13555/431?lang=ar"
+    },
+    {
+      "id": "sadiq-mohammed-al-nahi",
+      "name_ar": "المهندس صادق محمد محمد الناهي",
+      "name_en": "Engineer Sadiq Mohammed Mohammed al-Nahi",
+      "role_ar": "مهندس بترول ومؤسس مبادرة «مديرية حبيش الطبيعة والإنسان»",
+      "role_en": "Petroleum engineer and founder of the Hubaish Nature and People initiative",
+      "biography_ar": "من أبناء قرية حضار في جبل عميقة بمديرية حبيش، ويعرفه التقرير بوصفه مهندس بترول ومؤسس مبادرة «مديرية حبيش الطبيعة والإنسان». ينسب التقرير الصحفي الخبر إلى صحيفة عدن الغد سنة 2020م، لكن رابط المقال وتفاصيله الببليوغرافية لم تتوفر في النسخة الحالية؛ لذلك يبقى التوثيق بحاجة إلى استرجاع المقال الأصلي. لا يثبت هذا السجل أي نسب تاريخي للأسرة.",
+      "biography_en": "Reportedly from Hadhar village in Jabal Amiqa, Hubaish, he is described as a petroleum engineer and founder of the 'Hubaish Nature and People' initiative. The supplied report attributes this to Aden Al-Ghad in 2020, but the exact article URL and bibliographic details have not yet been recovered. No historical family lineage is inferred.",
+      "source_text": "تقرير المستخدم عن خبر صحيفة عدن الغد 2020م؛ يلزم استرجاع المقال الأصلي للتحقق."
     }
   ],
   "communityLinks": [],
@@ -1190,5 +1526,176 @@
       "body_fr": "Villages et terres cultivées",
       "source_text": "وصف تضاريسي استرشادي في ملف المشروع، وليس قائمة موثقة بالقرى التابعة. يلزم التحقق من الحدود والقرى من سجل رسمي أو مسح ميداني. مصادر داعمة: قائمة حبيش المنشورة وفهارس القرى الثانوية؛ الأسماء ليست سجلاً رسمياً."
     }
+  ],
+  "districtProfile": {
+    "area_km2": {
+      "value": 228,
+      "source": "المركز الوطني للمعلومات اليمني؛ منصة الحكم المحلي/OCHA HNRP 2025",
+      "source_url": "https://yemenlg.org/governorates/ibb/"
+    },
+    "population": [
+      {
+        "year": 2004,
+        "value": 105998,
+        "type": "census",
+        "source": "المركز الوطني للمعلومات اليمني",
+        "source_url": "https://www.yemen-nic.info/gover/ibb/brife/"
+      },
+      {
+        "year": 2025,
+        "value": 162023,
+        "type": "HNRP estimate including residents and IDPs",
+        "source": "OCHA — Yemen HNRP 2025, mirrored by Yemen Local Governance",
+        "source_url": "https://yemenlg.org/governorates/ibb/"
+      }
+    ],
+    "weekly_market": {
+      "day_ar": "الجمعة",
+      "source": "جدول الأسواق الشعبية الأسبوعية — المركز الوطني للمعلومات",
+      "source_url": "https://www.yemen-nic.info/gover/ibb/tursm/index.php?print=Y",
+      "verification_note_ar": "يورد الجدول يوم الجمعة لحبيش، كما يرد ذكر الاثنين في سطر آخر يجمع حبيش وأسواق مديريات أخرى؛ يجب تأكيد الموعد الحالي محلياً."
+    },
+    "subdistrict_count": 22,
+    "subdistrict_name_note_ar": "تحفظ قائمة العزل الأساسية ذات 22 اسماً كما هي في سجل المشروع. وترد «الزواحي/يريس» في المادة التاريخية بوصفها قرى/مواضع أو نطاقاً تاريخياً، ولا تضاف عزلة إدارية رقم 23 من دون سجل رسمي.",
+    "tribal_context": {
+      "groups_ar": [
+        "بطون من همدان",
+        "بطون من خولان العالية"
+      ],
+      "named_branches_ar": [
+        "آل راجح",
+        "بنو الصوفي",
+        "آل أبي حليقة",
+        "بنو السعيدي"
+      ],
+      "source": "محمد بن أحمد الحجري، مجموع بلدان اليمن وقبائلها — إحالات النسب والبطون",
+      "claim_status": "historical_relative_context_only",
+      "note_ar": "عرض نسبي تاريخي منسوب إلى الحجري، لا تعداد قبلي معاصر ولا حدود إدارية أو إثبات أن كل البطون المذكورة تقيم اليوم في نطاق واحد."
+    },
+    "geographic_disambiguation": [
+      {
+        "name_ar": "مديرية حبيش",
+        "note_ar": "حبيش التابعة لمحافظة إب موضوع هذا الدليل."
+      },
+      {
+        "name_ar": "مخلاف الحبيشية",
+        "note_ar": "اسم تاريخي آخر يرد في سياق دمت/رداع؛ لا يساوى بمديرية حبيش الحالية."
+      },
+      {
+        "name_ar": "ذو حبيش",
+        "note_ar": "نسبة/موضع قبلي يرد في سياق سفيان وسحار؛ لا يدمج جغرافياً مع حبيش إب."
+      }
+    ],
+    "name_origin_hypotheses": {
+      "status": "research_hypotheses",
+      "hypotheses_ar": [
+        "فرضية سبئية",
+        "فرضية معينية",
+        "فرضية حميرية"
+      ],
+      "note_ar": "تُعرض هذه الفرضيات بوصفها قراءات بحثية في أصل الاسم، ولا يعتمد الدليل واحدة منها أصلاً ثابتاً من دون نص لغوي أو نقش مؤرخ قابل للفحص."
+    }
+  },
+  "relatedHistoricalRegions": [
+    {
+      "id": "sahban-historical-region",
+      "title_ar": "بلاد / مخلاف صهبان",
+      "title_en": "Bilad / Mikhlaf Sahban",
+      "scope": "related_historical_region",
+      "modern_admin_note_ar": "النطاق التاريخي أوسع من الحدود الإدارية المعاصرة. ترد عزلة صهبان وهضبة صهبان في مصادر جغرافية حديثة ضمن السياني وذي السفال، جنوب وجنوب غرب مدينة إب؛ ولا تدخل صهبان ضمن مديرية حبيش أو عزلها الـ22.",
+      "description_ar": "تقع صهبان جنوب وجنوب غرب مدينة إب. وتذكر حاشية تحقيق صفة جزيرة العرب أن اسم مخلاف صهبان شاع في القرن الثامن الهجري عند تولي الأمير الصهباني المنطقة من الدولة الرسولية، وأنها كانت تعرف قبل ذلك باسم نعيمة/نعيمة المسواد نسبة إلى حصن هناك. وتذكر المصادر مصنعة سير على هضبة صهبان، وترتبط بسيرة الإمام يحيى بن أبي الخير العمراني. لا ينبغي الخلط بين اسم الموضع اليمني وبين بطن صهبان النخعي في النسب العربي.",
+      "historical_centres_ar": [
+        "مصنعة سير",
+        "هضبة صهبان",
+        "نعيمة / نعيمة المسواد"
+      ],
+      "historical_subdistricts_ar": [
+        "معشار الدامغ",
+        "معشار هدفان",
+        "الهادس",
+        "المجزع",
+        "عميد الداخل",
+        "عميد الخارج"
+      ],
+      "naming_note_ar": "تذكر بعض كتب الأنساب بطن صهبان بن سعد بن مالك بن النخع؛ وهذه نسبة قبلية لا تثبت وحدها أن تسمية مخلاف صهبان مشتقة من هذا البطن. تحفظ العلاقة كمسار بحثي منفصل.",
+      "source_text": "حاشية محمد علي الأكوع على صفة جزيرة العرب، ص 197؛ ومواد تاريخية عن عزلة صهبان ومصنعة سير.",
+      "source_url": "https://ablibrary.net/book_content/b/9942/205",
+      "status": "documented_with_scope_note"
+    }
+  ],
+  "educationalRecords": [
+    {
+      "id": "hijra-wuhaza",
+      "title_ar": "هجرة وحاظة",
+      "period_ar": "القرنان 5–6هـ",
+      "location_ar": "شباع، مديرية حبيش",
+      "subjects_ar": [
+        "اللغة وغريب الألفاظ",
+        "الفقه",
+        "الأدب",
+        "التأديب"
+      ],
+      "evidence_ar": [
+        "نظام الغريب لعيسى بن إبراهيم الربعي الوحاظي في اللغة وغريب الألفاظ.",
+        "التهذيب لزيد بن الحسن الفائشي في الفقه.",
+        "خزانة كتب فقهية للفائشي قيل إنها بلغت نحو 500 كتاب؛ لا تنسب تلقائياً إلى مكتبة عامة للمدرسة.",
+        "إشارات إلى تأديب أبناء الملوك الصليحيين في سيرة إسماعيل بن إبراهيم الوحاظي."
+      ],
+      "source_text": "الأكوع، هجر العلم ومعاقله، ج4، ص 2329–2331؛ الجندي، السلوك؛ الأفضل العباس، العطايا السنية."
+    },
+    {
+      "id": "al-zawahi-school",
+      "title_ar": "مدرسة الزواحي",
+      "period_ar": "قائمة قبل وفاة يوسف بن علي سنة 687هـ بحسب الجندي؛ سنة التأسيس غير محددة",
+      "location_ar": "الزواحي، عزلة كومان",
+      "subjects_ar": [],
+      "subject_claims_pending_verification_ar": [
+        "التنبيه في الفقه الشافعي",
+        "صحيح البخاري",
+        "نظام الغريب"
+      ],
+      "source_conflict_ar": "الجندي يذكر أنها من إحداث بعض مشايخ بني وائل؛ الأكوع ينسب البناء والأوقاف إلى قاسم بن حمير الوائلي. يجب فصل الروايتين ومقابلة الطبعات."
+    },
+    {
+      "id": "al-mushriq-al-kh-reading",
+      "title_ar": "جامع ألخ – النسخ والقراءة",
+      "period_ar": "561–562هـ",
+      "location_ar": "ناحية المشيرق",
+      "activity_ar": "نسخ كتاب الانتصار للإمام يحيى وذكر فقهاء ألخ والمشيرق",
+      "source_text": "الجندي، السلوك، ص 352."
+    },
+    {
+      "id": "dhi-ashraq-hadith",
+      "title_ar": "ذي أشرق – قراءة الحديث",
+      "period_ar": "570هـ",
+      "location_ar": "نطاق المشيرق",
+      "activity_ar": "قراءة سنن الترمذي بحسب رواية الجندي؛ ليست دليلاً على مدرسة نظامية",
+      "source_text": "الجندي، السلوك، ص 352."
+    },
+    {
+      "id": "sam-a-scholars",
+      "title_ar": "صمع – أسرة علمية",
+      "location_ar": "قرية صمع بالمشيرق",
+      "activity_ar": "ترجمة أبي عبد الله محمد بن منصور الجنيد الفتوحي وأقاربه الفقهاء",
+      "source_text": "الجندي، السلوك، ص 363."
+    },
+    {
+      "id": "yuhya-wuhaza-study-trip",
+      "title_ar": "رحلة الإمام يحيى العمراني إلى وحاظة",
+      "activity_ar": "رحلة من سير إلى أحاظة/وحاظة للأخذ عن زيد بن الحسن الفائشي في أصول الفقه واللغة",
+      "source_text": "دراسة د. علي صالح مانع العمري، 2024م؛ يلزم إدراج بيانات النشر التفصيلية عند توفر النسخة."
+    },
+    {
+      "id": "ali-al-fudayli-study-trip",
+      "title_ar": "رحلة المحدث علي بن أبي بكر الفضلي",
+      "activity_ar": "رحلة من عرشان إلى وحاظة والمشيرق في طلب العلم",
+      "source_text": "الجندي، السلوك، ص 303."
+    }
+  ],
+  "referenceNotes": [
+    "لا تخلط حبيش إب بمخلاف الحبيشية في سياق دمت/رداع أو بنسبة ذو حبيش في سفيان وسحار.",
+    "فرضيات الاسم السبئية والمعينية والحميرية قراءات بحثية غير محسومة.",
+    "لا تضف جبل هران كسجل مستقل في حبيش اعتماداً على تسمية غير محققة؛ أبقِ سجل جبل ذي هرّان القائم مرتبطاً بإحالة المركز الوطني للمعلومات دون توسيع الاسم.",
+    "تحفظ سجلات صهبان القديمة p1 وp15 وh3 في قسم النطاق التاريخي المرتبط، ولا تحذف أو يعاد استخدام معرّفاتها."
   ]
 }
