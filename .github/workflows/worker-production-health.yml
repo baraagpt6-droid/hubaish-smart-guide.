@@ -19,13 +19,30 @@ jobs:
     if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
     name: Verify live Worker, KV, GitHub and first-admin state
     runs-on: ubuntu-latest
-    timeout-minutes: 3
+    timeout-minutes: 5
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID || secrets.CLOUDFLARE_ACCOUNT_ID }}
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Resolve and enable the actual Cloudflare workers.dev hostname
+        id: worker-url
+        run: node scripts/resolve-cloudflare-worker-url.mjs
+
       - name: Check production endpoints
+        env:
+          CLOUDFLARE_WORKER_URL: ${{ steps.worker-url.outputs.base_url }}
         shell: bash
         run: |
           node <<'NODE'
-          const base = 'https://hubaish-cms.baraagpt6.workers.dev';
+          const base = process.env.CLOUDFLARE_WORKER_URL;
           const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 
           async function getJson(path) {
