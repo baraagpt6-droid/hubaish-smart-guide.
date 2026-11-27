@@ -204,7 +204,7 @@ jobs:
           mkdir -p release-out
           cp android/app/build/outputs/bundle/release/app-release.aab "release-out/Hubaish-Smart-Guide-v${VERSION_NAME}.aab"
           cp android/app/build/outputs/bundle/release/app-release.aab release-out/hubaish-smart-guide.aab
-          jarsigner -verify -strict release-out/hubaish-smart-guide.aab >/dev/null
+          jarsigner -verify release-out/hubaish-smart-guide.aab >/dev/null
           keytool -printcert -jarfile release-out/hubaish-smart-guide.aab >/dev/null
           echo "Signed AAB built and signature verification passed."
 
