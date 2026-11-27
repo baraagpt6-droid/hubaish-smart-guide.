@@ -250,7 +250,7 @@ const playResolver = await read('scripts/resolve-play-release.py');
 const playStoreVerifier = await read('scripts/verify-play-store.mjs');
 if (!playWorkflow.includes('workflow_dispatch:') ||
     playWorkflow.includes('pull_request:') ||
-    !playWorkflow.includes('push:\\n    branches: [main]') ||
+    !playWorkflow.includes('  push:') || !playWorkflow.includes('branches: [main]') ||
     !playWorkflow.includes("if: github.ref == 'refs/heads/main'") ||
     !playWorkflow.includes("github.event_name == 'push' && 'publish_closed_testing'") ||
     !playWorkflow.includes("inputs.mode || 'verify_only'") ||
