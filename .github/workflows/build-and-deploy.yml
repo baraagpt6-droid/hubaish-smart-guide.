@@ -6,6 +6,8 @@ on:
     paths-ignore:
       - '.github/workflows/**'
       - 'docs/google-play-setup.md'
+      - 'AGENTS.md'
+      - 'PROJECT_MEMORY.md'
       - 'fastlane/**'
       - 'scripts/resolve-play-release.py'
       - 'scripts/verify-build.mjs'

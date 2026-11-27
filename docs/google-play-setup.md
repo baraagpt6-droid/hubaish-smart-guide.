@@ -1,65 +1,81 @@
-# Google Play Closed Testing automation
+# Google Play Closed Testing automation — Hubaish Guide
 
-This repository deploys the Android app `com.hubaish.guide` to Google Play Closed testing from GitHub Actions. Every push to `main` runs a signed build and attempts a Closed-testing upload. A manual `workflow_dispatch` remains available for verification-only or publishing runs.
+This guide applies only to repository baraagpt6-droid/hubaish-smart-guide. and Android package com.hubaish.guide. Every push to main creates a draft preview on the exact Hubaish Closed Test track. Publishing that draft requires a separate manual workflow action.
 
 ## Fixed Google Cloud identity
 
-The workflow uses GitHub OIDC and Workload Identity Federation. It does not use a service-account JSON key.
+The workflow uses GitHub OIDC and Workload Identity Federation. It must not use a service-account JSON key.
 
-- Google Cloud project ID: `dalilna-play-automation-516000`
-- Workload Identity Provider: `projects/28058491662/locations/global/workloadIdentityPools/github-pool/providers/github-provider`
-- Service account: `dalilna-play-automation@dalilna-play-automation-516000.iam.gserviceaccount.com`
-- GitHub repository ID: `1469488424`
-- GitHub repository: `baraagpt6-droid/hubaish-smart-guide.`
-- Allowed ref: `refs/heads/main`
-- Workflow: `.github/workflows/google-play-closed-testing.yml`
+- Google Cloud project ID: dalilna-play-automation-516000.
+- Workload Identity Pool: projects/28058491662/locations/global/workloadIdentityPools/github-pool.
+- Workload Identity Provider: projects/28058491662/locations/global/workloadIdentityPools/github-pool/providers/github-provider.
+- Service account: dalilna-play-automation@dalilna-play-automation-516000.iam.gserviceaccount.com.
+- Google Play API scope: https://www.googleapis.com/auth/androidpublisher.
+- GitHub repository: baraagpt6-droid/hubaish-smart-guide.
+- GitHub repository ID: 1469488424.
+- Allowed branch/ref: main / refs/heads/main.
+- Workflow: .github/workflows/google-play-closed-testing.yml.
+- GitHub Actions permissions: contents: read and id-token: write.
 
-The provider's attribute condition must permit this repository and this main-branch workflow. The Cloud IAM binding must grant `roles/iam.workloadIdentityUser` to the repository principal set for repository ID `1469488424`. The Play service account must have app-scoped access to package `com.hubaish.guide`.
+The provider trust condition and service-account impersonation binding must be restricted to this exact repository and main branch. The expected impersonation role is roles/iam.workloadIdentityUser. The service account must have app-scoped Google Play access for com.hubaish.guide. The owner reported that all 13 available app permissions were granted.
 
-## Repository configuration
+## Android signing secrets
 
-Existing Android upload-signing secrets used by the main-branch Android release build:
+The workflow reuses the existing JKS upload key. These GitHub Actions secrets must be configured:
+- KEYSTORE_BASE64
+- KEYSTORE_PASSWORD
+- KEY_ALIAS
+- KEY_PASSWORD
 
-- `KEYSTORE_BASE64`
-- `KEYSTORE_PASSWORD`
-- `KEY_ALIAS`
-- `KEY_PASSWORD`
+Only the secret names are documented. Never print, commit, or expose their values. The workflow validates the JKS, password and alias, signs the AAB, and compares the AAB signer fingerprint with the existing upload certificate.
 
-The workflow reuses this persistent JKS upload key. It validates the Base64 JKS header, password and alias with `keytool` before signing. Do not generate a replacement upload key when the existing Play App Signing upload key is available.
+## Fixed release target and version allocation
 
-Optional repository variable:
+- Application ID: com.hubaish.guide.
+- The only allowed track: Hubaish Closed Test.
+- The workflow pins PLAY_TRACK to this exact value; a repository variable cannot redirect the upload.
+- No fallback to alpha, beta, internal, open, QA, form-factor, or Production tracks.
+- The resolver reads Play track releases and uploaded bundles, then calculates max(existing versionCode) + 1.
+- Version name comes from release-version.txt.
+- If the exact Hubaish Closed Test track is absent, the run fails instead of selecting another track.
+- Production versionCodes are read before and after an upload only to verify that Production did not change.
 
-- `PLAY_TRACK`: preferred custom Closed-testing track identifier. Defaults to `Hubaish Closed Test`.
+## Automatic draft preview on push
 
-Google Cloud project, provider and service-account identifiers are fixed in the workflow to avoid dependency on unverified repository variables.
+Every push to main triggers the Play workflow in preview_draft mode. This includes pushes that only update documentation or workflow files. The job:
+1. Checks out main and builds with Node.js 22.
+2. Installs dependencies and runs npm run build.
+3. Generates app icons, bilingual Play listing graphics, Arabic/English screenshots, and validates all eight phone screenshots.
+4. Authenticates to Google Cloud using GitHub OIDC/WIF.
+5. Resolves the next unused Play versionCode from Google Play.
+6. Builds and signs the Android App Bundle with the existing upload JKS.
+7. Uploads the AAB, listing metadata, images and screenshots to Hubaish Closed Test with release status draft.
+8. Reads the committed release back from Google Play and verifies exact track, versionCode and draft status.
+9. Verifies Production versionCodes are unchanged.
 
-## Track and version resolution
+Fastlane's automated upload lane rejects every release status other than draft. The resolver always emits draft even when a previous reviewed release exists. A successful draft API commit is not an approval or public release.
 
-Before building, `scripts/resolve-play-release.py` opens a temporary Google Play edit and reads `edits.tracks.list` and `edits.bundles.list`.
+## Manual workflow actions
 
-- It prefers the exact `PLAY_TRACK` track.
-- If that identifier is absent, it chooses the only named Closed-testing candidate, or the only Hubaish-named candidate when several exist.
-- If no named custom track exists, it accepts legacy `alpha` or `beta` Closed-testing tracks. If no track exists, it uses the configured custom name for the Fastlane upload.
-- It refuses Internal, Open, QA and Production tracks and refuses to guess when multiple candidates remain.
-- It reads existing release states outside Internal testing. A prior reviewed Closed/Production release selects `completed`; otherwise the first upload is `draft`.
-- It computes the next `versionCode` as one greater than the highest code found in all track releases and uploaded bundles.
-- It uses release status `draft` when no prior reviewed release exists. Once a previously reviewed release is present, the status becomes `completed`.
+workflow_dispatch offers three choices and defaults to verify_only:
+- verify_only: build validation and a debug APK artifact. No Google Cloud authentication or Play upload.
+- preview_draft: manually request another draft preview using the same draft-only upload path.
+- publish_approved_release: explicitly promote one existing draft to completed on Hubaish Closed Test. It does not build or upload a new AAB.
 
-The discovery edit is read-only and discarded. Fastlane creates and commits the upload edit after the signed AAB and listing assets pass validation. A post-upload API read-back confirms the selected track, versionCode and release status, and verifies Production versionCodes are unchanged.
+The manual publication script requires exactly one draft with versionCodes. If no draft exists or more than one draft exists, it stops without making changes. It is pinned to the Hubaish package and exact Hubaish Closed Test track. It never targets Production.
 
-## Workflow behavior
+A completed release state in the Play API remains subject to Google's review and rollout processing. A GitHub Actions success must not be described as Google approval unless the Play Console/API state confirms it.
 
-- A push to `main` automatically runs in `publish_closed_testing` mode.
-- Manual workflow dispatch supports `verify_only` and `publish_closed_testing`.
-- Verification-only builds a debug APK and does not authenticate or upload.
-- Publishing authenticates using `google-github-actions/auth@v2`, builds a signed AAB, validates the bilingual listing and screenshots, then uploads the AAB, metadata, graphics and screenshots to the discovered Closed-testing track.
-- Only the Closed-testing track is passed to Fastlane. Internal, beta/open, QA and Production targets are rejected.
-- No workflow step publishes to the Google Play Production track.
+## Workflow protection
 
-## First review
+- Workflow runs only when github.ref equals refs/heads/main.
+- Authentication uses google-github-actions/auth@v2.
+- The Play job uses contents: read and id-token: write.
+- No workflow step uploads, promotes, or modifies the Production track.
+- Draft uploads are read back from Google Play before the job can succeed.
+- The resolver and manual promoter reject every track except Hubaish Closed Test.
+- Pages and Cloudflare workflows ignore changes limited to this guide, AGENTS.md, PROJECT_MEMORY.md, and Play automation files.
 
-For the initial app submission, the workflow uses a draft release if Google Play does not show any prior reviewed release. Google Play may still require the initial changes to be sent for review. If Play Console presents a first-submission review action that the API does not permit, that single review action remains a Play Console step. Later uploads use `completed` on the existing Closed-testing track.
+## Listing assets
 
-## Store listing
-
-Arabic and English listing text lives under `fastlane/metadata/android/ar` and `fastlane/metadata/android/en-US`. The workflow generates the feature graphic and real Chromium screenshots before upload and validates all eight phone screenshots.
+Arabic metadata is under fastlane/metadata/android/ar and English metadata is under fastlane/metadata/android/en-US. The workflow generates the feature graphic and captures actual app screens through Chromium before uploading. Eight phone screenshots are validated before any AAB upload.

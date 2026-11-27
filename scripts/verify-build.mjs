@@ -252,7 +252,7 @@ if (!playWorkflow.includes('workflow_dispatch:') ||
     playWorkflow.includes('pull_request:') ||
     !playWorkflow.includes('  push:') || !playWorkflow.includes('branches: [main]') ||
     !playWorkflow.includes("if: github.ref == 'refs/heads/main'") ||
-    !playWorkflow.includes("github.event_name == 'push' && 'publish_closed_testing'") ||
+    !playWorkflow.includes("github.event_name == 'push' && 'preview_draft'") ||
     !playWorkflow.includes("inputs.mode || 'verify_only'") ||
     !playWorkflow.includes('google-github-actions/auth@v2') ||
     !playWorkflow.includes('projects/28058491662/locations/global/workloadIdentityPools/github-pool/providers/github-provider') ||
@@ -263,8 +263,14 @@ if (!playWorkflow.includes('workflow_dispatch:') ||
     !playWorkflow.includes('PLAY_RELEASE_STATUS: ${{ steps.play-release.outputs.release_status }}') ||
     !playWorkflow.includes('python3 scripts/resolve-play-release.py --verify-upload') ||
     !playWorkflow.includes('bundle exec fastlane android upload_closed_testing') ||
-    !playWorkflow.includes("PLAY_TRACK: ${{ vars.PLAY_TRACK || 'Hubaish Closed Test' }}")) {
-  throw new Error('Google Play workflow must auto-publish to Closed testing only on main pushes, remain manually runnable, use WIF, verify signing and read back the uploaded release.');
+    !playWorkflow.includes("PLAY_TRACK: Hubaish Closed Test") ||
+    !playWorkflow.includes("- preview_draft") ||
+    !playWorkflow.includes("- publish_approved_release") ||
+    !playWorkflow.includes("PLAY_RELEASE_STATUS: draft") ||
+    !playWorkflow.includes("python3 scripts/promote-play-draft.py") ||
+    playWorkflow.includes("publish_closed_testing") ||
+    playWorkflow.includes("approve_draft")) {
+  throw new Error('Google Play workflow must upload draft previews on main pushes, require explicit manual approval, use WIF, verify signing and read back the release.');
 }
 if (!playFastfile.includes('google_play_track_version_codes') ||
     !playFastfile.includes('PLAY_RELEASE_STATUS') ||
@@ -279,7 +285,8 @@ if (!playResolver.includes('/tracks') ||
     !playResolver.includes('nextVersionCode') ||
     !playResolver.includes('selectedClosedTestingTrack') ||
     !playResolver.includes('RELEASED_STATUSES') ||
-    !playResolver.includes("release_status = \"completed\" if has_reviewed_release else \"draft\"") ||
+    !playResolver.includes("release_status = \"draft\"") ||
+    !playResolver.includes('EXPECTED_TRACK = "Hubaish Closed Test"') ||
     !playResolver.includes('--verify-upload') ||
     !playResolver.includes('production_version_codes')) {
   throw new Error('Google Play track discovery and versionCode resolver is incomplete.');

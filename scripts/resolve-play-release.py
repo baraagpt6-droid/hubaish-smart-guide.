@@ -11,7 +11,8 @@ import google.auth
 from google.auth.transport.requests import AuthorizedSession
 
 PACKAGE = os.environ.get("PLAY_PACKAGE_NAME", "com.hubaish.guide").strip()
-PREFERRED_TRACK = os.environ.get("PLAY_TRACK", "Hubaish Closed Test").strip()
+EXPECTED_TRACK = "Hubaish Closed Test"
+PREFERRED_TRACK = os.environ.get("PLAY_TRACK", EXPECTED_TRACK).strip()
 SCOPE = "https://www.googleapis.com/auth/androidpublisher"
 API_ROOT = "https://androidpublisher.googleapis.com/androidpublisher/v3"
 FORBIDDEN_TRACKS = {"internal", "production", "open", "open-testing", "open testing", "qa"}
@@ -24,6 +25,8 @@ def fail(message):
 
 
 def validate_track_name(name):
+    if name.casefold() != EXPECTED_TRACK.casefold():
+        fail(f"Only the Hubaish Closed Test track is allowed; received {name!r}.")
     if not name or not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_. -]{2,59}", name):
         fail("PLAY_TRACK is empty or has unsupported characters.")
     lowered = name.casefold()
@@ -79,44 +82,15 @@ def codes_for_release(releases):
     return sorted(values)
 
 
-def is_named_closed_candidate(name):
-    lowered = name.casefold().strip()
-    if lowered in FORBIDDEN_TRACKS or lowered.endswith(FORM_FACTOR_TRACK_MARKERS) or ":" in name:
-        return False
-    if lowered in {"alpha", "beta"}:
-        return True
-    return "closed" in lowered or "test" in lowered or "hubaish" in lowered
-
-
 def choose_track(track_rows):
     names = sorted({str(row.get("track", "")).strip() for row in track_rows if row.get("track")})
     by_fold = {name.casefold(): name for name in names}
-    preferred_match = by_fold.get(PREFERRED_TRACK.casefold())
-    if preferred_match:
-        selected = preferred_match
-    else:
-        candidates = [name for name in names if is_named_closed_candidate(name)]
-        hubaish_candidates = [name for name in candidates if "hubaish" in name.casefold()]
-        if len(hubaish_candidates) == 1:
-            selected = hubaish_candidates[0]
-            print(f"Preferred track '{PREFERRED_TRACK}' was not found; selected the only Hubaish Closed-testing track '{selected}'.")
-        elif len(candidates) == 1:
-            selected = candidates[0]
-            print(f"Preferred track '{PREFERRED_TRACK}' was not found; selected the only Closed-testing candidate '{selected}'.")
-        elif len(candidates) > 1:
-            fail(
-                f"Closed-testing track '{PREFERRED_TRACK}' was not found and multiple candidates exist. "
-                f"Refusing to guess. Candidates: {', '.join(candidates)}"
-            )
-        elif "alpha" in by_fold:
-            selected = by_fold["alpha"]
-            print("No named Closed-testing track exists; using the legacy Closed-testing track 'alpha'.")
-        elif "beta" in by_fold:
-            selected = by_fold["beta"]
-            print("No named Closed-testing track exists; using the legacy Closed-testing track 'beta'.")
-        else:
-            selected = PREFERRED_TRACK
-            print(f"No existing named Closed-testing track was listed; Fastlane will create/use '{selected}' on upload.")
+    selected = by_fold.get(EXPECTED_TRACK.casefold())
+    if not selected:
+        fail(
+            f"Required Closed-testing track '{EXPECTED_TRACK}' was not found. "
+            "Refusing to fall back to alpha, beta, or another track."
+        )
     validate_track_name(selected)
     return selected, names
 
@@ -167,7 +141,7 @@ def discover_release():
             fail(f"Calculated versionCode {version_code} is outside Android's supported positive integer range.")
 
         version_name = read_release_version()
-        release_status = "completed" if has_reviewed_release else "draft"
+        release_status = "draft"
         output_path = os.environ.get("GITHUB_OUTPUT")
         if not output_path:
             fail("GITHUB_OUTPUT is missing; cannot pass the resolved Play release to subsequent steps.")

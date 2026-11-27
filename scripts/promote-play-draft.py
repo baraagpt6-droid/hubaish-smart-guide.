@@ -9,6 +9,7 @@ from google.auth.transport.requests import AuthorizedSession
 PACKAGE = os.environ.get("PLAY_PACKAGE_NAME", "").strip()
 TRACK = os.environ.get("PLAY_TRACK", "Hubaish Closed Test").strip()
 EXPECTED_PACKAGE = "com.hubaish.guide"
+EXPECTED_TRACK = "Hubaish Closed Test"
 SCOPE = "https://www.googleapis.com/auth/androidpublisher"
 API_ROOT = "https://androidpublisher.googleapis.com/androidpublisher/v3"
 RESERVED = {"internal", "beta", "production", "qa", "closed", "open", "closed-testing", "open-testing"}
@@ -19,6 +20,8 @@ def fail(message):
 def main():
     if PACKAGE != EXPECTED_PACKAGE:
         fail(f"Package lock failed: expected {EXPECTED_PACKAGE}.")
+    if TRACK.casefold() != EXPECTED_TRACK.casefold():
+        fail(f"Only the {EXPECTED_TRACK} track can be manually approved.")
     if not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_. -]{2,59}", TRACK):
         fail("Invalid Closed testing track name.")
     if TRACK.lower() in RESERVED or ":" in TRACK or TRACK.lower().endswith((":production", ":qa", ":internal", ":open")):

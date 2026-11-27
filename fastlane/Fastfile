@@ -2,15 +2,7 @@ default_platform(:android)
 
 def closed_testing_track!
   track = ENV.fetch("PLAY_TRACK", "Hubaish Closed Test").strip
-  UI.user_error!("PLAY_TRACK must be the exact Closed testing track name.") if track.empty?
-  reserved = %w[internal production open open-testing qa closed]
-  lowered = track.downcase
-  blocked_suffix = %w[:production :internal :open :qa].any? { |suffix| lowered.end_with?(suffix) }
-  blocked_words = %w[production internal open].any? { |word| lowered.match?(/(^|[\s_.-])#{word}($|[\s_.-])/) }
-  UI.user_error!("Only a Closed testing track is allowed; Internal, Open, QA and Production tracks are blocked.") if reserved.include?(lowered) || blocked_suffix || blocked_words
-  UI.user_error!("PLAY_TRACK contains unsupported form-factor syntax.") if track.include?(":")
-  UI.user_error!("PLAY_TRACK contains unsupported characters.") unless track.match?(/\A[a-zA-Z0-9][a-zA-Z0-9 _.-]{2,59}\z/)
-  # Legacy 'alpha' and 'beta' are Google Play Closed-testing tracks and remain allowed.
+  UI.user_error!("Only the exact Hubaish Closed Test track is allowed.") unless track.casecmp("Hubaish Closed Test").zero?
   track
 end
 
@@ -39,7 +31,7 @@ platform :android do
     track = closed_testing_track!
     UI.user_error!("Package ID mismatch: expected com.hubaish.guide.") unless package == "com.hubaish.guide"
     release_status = ENV.fetch("PLAY_RELEASE_STATUS", "draft")
-    UI.user_error!("PLAY_RELEASE_STATUS must be draft or completed.") unless %w[draft completed].include?(release_status)
+    UI.user_error!("Automated uploads to Hubaish Closed Test must always use draft status.") unless release_status == "draft"
 
     upload_to_play_store(
       package_name: package,
