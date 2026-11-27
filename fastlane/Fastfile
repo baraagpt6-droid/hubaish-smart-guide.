@@ -34,7 +34,7 @@ platform :android do
     package = ENV.fetch("PLAY_PACKAGE_NAME", "com.hubaish.guide")
     track = closed_testing_track!
     UI.user_error!("Package ID mismatch: expected com.hubaish.guide.") unless package == "com.hubaish.guide"
-    release_status = ENV.fetch("PLAY_RELEASE_STATUS", "completed")
+    release_status = ENV.fetch("PLAY_RELEASE_STATUS", "draft")
     UI.user_error!("PLAY_RELEASE_STATUS must be draft or completed.") unless %w[draft completed].include?(release_status)
     upload_to_play_store(
       package_name: package,
