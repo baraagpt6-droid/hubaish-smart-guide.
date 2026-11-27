@@ -17,7 +17,12 @@ const required = [
   'scripts/serve.mjs','scripts/configure-cloudflare-kv.mjs','.github/workflows/deploy-cloudflare-worker.yml','.github/workflows/build-and-deploy.yml',
   '.github/workflows/worker-production-health.yml','.github/workflows/deploy-cloudflare-worker.yml','scripts/configure-cloudflare-kv.mjs','README.md','cloudflare-worker/README.md',
   'assets/icon-only.png','assets/icon-foreground.png','assets/icon-background.png',
-  'assets/splash.png','assets/splash-dark.png'
+  'assets/splash.png','assets/splash-dark.png',
+  'Gemfile','fastlane/Appfile','fastlane/Fastfile',
+  'fastlane/metadata/android/ar/title.txt','fastlane/metadata/android/ar/short_description.txt','fastlane/metadata/android/ar/full_description.txt','fastlane/metadata/android/ar/changelogs/default.txt',
+  'fastlane/metadata/android/en-US/title.txt','fastlane/metadata/android/en-US/short_description.txt','fastlane/metadata/android/en-US/full_description.txt','fastlane/metadata/android/en-US/changelogs/default.txt',
+  'play-store/feature-graphic.svg','scripts/prepare-play-store-assets.py','scripts/capture-play-screenshots.mjs','scripts/normalize-play-screenshots.py','scripts/verify-play-store.mjs','scripts/prepare-android-release.py',
+  '.github/workflows/google-play-closed-testing.yml','docs/google-play-setup.md'
 ];
 for (const file of required) await access(resolve(root,file));
 const read = file => readFile(resolve(root,file),'utf8');
@@ -238,4 +243,33 @@ for(const [file,expected] of [['www/icons/icon-192.png',192],['www/icons/icon-51
 }
 if(readme.includes('الدخول المباشر الاحتياطي باستخدام GitHub Token')||workerReadme.includes('emergency fallback')||workerReadme.includes('GitHub Personal Access Token login'))throw new Error('Documentation still advertises the removed direct-token login.');
 if(!html.includes('upgrade-400.js')||!css.includes('F7F5EE')||!css.includes('0D2B22')||!app.includes("['review','adminTabReview',false]")||!worker.includes('/public/photo-submissions')||!worker.includes('/review/photo-submissions')||!html.includes('cloudPhotoReviewPanel')||!sw.includes("'upgrade-400.js'"))throw new Error('v1.0.400 theme, locale extensions, offline app shell or visitor photo moderation queue is incomplete.');
+
+const playWorkflow = await read('.github/workflows/google-play-closed-testing.yml');
+const playFastfile = await read('fastlane/Fastfile');
+const playStoreVerifier = await read('scripts/verify-play-store.mjs');
+if (!playWorkflow.includes('workflow_dispatch:') ||
+    playWorkflow.includes('pull_request:') ||
+    playWorkflow.includes('push:') ||
+    !playWorkflow.includes("if: github.ref == 'refs/heads/main'") ||
+    !playWorkflow.includes("inputs.mode == 'publish_closed_testing'") ||
+    !playWorkflow.includes('google-github-actions/auth@v3') ||
+    !playWorkflow.includes('workload_identity_provider:') ||
+    !playWorkflow.includes('npm run build') ||
+    !playWorkflow.includes('node scripts/verify-build.mjs') ||
+    !playWorkflow.includes('node scripts/verify-play-store.mjs --require-screenshots') ||
+    !playWorkflow.includes('bundle exec fastlane android upload_closed_testing') ||
+    !playWorkflow.includes("PLAY_TRACK: \${{ vars.PLAY_TRACK || 'alpha' }}")) {
+  throw new Error('Google Play workflow must be manual, main-only, WIF-authenticated and gated behind build verification.');
+}
+if (!playFastfile.includes('google_play_track_version_codes') ||
+    !playFastfile.includes('release_status: "completed"') ||
+    !playFastfile.includes('track.downcase == "production"') ||
+    !playFastfile.includes('metadata_path: "fastlane/metadata/android"')) {
+  throw new Error('Fastlane Play upload lane or closed-testing-only safeguards are incomplete.');
+}
+if (!playStoreVerifier.includes('512, 512, 6') ||
+    !playStoreVerifier.includes('1024, 500, 2') ||
+    !playStoreVerifier.includes('data[25] !== 2')) {
+  throw new Error('Google Play asset verifier must enforce RGBA icon, RGB feature graphic and RGB phone screenshots.');
+}
 console.log('Build check passed: Worker-only login, visitor photo moderation, four locales, ivory/emerald daytime theme, offline shell, Android assets and APK/AAB workflow.');
