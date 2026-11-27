@@ -30,7 +30,9 @@ try {
       const page = await context.newPage();
       await page.goto(baseUrl, { waitUntil: 'domcontentloaded', timeout: 45000 });
       await page.locator('#view-home').waitFor({ state: 'visible', timeout: 15000 });
-      await page.evaluate(() => document.fonts.ready);
+      // Avoid evaluating font readiness across a possible PWA/service-worker navigation.
+      // The home view's visibility plus a short settle delay gives Chromium time to paint the UI.
+      await page.waitForTimeout(600);
       if (lang === 'EN') {
         await page.locator('#languagePickerButton').click();
         await page.locator('[data-language="EN"]').click();
