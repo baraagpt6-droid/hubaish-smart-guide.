@@ -38,14 +38,14 @@ Google Cloud project, provider and service-account identifiers are fixed in the 
 Before building, `scripts/resolve-play-release.py` opens a temporary Google Play edit and reads `edits.tracks.list` and `edits.bundles.list`.
 
 - It prefers the exact `PLAY_TRACK` track.
-- If that identifier is absent and only one custom default-form-factor testing track exists, it selects that track.
-- If no named custom track exists, it accepts the legacy closed-testing `alpha` track.
-- If no closed track exists, it creates the configured custom Closed-testing track through the Android Publisher API. The edit is committed without a release.
-- It refuses internal, open/beta, QA and Production tracks. It also refuses to guess when multiple custom tracks exist.
+- If that identifier is absent, it chooses the only named Closed-testing candidate, or the only Hubaish-named candidate when several exist.
+- If no named custom track exists, it accepts legacy `alpha` or `beta` Closed-testing tracks. If no track exists, it uses the configured custom name for the Fastlane upload.
+- It refuses Internal, Open, QA and Production tracks and refuses to guess when multiple candidates remain.
+- It reads existing release states outside Internal testing. A prior reviewed Closed/Production release selects `completed`; otherwise the first upload is `draft`.
 - It computes the next `versionCode` as one greater than the highest code found in all track releases and uploaded bundles.
 - It uses release status `draft` when no prior reviewed release exists. Once a previously reviewed release is present, the status becomes `completed`.
 
-The discovery edit is not committed unless it needs to create the empty Closed-testing track. Fastlane creates and commits the upload edit after the signed AAB and listing assets pass validation.
+The discovery edit is read-only and discarded. Fastlane creates and commits the upload edit after the signed AAB and listing assets pass validation. A post-upload API read-back confirms the selected track, versionCode and release status, and verifies Production versionCodes are unchanged.
 
 ## Workflow behavior
 

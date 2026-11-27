@@ -260,9 +260,11 @@ if (!playWorkflow.includes('workflow_dispatch:') ||
     !playWorkflow.includes('npm run build') ||
     !playWorkflow.includes('node scripts/verify-play-store.mjs --require-screenshots') ||
     !playWorkflow.includes('scripts/resolve-play-release.py') ||
+    !playWorkflow.includes('PLAY_RELEASE_STATUS: ${{ steps.play-release.outputs.release_status }}') ||
+    !playWorkflow.includes('python3 scripts/resolve-play-release.py --verify-upload') ||
     !playWorkflow.includes('bundle exec fastlane android upload_closed_testing') ||
     !playWorkflow.includes("PLAY_TRACK: ${{ vars.PLAY_TRACK || 'Hubaish Closed Test' }}")) {
-  throw new Error('Google Play workflow must auto-publish only on main pushes, remain manually runnable, use WIF and verify assets before upload.');
+  throw new Error('Google Play workflow must auto-publish to Closed testing only on main pushes, remain manually runnable, use WIF, verify signing and read back the uploaded release.');
 }
 if (!playFastfile.includes('google_play_track_version_codes') ||
     !playFastfile.includes('PLAY_RELEASE_STATUS') ||
@@ -276,7 +278,10 @@ if (!playResolver.includes('/tracks') ||
     !playResolver.includes('/bundles') ||
     !playResolver.includes('nextVersionCode') ||
     !playResolver.includes('selectedClosedTestingTrack') ||
-    !playResolver.includes('RELEASED_STATUSES')) {
+    !playResolver.includes('RELEASED_STATUSES') ||
+    !playResolver.includes("release_status = \"completed\" if has_reviewed_release else \"draft\"") ||
+    !playResolver.includes('--verify-upload') ||
+    !playResolver.includes('production_version_codes')) {
   throw new Error('Google Play track discovery and versionCode resolver is incomplete.');
 }
 

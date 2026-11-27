@@ -2,11 +2,15 @@ default_platform(:android)
 
 def closed_testing_track!
   track = ENV.fetch("PLAY_TRACK", "Hubaish Closed Test").strip
-  UI.user_error!("PLAY_TRACK must be the exact custom Closed testing track name.") if track.empty?
-  reserved = %w[internal beta production qa closed open closed-testing open-testing]
-  UI.user_error!("Only a Closed testing track is allowed; internal, open, beta and Production tracks are blocked.") if reserved.include?(track.downcase) || track.downcase.end_with?(":production", ":beta", ":qa", ":internal")
-  UI.user_error!("Production tracks are blocked.") if track.downcase.end_with?(":production")
+  UI.user_error!("PLAY_TRACK must be the exact Closed testing track name.") if track.empty?
+  reserved = %w[internal production open open-testing qa closed]
+  lowered = track.downcase
+  blocked_suffix = %w[:production :internal :open :qa].any? { |suffix| lowered.end_with?(suffix) }
+  blocked_words = %w[production internal open].any? { |word| lowered.match?(/(^|[\s_.-])#{word}($|[\s_.-])/) }
+  UI.user_error!("Only a Closed testing track is allowed; Internal, Open, QA and Production tracks are blocked.") if reserved.include?(lowered) || blocked_suffix || blocked_words
+  UI.user_error!("PLAY_TRACK contains unsupported form-factor syntax.") if track.include?(":")
   UI.user_error!("PLAY_TRACK contains unsupported characters.") unless track.match?(/\A[a-zA-Z0-9][a-zA-Z0-9 _.-]{2,59}\z/)
+  # Legacy 'alpha' and 'beta' are Google Play Closed-testing tracks and remain allowed.
   track
 end
 
@@ -29,13 +33,14 @@ platform :android do
     UI.success("Next Google Play versionCode: #{next_code}")
   end
 
-  desc "Upload the signed app bundle, bilingual listing and screenshots to a custom Closed testing track only"
+  desc "Upload the signed app bundle, bilingual listing and screenshots to a Closed-testing track only"
   lane :upload_closed_testing do
     package = ENV.fetch("PLAY_PACKAGE_NAME", "com.hubaish.guide")
     track = closed_testing_track!
     UI.user_error!("Package ID mismatch: expected com.hubaish.guide.") unless package == "com.hubaish.guide"
     release_status = ENV.fetch("PLAY_RELEASE_STATUS", "draft")
     UI.user_error!("PLAY_RELEASE_STATUS must be draft or completed.") unless %w[draft completed].include?(release_status)
+
     upload_to_play_store(
       package_name: package,
       json_key: ENV.fetch("GOOGLE_APPLICATION_CREDENTIALS"),

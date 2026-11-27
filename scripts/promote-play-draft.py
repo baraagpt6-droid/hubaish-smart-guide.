@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Promote exactly one existing Closed testing draft after explicit manual dispatch."""
+"""Promote exactly one existing Closed-testing draft after explicit manual dispatch. Legacy alpha/beta tracks are allowed."""
 import os
 import re
 from urllib.parse import quote
@@ -21,7 +21,7 @@ def main():
         fail(f"Package lock failed: expected {EXPECTED_PACKAGE}.")
     if not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_. -]{2,59}", TRACK):
         fail("Invalid Closed testing track name.")
-    if TRACK.lower() in RESERVED or ":" in TRACK or TRACK.lower().endswith((":production", ":beta", ":qa", ":internal")):
+    if TRACK.lower() in RESERVED or ":" in TRACK or TRACK.lower().endswith((":production", ":qa", ":internal", ":open")):
         fail("Refusing reserved, Production, internal, open, or form-factor track.")
     credentials, _ = google.auth.default(scopes=[SCOPE])
     session = AuthorizedSession(credentials)

@@ -3,6 +3,13 @@ name: Build Android APK and deploy GitHub Pages
 on:
   push:
     branches: [main]
+    paths-ignore:
+      - '.github/workflows/**'
+      - 'docs/google-play-setup.md'
+      - 'fastlane/**'
+      - 'scripts/resolve-play-release.py'
+      - 'scripts/verify-build.mjs'
+      - 'scripts/promote-play-draft.py'
   workflow_dispatch:
 
 permissions:

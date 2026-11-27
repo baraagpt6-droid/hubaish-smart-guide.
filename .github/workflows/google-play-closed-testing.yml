@@ -5,9 +5,12 @@ on:
   workflow_dispatch:
     inputs:
       mode:
-        description: Verify only, create a Closed testing draft preview, or manually approve the existing draft
+        description: Verify only, publish a Closed-testing release, or promote an existing reviewed draft
         type: choice
-        options: [verify_only, preview_draft, approve_draft]
+        options:
+          - verify_only
+          - publish_closed_testing
+          - approve_draft
         default: verify_only
         required: true
 
@@ -22,26 +25,22 @@ concurrency:
 jobs:
   build-and-publish:
     if: github.ref == 'refs/heads/main'
-    outputs:
-      version_name: ${{ steps.play-release.outputs.version_name }}
-      version_code: ${{ steps.play-release.outputs.version_code }}
-      track: ${{ steps.play-release.outputs.track }}
-      artifact_url: ${{ steps.play-artifact.outputs.artifact-url }}
-      apk_filename: ${{ steps.signed-release.outputs.apk_filename }}
-      preview_tag: ${{ steps.signed-release.outputs.preview_tag }}
-      preview_name: ${{ steps.signed-release.outputs.preview_name }}
     runs-on: ubuntu-24.04
     timeout-minutes: 75
     env:
       PLAY_PACKAGE_NAME: com.hubaish.guide
       PLAY_TRACK: ${{ vars.PLAY_TRACK || 'Hubaish Closed Test' }}
-      # Static-verifier compatibility marker only. The active push mode is preview_draft, never publish_closed_testing.
-      # Historical expression retained only because scripts/verify-build.mjs checks for this exact legacy token:
-      # github.event_name == 'push' && 'publish_closed_testing'
-      PLAY_MODE: ${{ github.event_name == 'push' && 'preview_draft' || inputs.mode || 'verify_only' }}
+      PLAY_MODE: ${{ github.event_name == 'push' && 'publish_closed_testing' || inputs.mode || 'verify_only' }}
+    outputs:
+      version_name: ${{ steps.play-release.outputs.version_name }}
+      version_code: ${{ steps.play-release.outputs.version_code }}
+      track: ${{ steps.play-release.outputs.track }}
+      release_status: ${{ steps.play-release.outputs.release_status }}
     steps:
       - name: Checkout main
         uses: actions/checkout@v4
+        with:
+          ref: main
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
@@ -49,6 +48,7 @@ jobs:
           node-version: '22'
 
       - name: Install icon rendering dependencies
+        if: env.PLAY_MODE != 'approve_draft'
         run: |
           set -euo pipefail
           for source in /etc/apt/sources.list.d/*; do
@@ -60,40 +60,51 @@ jobs:
           sudo apt-get install -y python3-cairosvg python3-pil fonts-noto-core
 
       - name: Install app dependencies
+        if: env.PLAY_MODE != 'approve_draft'
         run: npm install --no-audit --no-fund
 
       - name: Generate PWA and Capacitor icon source images
+        if: env.PLAY_MODE != 'approve_draft'
         run: python3 scripts/generate-icons.py
 
       - name: Run project build and verification
+        if: env.PLAY_MODE != 'approve_draft'
         run: npm run build
 
       - name: Install Playwright for app screenshots and feature graphic
+        if: env.PLAY_MODE != 'approve_draft'
         run: npm install --no-save --package-lock=false playwright@1.56.1
 
       - name: Install Chromium
+        if: env.PLAY_MODE != 'approve_draft'
         run: npx playwright install --with-deps chromium
 
       - name: Render Arabic and English feature graphic
+        if: env.PLAY_MODE != 'approve_draft'
         run: node scripts/render-play-feature-graphic.mjs
 
       - name: Generate Google Play listing graphics
+        if: env.PLAY_MODE != 'approve_draft'
         run: python3 scripts/prepare-play-store-assets.py
 
       - name: Verify Play listing text and graphics
+        if: env.PLAY_MODE != 'approve_draft'
         run: node scripts/verify-play-store.mjs
 
       - name: Capture actual app screens in Arabic and English
+        if: env.PLAY_MODE != 'approve_draft'
         run: node scripts/capture-play-screenshots.mjs
 
       - name: Normalize screenshots to RGB PNG
+        if: env.PLAY_MODE != 'approve_draft'
         run: python3 scripts/normalize-play-screenshots.py
 
       - name: Validate all Play phone screenshots
+        if: env.PLAY_MODE != 'approve_draft'
         run: node scripts/verify-play-store.mjs --require-screenshots
 
       - name: Confirm target and existing upload-signing setup
-        if: env.PLAY_MODE == 'preview_draft'
+        if: env.PLAY_MODE == 'publish_closed_testing'
         shell: bash
         env:
           KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
@@ -102,18 +113,20 @@ jobs:
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
         run: |
           set -euo pipefail
+          [[ "$GITHUB_REPOSITORY" == "baraagpt6-droid/hubaish-smart-guide." ]] || { echo "::error::Repository identity mismatch."; exit 1; }
+          [[ "$GITHUB_REF" == "refs/heads/main" ]] || { echo "::error::Publishing is restricted to main."; exit 1; }
           [[ "$PLAY_PACKAGE_NAME" == "com.hubaish.guide" ]] || { echo "::error::Package ID mismatch."; exit 1; }
-          [[ "$PLAY_MODE" == "preview_draft" ]] || { echo "::error::Unexpected publishing mode."; exit 1; }
           [[ "$PLAY_TRACK" =~ ^[A-Za-z0-9][A-Za-z0-9_.\ -]{2,59}$ ]] || { echo "::error::PLAY_TRACK has an invalid name."; exit 1; }
           for name in KEYSTORE_BASE64 KEYSTORE_PASSWORD KEY_ALIAS KEY_PASSWORD; do
-            if [[ -z "${!name:-}" ]]; then
-              echo "::error::Required existing Android upload-signing secret is missing: $name"
+            if [[ -z "$(printenv "$name")" ]]; then
+              echo "::error::Required Android upload-signing secret is missing: $name"
               exit 1
             fi
           done
+          echo "Repository, package, Closed-testing preference and all four upload-signing secrets are present."
 
-      - name: Authenticate to Google Cloud using WIF
-        if: env.PLAY_MODE == 'preview_draft' || env.PLAY_MODE == 'approve_draft'
+      - name: Authenticate to Google Cloud using GitHub OIDC and WIF
+        if: env.PLAY_MODE == 'publish_closed_testing' || env.PLAY_MODE == 'approve_draft'
         id: google-auth
         uses: google-github-actions/auth@v2
         with:
@@ -125,18 +138,18 @@ jobs:
           access_token_scopes: https://www.googleapis.com/auth/androidpublisher
 
       - name: Install Google Play API client dependencies
-        if: env.PLAY_MODE == 'preview_draft' || env.PLAY_MODE == 'approve_draft'
+        if: env.PLAY_MODE == 'publish_closed_testing' || env.PLAY_MODE == 'approve_draft'
         run: python3 -m pip install --disable-pip-version-check "google-auth>=2.40,<3" "requests>=2.32,<3"
 
-      - name: Discover Closed testing track and next versionCode
-        if: env.PLAY_MODE == 'preview_draft'
+      - name: Discover actual Closed-testing track and next Play versionCode
+        if: env.PLAY_MODE == 'publish_closed_testing'
         id: play-release
         env:
           PLAY_PACKAGE_NAME: ${{ env.PLAY_PACKAGE_NAME }}
           PLAY_TRACK: ${{ env.PLAY_TRACK }}
         run: python3 scripts/resolve-play-release.py
 
-      - name: Approve existing Closed testing draft manually
+      - name: Promote an existing reviewed Closed-testing draft
         if: env.PLAY_MODE == 'approve_draft'
         env:
           PLAY_PACKAGE_NAME: ${{ env.PLAY_PACKAGE_NAME }}
@@ -183,9 +196,9 @@ jobs:
         if: env.PLAY_MODE != 'approve_draft'
         run: python3 scripts/apply-android-icons.py
 
-      - name: Build signed Android App Bundle and Release APK for preview
+      - name: Build and sign the Android App Bundle for Closed testing
+        if: env.PLAY_MODE == 'publish_closed_testing'
         id: signed-release
-        if: env.PLAY_MODE == 'preview_draft'
         shell: bash
         env:
           KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
@@ -202,9 +215,13 @@ jobs:
           fi
           export ANDROID_VERSION_NAME="$VERSION_NAME"
           export ANDROID_KEYSTORE_PATH="$GITHUB_WORKSPACE/android/keystore/hubaish-upload.jks"
+
           python3 - <<'PY'
-          import base64, os, re
+          import base64
+          import os
+          import re
           from pathlib import Path
+
           raw = os.environ["KEYSTORE_BASE64"].strip()
           lines = raw.splitlines()
           matches = [line for line in lines if line.split("=", 1)[0].strip() == "KEYSTORE_BASE64" and "=" in line]
@@ -213,59 +230,65 @@ jobs:
           elif raw.split("=", 1)[0].strip() == "KEYSTORE_BASE64" and "=" in raw:
               raw = raw.split("=", 1)[1]
           raw = raw.strip().strip('"').strip("'")
-          raw = re.sub(r"\\s+", "", raw)
+          raw = re.sub(r"\s+", "", raw)
           raw += "=" * (-len(raw) % 4)
           try:
               data = base64.b64decode(raw, validate=True)
           except Exception as exc:
-              raise SystemExit("KEYSTORE_BASE64 is not valid Base64 after normalizing an optional variable prefix and quotes.") from exc
+              raise SystemExit("KEYSTORE_BASE64 is not valid Base64.") from exc
           if not data.startswith(bytes.fromhex("feedfeed")):
               raise SystemExit("Expected the existing JKS upload keystore.")
           path = Path(os.environ["ANDROID_KEYSTORE_PATH"])
           path.parent.mkdir(parents=True, exist_ok=True)
           path.write_bytes(data)
           PY
+
           keytool -list -keystore "$ANDROID_KEYSTORE_PATH" -storetype JKS -storepass "$KEYSTORE_PASSWORD" -alias "$KEY_ALIAS" >/dev/null
           python3 scripts/prepare-android-release.py
-          (cd android && ./gradlew --no-daemon bundleRelease assembleRelease)
-          mkdir -p release-out
+          (cd android && ./gradlew --no-daemon bundleRelease)
+
           AAB_SOURCE="android/app/build/outputs/bundle/release/app-release.aab"
-          APK_SOURCE="android/app/build/outputs/apk/release/app-release.apk"
           [[ -s "$AAB_SOURCE" ]] || { echo "::error::Signed Release AAB was not produced."; exit 1; }
-          [[ -s "$APK_SOURCE" ]] || { echo "::error::Signed Release APK was not produced."; exit 1; }
+          jarsigner -verify "$AAB_SOURCE" >/dev/null
+          keytool -printcert -jarfile "$AAB_SOURCE" > "$RUNNER_TEMP/aab-certificate.txt"
 
-          COMMIT_SHORT="${GITHUB_SHA:0:12}"
-          APK_FILENAME="Hubaish-Smart-Guide-v${VERSION_NAME}-${COMMIT_SHORT}-release.apk"
-          PREVIEW_TAG="preview-v${VERSION_NAME}-${GITHUB_SHA}"
-          PREVIEW_NAME="Hubaish Smart Guide v${VERSION_NAME} Preview (${COMMIT_SHORT})"
-          APK_DESTINATION="release-out/${APK_FILENAME}"
+          python3 - <<'PY'
+          import hashlib
+          import os
+          import re
+          import subprocess
+          from pathlib import Path
 
-          cp "$AAB_SOURCE" "release-out/Hubaish-Smart-Guide-v${VERSION_NAME}.aab"
+          report = Path(os.environ["RUNNER_TEMP"], "aab-certificate.txt").read_text(encoding="utf-8", errors="replace")
+          match = re.search(r"SHA256:\s*([0-9A-Fa-f:]{64,95})", report)
+          if not match:
+              raise SystemExit("Could not read the AAB signing certificate SHA-256 fingerprint.")
+          bundle_fingerprint = match.group(1).replace(":", "").lower()
+          command = [
+              "keytool", "-exportcert",
+              "-alias", os.environ["KEY_ALIAS"],
+              "-keystore", os.environ["ANDROID_KEYSTORE_PATH"],
+              "-storetype", "JKS",
+              "-storepass", os.environ["KEYSTORE_PASSWORD"]
+          ]
+          exported = subprocess.run(command, check=True, capture_output=True).stdout
+          keystore_fingerprint = hashlib.sha256(exported).hexdigest()
+          if bundle_fingerprint != keystore_fingerprint:
+              raise SystemExit(
+                  "AAB signer does not match the existing Play upload keystore. "
+                  f"AAB={bundle_fingerprint}, keystore={keystore_fingerprint}"
+              )
+          print("PASS: AAB is signed with the existing Play upload key.")
+          PY
+
+          mkdir -p release-out
           cp "$AAB_SOURCE" release-out/hubaish-smart-guide.aab
-          cp "$APK_SOURCE" "$APK_DESTINATION"
+          AAB_SHA256="$(sha256sum release-out/hubaish-smart-guide.aab | awk '{print $1}')"
+          echo "version_name=$VERSION_NAME" >> "$GITHUB_OUTPUT"
+          echo "aab_sha256=$AAB_SHA256" >> "$GITHUB_OUTPUT"
+          echo "Signed AAB ready: versionName=$VERSION_NAME versionCode=$ANDROID_VERSION_CODE sha256=$AAB_SHA256"
 
-          jarsigner -verify release-out/hubaish-smart-guide.aab >/dev/null
-          keytool -printcert -jarfile release-out/hubaish-smart-guide.aab >/dev/null
-
-          SDK_ROOT="${ANDROID_HOME:-${ANDROID_SDK_ROOT:-}}"
-          [[ -n "$SDK_ROOT" ]] || { echo "::error::Android SDK path is not available."; exit 1; }
-          APKSIGNER="$(find "$SDK_ROOT/build-tools" -type f -name apksigner -print | sort -V | tail -n 1)"
-          [[ -n "$APKSIGNER" && -x "$APKSIGNER" ]] || { echo "::error::Android apksigner was not found."; exit 1; }
-          APK_SIGNATURE_REPORT="$("$APKSIGNER" verify --verbose --print-certs "$APK_DESTINATION")"
-          printf '%s\n' "$APK_SIGNATURE_REPORT"
-          APK_CERT_SHA256="$(printf '%s\n' "$APK_SIGNATURE_REPORT" | awk -F': ' '/Signer #1 certificate SHA-256 digest:/ {print tolower($2); exit}')"
-          KEYSTORE_CERT_SHA256="$(keytool -exportcert -alias "$KEY_ALIAS" -keystore "$ANDROID_KEYSTORE_PATH" -storetype JKS -storepass "$KEYSTORE_PASSWORD" | sha256sum | awk '{print tolower($1)}')"
-          [[ -n "$APK_CERT_SHA256" && "$APK_CERT_SHA256" == "$KEYSTORE_CERT_SHA256" ]] || {
-            echo "::error::Release APK signer does not match the configured official upload keystore certificate."
-            exit 1
-          }
-
-          echo "apk_filename=$APK_FILENAME" >> "$GITHUB_OUTPUT"
-          echo "preview_tag=$PREVIEW_TAG" >> "$GITHUB_OUTPUT"
-          echo "preview_name=$PREVIEW_NAME" >> "$GITHUB_OUTPUT"
-          echo "Signed AAB and Release APK built. APK signature matches the configured upload keystore certificate."
-
-      - name: Build debug APK for verify-only run
+      - name: Build debug APK for verify-only runs
         if: env.PLAY_MODE == 'verify_only'
         shell: bash
         run: |
@@ -274,149 +297,90 @@ jobs:
           from pathlib import Path
           import re
           path = Path("android/app/build.gradle")
-          source = path.read_text()
+          source = path.read_text(encoding="utf-8")
           source, count = re.subn(r"(?m)^(\s*versionCode\s*(?:=\s*)?).+$", r"\g<1>1", source, count=1)
           if count != 1:
               raise SystemExit("Generated Android versionCode was not found.")
-          path.write_text(source)
+          path.write_text(source, encoding="utf-8")
           PY
           (cd android && ./gradlew --no-daemon assembleDebug)
           mkdir -p release-out
           cp android/app/build/outputs/apk/debug/app-debug.apk release-out/hubaish-smart-guide-debug.apk
 
-      - name: Upload AAB or debug APK and Play assets as artifact
-        id: play-artifact
-        if: env.PLAY_MODE == 'preview_draft' || env.PLAY_MODE == 'verify_only'
+      - name: Upload the AAB and bilingual Play listing artifacts
+        if: env.PLAY_MODE == 'publish_closed_testing'
         uses: actions/upload-artifact@v4
         with:
           name: hubaish-play-closed-testing
           path: |
-            release-out/*
+            release-out/hubaish-smart-guide.aab
             fastlane/metadata/android/ar/images/
             fastlane/metadata/android/en-US/images/
           if-no-files-found: error
           retention-days: 30
 
-      - name: Upload listing, screenshots and AAB to Closed testing as draft preview
-        if: env.PLAY_MODE == 'preview_draft'
+      - name: Upload the debug APK validation artifact
+        if: env.PLAY_MODE == 'verify_only'
+        uses: actions/upload-artifact@v4
+        with:
+          name: hubaish-play-verify-only
+          path: release-out/hubaish-smart-guide-debug.apk
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Upload the signed AAB, listing, graphics and screenshots to Closed testing
+        if: env.PLAY_MODE == 'publish_closed_testing'
         env:
           AAB_PATH: release-out/hubaish-smart-guide.aab
           PLAY_TRACK: ${{ steps.play-release.outputs.track }}
-          PLAY_RELEASE_STATUS: draft
+          PLAY_RELEASE_STATUS: ${{ steps.play-release.outputs.release_status }}
           PLAY_PACKAGE_NAME: com.hubaish.guide
         run: bundle exec fastlane android upload_closed_testing
 
-
-  publish-apk-preview:
-    name: Publish signed APK preview to GitHub Releases
-    needs: build-and-publish
-    if: github.ref == 'refs/heads/main' && (github.event_name == 'push' || inputs.mode == 'preview_draft')
-    runs-on: ubuntu-24.04
-    timeout-minutes: 15
-    permissions:
-      contents: write
-      actions: read
-    steps:
-      - name: Checkout exact preview commit
-        uses: actions/checkout@v4
-
-      - name: Download signed APK and Play listing artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: hubaish-play-closed-testing
-          path: preview-artifact
-
-      - name: Create or update signed APK prerelease
-        id: github-release
-        uses: softprops/action-gh-release@v3
-        with:
-          tag_name: ${{ needs.build-and-publish.outputs.preview_tag }}
-          name: ${{ needs.build-and-publish.outputs.preview_name }}
-          target_commitish: ${{ github.sha }}
-          body: |
-            Hubaish Smart Guide Android preview.
-
-            - Version: ${{ needs.build-and-publish.outputs.version_name }}
-            - Commit: ${{ github.sha }}
-            - Package: com.hubaish.guide
-            - APK is signed with the same official upload keystore certificate as the Closed testing AAB.
-            - This GitHub prerelease is a direct installation preview. It does not approve or publish the Google Play draft.
-          files: preview-artifact/release-out/${{ needs.build-and-publish.outputs.apk_filename }}
-          prerelease: true
-          overwrite_files: true
-          fail_on_unmatched_files: true
-          make_latest: false
-
-      - name: Resolve direct APK download URL
-        id: apk-links
+      - name: Verify the committed Closed-testing release and protect Production
+        if: env.PLAY_MODE == 'publish_closed_testing'
         env:
-          RELEASE_ASSETS_JSON: ${{ steps.github-release.outputs.assets }}
-          APK_FILENAME: ${{ needs.build-and-publish.outputs.apk_filename }}
+          PLAY_PACKAGE_NAME: com.hubaish.guide
+          PLAY_TRACK: ${{ steps.play-release.outputs.track }}
+          PLAY_RELEASE_STATUS: ${{ steps.play-release.outputs.release_status }}
+          ANDROID_VERSION_CODE: ${{ steps.play-release.outputs.version_code }}
+          PLAY_PRODUCTION_VERSION_CODES: ${{ steps.play-release.outputs.production_version_codes }}
+        run: python3 scripts/resolve-play-release.py --verify-upload
+
+      - name: Publish the result summary
+        if: success()
         shell: bash
-        run: |
-          set -euo pipefail
-          python3 - <<'PY'
-          import json
-          import os
-
-          assets = json.loads(os.environ["RELEASE_ASSETS_JSON"])
-          filename = os.environ["APK_FILENAME"]
-          matches = [asset for asset in assets if asset.get("name") == filename]
-          if len(matches) != 1:
-              raise SystemExit(f"Expected exactly one uploaded APK asset named {filename!r}; found {len(matches)}.")
-          url = matches[0].get("browser_download_url", "")
-          if not url.startswith("https://github.com/"):
-              raise SystemExit("GitHub did not return a valid direct APK download URL.")
-          with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as output:
-              output.write(f"apk_download_url={url}\\n")
-          PY
-
-      - name: Publish preview report and direct APK link
         env:
-          APK_DOWNLOAD_URL: ${{ steps.apk-links.outputs.apk_download_url }}
-          APK_RELEASE_URL: ${{ steps.github-release.outputs.url }}
-          APK_FILENAME: ${{ needs.build-and-publish.outputs.apk_filename }}
-          PREVIEW_TAG: ${{ needs.build-and-publish.outputs.preview_tag }}
-          VERSION_NAME: ${{ needs.build-and-publish.outputs.version_name }}
-          VERSION_CODE: ${{ needs.build-and-publish.outputs.version_code }}
-          TARGET_TRACK: ${{ needs.build-and-publish.outputs.track }}
-          ARTIFACT_URL: ${{ needs.build-and-publish.outputs.artifact_url }}
-        shell: bash
+          PLAY_MODE: ${{ env.PLAY_MODE }}
+          PLAY_PACKAGE_NAME: ${{ env.PLAY_PACKAGE_NAME }}
+          PLAY_TRACK: ${{ steps.play-release.outputs.track }}
+          PLAY_VERSION_NAME: ${{ steps.play-release.outputs.version_name }}
+          PLAY_VERSION_CODE: ${{ steps.play-release.outputs.version_code }}
+          PLAY_RELEASE_STATUS: ${{ steps.play-release.outputs.release_status }}
+          AAB_SHA256: ${{ steps.signed-release.outputs.aab_sha256 }}
         run: |
-          set -euo pipefail
           {
-            echo '# Hubaish Smart Guide — Preview Report'
+            echo "## Hubaish Google Play — Closed Testing"
             echo
-            echo '## Download signed Release APK'
-            echo "[Download APK directly]($APK_DOWNLOAD_URL)"
-            echo
-            echo "- APK file: `$APK_FILENAME`"
-            echo "- GitHub prerelease: $APK_RELEASE_URL"
-            echo "- Release tag: `$PREVIEW_TAG`"
-            echo
-            echo '## Google Play draft preview'
-            echo "- Commit: $GITHUB_SHA"
-            echo "- Package: com.hubaish.guide"
-            echo "- Version: $VERSION_NAME (versionCode $VERSION_CODE)"
-            echo "- Track: $TARGET_TRACK"
-            echo '- Release status: **DRAFT — not approved and not public**'
-            echo "- AAB and generated listing assets: $ARTIFACT_URL"
-            echo
-            echo '## Code changes'
-            git show --stat --oneline --no-renames "$GITHUB_SHA"
-            echo
-            for locale in ar en-US; do
-              echo "## Store listing — $locale"
-              for field in title short_description full_description; do
-                file="preview-artifact/fastlane/metadata/android/$locale/$field.txt"
-                if [[ -f "$file" ]]; then
-                  echo "### $field"
-                  cat "$file"
-                  echo
-                fi
-              done
-              echo '### Generated image assets'
-              find "preview-artifact/fastlane/metadata/android/$locale/images" -maxdepth 2 -type f -print 2>/dev/null | sort || true
-              echo
-            done
+            echo "- Package: $PLAY_PACKAGE_NAME"
+            if [[ "$PLAY_MODE" == "publish_closed_testing" ]]; then
+              echo "- Result: **Upload and read-back verification passed**"
+              echo "- Track: \`$PLAY_TRACK\`"
+              echo "- Version: \`$PLAY_VERSION_NAME\`"
+              echo "- versionCode: \`$PLAY_VERSION_CODE\`"
+              echo "- Release status: **$PLAY_RELEASE_STATUS**"
+              echo "- AAB SHA-256: \`$AAB_SHA256\`"
+              echo "- Production track changed: **No — verified unchanged**"
+              if [[ "$PLAY_RELEASE_STATUS" == "draft" ]]; then
+                echo "- First-release review: Google Play may require the initial draft to be sent for review before testers can install it."
+              else
+                echo "- Closed-testing rollout: completed."
+              fi
+            elif [[ "$PLAY_MODE" == "approve_draft" ]]; then
+              echo "- Result: existing Closed-testing draft promoted by explicit manual dispatch."
+              echo "- Track: \`$PLAY_TRACK\`"
+              echo "- Production track changed: **No**"
+            else
+              echo "- Result: verification-only build succeeded. No Google Play upload was attempted."
+            fi
           } >> "$GITHUB_STEP_SUMMARY"
