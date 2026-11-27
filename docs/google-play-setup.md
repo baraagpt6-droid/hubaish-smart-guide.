@@ -96,3 +96,15 @@ The monitor is read-only with respect to releases. It opens a temporary Google P
 scripts/audit-runtime.mjs is executed by the preview workflow after Chromium is installed and before the AAB is built. It checks app navigation, Arabic/English language switching, widths 360/390/768/1024, Service Worker activation, cached shell contents, offline home rendering, browser errors, and Cloudflare Worker /health and /setup/status. Worker checks are reported separately so a Worker outage does not erase the local/offline fallback result. The Worker health endpoint uses only a short-lived KV self-test key which is deleted immediately.
 
 Do not modify release 413 or Production as part of monitoring. Do not automatically promote any draft.
+
+## Build rate limits and last live status snapshot
+
+The Android bundle step retries up to four times only for Maven Central HTTP 429 responses (20s, 40s, and 60s backoff). Other Gradle errors fail immediately. If all retries are rate-limited, the job exits before upload.
+
+Read-only Google Play Status Monitor run 46031294660 (2026-11-27 16:10:27 UTC) read:
+- Hubaish Closed Test versionCode 413: completed; versionName 1.0.401.
+- Hubaish Closed Test versionCode 414: draft; versionName 1.0.401.
+- One draft exists on Hubaish Closed Test.
+- No version codes on alternative tracks. A separate legacy Closed testing track had a draft with no versionCode; it was not modified.
+- Production had no versionCodes.
+- Edits.tracks does not provide a distinct policy-review queue state or tester email allow-list.

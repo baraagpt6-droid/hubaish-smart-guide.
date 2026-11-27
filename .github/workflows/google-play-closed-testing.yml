@@ -249,7 +249,32 @@ jobs:
 
           keytool -list -keystore "$ANDROID_KEYSTORE_PATH" -storetype JKS -storepass "$KEYSTORE_PASSWORD" -alias "$KEY_ALIAS" >/dev/null
           python3 scripts/prepare-android-release.py
-          (cd android && ./gradlew --no-daemon bundleRelease)
+          gradle_success=0
+          for attempt in 1 2 3 4; do
+            gradle_log="$RUNNER_TEMP/hubaish-gradle-bundle-$attempt.log"
+            set +e
+            (cd android && ./gradlew --no-daemon --console=plain bundleRelease) > "$gradle_log" 2>&1
+            gradle_status=$?
+            set -e
+            cat "$gradle_log"
+            if [[ "$gradle_status" -eq 0 ]]; then
+              gradle_success=1
+              break
+            fi
+            if ! grep -Eiq 'status code 429|HTTP 429|Too Many Requests' "$gradle_log"; then
+              echo "::error::Gradle failed for a reason other than Maven Central rate limiting."
+              exit "$gradle_status"
+            fi
+            if [[ "$attempt" -lt 4 ]]; then
+              retry_delay=$((attempt * 20))
+              echo "::warning::Maven Central rate-limited Android dependencies (HTTP 429). Waiting ${retry_delay}s before retry $((attempt + 1))/4."
+              sleep "$retry_delay"
+            fi
+          done
+          if [[ "$gradle_success" != "1" ]]; then
+            echo "::error::Gradle remained rate-limited after 4 attempts. No AAB was uploaded."
+            exit 1
+          fi
 
           AAB_SOURCE="android/app/build/outputs/bundle/release/app-release.aab"
           [[ -s "$AAB_SOURCE" ]] || { echo "::error::Signed Release AAB was not produced."; exit 1; }

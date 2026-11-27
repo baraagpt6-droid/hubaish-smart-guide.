@@ -41,8 +41,10 @@ async function checkWorker(path) {
     if (path === '/setup/status' && typeof body.setupRequired !== 'boolean') throw new Error('Worker setup response is invalid.');
     return { ok: true, status: response.status, ...(path === '/health' ? { checks: body.checks } : { setupRequired: body.setupRequired }) };
   } catch (error) {
-    console.warn('WARN: Cloudflare Worker ' + path + ' health check failed: ' + error.message);
-    return { ok: false, error: error.message };
+    const cause = error?.cause;
+    const detail = [error?.name, error?.message, cause?.code, cause?.message].filter(Boolean).join(' | ');
+    console.warn('WARN: Cloudflare Worker ' + path + ' health check failed: ' + detail);
+    return { ok: false, error: detail };
   }
 }
 

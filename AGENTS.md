@@ -111,3 +111,8 @@ Do not generate or rotate an upload key without an explicit migration plan. Vali
 - The Google Play preview workflow runs the runtime audit before generating/uploading its AAB. A failed app/UI/offline test must block the draft upload.
 - Do not change or remove release 413 as part of monitoring or runtime audit. Never modify Production.
 - Any app-store listing or rollout change that could affect an active review must wait until the current release status has been checked; do not claim review completion from a track status alone.
+
+## Build reliability and live monitor findings
+- Gradle may retry up to four times only when Maven Central returns HTTP 429. The retry delay is bounded (20s, 40s, 60s). Every other Gradle failure exits immediately; after the last 429, the build fails and no AAB is uploaded.
+- On 2026-11-27T16:10:27Z, the read-only Play monitor returned 413 completed and 414 draft on Hubaish Closed Test, exactly one draft on that track, no alternate track version codes, and no Production version codes. It also found an empty draft record on the separate legacy Closed testing track without a versionCode; do not mutate that track automatically.
+- The same runtime audit passed UI, layout, Service Worker/cache and offline checks, but the GitHub runner could not reach the Worker /health and /setup/status endpoints (fetch failed). Treat Worker connectivity as unverified until a successful live health run confirms it.

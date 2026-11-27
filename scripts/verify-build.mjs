@@ -274,6 +274,12 @@ if (!playWorkflow.includes('workflow_dispatch:') ||
     playWorkflow.includes("approve_draft")) {
   throw new Error('Google Play workflow must upload draft previews on main pushes, require explicit manual approval, use WIF, verify signing and read back the release.');
 }
+if (!playWorkflow.includes('status code 429') ||
+    !playWorkflow.includes('Too Many Requests') ||
+    !playWorkflow.includes('Gradle remained rate-limited after 4 attempts') ||
+    !playWorkflow.includes('No AAB was uploaded')) {
+  throw new Error('The signed AAB build must retry only Maven Central HTTP 429 and fail safely after bounded retries.');
+}
 if (!playFastfile.includes('google_play_track_version_codes') ||
     !playFastfile.includes('PLAY_RELEASE_STATUS') ||
     !playFastfile.includes('release_status: release_status') ||

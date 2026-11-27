@@ -136,3 +136,18 @@ That result is historical context only. It does not authorize future automatic c
 - Important API limitation: Edits.tracks does not expose a separate Play policy-review queue or a closed-test tester email allow-list. A track status is not enough to independently assert that every tester can install.
 - scripts/audit-runtime.mjs exercises the local app with Playwright at mobile, tablet and desktop widths; checks language switching, navigation, Service Worker activation, cached app shell, offline home rendering and browser errors; and calls the Worker health/setup endpoints read-only apart from its health endpoint's temporary KV self-test.
 - The Google Play preview workflow runs this audit before AAB build/upload. Failure blocks the draft upload. Existing 413 is not modified and Production remains prohibited.
+
+## Live Google Play and audit checkpoint
+Read-only Google Play Status Monitor run 46031294660 at 2026-11-27T16:10:27Z:
+- Effective versionCode on Hubaish Closed Test: 413.
+- versionCode 413, versionName 1.0.401: status completed.
+- versionCode 414, versionName 1.0.401: status draft.
+- Draft count on the exact Hubaish Closed Test track: 1.
+- Other track version codes: none. Legacy Closed testing has an empty draft record with no versionCode; it was not modified.
+- Production versionCodes/statuses: none.
+- The API cannot provide a separate Play policy-review queue state or tester allow-list.
+Runtime audit run 46030839266:
+- Passed app navigation, AR/EN switching, responsive width checks at 360/390/768/1024 (0 px overflow), Service Worker activation, 23 cached assets, offline home and zero browser errors.
+- Initial ready time 1.95s; DOMContentLoaded 66ms; window load 74ms; transfer size reported 51,964 bytes.
+- Cloudflare Worker /health and /setup/status requests from the GitHub runner failed with fetch failed. This means external Worker connectivity is unverified, not proof that the Worker is down.
+- Android AAB build then failed on Maven Central HTTP 429 dependency rate limiting, before any AAB upload. A bounded HTTP 429 retry has been added; no app release was committed by that failed attempt.
