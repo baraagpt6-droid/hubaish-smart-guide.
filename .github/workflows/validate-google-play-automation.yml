@@ -2,7 +2,7 @@ name: Validate Google Play Automation
 
 on:
   push:
-    branches: [feat/google-play-closed-testing-wif]
+    branches: [feat/google-play-closed-testing-wif, feat/hubaish-historical-schools-scope]
   workflow_dispatch:
 
 permissions:
