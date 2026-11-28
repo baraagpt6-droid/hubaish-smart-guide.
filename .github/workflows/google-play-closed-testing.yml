@@ -196,6 +196,40 @@ jobs:
         if: steps.release-mode.outputs.mode != 'publish_approved_release'
         run: node scripts/audit-runtime.mjs
 
+      - name: Wait for deployed Cloudflare live-content feed before release
+        if: steps.release-mode.outputs.mode != 'publish_approved_release'
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --input-type=module <<'NODE'
+          const base = 'https://hubaish-cms.baraagpt6.workers.dev';
+          const collections = ['landmarks', 'historyEvents', 'subDistrictUpdates', 'subDistricts', 'historicalFigures', 'communityLinks'];
+          let lastError = 'Worker did not become ready.';
+          for (let attempt = 1; attempt <= 18; attempt++) {
+            try {
+              const response = await fetch(base + '/api/live-content', {
+                headers: { Accept: 'application/json' },
+                cache: 'no-store',
+                signal: AbortSignal.timeout(12000)
+              });
+              const body = await response.json();
+              if (response.ok && body.content?.schemaVersion === 1 &&
+                  collections.every(key => Array.isArray(body.content[key])) &&
+                  typeof body.updatedAt === 'string' && body.updatedAt.length > 0) {
+                console.log('PASS: deployed Cloudflare live feed returned HTTP ' + response.status +
+                  ' with six valid Hubaish collections. Updated at ' + body.updatedAt);
+                process.exit(0);
+              }
+              lastError = 'HTTP ' + response.status + ': ' + JSON.stringify(body).slice(0, 500);
+            } catch (error) {
+              lastError = String(error?.message || error);
+            }
+            console.warn('Live feed readiness attempt ' + attempt + '/18: ' + lastError);
+            if (attempt < 18) await new Promise(resolve => setTimeout(resolve, 10000));
+          }
+          throw new Error('Cloudflare live content was not deployed and schema-valid after 18 checks: ' + lastError);
+          NODE
+
       - name: Render Arabic and English feature graphic
         if: steps.release-mode.outputs.mode != 'publish_approved_release'
         run: node scripts/render-play-feature-graphic.mjs
