@@ -30,23 +30,28 @@
 <body>
   <div id="appSplash" class="app-splash" role="dialog" aria-modal="true" aria-labelledby="welcomeTitle" aria-describedby="welcomeCopy">
     <div class="app-splash-inner">
-      <svg class="welcome-graphic" viewBox="0 0 420 280" role="img" aria-label="قمم جبال حبيش وقوس حصن ذهبي">
+      <svg class="welcome-graphic" viewBox="0 0 420 280" role="img" aria-label="قوس معماري وزخرفة هندسية من تراث حبيش">
         <defs>
           <linearGradient id="welcomeGold" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#fff0b0"/><stop offset=".48" stop-color="#d4af37"/><stop offset="1" stop-color="#9b6b1d"/></linearGradient>
           <linearGradient id="welcomePeak" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#23704b"/><stop offset="1" stop-color="#0b281c"/></linearGradient>
+          <radialGradient id="welcomeHalo"><stop stop-color="#d4af37" stop-opacity=".3"/><stop offset="1" stop-color="#10b981" stop-opacity="0"/></radialGradient>
         </defs>
-        <path d="M18 214 92 124l38 42 56-94 58 92 48-56 112 106v38H18Z" fill="url(#welcomePeak)" stroke="#2b875c" stroke-width="2"/>
-        <path d="m42 218 86-34 57 18 72-35 58 35 60-25 27 17" fill="none" stroke="url(#welcomeGold)" stroke-width="3" opacity=".8"/>
-        <path d="M142 214v-61a68 68 0 0 1 136 0v61" fill="none" stroke="url(#welcomeGold)" stroke-width="13" stroke-linecap="round"/>
-        <path d="M160 214v-60a50 50 0 0 1 100 0v60" fill="none" stroke="#e5c66b" stroke-width="2" opacity=".8"/>
-        <path d="M210 91V59m0 0 20-10m-20 10-20-10" fill="none" stroke="url(#welcomeGold)" stroke-width="3" stroke-linecap="round"/>
-        <g fill="none" stroke="#d4af37" stroke-width="1.5" opacity=".6"><path d="M42 70h36m-18-18v36m-12-12 24-24m0 24L48 52"/><path d="M342 75h36m-18-18v36m-12-12 24-24m0 24-24-24"/></g>
-        <path d="M22 244Q105 223 210 244t188 0" fill="none" stroke="url(#welcomeGold)" stroke-width="2" opacity=".65"/>
+        <ellipse cx="210" cy="160" rx="184" ry="120" fill="url(#welcomeHalo)"/>
+        <path class="welcome-mountain" d="M18 214 92 124l38 42 56-94 58 92 48-56 112 106v38H18Z" fill="url(#welcomePeak)" stroke="#2b875c" stroke-width="2"/>
+        <path class="welcome-terrace" d="m42 218 86-34 57 18 72-35 58 35 60-25 27 17" fill="none" stroke="url(#welcomeGold)" stroke-width="3" opacity=".8"/>
+        <path class="welcome-arch" d="M142 214v-61a68 68 0 0 1 136 0v61" fill="none" stroke="url(#welcomeGold)" stroke-width="13" stroke-linecap="round"/>
+        <path class="welcome-arch-inner" d="M160 214v-60a50 50 0 0 1 100 0v60" fill="none" stroke="#e5c66b" stroke-width="2" opacity=".8"/>
+        <path class="welcome-finial" d="M210 91V59m0 0 20-10m-20 10-20-10" fill="none" stroke="url(#welcomeGold)" stroke-width="3" stroke-linecap="round"/>
+        <g class="welcome-ornament" fill="none" stroke="#d4af37" stroke-width="1.5" opacity=".75"><path d="M42 70h36m-18-18v36m-12-12 24-24m0 24L48 52"/><path d="M342 75h36m-18-18v36m-12-12 24-24m0 24-24-24"/><path d="M210 15v18m-18-9h36m-31-13 26 26m0-26-26 26"/></g>
+        <path class="welcome-baseline" d="M22 244Q105 223 210 244t188 0" fill="none" stroke="url(#welcomeGold)" stroke-width="2" opacity=".65"/>
       </svg>
+      <div class="welcome-motes" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
       <span class="welcome-kicker">HUBAISH HERITAGE ARCHIVE</span>
-      <strong id="welcomeTitle">مرحباً بكم في رحاب مديرية حبيش</strong>
-      <p id="welcomeCopy">التاريخ، المعالم، والإنسان</p>
-      <button id="welcomeSkipBtn" class="welcome-skip" type="button">تخطي</button>
+      <strong id="welcomeTitle">دليل حبيش الذكي</strong>
+      <p id="welcomeCopy">موسوعة رقمية لتاريخ ومعالم وعُزل مديرية حبيش — إب</p>
+      <p id="welcomeGreeting" class="welcome-greeting" aria-live="polite">أهلاً بك في رحاب جبل حبيش التاريخي</p>
+      <div class="welcome-progress" role="progressbar" aria-label="تقدم شاشة الترحيب" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span id="welcomeProgressBar"></span></div>
+      <button id="welcomeSkipBtn" class="welcome-skip" type="button">تخطي الآن</button>
     </div>
   </div>
   <div id="offlineIndicator" class="offline-indicator" role="status" hidden>أنت دون اتصال. المحتوى المحفوظ متاح.</div>
@@ -77,6 +82,7 @@
         <p class="hero-desc" data-i18n="heroDesc">موسوعة جغرافية وتاريخية لعزل حبيش وقراها ومعالمها ومجتمعها.</p>
         <div class="terrain-strip"><span class="terrain-icon"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m2 20 7-12 4 7 3-5 6 10H2ZM9 8l2-4 3 5"/></svg></span><div><strong data-i18n="westIbbMountains">جبال إب الغربية</strong><small>إحداثيات تقريبية 14°07′N · 44°05′E</small></div><b>1,550–2,450 م</b></div>
         <label class="search-box"><span aria-hidden="true">⌕</span><input id="globalSearchInput" class="search-input" type="search" placeholder="ابحث عن عزلة أو قرية أو حصن أو حدث..." data-i18n-placeholder="searchPlaceholder"><button class="mic-btn" id="globalMicBtn" type="button" aria-label="بحث صوتي"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="2.5" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3m-4 0h8"/></svg></button></label>
+         <div id="globalSearchResults" class="search-results-dock" aria-live="polite"></div>
         <div class="quick-searches" aria-label="بحث سريع في مواضع حبيش">
           <button class="quick-chip" data-query="حصن يريس">حصن يريس</button>
           <button class="quick-chip" data-query="عزلة شباع">عزلة شباع</button>
@@ -137,7 +143,7 @@
         <p id="seasonSource" class="small muted">المصدر: منظمة الأغذية والزراعة للأمم المتحدة — سلسلة قيمة البن في اليمن</p>
         <button class="text-action" id="nextSeasonBtn" type="button">موسم آخر</button>
       </article>
-      <div id="globalSearchResults" aria-live="polite"></div>
+      
     </section>
 
     <section id="view-history" class="view-section">
@@ -181,6 +187,7 @@
 <section class="knowledge-section"><h4 class="item-title">مكتبة المؤلفات المنسوبة إلى علماء حبيش</h4><div id="knowledgeWorksList" class="knowledge-grid"></div><p class="small muted">تُفهرس الأعمال المنقولة مع اختلاف عناوينها، ولا تُعرض نسخة رقمية ما لم يودعها مالك الحقوق أو يثبت الإذن.</p><div id="knowledgeAuthorsList" class="knowledge-grid"></div></section>
 <section class="knowledge-section"><h4 class="item-title">الأعلام والسير المهنية</h4><div id="knowledgePeopleList" class="knowledge-grid"></div></section>
 <section class="knowledge-section"><h4 class="item-title">دليل الأسر والبطاقات التعريفية</h4><p class="item-body">هذا الباب للتعارف العلمي وحفظ الذاكرة، لا للتفاخر أو التعالي. لا ينسب التطبيق أسرة أو فرداً إلى أصل قبلي من تشابه الاسم.</p><blockquote class="knowledge-charter">﴿وَجَعَلْنَاكُمْ شُعُوبًا وَقَبَائِلَ لِتَعَارَفُوا إِنَّ أَكْرَمَكُمْ عِندَ اللَّهِ أَتْقَاكُمْ﴾</blockquote><div id="knowledgeFamiliesList" class="knowledge-grid"></div></section>
+<section class="knowledge-section"><h4 class="item-title">ملاحظات البحث والنطاق والمراجع النسبية</h4><div id="knowledgeResearchNotesList" class="knowledge-grid"></div></section>
 <section class="knowledge-section"><h4 class="item-title">لوحة الشرف والإسناد</h4><div id="knowledgeHonorRoll" class="knowledge-grid"></div></section>
 <section class="knowledge-section"><h4 class="item-title">الأرشيف الوثائقي والنقوش</h4><div id="knowledgeArchiveList" class="knowledge-grid"></div><p class="small muted">تعرض الوثائق بعد مراجعتها داخل عارض بعلامة مائية. العلامة المائية تقلل إعادة الاستخدام غير المنسوب، لكنها لا تمنع استخراج ملف ثابت من جهاز أو حزمة تطبيق.</p></section>
 <section class="knowledge-section"><div id="knowledgeAgriculture" class="knowledge-agriculture"></div></section>
@@ -346,7 +353,7 @@
   </nav>
 
   <div class="modal-backdrop image-lightbox-backdrop" id="imageLightbox" aria-hidden="true"><section class="image-lightbox-sheet" role="dialog" aria-modal="true" aria-label="عرض الصورة"><button class="image-lightbox-close" type="button" data-close="imageLightbox" aria-label="إغلاق الصورة">×</button><img id="imageLightboxImage" alt=""><p id="imageLightboxCaption" class="small muted"></p></section></div>
-  <div class="modal-backdrop" id="aiModal" aria-hidden="true"><section class="modal-sheet" role="dialog" aria-modal="true" aria-labelledby="aiTitle"><div class="modal-head"><strong id="aiTitle">مساعد دليل حبيش المحلي</strong><button class="btn-sm" data-close="aiModal" aria-label="إغلاق"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button></div><div id="aiSuggestions" class="quick-searches"><button class="quick-chip" data-ai-question="ما تاريخ مصنعة وحاظة؟">مصنعة وحاظة</button><button class="quick-chip" data-ai-question="ما تاريخ قبة بين الدور؟">قبة بين الدور</button><button class="quick-chip" data-ai-question="كم عدد عزل حبيش؟">كم عدد العزل</button></div><div id="aiChatLog" class="chat-log"><div class="item-card">مرحباً. أبحث في محتوى الموسوعة المحفوظ محلياً، ولا أرسل سؤالك إلى خدمة خارجية.</div></div><form id="aiForm" class="chat-form"><input id="aiInput" class="search-input" type="text" maxlength="500" placeholder="اسأل عن عزلة أو معلم..."><button class="mic-btn" id="aiMicBtn" type="button" aria-label="إملاء صوتي"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="2.5" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3m-4 0h8"/></svg></button><button class="btn-primary" type="submit">إرسال</button></form></section></div>
+  <div class="modal-backdrop" id="aiModal" aria-hidden="true"><section class="modal-sheet" role="dialog" aria-modal="true" aria-labelledby="aiTitle"><div class="modal-head"><strong id="aiTitle">مساعد حبيش الذكي</strong><button class="btn-sm" data-close="aiModal" aria-label="إغلاق"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button></div><div id="aiSuggestions" class="quick-searches"><button class="quick-chip" data-ai-question="ما تاريخ مصنعة وحاظة؟">مصنعة وحاظة</button><button class="quick-chip" data-ai-question="ما تاريخ قبة بين الدور؟">قبة بين الدور</button><button class="quick-chip" data-ai-question="كم عدد عزل حبيش؟">كم عدد العزل</button></div><div id="aiChatLog" class="chat-log"><div class="item-card">مرحباً بك. أبحث في بيانات حبيش المحلية والمحتوى المنشور في الموسوعة، وأوضح مصدر كل معلومة وحدود توثيقها.</div></div><form id="aiForm" class="chat-form"><input id="aiInput" class="search-input" type="text" maxlength="500" placeholder="اسأل عن عزلة أو معلم أو مدرسة أو شخصية أو سوق..."><button class="mic-btn" id="aiMicBtn" type="button" aria-label="إملاء صوتي"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="2.5" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3m-4 0h8"/></svg></button><button class="btn-primary" type="submit">إرسال</button></form></section></div>
   <div class="modal-backdrop" id="favModal" aria-hidden="true"><section class="modal-sheet" role="dialog" aria-modal="true" aria-labelledby="favTitle"><div class="modal-head"><strong id="favTitle">المحفوظات والمفضلة</strong><button class="btn-sm" data-close="favModal" aria-label="إغلاق"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button></div><div class="search-box"><input id="favSearch" class="search-input" placeholder="تصفية المحفوظات"><select id="favTypeFilter" class="fav-select"><option value="all">الكل</option><option value="place">المعالم</option><option value="history">التاريخ</option></select><button class="btn-sm" id="favExportBtn">تصدير</button></div><div id="favListContainer"></div></section></div>
   <div class="modal-backdrop" id="detailModal" aria-hidden="true"><section class="modal-sheet detail-sheet" role="dialog" aria-modal="true" aria-labelledby="detailTitle"><div class="modal-head"><strong id="detailTitle">تفاصيل العنصر</strong><button class="btn-sm" data-close="detailModal" aria-label="إغلاق"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button></div><div id="detailContent"></div></section></div>
   <footer class="site-footer"><span>دليل مديرية حبيش</span><span id="appVersion">نسخة PWA محلية</span></footer>
