@@ -712,6 +712,8 @@ function openKnowledgeRecord(id) {
   }
   openModal('detailModal');return true;
 }
+window.HubaishOpenKnowledgeRecord=openKnowledgeRecord;
+
 function renderGlobalSearch(query) {
   const target=document.getElementById('globalSearchResults');
   const needle=normalizeSearchQuery(query);
