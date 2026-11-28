@@ -294,7 +294,7 @@ if (!playWorkflow.includes('workflow_dispatch:') ||
     !playWorkflow.includes("if: github.ref == 'refs/heads/main'") ||
     !playWorkflow.includes("github.event_name == 'push' && 'preview_draft'") ||
     !playWorkflow.includes("inputs.mode || 'verify_only'") ||
-    !playWorkflow.includes('google-github-actions/auth@v2') ||
+    !playWorkflow.includes('google-github-actions/auth@v3') || playWorkflow.includes('google-github-actions/auth@v2') ||
     !playWorkflow.includes('projects/28058491662/locations/global/workloadIdentityPools/github-pool/providers/github-provider') ||
     !playWorkflow.includes('dalilna-play-automation@dalilna-play-automation-516000.iam.gserviceaccount.com') ||
     !playWorkflow.includes('npm run build') ||
