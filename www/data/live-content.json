@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-28T03:30:00+08:00",
+  "updatedAt": "2026-11-28T07:56:28.299Z",
   "landmarks": [
     {
       "id": "khudad-fort",
@@ -214,7 +214,22 @@
       "source_text": "دراسة العروسي عن المعالم ونقوش المباني، منقولة في نبذة إسماعيل عبدالقادر الفلاحي.",
       "source_url": "https://kenanaonline.com/users/esmaeilalflahi/posts/280884",
       "evidence_level": "wooden_inscription_reported_in_secondary_study",
-      "reported_date": "811هـ / 1409م؛ البناء الحالي بحسب الدراسة 1183هـ / 1718م"
+      "reported_date": "811هـ / 1409م؛ البناء الحالي بحسب الدراسة 1183هـ / 1718م",
+      "image_url": "./assets/heritage/1183-wood-inscription.webp",
+      "image_verified": true,
+      "image_category": "heritage",
+      "image_title_ar": "نقش مسجد مروحة الأثري — عزلة شباع (تاريخ ١١٨٣ هـ)",
+      "image_title_en": "Marwaha Mosque Inscription — Shaba'a (1183 AH)",
+      "image_alt_ar": "لوح خشبي يحمل نقشاً عربياً في مسجد مروحة",
+      "image_alt_en": "Arabic inscription on a wooden panel from Marwaha Mosque",
+      "image_caption_ar": "صورة اللوح الخشبي المحفوظ في أرشيف دليل حبيش. تنقل الدراسة أن النقش يؤرخ إلى 811هـ، وأن البناء الحالي يعود إلى 1183هـ. التفريغ الحرفي واسم الواقف لم يثبتا من الصورة الحالية.",
+      "image_caption_en": "A wooden panel preserved in the Hubaish archive. The cited study assigns 811 AH to the inscription and 1183 AH to the current building. The exact transcription and waqf founder are not verified from this image.",
+      "image_district_ar": "عزلة نقيل العقاب — مسجد مروحة",
+      "image_district_en": "Naqil al-Aqab sub-district — Marwaha Mosque",
+      "image_photographer": "غير محدد في الملف المرجعي",
+      "image_credit": "أرشيف دليل حبيش الذكي — صورة محفوظة للمراجعة",
+      "image_license": "لم تُحدد الرخصة أو حقوق الصورة في المرجع المتاح",
+      "image_source_url": "https://kenanaonline.com/users/esmaeilalflahi/posts/280884"
     },
     {
       "id": "al-farawi-mosque-dome",
@@ -369,23 +384,6 @@
       "importance_en": "A geographic feature associated with the district's highland and agricultural slopes.",
       "source_text": "بلال الطيب، «حبيش.. مفتتح المجد وذروته»، 21 مايو 2022.",
       "source_url": "https://hekmahyemanya.com/آثار/حُبيش-مُفتتح-المجد-وذروته/"
-    },
-    {
-      "id": "al-dhuhrah-historic-settlement",
-      "category": "mountain",
-      "status": "local",
-      "title_ar": "مدينة الظاهرة – نطاق عمران تاريخي",
-      "title_en": "Al-Dhuhrah Historic Settlement",
-      "location_ar": "قرب قرية ملكان شمال غرب مدينة إب؛ التبعية الإدارية الحالية بحاجة إلى مطابقة",
-      "location_en": "Sahul highlands near Malkan, northwest of Ibb; current administrative affiliation is unconfirmed",
-      "description_ar": "يربط مقال محلي مدينة الظاهرة بمنطقة عمران تاريخي قرب قرية ملكان وبسلطنة بني وائل. يورد وصفاً لدور سكنية ونوبة حراسة. لا تتوفر في المادة خريطة إدارية أو إحداثيات تثبت انتماء الموقع إلى مديرية حبيش المعاصرة؛ لذلك تحفظ البطاقة في السجلات قيد التحقق الجغرافي ولا تقدمها كمعلم داخل الحدود الحالية.",
-      "description_en": "A local account places Al-Dhuhrah northwest of Ibb near Malkan and describes occupied and ruined houses and a watchtower known as Nubbat Sind. It associates the area with Sultan Sa'd bin Wa'il al-Himyari, but provides no map confirming its current inclusion in Hubaish District.",
-      "importance_ar": "موضع عمران تاريخي يحتاج إلى مسح أثري وحدود إدارية موثقة.",
-      "importance_en": "A historic settlement area requiring archaeological survey and verified administrative boundaries.",
-      "source_text": "العرشي؛ وإحالات مادة حبيش المحلية إلى وصف منطقة الظاهرة وبني وائل.",
-      "source_url": "https://www.thu-raein.com/index.php/ar/makhaleef-ar/hubaish-district-ar?id=17&view=category",
-      "scope": "unverified_location",
-      "evidence_level": "local_historical_account"
     },
     {
       "id": "hubaish-weekly-market",
