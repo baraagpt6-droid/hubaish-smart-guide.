@@ -130,6 +130,10 @@ jobs:
         if: steps.release-mode.outputs.mode == 'publish_approved_release'
         run: python3 -m py_compile scripts/promote-play-draft.py scripts/monitor-play-status.py
 
+      - name: Validate guarded 418 release helpers
+        if: steps.release-mode.outputs.mode == 'publish_new_release'
+        run: python3 -m py_compile scripts/resolve-play-release.py scripts/retire-obsolete-play-draft.py scripts/promote-play-draft.py scripts/monitor-play-status.py
+
       - name: Install icon rendering dependencies
         if: steps.release-mode.outputs.mode != 'publish_approved_release'
         run: |
