@@ -434,6 +434,13 @@ jobs:
           echo "aab_sha256=$AAB_SHA256" >> "$GITHUB_OUTPUT"
           echo "Signed AAB ready: versionName=$VERSION_NAME versionCode=$ANDROID_VERSION_CODE sha256=$AAB_SHA256"
 
+      - name: Retire only an exact 419 preview draft after the clean 420 bundle is signed
+        if: steps.release-mode.outputs.mode == 'publish_420_release'
+        env:
+          PLAY_PACKAGE_NAME: ${{ env.PLAY_PACKAGE_NAME }}
+          PLAY_TRACK: ${{ env.PLAY_TRACK }}
+        run: python3 scripts/retire-preview-419-draft.py
+
       - name: Retire only the obsolete 417 draft after the clean 418 bundle is signed
         if: steps.release-mode.outputs.mode == 'publish_new_release'
         env:
