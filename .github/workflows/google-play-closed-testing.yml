@@ -96,6 +96,12 @@ jobs:
               exit 1
             }
           fi
+if [[ "$mode" == "verify_only" ]]; then
+            [[ "$commit_message" == *"[verify-only]"* ]] || {
+              echo "::error::verify_only is allowed on push only with an explicit marker."
+              exit 1
+            }
+          fi
           echo "mode=$mode" >> "$GITHUB_OUTPUT"
           echo "expected_version_code=$expected_code" >> "$GITHUB_OUTPUT"
           echo "Resolved mode=$mode; expected versionCode=${expected_code:-not applicable}."
@@ -142,6 +148,7 @@ jobs:
         run: npx playwright install --with-deps chromium
 
       - name: Audit navigation, responsive layouts, offline cache and Cloudflare Worker
+        timeout-minutes: 15
         timeout-minutes: 15
         if: steps.release-mode.outputs.mode != 'publish_approved_release'
         run: node scripts/audit-runtime.mjs
@@ -395,11 +402,11 @@ jobs:
           export KEY_ALIAS="hubaish-verify-only"
           export KEY_PASSWORD="temporary-verify-only-key"
           VERSION_NAME="$(tr -d '[:space:]' < release-version.txt)"
-          [[ "$VERSION_NAME" =~ ^[0-9]+\\.[0-9]+\\.[0-9]+$ ]] || { echo "::error::Invalid release-version.txt"; exit 1; }
+          [[ "$VERSION_NAME" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]] || { echo "::error::Invalid release-version.txt (got '$VERSION_NAME')"; exit 1; }
           export ANDROID_VERSION_NAME="$VERSION_NAME"
 
-          keytool -genkeypair -noprompt -keystore "$ANDROID_KEYSTORE_PATH" -storetype JKS \\
-            -storepass "$KEYSTORE_PASSWORD" -keypass "$KEY_PASSWORD" -alias "$KEY_ALIAS" \\
+          keytool -genkeypair -noprompt -keystore "$ANDROID_KEYSTORE_PATH" -storetype JKS \
+            -storepass "$KEYSTORE_PASSWORD" -keypass "$KEY_PASSWORD" -alias "$KEY_ALIAS" \
             -dname "CN=Hubaish Verify Only,O=Hubaish District,C=YE" -keyalg RSA -keysize 2048 -validity 2
 
           python3 scripts/prepare-android-release.py
@@ -407,7 +414,7 @@ jobs:
           python3 - <<'PY'
           from pathlib import Path
           import re
-          mirror = re.compile(r'maven\\s*\\{\\s*url\\s*=\\s*uri\\("https://maven-central\\.storage-download\\.googleapis\\.com/maven2/"\\)\\s*\\}\\s*mavenCentral\\(\\)')
+          mirror = re.compile(r'maven\s*\{\s*url\s*=\s*uri\("https://maven-central\.storage-download\.googleapis\.com/maven2/"\)\s*\}\s*mavenCentral\(\)')
           total = 0
           for path in Path("android").rglob("*.gradle"):
               source = path.read_text(encoding="utf-8")
