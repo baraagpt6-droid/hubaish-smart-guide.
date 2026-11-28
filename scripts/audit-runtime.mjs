@@ -233,6 +233,34 @@ try {
 
   await page.locator('.nav-btn[data-tab="more"]').click();
   await page.locator('#view-more.active').waitFor({ state: 'visible', timeout: 10000 });
+
+  // The photo gallery must expose five sourced Hubaish images, including the Marwaha inscription.
+  await page.locator('#heritageGalleryCount').waitFor({ state: 'visible', timeout: 10000 });
+  const galleryCards = page.locator('#heritageGalleryGrid .heritage-gallery-card');
+  await page.waitForFunction(() => Number(document.querySelector('#heritageGalleryCount')?.textContent) === 5, { timeout: 10000 });
+  if (await galleryCards.count() !== 5) throw new Error('The verified Hubaish gallery must contain five photo cards.');
+  const marwahaGalleryCard = galleryCards.filter({ hasText: 'نقش مسجد مروحة الأثري' }).first();
+  await marwahaGalleryCard.waitFor({ state: 'visible', timeout: 10000 });
+  const marwahaImage = marwahaGalleryCard.locator('img');
+  await page.waitForFunction(() => {
+    const card = [...document.querySelectorAll('#heritageGalleryGrid .heritage-gallery-card')]
+      .find(node => node.textContent.includes('نقش مسجد مروحة الأثري'));
+    const image = card?.querySelector('img');
+    return !!image && image.complete && image.naturalWidth > 0;
+  }, { timeout: 10000 });
+  await marwahaGalleryCard.click();
+  await page.locator('.heritage-lightbox:not([hidden])').waitFor({ state: 'visible', timeout: 10000 });
+  if (!(await page.locator('#heritageLightboxTitle').innerText()).includes('١١٨٣ هـ') ||
+      await page.locator('.heritage-lightbox-watermark-primary').count() !== 1 ||
+      await page.locator('.heritage-lightbox-watermark-secondary').count() !== 1) {
+    throw new Error('The Marwaha gallery viewer is missing its title or double watermark.');
+  }
+  if (await page.locator('.heritage-lightbox a[href*="1183-wood-inscription"]').count()) {
+    throw new Error('The protected Marwaha gallery exposes a raw local-image link.');
+  }
+  await page.locator('.heritage-lightbox-close').click();
+  await page.locator('.heritage-lightbox[hidden]').waitFor({ state: 'attached', timeout: 5000 });
+
   const sadiqText = await page.locator('#knowledgePeopleList').innerText();
   if (!sadiqText.includes('صادق محمد محمد الناهي')) throw new Error('The sourced Sadiq profile is missing.');
   await page.locator('#view-more .more-tab-button[data-more-tab="tools"]').click();
