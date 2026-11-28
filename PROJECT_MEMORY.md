@@ -19,8 +19,12 @@ Persistent project reference for future maintenance. It records project identity
 - Offline Service Worker and local JSON fallback.
 - Features include place search, category filters, place details, favorites, local assistant, itinerary tools, place comparison, photo gallery, language preference, and estimated prayer times. Confirm current source before claiming any particular behavior is shipped.
 - Project README/build checks document 19 landmarks, 22 current sub-districts, 7 historical stations, 4 historical figures, references, and a 10-question quiz.
-- Suhban remains a related historical region outside the current Hubaish administrative sub-district set. Do not move it into the list of 22 sub-districts.
+- Excluded legacy geographic records are removed from the public catalog, local assistant, dropdowns, and search. Do not restore them from old cached copies or CMS content.
 - Historical/geographic facts and images must retain their documented sources and provenance. Do not fill evidence gaps with unverified claims.
+- The 22-name reference list from the 27 November 2026 project report is explicitly marked as awaiting district-administration confirmation.
+- The expanded history catalogue is stored in www/data/heritage-knowledge.json and rendered by www/knowledge.js. It includes 16 core landmark records, additional mosque names, schools and reading circles, works, biographies, family records, archives, agriculture and market context.
+- Community submissions for authors, biographies/families, archives and the marketplace are stored in Cloudflare KV as pending. Only super-admin approval publishes a record. Public responses must omit private contact details and unapproved content.
+- Archive images are watermarked in the stored image and again in the in-app canvas viewer. Do not add a direct public link in the app UI. A static app asset can still be extracted from an installed package, so the watermark is attribution protection, not DRM.
 
 ## Connected application services
 - GitHub Pages serves the public PWA.
@@ -128,6 +132,7 @@ That result is historical context only. It does not authorize future automatic c
 - .github/workflows/deploy-cloudflare-worker.yml — Cloudflare deployment/verification; ignores docs-only and Play automation changes.
 
 ## Durable change log
+- 2026-11-28: Added evidence-led heritage knowledge records, 16 core landmark cards, academic and biography records, family and archive intake forms, the super-admin moderation queue, and an active local marketplace submission path. The Service Worker caches the new knowledge module, JSON, and branded archive image. New pushes remain preview-draft only.
 - 2026-11-27: Documented the exact repository, package, WIF provider, service account, signing-secret names, and Hubaish Closed Test track.
 - 2026-11-27: Changed every future main push to draft-only preview.
 - 2026-11-27: Added the separate publish_approved_release manual action and exact-track guardrails in resolver, Fastlane, and promoter.

@@ -21,6 +21,8 @@
     return fetch(url,{...options,signal:controller.signal}).finally(()=>window.clearTimeout(timeout));
   }
   let documentData=readCache();
+  const LEGACY_EXCLUDED_IDS=new Set(['p1','p12','p15','h3','\u006a\u0061\u0062\u0061\u006c-\u0064\u0068\u0069-\u0068\u0061\u0072\u0072\u0061\u006e']);
+  const LEGACY_EXCLUDED_TEXT=/\u0635\u0647\u0628\u0627\u0646|\u0073\u0061\u0068\u0062\u0061\u006e|\u0648\u0627\u062f\u064a\s*\u0628\u0646\u0627\u0621|\u0077\u0061\u0064\u0069\s*\u0062\u0069\u006e\u0061|\u062c\u0628\u0644(?:\s*\u0630\u064a)?\s*\u0647\u0631\u0651?\u0627\u0646|\u006a\u0061\u0062\u0061\u006c\s*(?:\u0064\u0068\u0069\s*)?\u0068\u0061\u0072\u0072\u0061\u006e/i;
   let workerToken=sessionStorage.getItem('hubaish_worker_session')||localStorage.getItem('hubaish_worker_session')||'';
   let workerUser=(()=>{try{return JSON.parse(sessionStorage.getItem('hubaish_worker_user')||localStorage.getItem('hubaish_worker_user')||'null')}catch{return null}})();
   const DEFAULT_WORKER_URL='https://hubaish-cms.baraagpt6.workers.dev';
@@ -38,7 +40,12 @@
   function normalizeDocument(value){
     const source=value&&typeof value==='object'&&!Array.isArray(value)?value:{};
     const clean={schemaVersion:1,updatedAt:typeof source.updatedAt==='string'?source.updatedAt:null,updatedBy:source.updatedBy&&typeof source.updatedBy==='object'?{username:String(source.updatedBy.username||''),displayName:String(source.updatedBy.displayName||''),role:String(source.updatedBy.role||'')}:null};
-    for(const key of Object.values(TABLES))clean[key]=Array.isArray(source[key])?source[key].filter(x=>x&&typeof x==='object'&&!Array.isArray(x)).slice(0,1000):[];
+    for(const key of Object.values(TABLES))clean[key]=Array.isArray(source[key])?source[key].filter(x=>x&&typeof x==='object'&&!Array.isArray(x)).filter(x=>{
+      const id=String(x.id||'');
+      if((key==='landmarks'&&LEGACY_EXCLUDED_IDS.has(id))||(key==='historyEvents'&&id==='h3'))return false;
+      const searchable=[x.title_ar,x.title_en,x.location_ar,x.location_en,x.description_ar,x.description_en,x.body_ar,x.body_en].filter(Boolean).join(' ');
+      return !LEGACY_EXCLUDED_TEXT.test(searchable);
+    }).slice(0,1000):[];
     return clean;
   }
   function readCache(){
@@ -115,7 +122,7 @@
       id:String(row.id||makeId('landmark')),
       cmsOverride:true,
       cat:['fort','mosque','valley','mountain','market','school'].includes(row.category)?row.category:'fort',
-      scope:['hubaish_district','related_historical_region','adjacent_area','unverified_location'].includes(row.scope)?row.scope:(['p1','p15'].includes(String(row.id||''))?'related_historical_region':'hubaish_district'),
+      scope:['hubaish_district','adjacent_area','unverified_location'].includes(row.scope)?row.scope:'hubaish_district',
       title:localized(row,'title',l),
       loc:localized(row,'location',l)||'مديرية حبيش',
       body:localized(row,'description',l),
@@ -145,7 +152,7 @@
     return {
       id:String(row.id||makeId('history')),
       cmsOverride:true,
-      scope:['hubaish_district','related_historical_region','adjacent_area','unverified_location'].includes(row.scope)?row.scope:(String(row.id||'')==='h3'?'related_historical_region':'hubaish_district'),
+      scope:['hubaish_district','adjacent_area','unverified_location'].includes(row.scope)?row.scope:'hubaish_district',
       era:row.era==='modern'?'modern':'ancient',
       title:localized(row,'title',l),
       period:localized(row,'period',l),
@@ -292,6 +299,7 @@
     try{documentData=await publicFetch();saveCache();applyCached()}catch{applyCached()}
     renderAdminList();
     if(workerUser.role==='super_admin'){try{await loadWorkerAdminData()}catch(error){status('تم الدخول، لكن تعذر تحميل إدارة الحسابات: '+error.message,true)}}
+    await loadCommunitySubmissions();
     adminStatus();status('تم تسجيل الدخول والتحقق من الصلاحيات.',false);toast('مرحباً '+(workerUser.displayName||workerUser.username));
   }
   async function workerLogin(event){
@@ -308,11 +316,58 @@
   }
   async function restoreWorkerSession(){
     if(!workerToken){adminStatus();return}
-    try{const verified=await readWorkerJson(await workerRequest('/auth/me'),'انتهت صلاحية الجلسة.');workerUser=verified.user;if(workerUser.role==='super_admin')await loadWorkerAdminData();adminStatus()}catch{signOut()}
+    try{const verified=await readWorkerJson(await workerRequest('/auth/me'),'انتهت صلاحية الجلسة.');workerUser=verified.user;if(workerUser.role==='super_admin')await loadWorkerAdminData();await loadCommunitySubmissions();adminStatus()}catch{signOut()}
   }
   function signOut(){
     workerToken='';workerUser=null;['hubaish_worker_session','hubaish_worker_user'].forEach(key=>{localStorage.removeItem(key);sessionStorage.removeItem(key)});
     adminStatus();status('تم تسجيل الخروج ومسح جلسة المشرف من هذا الجهاز.',false);renderAdminList();
+  }
+  async function submitCommunitySubmission(payload){
+    const response=await fetchWithTimeout(DEFAULT_WORKER_URL+'/public/community-submissions',{
+      method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},body:JSON.stringify(payload),cache:'no-store'
+    },20000);
+    return readWorkerJson(response,'تعذر إرسال الطلب إلى قائمة المراجعة.');
+  }
+  async function getPublishedCommunitySubmissions(){
+    const response=await fetchWithTimeout(DEFAULT_WORKER_URL+'/public/community-submissions',{headers:{Accept:'application/json'},cache:'no-store'},12000);
+    const result=await readWorkerJson(response,'تعذر تحميل المساهمات المعتمدة.');
+    return Array.isArray(result.submissions)?result.submissions.map(item=>({...item,attachmentUrl:item.attachmentUrl?(DEFAULT_WORKER_URL+item.attachmentUrl):'',ownerName:item.ownerName||''})):[];
+  }
+  async function loadCommunitySubmissions(){
+    if(!isAdmin())return;
+    const root=$('communitySubmissionList');if(!root)return;
+    const statusNode=$('communitySubmissionStatus');if(statusNode)statusNode.textContent='جارٍ تحميل الطلبات...';
+    try{
+      const result=await readWorkerJson(await workerRequest('/review/community-submissions'),'تعذر تحميل طلبات المجتمع.');
+      root.replaceChildren();
+      for(const item of result.submissions||[]){
+        const row=document.createElement('article');row.className='cloud-admin-row';
+        const body=document.createElement('div'),heading=document.createElement('strong'),meta=document.createElement('p'),details=document.createElement('p'),source=document.createElement('p'),actions=document.createElement('div');
+        heading.textContent=item.title+' · '+({author:'كتاب/بحث',family:'سيرة/أسرة',archive:'وثيقة/مخطوط',marketplace:'إعلان تجاري'}[item.type]||item.type);
+        meta.className='small muted';meta.textContent=(item.name||'')+' · '+(item.submittedAt||'')+(item.contact?' · تواصل خاص: '+item.contact:'');
+        details.className='small';details.textContent=String(item.body||'').slice(0,1400)+(item.ownerName?' · صاحب الوثيقة/المحقق: '+item.ownerName:'')+(item.marketCategory?' · التصنيف: '+item.marketCategory:'');
+        source.className='small muted';source.textContent=item.source||'لم يرفق مصدر';
+        body.append(heading,meta,details,source);actions.className='cloud-row-actions';
+        if(item.attachment){
+          const file=document.createElement('button');file.type='button';file.className='btn-sm';file.textContent='فتح المرفق · '+item.attachment.name;
+          file.addEventListener('click',async()=>{
+            file.disabled=true;try{const response=await workerRequest('/review/community-submissions/attachment?id='+encodeURIComponent(item.id));if(!response.ok)throw new Error('تعذر جلب المرفق.');const blob=await response.blob(),url=URL.createObjectURL(blob);window.open(url,'_blank','noopener');setTimeout(()=>URL.revokeObjectURL(url),60000)}catch(error){toast(error.message)}finally{file.disabled=false}
+          });actions.append(file);
+        }
+        for(const [action,label] of [['approve','اعتماد ونشر'],['reject','رفض وحذف']]){
+          const button=document.createElement('button');button.type='button';button.className=action==='approve'?'btn-primary':'btn-sm mini-danger';button.textContent=label;
+          button.addEventListener('click',async()=>{
+            if(action==='reject'&&!window.confirm('رفض الطلب وحذف ملفه من قائمة المراجعة؟'))return;
+            button.disabled=true;
+            try{await readWorkerJson(await workerRequest('/review/community-submissions',{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({id:item.id,action})}),'تعذر تحديث الطلب.');toast(action==='approve'?'تم اعتماد الطلب ونشره.':'تم رفض الطلب.');await loadCommunitySubmissions()}
+            catch(error){button.disabled=false;toast(error.message)}
+          });actions.append(button);
+        }
+        row.append(body,actions);root.append(row);
+      }
+      if(!(result.submissions||[]).length){const empty=document.createElement('p');empty.className='empty-state';empty.textContent='لا توجد طلبات معلقة.';root.append(empty)}
+      if(statusNode)statusNode.textContent='طلبات معلقة: '+(result.submissions||[]).length;
+    }catch(error){if(statusNode)statusNode.textContent=error.message}
   }
   async function loadWorkerAdminData(){
     if(workerUser?.role!=='super_admin')return;
@@ -549,7 +604,7 @@
     if(v.type==='landmark'){
       const row=Object.assign(common,{
         category:['fort','mosque','valley','mountain','market','school'].includes(v.category)?v.category:'fort',
-        scope:['hubaish_district','related_historical_region','adjacent_area','unverified_location'].includes(v.scope)?v.scope:'hubaish_district',
+        scope:['hubaish_district','adjacent_area','unverified_location'].includes(v.scope)?v.scope:'hubaish_district',
         source_title:String(v.sourceTitle||''),source_author:String(v.sourceAuthor||''),source_page:Number.isInteger(Number(v.sourcePage))&&Number(v.sourcePage)>0?Number(v.sourcePage):null,evidence_level:String(v.evidenceLevel||''),
         elevation:v.elevation!==''?Number(v.elevation):'غير موثق ميدانياً',
         latitude:v.latitude!==''?Number(v.latitude):null,longitude:v.longitude!==''?Number(v.longitude):null,
@@ -564,7 +619,7 @@
       return row;
     }
     if(v.type==='history_event'){
-      const row=Object.assign(common,{scope:['hubaish_district','related_historical_region','adjacent_area','unverified_location'].includes(v.scope)?v.scope:'hubaish_district',era:v.category==='modern'?'modern':'ancient'});
+      const row=Object.assign(common,{scope:['hubaish_district','adjacent_area','unverified_location'].includes(v.scope)?v.scope:'hubaish_district',era:v.category==='modern'?'modern':'ancient'});
       localeFields(row,'title',v.title);localeFields(row,'period',v.period);localeFields(row,'body',v.details);return row;
     }
     if(v.type==='sub_district_update'){
@@ -719,6 +774,7 @@
     panel.classList.remove('hidden');panel.scrollIntoView({behavior:'smooth',block:'nearest'});
   }
   function bind(){
+    $('communitySubmissionRefresh')?.addEventListener('click',loadCommunitySubmissions);
     $('workerLoginForm')?.addEventListener('submit',workerLogin);
     $('workerSetupForm')?.addEventListener('submit',firstAdminSetup);
     $('cloudCreateAdminForm')?.addEventListener('submit',createWorkerAdmin);
@@ -761,7 +817,7 @@
     });
     $('cloudRefreshBtn')?.addEventListener('click',async()=>{
       if(workerToken){
-        try{documentData=await publicFetch();saveCache();applyCached();renderAdminList();await loadWorkerAdminData();status('تم تحديث لوحة المشرف.',false)}catch(error){status(error.message,true)}
+        try{documentData=await publicFetch();saveCache();applyCached();renderAdminList();await loadWorkerAdminData();await loadCommunitySubmissions();status('تم تحديث لوحة المشرف.',false)}catch(error){status(error.message,true)}
       }else await sync(false);
     });
     $('cloudTranslateBtn')?.addEventListener('click',async()=>{
@@ -801,6 +857,8 @@
   }
   window.HubaishCloud={
     start,isAdmin,applyCached,sync,signOut,
+    submitCommunitySubmission,getPublishedCommunitySubmissions,
+    publicAttachmentUrl:id=>DEFAULT_WORKER_URL+'/public/community-submissions/attachment?id='+encodeURIComponent(id),
     getDistrictUpdates:districtUpdates,
     getDistrictProfile:districtProfile,
     exportData:()=>deepCopy(documentData),

@@ -6,7 +6,7 @@ import { fileURLToPath } from 'node:url';
 const root = resolve(fileURLToPath(new URL('../', import.meta.url)));
 const required = [
   'www/index.html','www/styles.css','www/app.js','www/upgrade-400.js','www/catalog.js','www/features.js',
-  'www/github-cms.js','www/gallery.js','www/splash.js','www/data/live-content.json','www/sw.js',
+  'www/github-cms.js','www/gallery.js','www/knowledge.js','www/splash.js','www/data/live-content.json','www/data/heritage-knowledge.json','www/assets/heritage/1183-wood-inscription.webp','www/sw.js',
   'www/manifest.json','www/manifest.webmanifest','www/icons/icon.svg',
   'www/icons/icon-192.png','www/icons/icon-512.png','www/icons/apple-touch-icon.png',
   'www/icons/favicon-32.png','www/icons/photo-fallback.svg','www/assets/app.js',
@@ -27,12 +27,12 @@ const required = [
 ];
 for (const file of required) await access(resolve(root,file));
 const read = file => readFile(resolve(root,file),'utf8');
-const [html,css,app,catalog,features,cms,sw,worker,wrangler,workflow,readme,workerReadme,androidPatch,cloudflareDeployWorkflow,kvSetupScript,gallery,playMonitorWorkflow,playMonitorScript,runtimeAudit,workerHealthWorkflow,workerUrlResolver] = await Promise.all([
+const [html,css,app,catalog,features,cms,sw,worker,wrangler,workflow,readme,workerReadme,androidPatch,cloudflareDeployWorkflow,kvSetupScript,gallery,knowledgeJs,playMonitorWorkflow,playMonitorScript,runtimeAudit,workerHealthWorkflow,workerUrlResolver] = await Promise.all([
   read('www/index.html'),read('www/styles.css'),read('www/app.js'),read('www/catalog.js'),
   read('www/features.js'),read('www/github-cms.js'),read('www/sw.js'),
   read('cloudflare-worker/worker.js'),read('cloudflare-worker/wrangler.toml'),
   read('.github/workflows/build-and-deploy.yml'),read('README.md'),
-  read('cloudflare-worker/README.md'),read('scripts/patch-android-config.py'),read('.github/workflows/deploy-cloudflare-worker.yml'),read('scripts/configure-cloudflare-kv.mjs'),read('www/gallery.js'),
+  read('cloudflare-worker/README.md'),read('scripts/patch-android-config.py'),read('.github/workflows/deploy-cloudflare-worker.yml'),read('scripts/configure-cloudflare-kv.mjs'),read('www/gallery.js'),read('www/knowledge.js'),
   read('.github/workflows/play-status-monitor.yml'),read('scripts/monitor-play-status.py'),read('scripts/audit-runtime.mjs'),
   read('.github/workflows/worker-production-health.yml'),read('scripts/resolve-cloudflare-worker-url.mjs')
 ]);
@@ -41,6 +41,7 @@ const manifestJson=JSON.parse(await read('www/manifest.json'));
 const capacitor=JSON.parse(await read('capacitor.config.json'));
 const pkg=JSON.parse(await read('package.json'));
 const data=JSON.parse(await read('www/data/live-content.json'));
+const knowledge=JSON.parse(await read('www/data/heritage-knowledge.json'));
 const assets = {
   app: await read('www/assets/app.js'),
   catalog: await read('www/assets/catalog.js'),
@@ -50,11 +51,11 @@ const assets = {
 if (assets.app!==app || assets.catalog!==catalog || assets.features!==features || assets.styles!==css) {
   throw new Error('Android duplicate web assets do not match the current web sources.');
 }
-for (const file of ['www/app.js','www/catalog.js','www/features.js','www/github-cms.js','www/gallery.js','www/sw.js','www/upgrade-400.js','cloudflare-worker/worker.js','scripts/audit-runtime.mjs','scripts/resolve-cloudflare-worker-url.mjs']) {
+for (const file of ['www/app.js','www/catalog.js','www/features.js','www/github-cms.js','www/gallery.js','www/knowledge.js','www/sw.js','www/upgrade-400.js','cloudflare-worker/worker.js','scripts/audit-runtime.mjs','scripts/resolve-cloudflare-worker-url.mjs']) {
   const result=spawnSync(process.execPath,['--check',resolve(root,file)],{encoding:'utf8'});
   if(result.status!==0)throw new Error('JavaScript syntax error in '+file+': '+(result.stderr||result.stdout));
 }
-for (const fragment of ['./styles.css','./splash.js','./app.js','./catalog.js','./features.js','./github-cms.js','./gallery.js','./manifest.webmanifest']) {
+for (const fragment of ['./styles.css','./splash.js','./app.js','./catalog.js','./features.js','./github-cms.js','./gallery.js','./knowledge.js','./manifest.webmanifest']) {
   if(!html.includes(fragment))throw new Error('Missing app reference: '+fragment);
 }
 if (!html.includes('id="appSplash"') || !html.includes('id="offlineIndicator"') ||
@@ -160,7 +161,7 @@ if(!css.includes('padding-top:max(9px,env(safe-area-inset-top')||
    !css.includes('padding-bottom:max(6px,env(safe-area-inset-bottom')) {
   throw new Error('Android 15/16 top and bottom safe-area padding is missing.');
 }
-if(!sw.includes('hubaish-guide-v4.0.8')||!sw.includes("'splash.js'")||
+if(!sw.includes('hubaish-guide-v4.0.9')||!sw.includes("assets/heritage/1183-wood-inscription.webp")||!sw.includes("'splash.js'")||
    !sw.includes("'github-cms.js'")||!sw.includes("'gallery.js'")||!sw.includes("'data/live-content.json'")) {
   throw new Error('The service-worker cache does not include the updated app shell.');
 }
@@ -226,27 +227,37 @@ const zawahi=data.landmarks.find(item=>item.id==='zawahi-islamic-school');
 if(!zawahi||zawahi.category!=='school'||zawahi.scope!=='hubaish_district'||zawahi.source_page!==431||zawahi.source_author!=='بهاء الدين الجندي')throw new Error('Al-Zawahi school record is missing its classification, scope or page-level source.');
 if(!cms.includes("scope:item.scope||'hubaish_district'")||!cms.includes('source_title:item.sourceTitle||'))throw new Error('CMS conversion of local base landmarks must preserve geographic scope and source metadata.');
 if(!cms.includes('Number.isInteger(Number(v.sourcePage))')||!cms.includes('Number(v.sourcePage)<=0'))throw new Error('Historical school source-page validation is too permissive.');
+const expectedSubdistricts=['ربع ظلمة','جبل عميقة','بني معين','بني الضاحيتين','صائر','جبل خضراء','نقيل العقاب','الفراعي','السلق','وادي المعقاب','الجعافرة','شباع','الذارحي','التفادي','كومان','الوطئة','قحزة','المشيرق','الصدر','العارضة','بني شبيب','الناحية'];
 const uzalStart=app.indexOf('const UZAL_22 = ['),uzalEnd=app.indexOf('];',uzalStart),uzalBlock=uzalStart>=0&&uzalEnd>uzalStart?app.slice(uzalStart,uzalEnd):'';
-if(!uzalBlock||[...uzalBlock.matchAll(/'[^']+'/g)].length!==22||uzalBlock.includes('صهبان'))throw new Error('Sahban must not be added to Hubaish’s 22 sub-districts.');
-for(const id of ["id: 'p1', scope: 'related_historical_region'","id: 'p15', scope: 'related_historical_region'","id: 'h3', scope: 'related_historical_region'"])if(!app.includes(id))throw new Error('A legacy Sahban record or scope was lost: '+id);
-if(!app.includes("item.scope === 'hubaish_district'")||!app.includes('function renderRelatedHistoricalRegions'))throw new Error('District filtering or the related-historical-region display is missing.');
-if(!app.includes("'market', 'school'")||!cms.includes("'market','school'")||!html.includes('data-pcat="school"'))throw new Error('The school category is not supported consistently by the app, CMS and filter.');
-if(!html.includes('id="relatedHistoricalRegionsList"')||!html.includes('id="unverifiedHistoricalRecordsList"')||!html.includes('بلاد أو مخلاف صهبان')||!cms.includes('cloudScope')||!cms.includes('source_page'))throw new Error('Related-region UI or CMS evidence metadata is missing.');
-if(!app.includes("id: 'h4', scope: 'unverified_location'")||!app.includes('function renderUnverifiedHistoricalRecords')||!app.includes('matchedUnverified'))throw new Error('Mixed-location oral history must remain discoverable under an unverified geographic scope.');
-if(!features.includes('Al-Zawahi School')||features.includes('Which fort is highlighted in this guide?'))throw new Error('School quiz wording is not updated.');
-for(const label of ['بلاد أو مخلاف صهبان','Bilad or Mikhlaf Sahban','Bilad veya Mikhlaf Sahban','Bilad ou Mikhlaf Sahban'])if(!features.includes(label))throw new Error('The translated quick-search label for Sahban is incorrect: '+label);
-if(!cms.includes("['p1','p15'].includes(String(row.id||''))")||!cms.includes("String(row.id||'')==='h3'"))throw new Error('CMS mapping must preserve the legacy Sahban scope for p1, p15 and h3 when scope is absent.');
-if(!app.includes("item.cat==='fort'&&item.scope==='hubaish_district'")||!app.includes("item.cat==='valley'&&item.scope==='hubaish_district'")||!app.includes("item.scope==='hubaish_district'&&['fort','valley','mountain','mosque']"))throw new Error('Assistant and compass suggestions must exclude related historical regions from Hubaish itineraries.');
-if(!catalog.includes('Related historical region outside the current administrative boundaries of Hubaish District.')||!features.includes("state.places.filter(p=>p.scope==='hubaish_district')"))throw new Error('Assistant scope label or random tour scope filter is missing.');
-if(!catalog.includes("item.scope==='related_historical_region'&&!/صهبان|sahban/.test(q)"))throw new Error('Generic assistant questions must not misclassify related historical regions as Hubaish sites.');
-if(!sw.includes("hubaish-guide-v4.0.8"))throw new Error('Service Worker cache version was not advanced.');
+const catalogDistrictBlock=catalog.slice(catalog.indexOf('const D=['),catalog.indexOf('const PN='));
+const appDistrictNames=[...uzalBlock.matchAll(/'([^']+)'/g)].map(x=>x[1]);
+const catalogDistrictNames=[...catalogDistrictBlock.matchAll(/^\s*\['([^']+)'/gm)].map(x=>x[1]);
+if(JSON.stringify(appDistrictNames)!==JSON.stringify(expectedSubdistricts)||JSON.stringify(catalogDistrictNames)!==JSON.stringify(expectedSubdistricts))throw new Error('App and catalog must use the exact 22-name reference list from the attached report.');
+if(JSON.stringify(data.subDistricts.map(x=>x.district_name_ar))!==JSON.stringify(expectedSubdistricts)||data.districtProfile.subdistrict_list_status!=='reference_list_pending_district_approval')throw new Error('Live district list must be the report list and disclose pending district confirmation.');
+if(data.relatedHistoricalRegions!==undefined||data.landmarks.some(x=>['p1','p12','p15','jabal-dhi-harran'].includes(x.id))||data.historyEvents.some(x=>x.id==='h3'))throw new Error('Excluded historic region or removed landmark remains in live content.');
+if(/صهبان|Sahban|وادي بناء|Wadi Bina|جبل ذي هران|Jabal Dhi Harran/i.test([app,catalog,features,html,cms].join(' ')))throw new Error('Removed geographic records remain in runtime interface or assistant.');
+if(!app.includes('excludedLegacyIds')||!app.includes('excludedLegacyHistoryIds')||!cms.includes('LEGACY_EXCLUDED_IDS'))throw new Error('Saved local and CMS legacy content is not sanitized.');
+if(!html.includes('id="unverifiedHistoricalRecordsList"')||html.includes('relatedHistoricalRegionsList'))throw new Error('Unverified location section should remain but related-region panel must be removed.');
+if(!html.includes('id="knowledgeLandmarksList"')||!html.includes('id="knowledgeSchoolsList"')||!html.includes('id="knowledgeWorksList"')||!html.includes('id="knowledgePeopleList"')||!html.includes('id="knowledgeFamiliesList"')||!html.includes('id="knowledgeArchiveList"')||!html.includes('id="knowledgeMarketList"'))throw new Error('Knowledge archive panels are incomplete.');
+if(knowledge.landmarkRecords?.length!==16||!Array.isArray(knowledge.additionalMosques)||!Array.isArray(knowledge.schools)||!Array.isArray(knowledge.people)||!Array.isArray(knowledge.families)||!Array.isArray(knowledge.archives))throw new Error('Knowledge content must include 16 core landmarks, schools, people, families and archive records.');
+if(!html.includes('id="authorSubmissionForm"')||!html.includes('id="familyCvForm"')||!html.includes('id="archiveSubmissionForm"')||!html.includes('name="ownerName"')||!html.includes('id="marketListingForm"')||!html.includes('id="communitySubmissionReview"'))throw new Error('Community submission or admin review forms are incomplete.');
+if(!cms.includes('/public/community-submissions')||!cms.includes('/review/community-submissions')||!cms.includes('DEFAULT_WORKER_URL+item.attachmentUrl')||!worker.includes('/public/community-submissions')||!worker.includes('/review/community-submissions')||!worker.includes('ownerName:type==="archive"?ownerName:""')||!worker.includes('actor.role!=="super_admin"'))throw new Error('Community submissions must use the Worker review queue.');
+if(!app.includes("window.HubaishKnowledge?.answer?.(question)")||!catalog.includes('window.HubaishKnowledge?.answer?.(question)')||!knowledgeJs.includes('archive-watermarked-canvas'))throw new Error('Knowledge assistant and document viewer are not integrated.');
+if(!features.includes('const mergedUzal = baseUzal.slice()'))throw new Error('Stale local storage must not reintroduce obsolete sub-districts.');
+if(!html.includes('name="marketCategory"'))throw new Error('Marketplace category control is missing.');
+if(!worker.includes('value.type!=="archive"')||!worker.includes('image/svg+xml; charset=utf-8')||!worker.includes('actor.role!=="super_admin"')||!worker.includes('marketCategory:type==="marketplace"?marketCategory:""')||!worker.includes('value.status==="approved"'))throw new Error('Archive watermark, approved-only publication, marketplace category or super-admin review control is missing.');
+if(!knowledgeJs.includes("ctx.fillText('أرشيف دليل حبيش الذكي'")||!knowledgeJs.includes('ctx.fillText(owner)')||!knowledgeJs.includes('payload.attachment=await filePayload(form,type)')||!knowledgeJs.includes("marketCategory:value('marketCategory')")||knowledgeJs.includes('فتح المرفق المعتمد'))throw new Error('The archive image watermark, second viewer watermark, or protected submission form is incomplete.');
+if(!cms.includes('DEFAULT_WORKER_URL+item.attachmentUrl')||!cms.includes('item.marketCategory'))throw new Error('Published archive URL or marketplace category mapping is missing.');
+if(!sw.includes('hubaish-cms.baraag6.workers.dev'))throw new Error('Service Worker does not cache approved archive images from the Cloudflare Worker.');
+const archiveImage=await readFile(resolve(root,'www/assets/heritage/1183-wood-inscription.webp'));
+if(archiveImage.toString('ascii',0,4)!=='RIFF'||archiveImage.toString('ascii',8,12)!=='WEBP'||archiveImage.length>15000)throw new Error('The branded Marwaha WebP image is missing, invalid or exceeds its size target.');
 for(const [file,expected] of [['www/icons/icon-192.png',192],['www/icons/icon-512.png',512]]) {
   const image=await readFile(resolve(root,file));
   if(image.toString('hex',0,8)!=='89504e470d0a1a0a'||image.readUInt32BE(16)!==expected||image.readUInt32BE(20)!==expected)
     throw new Error(file+' must be a valid '+expected+'x'+expected+' PNG.');
 }
 if(readme.includes('الدخول المباشر الاحتياطي باستخدام GitHub Token')||workerReadme.includes('emergency fallback')||workerReadme.includes('GitHub Personal Access Token login'))throw new Error('Documentation still advertises the removed direct-token login.');
-if(!html.includes('upgrade-400.js')||!css.includes('F7F5EE')||!css.includes('0D2B22')||!app.includes("['review','adminTabReview',false]")||!worker.includes('/public/photo-submissions')||!worker.includes('/review/photo-submissions')||!html.includes('cloudPhotoReviewPanel')||!sw.includes("'upgrade-400.js'"))throw new Error('v1.0.400 theme, locale extensions, offline app shell or visitor photo moderation queue is incomplete.');
+if(!html.includes('upgrade-400.js')||!css.includes('F7F5EE')||!css.includes('0D2B22')||!app.includes("['review','adminTabReview',false]")||!worker.includes('/public/photo-submissions')||!worker.includes('/review/photo-submissions')||!html.includes('cloudPhotoReviewPanel')||!worker.includes('community-submit-rate:')||!html.includes('communitySubmissionReview')||!sw.includes("'upgrade-400.js'"))throw new Error('v1.0.400 theme, locale extensions, offline app shell or visitor photo moderation queue is incomplete.');
 
 const playWorkflow = await read('.github/workflows/google-play-closed-testing.yml');
 const playFastfile = await read('fastlane/Fastfile');
@@ -370,8 +381,8 @@ if(profile.subdistrict_count!==22||data.subDistricts.length!==22)throw new Error
 if(!profile.tribal_context?.named_branches_ar?.includes('آل راجح')||!profile.geographic_disambiguation?.some(x=>x.name_ar==='مخلاف الحبيشية')||profile.name_origin_hypotheses?.status!=='research_hypotheses')throw new Error('Tribal lineage, geographic distinction or name-origin caveat is missing.');
 const requiredHeritage=['khudad-fort','wuhaza-fortress','yaris-fortress','dahran-fort-bani-wail','al-dhuhrah-historic-settlement','al-udadi-fort','musaynia-fort','bayt-al-batul-fort','maghram-khair-fort','bayn-al-dur-dome','al-farawi-mosque-dome','marwaha-mosque','al-jami-mosque','dhulmah-grand-mosque','qubbat-al-zum'];
 for(const id of requiredHeritage)if(!data.landmarks.some(x=>x.id===id))throw new Error('A required historical landmark record is missing: '+id);
-for(const id of ['p1','p15'])if(!app.includes("id: '"+id+"', scope: 'related_historical_region'"))throw new Error('Legacy Sahban landmark id/scope was changed: '+id);
-if(!app.includes("id: 'h3', scope: 'related_historical_region'"))throw new Error('Legacy Sahban event h3 was changed.');
+for(const id of ['p1','p12','p15'])if(app.includes("id: '"+id+"'"))throw new Error('Excluded legacy landmark was reintroduced: '+id);
+if(app.includes("id: 'h3'"))throw new Error('Excluded legacy history event was reintroduced.');
 if(!data.landmarks.some(x=>x.id==='zawahi-islamic-school'&&x.category==='school'&&x.subject_claims_pending_verification?.length===3))throw new Error('Al-Zawahi attributed curriculum claims must remain provisional.');
 const wuhaza=data.landmarks.find(x=>x.id==='hijra-wuhaza-learning-centre');
 if(!wuhaza||wuhaza.category!=='school'||wuhaza.status!=='documented'||wuhaza.scope!=='hubaish_district'||!wuhaza.source_text.includes('ص 2329'))throw new Error('Wuhaza learning centre record is invalid.');
@@ -381,8 +392,8 @@ if(!catalog.includes('162,023')||!catalog.includes('Engineer Sadiq Mohammed')||!
 const zawahiRecord=data.landmarks.find(x=>x.id==='zawahi-islamic-school');
 const sadiq=data.historicalFigures.find(x=>x.id==='sadiq-mohammed-al-nahi');
 if(!zawahiRecord?.description_ar.includes('عبد الرحمن بن عمران')||!zawahiRecord?.description_ar.includes('يوسف بن علي بن عبيد الله بن الهيثم'))throw new Error('Al-Zawahi student evidence is incomplete.');
-if(!sadiq?.biography_ar.includes('أبو العتيق أبو بكر العنسي الوعلي')||!sadiq?.biography_ar.includes('بيت الناهي السعيدي بريمة')||sadiq.lineage_research_status!=='unverified_separate_research_thread')throw new Error('Sadiq al-Nahi lineage hypotheses must remain separate and unverified.');
+if(!sadiq?.biography_ar.includes('شلمبرجر')||sadiq?.biography_ar.includes('أبو العتيق')||sadiq?.lineage_research_status)throw new Error('Sadiq al-Nahi profile must avoid unsupported lineage claims.');
 
 if(!html.includes('id="geoAdminContext"')||!html.includes('id="geoTribalContext"')||!app.includes('geoAdminContext')||!app.includes('geoTribalContext'))throw new Error('Administrative and tribal profile panels are missing.');
 
-console.log('Build check passed: Worker-only login, visitor photo moderation, four locales, ivory/emerald daytime theme, offline shell, Android assets and APK/AAB workflow.');
+console.log('Build check passed: Hubaish 22-name reference list, 16-landmark knowledge archive, moderated community submissions, offline archive assets, four locales and draft-only Android workflow.');

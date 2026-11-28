@@ -73,6 +73,9 @@ Do not generate or rotate an upload key without an explicit migration plan. Vali
 - The app is a local guide to Hubaish, Yemen. Preserve its historical and geographic scope.
 - The project has 22 current Hubaish sub-districts. Suhban is a related historical region and must not be inserted into the current 22 sub-district list.
 - Do not present unverified locations, historical claims, sources, images, or attribution details as facts.
+- The 22-name list from the 27 November 2026 project report is a reference list pending district-administration confirmation, not a certified administrative instrument.
+- Heritage knowledge lives in www/data/heritage-knowledge.json and is rendered by www/knowledge.js. The Marwaha wood-inscription image must remain branded and opened through the watermarked viewer; never add a public raw-image link.
+- Community author, family/CV, archive, and marketplace submissions are private Cloudflare KV moderation records. Public output includes approved records only. Super-admin review is required. Preserve owner/investigator attribution and explicit publishing consent.
 - Preserve provenance rules in README.md and app data.
 - App features include place search and filters, detail pages, favorites, a local assistant, itinerary tools, language selection, offline support, and estimated prayer times. Verify source before claiming any feature has shipped.
 - UI languages currently include Arabic, English, Turkish, and French.

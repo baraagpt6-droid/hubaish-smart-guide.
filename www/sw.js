@@ -1,12 +1,12 @@
 'use strict';
 
-const CACHE_NAME = 'hubaish-guide-v4.0.8';
+const CACHE_NAME = 'hubaish-guide-v4.0.9';
 const BASE_URL = new URL('./', self.registration.scope);
 const INDEX_URL = new URL('index.html', BASE_URL).href;
-const REMOTE_IMAGE_HOSTS = new Set(['upload.wikimedia.org', 'al-jandprovince.com', 'hekmahyemanya.com']);
+const REMOTE_IMAGE_HOSTS = new Set(['upload.wikimedia.org', 'al-jandprovince.com', 'hekmahyemanya.com', 'hubaish-cms.baraag6.workers.dev']);
 const APP_SHELL = [
   '', 'index.html', 'styles.css', 'splash.js', 'app.js', 'catalog.js', 'features.js', 'gallery.js', 'upgrade-400.js', 'manifest.json',
-  'manifest.webmanifest', 'github-cms.js', 'data/live-content.json', 'icons/icon.svg', 'icons/icon-192.png', 'icons/icon-512.png', 'icons/apple-touch-icon.png', 'icons/favicon-32.png', 'icons/photo-fallback.svg'
+  'manifest.webmanifest', 'github-cms.js', 'knowledge.js', 'data/live-content.json', 'data/heritage-knowledge.json', 'icons/icon.svg', 'icons/icon-192.png', 'icons/icon-512.png', 'icons/apple-touch-icon.png', 'icons/favicon-32.png', 'icons/photo-fallback.svg', 'assets/heritage/1183-wood-inscription.webp'
 ].map(path => new URL(path, BASE_URL).href);
 
 self.addEventListener('install', event => {

@@ -388,21 +388,6 @@
       "evidence_level": "local_historical_account"
     },
     {
-      "id": "jabal-dhi-harran",
-      "category": "mountain",
-      "status": "documented",
-      "title_ar": "جبل ذي هرّان",
-      "title_en": "Jabal Dhi Harran",
-      "location_ar": "مديرية حبيش – الموضع التفصيلي بحاجة إلى إحداثيات",
-      "location_en": "Hubaish District – precise location needs coordinates",
-      "description_ar": "يذكر المركز الوطني للمعلومات الاسم بصيغته المنشورة «جبل ذي هرّان» ضمن قائمة معالم مديرية حبيش. يحافظ الدليل على هذه التسمية كما وردت في المصدر، ولا يضيف جبلاً مستقلاً باسم «جبل هران»؛ إذ ينقل التقرير البحثي إنكار القاضي محمد الغرباني وجود جبل بهذا الاسم في حبيش. لا تحدد الصفحة العزلة أو الإحداثيات.",
-      "description_en": "The Yemen National Information Centre lists the name as Jabal Dhi Harran in its Hubaish landmarks inventory. This guide preserves that exact published form and does not add a separate Jabal Harran site; the supplied research report cites judge Muhammad al-Gharbani disputing the existence of a mountain by that shorter name in Hubaish. The official listing does not specify a sub-district or coordinates.",
-      "importance_ar": "معلم جبلي مدرج في قائمة المركز الوطني للمعلومات، وينتظر تحديد موضعه ميدانياً.",
-      "importance_en": "A mountain landmark listed by the National Information Centre; its precise location needs field verification.",
-      "source_text": "المركز الوطني للمعلومات – «السياحة في محافظة إب»، قائمة آثار ومعالم مديرية حبيش.",
-      "source_url": "https://www.yemen-nic.info/gover/ibb/tursm/index.php?print=Y"
-    },
-    {
       "id": "hubaish-weekly-market",
       "category": "market",
       "status": "documented",
@@ -1226,11 +1211,10 @@
       "name_en": "Engineer Sadiq Mohammed Mohammed al-Nahi",
       "role_ar": "مهندس بترول ومؤسس مبادرة «مديرية حبيش الطبيعة والإنسان»",
       "role_en": "Petroleum engineer and founder of the Hubaish Nature and People initiative",
-      "biography_ar": "من أبناء قرية حضار في جبل عميقة بمديرية حبيش، ويعرفه التقرير بوصفه مهندس بترول ومؤسس مبادرة «مديرية حبيش الطبيعة والإنسان». ينسب التقرير الصحفي الخبر إلى صحيفة عدن الغد سنة 2020م، لكن رابط المقال وتفاصيله الببليوغرافية لم تتوفر في النسخة الحالية؛ لذلك يبقى التوثيق بحاجة إلى استرجاع المقال الأصلي. أما النسب القديم فترد فيه فرضيتان منفصلتان في التقرير: الانتساب إلى أبو العتيق أبو بكر العنسي الوعلي، أو إلى بيت الناهي السعيدي بريمة. كلا القولين غير مثبت، ولا يعتمد الدليل أياً منهما تعريفاً لنسب الشخصية.",
-      "biography_en": "Reportedly from Hadhar village in Jabal Amiqa, Hubaish, he is described as a petroleum engineer and founder of the 'Hubaish Nature and People' initiative. The supplied report attributes this to Aden Al-Ghad in 2020, but the exact article URL and bibliographic details have not yet been recovered. Two separate lineage hypotheses are mentioned in the report: a link to Abu al-Atiq Abu Bakr al-Ansi al-Wa'li, or to the al-Nahi al-Saidi house in Raymah. Neither claim is verified, and the guide does not adopt either as an established lineage.",
-      "source_text": "تقرير المستخدم عن خبر صحيفة عدن الغد 2020م؛ يلزم استرجاع المقال الأصلي للتحقق.",
-      "lineage_research_note_ar": "فرضيتان منفصلتان غير مثبتتين في التقرير: أبو العتيق أبو بكر العنسي الوعلي؛ أو بيت الناهي السعيدي بريمة.",
-      "lineage_research_status": "unverified_separate_research_thread"
+      "biography_ar": "من أبناء قرية حضار في جبل عميقة بمديرية حبيش. يصفه الملف التعريفي المقدم بأنه مهندس بترول عمل في شركة شلمبرجر منذ عام 2000، ومؤسس مبادرة «مديرية حبيش الطبيعة والإنسان». ويشير تقرير الجغرافيا إلى خبر نشرته صحيفة عدن الغد في 23 أكتوبر 2020 عن المبادرة. لا يقدم المصدر شجرة نسب موثقة؛ لذلك لا يستنتج الدليل أصلاً نسبياً من اسم الأسرة.",
+      "biography_en": "From Hadhar village in Jabal Amiqa, Hubaish. The supplied professional profile describes him as a petroleum engineer who has worked at Schlumberger since 2000 and as founder of the Hubaish Nature and People initiative. The geography report cites an Aden Al-Ghad article dated 23 October 2020 about the initiative. No documented family tree is supplied, so the guide makes no lineage inference from the surname.",
+      "source_text": "الملف المهني المقدم ضمن تقرير الجغرافيا؛ شرف الكبسي، عدن الغد، 23 أكتوبر 2020.",
+      "source_url": "https://www.adngad.net/articles/499738"
     }
   ],
   "communityLinks": [],
@@ -1599,33 +1583,6 @@
       "note_ar": "تُعرض هذه الفرضيات بوصفها قراءات بحثية في أصل الاسم، ولا يعتمد الدليل واحدة منها أصلاً ثابتاً من دون نص لغوي أو نقش مؤرخ قابل للفحص."
     }
   },
-  "relatedHistoricalRegions": [
-    {
-      "id": "sahban-historical-region",
-      "title_ar": "بلاد / مخلاف صهبان",
-      "title_en": "Bilad / Mikhlaf Sahban",
-      "scope": "related_historical_region",
-      "modern_admin_note_ar": "النطاق التاريخي أوسع من الحدود الإدارية المعاصرة. ترد عزلة صهبان وهضبة صهبان في مصادر جغرافية حديثة ضمن السياني وذي السفال، جنوب وجنوب غرب مدينة إب؛ ولا تدخل صهبان ضمن مديرية حبيش أو عزلها الـ22.",
-      "description_ar": "تقع صهبان جنوب وجنوب غرب مدينة إب. وتذكر حاشية تحقيق صفة جزيرة العرب أن اسم مخلاف صهبان شاع في القرن الثامن الهجري عند تولي الأمير الصهباني المنطقة من الدولة الرسولية، وأنها كانت تعرف قبل ذلك باسم نعيمة/نعيمة المسواد نسبة إلى حصن هناك. وتذكر المصادر مصنعة سير على هضبة صهبان، وترتبط بسيرة الإمام يحيى بن أبي الخير العمراني. لا ينبغي الخلط بين اسم الموضع اليمني وبين بطن صهبان النخعي في النسب العربي.",
-      "historical_centres_ar": [
-        "مصنعة سير",
-        "هضبة صهبان",
-        "نعيمة / نعيمة المسواد"
-      ],
-      "historical_subdistricts_ar": [
-        "معشار الدامغ",
-        "معشار هدفان",
-        "الهادس",
-        "المجزع",
-        "عميد الداخل",
-        "عميد الخارج"
-      ],
-      "naming_note_ar": "يرد في التقرير البحثي ضبط النسب بصيغة «صهبان بن أسعد بن مالك بن النخع». تحفظ هذه الصيغة بوصفها إحالة نسبية منقولة تحتاج إلى مقابلة نصوص الأنساب والنسخ المحققة، ولا تثبت وحدها أن اسم مخلاف صهبان مشتق من هذا البطن. ولا يخلط الدليل بين اسم الموضع اليمني والنسب القبلي.",
-      "source_text": "حاشية محمد علي الأكوع على صفة جزيرة العرب، ص 197؛ ومواد تاريخية عن عزلة صهبان ومصنعة سير.",
-      "source_url": "https://ablibrary.net/book_content/b/9942/205",
-      "status": "documented_with_scope_note"
-    }
-  ],
   "educationalRecords": [
     {
       "id": "hijra-wuhaza",
@@ -1699,8 +1656,6 @@
   ],
   "referenceNotes": [
     "لا تخلط حبيش إب بمخلاف الحبيشية في سياق دمت/رداع أو بنسبة ذو حبيش في سفيان وسحار.",
-    "فرضيات الاسم السبئية والمعينية والحميرية قراءات بحثية غير محسومة.",
-    "لا تضف جبل هران كسجل مستقل في حبيش اعتماداً على تسمية غير محققة؛ أبقِ سجل جبل ذي هرّان القائم مرتبطاً بإحالة المركز الوطني للمعلومات دون توسيع الاسم.",
-    "تحفظ سجلات صهبان القديمة p1 وp15 وh3 في قسم النطاق التاريخي المرتبط، ولا تحذف أو يعاد استخدام معرّفاتها."
+    "فرضيات الاسم السبئية والمعينية والحميرية قراءات بحثية غير محسومة."
   ]
 }

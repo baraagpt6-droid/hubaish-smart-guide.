@@ -8,23 +8,21 @@ const YEMEN_LNG = 44.0833;
 const YEMEN_UTC_OFFSET_HOURS = 3;
 
 const UZAL_22 = [
-  'بني معين', 'السلق', 'بني شبيب', 'بني الضاحيتين', 'التفادي', 'جبل خضراء',
-  'جبل عميقة (جبل عنقه)', 'الجعافرة', 'ربع ظُلمة', 'الذارحي (الزراحي)', 'شباع',
-  'صائر', 'الصدر', 'العارضة', 'الفراعي', 'قحزة (جحزه)', 'كومان', 'المشيرق',
-  'الناحية', 'نقيل العقاب', 'وادي العقاب (وادي المعقاب)', 'الوطئة (الوطنة)'
+  'ربع ظلمة', 'جبل عميقة', 'بني معين', 'بني الضاحيتين', 'صائر', 'جبل خضراء',
+  'نقيل العقاب', 'الفراعي', 'السلق', 'وادي المعقاب', 'الجعافرة', 'شباع',
+  'الذارحي', 'التفادي', 'كومان', 'الوطئة', 'قحزة', 'المشيرق', 'الصدر',
+  'العارضة', 'بني شبيب', 'الناحية'
 ];
 
 const DEFAULT_HISTORY = [
   { id: 'h1', era: 'ancient', period: 'قبل الإسلام • رواية تحتاج تدقيقاً أثرياً', title: 'الجذور القديمة والحصون والصهاريج', body: 'تربط بعض الكتابات المحلية اسم حبيش بأصول حميرية أو سبئية، وتتناقل روايات عن حصون وصهاريج ومدرجات قديمة. لا يتوفر حتى الآن مسح أثري منشور يؤرخ هذه المنشآت في كل مواقع المديرية؛ لذلك يعرض هذا الربط بوصفه فرضية بحثية لا حقيقة محسومة.', status: 'local', source: 'كتاب نفيس الثمن في أسباب مسميات مديريات ومحافظات اليمن، مع الحاجة إلى تحقق أثري مستقل', sourceUrl: 'https://www.nafsam.org/ar/wp-content/uploads/2022/05/2022-05-28_01-12-25_532941-nafsam.pdf' },
   { id: 'h2', era: 'ancient', period: 'القرن الرابع الهجري وما بعده • نص محقق وحاشية', title: 'حبيش في شروح كتب الهمداني', body: 'يقدم كتاب صفة جزيرة العرب إطاراً مهماً لجغرافية اليمن القديمة. وفي حاشية تحقيق محمد الأكوع ترد إحالات إلى اسم حبيش وجبل حبيش ضمن ضبط المواضع. ينبغي التمييز بين نص الهمداني نفسه وبين تعليقات المحقق، وعدم اعتبار الإحالة وحدها دليلاً على حدود المديرية الحديثة.', status: 'documented', source: 'صفة جزيرة العرب، حاشية التحقيق، صفحة 197 في النسخة الرقمية', sourceUrl: 'https://ablibrary.net/book_content/b/9942/205' },
-  { id: 'h3', scope: 'related_historical_region', era: 'ancient', period: 'القرن الثامن الهجري • العصر الرسولي', title: 'بلاد / مخلاف صهبان', body: 'تقع صهبان جنوب وجنوب غرب مدينة إب. وتذكر حاشية تحقيق صفة جزيرة العرب أن المنطقة كانت تعرف باسم نعيمة/نعيمة المسواد، ثم شاع اسم مخلاف صهبان في القرن الثامن الهجري حين تولاه الأمير الصهباني من الدولة الرسولية. ترتبط بها هضبة صهبان ومصنعة سير ومراكز تاريخية في السياني وذي السفال. هذا نطاق تاريخي خارج مديرية حبيش الحالية، ولا يساوى بحدودها أو بعزلها الـ22.', status: 'documented', source: 'صفة جزيرة العرب، حاشية تحقيق محمد علي الأكوع، ص 197؛ مرصد تاريخي عن السياني وصهبان', sourceUrl: 'https://ablibrary.net/book_content/b/9942/205' },
-  { id: 'h4', scope: 'unverified_location', era: 'ancient', period: 'العصور الإسلامية • رواية محلية', title: 'المساجد والمدارس والحركة العلمية', body: 'تتداول الذاكرة المحلية أخبار مساجد قديمة ومجالس تعليم في ظُلمة وصهبان وبني سيف والأشعوب. لم تتوفر فهارس منشورة أو تواريخ تأسيس موثقة لهذه المواقع أثناء إعداد هذه النسخة؛ ويحتاج هذا المحور إلى مقابلات مع الأهالي، وتصوير النقوش والوثائق الوقفية إن وجدت.', status: 'local', source: 'روايات محلية أولية تحتاج جمع وثائق ومقابلات ميدانية' },
+  { id: 'h4', scope: 'unverified_location', era: 'ancient', period: 'العصور الإسلامية • رواية محلية', title: 'المساجد والمدارس والحركة العلمية', body: 'تتداول الذاكرة المحلية أخبار مساجد قديمة ومجالس تعليم في ظُلمة وبني سيف والأشعوب. لم تتوفر فهارس منشورة أو تواريخ تأسيس موثقة لهذه المواقع أثناء إعداد هذه النسخة؛ ويحتاج هذا المحور إلى مقابلات مع الأهالي، وتصوير النقوش والوثائق الوقفية إن وجدت.', status: 'local', source: 'روايات محلية أولية تحتاج جمع وثائق ومقابلات ميدانية' },
   { id: 'h5', era: 'modern', period: 'أبريل–مايو 1919م', title: 'انتفاضة حبيش ضد الحكم الإمامي', body: 'تورد دراسات صحفية تاريخية ومقتطفات من مذكرات وتقارير معاصرة مقاومة أبناء حبيش للحملة الإمامية سنة 1919م، وتذكر الشيخ محمد عائض العقاب ومواجهات في محيط حبيش. تختلف الروايات في بعض تفاصيل المعارك ومدتها؛ لذا يعرض الحدث مع إحالاته، لا بوصف كل رقم متداول حقيقة متفقاً عليها.', status: 'documented', source: 'دراسة الساحل الغربي عن انتفاضات إب، ومقال نشوان نيوز عن حبيش', sourceUrl: 'https://www.alsahil.net/news20987.html' },
   { id: 'h6', era: 'modern', period: '1357هـ / نحو 1938م وما بعده', title: 'التحول الإداري وظُلمة والعزل', body: 'تذكر مادة تاريخية عن مخلاف الحبيشية تغييرات إدارية سنة 1357هـ وربط المنطقة بلواء إب بعد أن كانت تتبع قضاء رداع. وتُعرّف البيانات الإدارية المتاحة ظُلمة مركزاً للمديرية، بينما تسجل قائمة الدليل 22 عزلة. وظلت المدرجات والبن والحبوب جزءاً من النشاط الزراعي المحلي، لكن قياس تطور الإنتاج الزراعي يحتاج إلى سلسلة إحصائية حديثة، كما تحتاج حدود العزل وقراها إلى مطابقة مع سجل رسمي.', status: 'documented', source: 'مادة تاريخية عن مخلاف الحبيشية والتقسيم الإداري', sourceUrl: 'https://www.thu-raein.com/index.php/ar/makhaleef-ar/hubaish-district-ar' }
 ];
 
 const DEFAULT_PLACES = [
-  { id: 'p1', scope: 'related_historical_region', cat: 'fort', title: 'حصن صهبان التاريخي', loc: 'مصنعة سير / هضبة صهبان جنوب مدينة إب — خارج حبيش الحالية', elevation: 'غير موثق ميدانياً', importance: 'سجل حصني لنطاق صهبان التاريخي؛ لا ينسب إلى مديرية حبيش الحالية.', status: 'documented', source: 'صفة جزيرة العرب، حاشية محمد علي الأكوع، ص 197', sourceUrl: 'https://ablibrary.net/book_content/b/9942/205', body: 'تذكر حاشية التحقيق أن مخلاف صهبان جنوب مدينة إب، وأن الاسم شاع في القرن الثامن الهجري مع الأمير الصهباني. تحفظ البطاقة هوية الموضع التاريخية ولا تفترض أن كل حصن متداول محلياً هو منشأة واحدة أو أن صهبان ضمن حبيش.' },
   { id: 'p2', cat: 'fort', title: 'حصن حبيش (جبل حبيش)', loc: 'جبل حبيش — الموقع الدقيق قيد التحقق', elevation: 'غير موثق ميدانياً', importance: 'معلم مرتبط باسم الجبل والمديرية في الرواية المحلية.', status: 'local', body: 'يرتبط اسم الحصن بجبل حبيش في الذاكرة المحلية. يحتاج وصف الأسوار والصهاريج، وتحديد موضعها وحدودها، إلى تصوير ميداني ومقارنة بالخرائط والسجلات الأثرية قبل اعتماد تفاصيل معمارية أو تاريخ بناء.' },
   { id: 'p3', cat: 'mosque', title: 'الجامع الكبير في ظُلمة', loc: 'مركز ظُلمة — العنوان التفصيلي قيد التوثيق', elevation: 'غير موثق ميدانياً', importance: 'معلم ديني واجتماعي في مركز المديرية.', status: 'local', body: 'يمثل الجامع الكبير نقطة مهمة في الحياة الدينية والاجتماعية في مركز ظُلمة. لا تتوفر في هذه النسخة وثيقة منشورة تثبت تاريخ البناء أو مراحل الترميم؛ يمكن إثراء البطاقة بصور الواجهة والنقوش وسجل الوقف بعد التحقق.' },
   { id: 'p4', cat: 'valley', title: 'وادي الدُّور ومدرجات البن', loc: 'وادي الدُّور — يحتاج تحديد حدوده', elevation: 'غير موثق ميدانياً', importance: 'مشهد زراعي مرتبط بالمدرجات والبن في الرواية المحلية.', status: 'local', body: 'تصف الروايات المحلية الوادي بمدرجاته الزراعية ومحاصيل البن والحبوب. تعتمد قيمة المكان على شبكة المدرجات ومصادر المياه والعمل الزراعي؛ وتحتاج أسماء القرى والروافد والارتفاعات إلى توثيق ميداني.' },
@@ -35,10 +33,8 @@ const DEFAULT_PLACES = [
   { id: 'p9', cat: 'mountain', title: 'جبل خضراء', loc: 'عزلة جبل خضراء — الارتفاع قيد التحقق', elevation: 'غير موثق ميدانياً', importance: 'مرتفع يحمل اسم إحدى العزل الواردة في قائمة الدليل.', status: 'local', body: 'يرتبط اسم جبل خضراء بالتقسيم المحلي وبالطبيعة الجبلية للمديرية. يمكن أن توثق البطاقة المدرجات والقرى القريبة ومصادر المياه بعد مراجعة الخرائط والزيارات الميدانية.' },
   { id: 'p10', cat: 'mountain', title: 'مرتفعات ظُلمة', loc: 'محيط مركز ظُلمة', elevation: 'غير موثق ميدانياً', importance: 'تطل على مركز المديرية ومحيطه العمراني والزراعي.', status: 'local', body: 'تجمع مرتفعات ظُلمة بين المشهد العمراني والحقول والمنحدرات. لا تعني التسمية قمة واحدة محددة؛ ويحتاج تحديد نطاقها وارتفاعاتها إلى طبقة تضاريس أو مسح GPS.' },
   { id: 'p11', cat: 'mountain', title: 'جبل بني شبيب', loc: 'بني شبيب — يلزم التحقق من الامتداد', elevation: 'غير موثق ميدانياً', importance: 'مرتفع مرتبط باسم عزلة بني شبيب.', status: 'local', body: 'يرتبط الجبل باسم بني شبيب في القائمة المحلية. توثق البطاقة حالياً الاسم فقط، وتنتظر تحديد القمم والقرى والطرق الزراعية ومصادر المياه من مصادر محلية معتمدة.' },
-  { id: 'p12', cat: 'valley', title: 'وادي بناء (الروافد العليا)', loc: 'الروافد العليا — المسار يحتاج مطابقة', elevation: 'غير موثق ميدانياً', importance: 'مجرى مائي ومشهد زراعي يحتاج رسم حوضه وروافده.', status: 'local', body: 'يُدرج الجزء الأعلى من وادي بناء بوصفه نطاقاً طبيعياً يحتاج إلى رسم مجراه وروافده ومواقع الغيول. لا تعرض البطاقة مسافة أو اتجاه تدفق من دون قياس ميداني.' },
   { id: 'p13', cat: 'valley', title: 'وادي الشعيب', loc: 'الموقع التفصيلي قيد التحقق', elevation: 'غير موثق ميدانياً', importance: 'وادي محلي مقترح للتوثيق الطبيعي والزراعي.', status: 'local', body: 'تحتاج هذه البطاقة إلى تعيين حدود الوادي والقرى المحاذية وموسمية جريانه. يمكن إكمالها بصور للمنحدرات والمدرجات ومواقع عبور السيول.' },
   { id: 'p14', cat: 'valley', title: 'غيول حبيش الموسمية', loc: 'مواضع متعددة — تحتاج حصر مواقع', elevation: 'غير موثق ميدانياً', importance: 'مصادر مياه موسمية ذات صلة بالزراعة والغطاء النباتي.', status: 'local', body: 'تشير التسمية إلى عيون ومجاري مياه موسمية متفرقة. لا تمثل البطاقة غيلاً واحداً بإحداثيات معتمدة؛ وينبغي تسجيل كل موقع على حدة وقياس استمرارية جريانه وموسم ظهوره.' },
-  { id: 'p15', scope: 'related_historical_region', cat: 'mosque', title: 'مسجد صهبان الأثري', loc: 'نطاق صهبان جنوب مدينة إب — خارج حبيش الحالية؛ الموقع التفصيلي قيد التحقق', elevation: 'غير موثق ميدانياً', importance: 'سجل ديني تاريخي محفوظ ضمن النطاق المرتبط، لا ضمن معالم حبيش الحالية.', status: 'local', source: 'سجل تراثي محلي عن بلاد صهبان؛ يلزم مرجع أثري محدد', sourceUrl: '', body: 'يحفظ هذا المعرّف القديم ضمن قسم النطاقات التاريخية المرتبطة. لا تتوفر في السجل الحالي وثيقة تثبت سنة بناء المسجد أو موقعه الدقيق أو وصفه الأثري؛ وتحتاج البطاقة إلى نقش أو وقف أو مسح ميداني.' },
   { id: 'p16', cat: 'mosque', title: 'المساجد العلمية القديمة في بني سيف والأشعوب', loc: 'بني سيف والأشعوب — المواقع الفردية غير محصورة', elevation: 'غير موثق ميدانياً', importance: 'ذاكرة التعليم الديني ومجالس القراءة في القرى.', status: 'local', body: 'تتداول الذاكرة المحلية وجود مساجد ومجالس تعليم قديمة في بني سيف والأشعوب. هذه بطاقة تجميعية لا تمثل مسجداً واحداً، ويجب فصل كل مبنى في سجل مستقل بعد حصر الاسم والوقف والنقوش وتاريخ الترميم.' }
 ];
 
@@ -80,7 +76,7 @@ function validatePlace(item, index = 0) {
   const body = cleanText(item.body, 700);
   const loc = cleanText(item.loc, 120);
   const cat = ['fort', 'mosque', 'valley', 'mountain', 'market', 'school'].includes(item.cat) ? item.cat : 'fort';
-  const scope = ['hubaish_district', 'related_historical_region', 'adjacent_area', 'unverified_location'].includes(item.scope) ? item.scope : (['p1', 'p15'].includes(String(item.id || '')) ? 'related_historical_region' : 'hubaish_district');
+  const scope = ['hubaish_district', 'adjacent_area', 'unverified_location'].includes(item.scope) ? item.scope : 'hubaish_district';
   if (!title || !body) return null;
   const sourceUrl = validHttpUrl(item.sourceUrl) ? cleanText(item.sourceUrl, 500) : '';
   return {
@@ -107,7 +103,7 @@ function validateHistory(item, index = 0) {
   if (!title || !body) return null;
   return {
     id: /^[a-zA-Z0-9_-]{1,100}$/.test(String(item.id || '')) ? String(item.id) : makeId('h' + index),
-    scope: ['hubaish_district', 'related_historical_region', 'adjacent_area', 'unverified_location'].includes(item.scope) ? item.scope : (String(item.id || '') === 'h3' ? 'related_historical_region' : (String(item.id || '') === 'h4' ? 'unverified_location' : 'hubaish_district')),
+    scope: ['hubaish_district', 'adjacent_area', 'unverified_location'].includes(item.scope) ? item.scope : 'hubaish_district',
     era: item.era === 'modern' ? 'modern' : 'ancient',
     period: cleanText(item.period, 70), title, body,
     status: ['documented', 'local', 'unverified'].includes(item.status) ? item.status : 'unverified',
@@ -121,6 +117,11 @@ function normalizeState(value) {
   let places = Array.isArray(source.places) ? source.places.slice(0, 200).map(validatePlace).filter(Boolean) : [];
   let history = Array.isArray(source.history) ? source.history.slice(0, 100).map(validateHistory).filter(Boolean) : [];
   // Restore missing built-in records without overwriting saved edits.
+  const excludedLegacyIds = new Set(['p1','p12','p15','\u006a\u0061\u0062\u0061\u006c-\u0064\u0068\u0069-\u0068\u0061\u0072\u0072\u0061\u006e']);
+  const excludedLegacyHistoryIds = new Set(['h3']);
+  const excludedLocation = /\u0635\u0647\u0628\u0627\u0646|\u0073\u0061\u0068\u0062\u0061\u006e|\u0648\u0627\u062f\u064a\s*\u0628\u0646\u0627\u0621|\u0077\u0061\u0064\u0069\s*\u0062\u0069\u006e\u0061|\u062c\u0628\u0644(?:\s*\u0630\u064a)?\s*\u0647\u0631\u0651?\u0627\u0646|\u006a\u0061\u0062\u0061\u006c\s*(?:\u0064\u0068\u0069\s*)?\u0068\u0061\u0072\u0072\u0061\u006e/i;
+  places = places.filter(item => !excludedLegacyIds.has(item.id) && !excludedLocation.test([item.title,item.loc,item.body].join(' ')));
+  history = history.filter(item => !excludedLegacyHistoryIds.has(item.id) && !excludedLocation.test([item.title,item.period,item.body].join(' ')));
   const basePlaceIds = new Set(DEFAULT_PLACES.map(item => item.id));
   const baseHistoryIds = new Set(DEFAULT_HISTORY.map(item => item.id));
   places = [
@@ -328,10 +329,7 @@ function createContentCard(item, options = {}) {
   const genericMeta = {AR:isHistory?'محطة تاريخية':'معلم',EN:isHistory?'History stop':'Landmark',TR:isHistory?'Tarih durağı':'Yer',FR:isHistory?'Étape historique':'Monument'}[state.lang] || 'Landmark';
   meta.append(heritageIcon(isHistory ? 'scroll' : (item.cat || 'fort')), makeTag(options.meta || genericMeta, true));
   meta.append(makeTag(category, false));
-  if (item.scope === 'related_historical_region') {
-    const scopeLabels = { AR:'نطاق تاريخي مرتبط • خارج حبيش الحالية', EN:'Related historical region • outside present-day Hubaish', TR:'İlişkili tarihî bölge • günümüz Hubaish idaresinin dışında', FR:'Région historique associée • hors de Hubaish actuelle' };
-    meta.append(makeTag(scopeLabels[state.lang] || scopeLabels.AR));
-  } else if (item.scope === 'unverified_location') {
+  if (item.scope === 'unverified_location') {
     const scopeLabels = { AR:'النطاق الجغرافي قيد التحقق', EN:'Geographic scope under review', TR:'Coğrafi kapsam doğrulanıyor', FR:'Portée géographique à vérifier' };
     meta.append(makeTag(scopeLabels[state.lang] || scopeLabels.AR));
   }
@@ -424,22 +422,6 @@ function renderPlaces(category = currentPlaceCategory, query = '') {
   });
 }
 
-function renderRelatedHistoricalRegions() {
-  const target = document.getElementById('relatedHistoricalRegionsList');
-  if (!target) return;
-  target.replaceChildren();
-  const items = [
-    ...state.places.filter(item => item.scope === 'related_historical_region'),
-    ...state.history.filter(item => item.scope === 'related_historical_region')
-  ];
-  if (!items.length) return appendEmpty(target, state.lang === 'EN' ? 'No related historical records yet.' : state.lang === 'TR' ? 'Henüz ilişkili tarihî kayıt yok.' : state.lang === 'FR' ? 'Aucun document historique associé pour le moment.' : 'لا توجد سجلات تاريخية مرتبطة حالياً.');
-  items.forEach(item => {
-    const view = localizedDirectoryItem(item);
-    const meta = state.history.some(entry => entry.id === item.id) ? (view.period || item.period || '') : (view.loc || item.loc || '');
-    target.append(createContentCard(item, { meta, extraMeta: state.lang === 'EN' ? 'Related historical region' : state.lang === 'TR' ? 'İlişkili tarihî bölge' : state.lang === 'FR' ? 'Région historique associée' : 'نطاق تاريخي مرتبط' }));
-  });
-}
-
 function renderUnverifiedHistoricalRecords() {
   const target = document.getElementById('unverifiedHistoricalRecordsList');
   if (!target) return;
@@ -500,7 +482,7 @@ function renderAll() {
   renderSpotlight();
   renderHistory(currentEra, document.getElementById('histSearchInput').value);
   renderPlaces(currentPlaceCategory, document.getElementById('placeSearchInput').value);
-  renderRelatedHistoricalRegions();
+
   renderUnverifiedHistoricalRecords();
   renderUzal(document.getElementById('uzalSearchInput').value);
   window.HubaishGallery?.render?.();
@@ -586,10 +568,11 @@ function renderGlobalSearch(query) {
   if (!needle) return;
   const matchedPlaces = state.places.filter(item => item.scope === 'hubaish_district' && normalizeArabic(`${item.title} ${item.loc} ${item.body}`).includes(needle));
   const matchedHistory = state.history.filter(item => item.scope === 'hubaish_district' && normalizeArabic(`${item.title} ${item.period} ${item.body}`).includes(needle));
-  const matchedRelated = [...state.places, ...state.history].filter(item => item.scope === 'related_historical_region' && normalizeArabic(`${item.title} ${item.loc || ''} ${item.period || ''} ${item.body}`).includes(needle));
+
   const matchedUnverified = [...state.places, ...state.history].filter(item => item.scope === 'unverified_location' && normalizeArabic(`${item.title} ${item.loc || ''} ${item.period || ''} ${item.body}`).includes(needle));
   const directoryNames = window.HubaishFeatures?.getUzal?.() || UZAL_22;
   const matchedUzal = directoryNames.filter(name => normalizeArabic(name).includes(needle)).map((name, index) => ({ title: `عزلة ${name}`, body: 'إحدى العزل المدرجة ضمن قائمة مديرية حبيش. التفاصيل القروية بحاجة إلى توثيق ميداني.', id: `uzal-search-${index}` }));
+  const matchedKnowledge = (window.HubaishKnowledge?.search?.(query) || []).map(item => ({title:item.title,body:item.body,id:'knowledge-'+item.id}));
   const matchedPeople = (window.HubaishFeatures?.getPeople?.() || []).filter(item => normalizeArabic(`${item.title} ${item.body}`).includes(needle)).map(item => ({title:item.title,body:item.body,id:`person-${normalizeArabic(item.title)}`}));
   const refs = [{title:'التعداد السكاني 2004',body:'105,998 نسمة وفق المركز الوطني للمعلومات اليمني.'},{title:'مساحة المديرية',body:'228 كم² في بيانات OCHA/Local Governance، مع وجود مرجع محلي ينشر 330 كم².'},{title:'التقسيم الإداري',body:'مديرية حبيش تضم 22 عزلة وفق المركز الوطني للمعلومات.'}].filter(item=>normalizeArabic(`${item.title} ${item.body}`).includes(needle)).map((item,index)=>({...item,id:`ref-${index}`}));
   const groups = [
@@ -597,7 +580,8 @@ function renderGlobalSearch(query) {
     {label:'التاريخ',kind:'history',items:matchedHistory},
     {label:'العزل',kind:'district',items:matchedUzal},
     {label:'الشخصيات',kind:'person',items:matchedPeople},
-    {label:'النطاقات التاريخية المرتبطة',kind:'related-region',items:matchedRelated},
+    {label:'الموسوعة الموسعة',kind:'knowledge',items:matchedKnowledge},
+
     {label:'سجلات بنطاق جغرافي قيد التحقق',kind:'unverified-region',items:matchedUnverified},
     {label:'المراجع',kind:'reference',items:refs}
   ].filter(group=>group.items.length);
@@ -608,13 +592,15 @@ function renderGlobalSearch(query) {
     const card = element('article', 'item-card search-result-card');
     card.append(makeTag(item.searchLabel,true),element('h3', 'item-title', item.title), element('p', 'item-body', item.body));
     card.append(createAction('اسأل المساعد', 'ask', item.title));
-    if (item.scope === 'related_historical_region') card.append(element('p', 'small muted scope-note', 'هذا السجل مرتبط بنطاق تاريخي خارج الحدود الإدارية الحالية لمديرية حبيش.'));
+
     if (item.scope === 'unverified_location') card.append(element('p', 'small muted scope-note', 'النطاق الجغرافي لهذا السجل غير محسوم، وتحتاج مواضعه المذكورة إلى مطابقة مستقلة.'));
     target.append(card);
   });
 }
 
 function localAssistantAnswer(question) {
+  const extendedAnswer = window.HubaishKnowledge?.answer?.(question);
+  if (extendedAnswer) return extendedAnswer;
   const q = normalizeArabic(question);
   if (/حصن|حصون|قلاع|قلعة|fort|castle/i.test(question)) {
     const found=state.places.filter(item=>item.cat==='fort'&&item.scope==='hubaish_district');
@@ -647,12 +633,12 @@ function localAssistantAnswer(question) {
     const terms = normalizeArabic(`${item.title} ${item.loc}`).split(/\s+/).filter(term => term.length > 2);
     return terms.some(term => q.includes(term));
   });
-  if (place) return `${place.title}\n${place.loc}\n${place.body}${place.scope==='related_historical_region'?'\nنطاق تاريخي مرتبط خارج الحدود الإدارية الحالية لمديرية حبيش.':place.scope==='unverified_location'?'\nالنطاق الجغرافي لهذا السجل غير محسوم ويحتاج إلى تحقق.':''}`;
+  if (place) return `${place.title}\n${place.loc}\n${place.body}${place.scope==='unverified_location'?'\nالنطاق الجغرافي لهذا السجل غير محسوم ويحتاج إلى تحقق.':''}`;
   const directoryNames = window.HubaishFeatures?.getUzal?.() || UZAL_22;
   const uzla = directoryNames.find(name => q.includes(normalizeArabic(name)));
   if (uzla) return `عزلة ${uzla} مدرجة ضمن قائمة العزل الـ22 في بيانات هذا الدليل. لا تتوفر في النسخة الحالية تفاصيل مستقلة موثقة عن كل قرية أو حدود العزلة.`;
   const history = state.history.find(item => q.includes(normalizeArabic(item.title)) || normalizeArabic(item.title).split(/\s+/).some(term => term.length > 3 && q.includes(term)));
-  if (history) return `${history.title} — ${history.period}\n${history.body}${history.scope==='related_historical_region'?'\nنطاق تاريخي مرتبط خارج الحدود الإدارية الحالية لمديرية حبيش.':history.scope==='unverified_location'?'\nالنطاق الجغرافي لهذا السجل غير محسوم ويحتاج إلى تحقق.':''}`;
+  if (history) return `${history.title} — ${history.period}\n${history.body}${history.scope==='unverified_location'?'\nالنطاق الجغرافي لهذا السجل غير محسوم ويحتاج إلى تحقق.':''}`;
   return 'لم أعثر على إجابة في المحتوى المحلي المتاح. جرّب اسم عزلة أو حصن أو استخدم البحث في الأقسام. هذا المساعد لا يتصل حالياً بخدمة ذكاء اصطناعي خارجية.';
 }
 

@@ -116,3 +116,10 @@ npm run preview
 `https://github.com/baraagpt6-droid/hubaish-smart-guide./releases/latest/download/hubaish-smart-guide.apk`
 
 قد تحتاج إلى إزالة APK تجريبي قبل تثبيت أول APK موقع، إذا كان مفتاح التوقيع مختلفاً.
+
+
+## Heritage knowledge archive
+
+The expanded evidence catalogue is stored in `www/data/heritage-knowledge.json` and rendered by `www/knowledge.js`. It separates 16 core landmark records from additional mosque names, learning centres, reading circles, attributed works, biographies, family records, archive references, agricultural traditions, and the weekly market. Each record preserves its source and a verification status. The 22-name reference list is marked as awaiting district-administration confirmation.
+
+Author, CV/family, archive, and marketplace forms submit to the Cloudflare Worker moderation queue. Requests stay private in KV until a super-admin approves them. Public responses omit private contact details unless a marketplace submitter explicitly permits their display. Archive images use a branded image watermark and an in-app second watermark; do not add raw-image links to public UI. This deters unattributed reuse but is not DRM.

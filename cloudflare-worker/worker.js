@@ -73,6 +73,66 @@ async function route(req,env){
  if(req.method==="POST"&&path==="/public/photo-submissions"){
   return json({ok:false,error:"Visitor photo submissions are temporarily disabled."},410);
  }
+ if(req.method==="GET"&&path==="/public/community-submissions/attachment"){
+  if(!env.ADMINS)return json({error:"Public archive unavailable."},503);
+  const id=String(u.searchParams.get("id")||"");
+  if(!/^[0-9a-f-]{20,40}$/i.test(id))return json({error:"Invalid attachment id."},400);
+  const value=await env.ADMINS.get("community-published:"+id,"json");
+  if(!value||value.status!=="approved"||value.type!=="archive"||!value.attachment?.dataUrl)return json({error:"Published image not found."},404);
+  const match=String(value.attachment.dataUrl).match(/^data:(image\/(?:jpeg|png|webp));base64,([A-Za-z0-9+/]+={0,2})$/);
+  if(!match)return json({error:"Only approved archive images may be displayed."},415);
+  const esc=s=>String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&apos;");
+  const owner=esc(value.ownerName||"صاحب الوثيقة غير محدد"),brand="أرشيف دليل حبيش الذكي";
+  const watermark=Array.from({length:18},(_,i)=>{const x=(i%3)*360+180,y=Math.floor(i/3)*230+120;return '<text x="'+x+'" y="'+y+'" fill="#ffe291" fill-opacity=".24" font-family="sans-serif" font-size="30" font-weight="700" text-anchor="middle">'+brand+'</text><text x="'+x+'" y="'+(y+34)+'" fill="#ffffff" fill-opacity=".22" font-family="sans-serif" font-size="24" text-anchor="middle">'+owner+'</text>'}).join("");
+  const svg='<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="900" height="1800" viewBox="0 0 900 1800"><image x="0" y="0" width="900" height="1800" preserveAspectRatio="xMidYMid meet" href="'+value.attachment.dataUrl+'" xlink:href="'+value.attachment.dataUrl+'"/><g transform="rotate(-24 450 900)">'+watermark+'</g></svg>';
+  const headers={...cors(req,env),...SECURITY_HEADERS,"Content-Type":"image/svg+xml; charset=utf-8","Content-Length":String(new TextEncoder().encode(svg).length),"Content-Disposition":"inline; filename=watermarked-archive.svg","Cache-Control":"private, max-age=300","Cross-Origin-Resource-Policy":"cross-origin","X-Content-Type-Options":"nosniff","Content-Security-Policy":"default-src 'none'; img-src data:; style-src 'unsafe-inline'; frame-ancestors 'none'; base-uri 'none'"};
+  return new Response(svg,{status:200,headers});
+ }
+ if(req.method==="GET"&&path==="/public/community-submissions"){
+  if(!env.ADMINS)return json({error:"Public submissions store unavailable."},503);
+  const keys=await env.ADMINS.list({prefix:"community-published:",limit:100}),submissions=[];
+  for(const key of keys.keys){
+   const value=await env.ADMINS.get(key.name,"json");
+   if(value&&value.status==="approved")submissions.push({
+    id:value.id,type:value.type,name:value.name,title:value.title,body:value.body,source:value.source,
+    createdAt:value.reviewedAt||value.submittedAt,
+    contactPublic:value.type==="marketplace"&&value.contactPublic===true?value.contactPublicValue:"",ownerName:value.type==="archive"?(value.ownerName||""):"",marketCategory:value.marketCategory||"",
+    hasAttachment:!!value.attachment,attachmentName:value.attachment?.name||"",attachmentUrl:value.type==="archive"&&["image/jpeg","image/png","image/webp"].includes(value.attachment?.mimeType)?"/public/community-submissions/attachment?id="+encodeURIComponent(value.id):""
+   });
+  }
+  submissions.sort((a,b)=>String(b.createdAt).localeCompare(String(a.createdAt)));
+  return json({submissions});
+ }
+ if(req.method==="POST"&&path==="/public/community-submissions"){
+  if(!env.ADMINS)return json({error:"Submission store unavailable."},503);
+  const length=Number(req.headers.get("Content-Length")||0);
+  if(length>480000)return json({error:"Submission exceeds the 480 KB limit."},413);
+  const b=await req.json();
+  if(JSON.stringify(b).length>480000)return json({error:"Submission exceeds the 480 KB limit."},413);
+  const types=new Set(["author","family","archive","marketplace"]);
+  const clean=(v,max)=>String(v||"").replace(/[\u0000-\u001F\u007F]/g," ").trim().slice(0,max);
+  const type=String(b.type||"");
+  const name=clean(b.name,120),title=clean(b.title,180),body=clean(b.body,5000),source=clean(b.source,1000),contact=clean(b.contact,160),ownerName=clean(b.ownerName,160),marketCategory=clean(b.marketCategory,40);
+  if(!types.has(type)||!name||!title||!body||b.publishConsent!==true)return json({error:"A valid category, name, title, content and rights consent are required."},400);
+  if(type==="marketplace"&&!contact)return json({error:"A contact method is required for a marketplace listing."},400);
+  if(type==="marketplace"&&!["shop","artisan","service","weekly_market","sale","wanted"].includes(marketCategory))return json({error:"A marketplace category is required."},400);
+  if(b.publicContact===true&&(!contact||type!=="marketplace"))return json({error:"Public contact is allowed only for marketplace listings."},400);
+  let attachment=null;
+  if(b.attachment!=null){
+   const file=b.attachment,mime=String(file.mimeType||""),allowed=new Set(["application/pdf","text/plain","image/jpeg","image/png","image/webp","application/vnd.openxmlformats-officedocument.wordprocessingml.document"]);
+   const match=String(file.dataUrl||"").match(/^data:([\w.+-]+\/[\w.+-]+);base64,([A-Za-z0-9+/]+={0,2})$/);
+   if(!allowed.has(mime)||!match||match[1]!==mime||match[2].length>420000)return json({error:"Unsupported or oversized attachment."},400);
+   attachment={name:clean(file.name,120)||"attachment",mimeType:mime,dataUrl:file.dataUrl};
+  }
+  const ip=String(req.headers.get("CF-Connecting-IP")||"unknown"),ipHash=b64u(await crypto.subtle.digest("SHA-256",enc(ip)));
+  const rateKey="community-submit-rate:"+ipHash,rate=await env.ADMINS.get(rateKey,"json")||{count:0};
+  if(Number(rate.count||0)>=6)return json({error:"تم بلوغ حد الإرسال اليومي. حاول غداً."},429);
+  const id=crypto.randomUUID(),submittedAt=new Date().toISOString();
+  const record={id,type,name,title,body,source,contact,ownerName:type==="archive"?ownerName:"",marketCategory:type==="marketplace"?marketCategory:"",publicContact:b.publicContact===true&&type==="marketplace",publishConsent:true,attachment,submittedAt,status:"pending"};
+  await env.ADMINS.put("community-submission:"+id,JSON.stringify(record),{expirationTtl:60*60*24*90});
+  await env.ADMINS.put(rateKey,JSON.stringify({count:Number(rate.count||0)+1}),{expirationTtl:86400});
+  return json({ok:true,id,status:"pending",message:"تم استلام الطلب وهو بانتظار المراجعة."},201);
+ }
  if(!env.ADMINS||!env.GITHUB_TOKEN||!env.SESSION_SECRET) return json({error:"Configure ADMINS KV, GITHUB_TOKEN and SESSION_SECRET."},500);
  if(req.method==="GET"&&path==="/setup/status"){
   const keys=await env.ADMINS.list({prefix:UP,limit:1});
@@ -102,6 +162,49 @@ async function route(req,env){
   await log(env,{actor:username,action:"login"});return json({token,expiresIn:ttl,user:{username,displayName:user.displayName,role:user.role}})
  }
  const actor=await auth(req,env);if(!actor)return json({error:"انتهت الجلسة أو بيانات الدخول غير صالحة."},401);
+ if(path.startsWith("/review/community-submissions")&&actor.role!=="super_admin")return json({error:"يتطلب هذا الإجراء صلاحية المشرف العام."},403);
+ if(req.method==="GET"&&path==="/review/community-submissions"){
+  const keys=await env.ADMINS.list({prefix:"community-submission:",limit:100}),submissions=[];
+  for(const key of keys.keys){
+   const value=await env.ADMINS.get(key.name,"json");
+   if(value&&value.status==="pending")submissions.push({
+    id:value.id,type:value.type,name:value.name,title:value.title,body:value.body,source:value.source,contact:value.contact,ownerName:value.ownerName||"",marketCategory:value.marketCategory||"",
+    publicContact:!!value.publicContact,submittedAt:value.submittedAt,
+    attachment:value.attachment?{name:value.attachment.name,mimeType:value.attachment.mimeType}:null
+   });
+  }
+  submissions.sort((a,b)=>String(b.submittedAt).localeCompare(String(a.submittedAt)));
+  return json({submissions});
+ }
+ if(req.method==="GET"&&path==="/review/community-submissions/attachment"){
+  const id=String(u.searchParams.get("id")||"");
+  if(!/^[0-9a-f-]{20,40}$/i.test(id))return json({error:"Invalid submission id."},400);
+  const value=await env.ADMINS.get("community-submission:"+id,"json");
+  if(!value||value.status!=="pending"||!value.attachment?.dataUrl)return json({error:"Pending attachment not found."},404);
+  const match=String(value.attachment.dataUrl).match(/^data:([\w.+-]+\/[\w.+-]+);base64,([A-Za-z0-9+/]+={0,2})$/);
+  if(!match)return json({error:"Stored attachment is invalid."},500);
+  const bytes=Uint8Array.from(atob(match[2]),c=>c.charCodeAt(0));
+  const filename=String(value.attachment.name||"attachment").replace(/[^\p{L}\p{N}._-]/gu,"_").slice(0,100)||"attachment";
+  return new Response(bytes,{status:200,headers:{...SECURITY_HEADERS,"Content-Type":match[1],"Content-Length":String(bytes.length),"Content-Disposition":"inline; filename*=UTF-8''"+encodeURIComponent(filename),"Cache-Control":"no-store"}});
+ }
+ if(req.method==="PATCH"&&path==="/review/community-submissions"){
+  const b=await req.json(),id=String(b.id||""),key="community-submission:"+id;
+  if(!/^[0-9a-f-]{20,40}$/i.test(id))return json({error:"Invalid submission id."},400);
+  const record=await env.ADMINS.get(key,"json");
+  if(!record||record.status!=="pending")return json({error:"Pending submission not found."},404);
+  if(b.action==="reject"){
+   await env.ADMINS.delete(key);await log(env,{actor:actor.username,action:"reject_community_submission",target:id,type:record.type});
+   return json({ok:true,status:"rejected"});
+  }
+  if(b.action!=="approve"||record.publishConsent!==true)return json({error:"Explicit rights approval is required."},400);
+  const approved={id,type:record.type,name:record.name,title:record.title,body:record.body,source:record.source,ownerName:record.ownerName||"",marketCategory:record.marketCategory||"",
+   contactPublic:record.type==="marketplace"&&record.publicContact===true,
+   contactPublicValue:record.type==="marketplace"&&record.publicContact===true?record.contact:"",
+   attachment:record.attachment||null,submittedAt:record.submittedAt,reviewedAt:new Date().toISOString(),reviewedBy:actor.username,status:"approved"};
+  await env.ADMINS.put("community-published:"+id,JSON.stringify(approved),{expirationTtl:60*60*24*365});
+  await env.ADMINS.delete(key);await log(env,{actor:actor.username,action:"approve_community_submission",target:id,type:record.type});
+  return json({ok:true,status:"approved",id});
+ }
  if(path.startsWith("/admin/")&&actor.role!=="super_admin")return json({error:"يتطلب هذا الإجراء صلاحية المشرف العام."},403);
  if(req.method==="GET"&&path==="/review/photo-submissions"){
   const keys=await env.ADMINS.list({prefix:"photo-submission:",limit:100}),submissions=[];
