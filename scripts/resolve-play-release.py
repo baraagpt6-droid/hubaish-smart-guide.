@@ -109,17 +109,27 @@ def discover_release():
         tracks = api_json(session, "GET", f"{edit_url}/tracks").get("tracks") or []
         selected_track, track_names = choose_track(tracks)
         selected_rows = [row for row in tracks if str(row.get("track", "")).strip().casefold() == selected_track.casefold()]
-        existing_drafts = [
-            code
+        draft_records = [
+            release
             for row in selected_rows
             for release in (row.get("releases") or [])
             if str(release.get("status", "")).strip().casefold() == "draft"
-            for code in codes_for_release([release])
+            and codes_for_release([release])
         ]
-        if existing_drafts:
+        release_mode = os.environ.get("PLAY_RELEASE_MODE", "preview_draft").strip()
+        if release_mode == "publish_new_release":
+            allowed_obsolete_code = os.environ.get("PLAY_ALLOWED_EXISTING_DRAFT_VERSION_CODE", "").strip()
+            if allowed_obsolete_code != "417":
+                fail("The one-shot 418 release may tolerate only explicitly identified obsolete draft 417.")
+            if len(draft_records) != 1 or codes_for_release([draft_records[0]]) != [417]:
+                fail(
+                    "The one-shot 418 release requires exactly one obsolete 417 draft before cleanup; "
+                    f"found {[codes_for_release([item]) for item in draft_records]}."
+                )
+        elif draft_records:
             fail(
                 f"Closed-testing track '{selected_track}' already contains draft versionCode(s) "
-                f"{sorted(set(existing_drafts))}. Refusing to create a duplicate draft."
+                f"{[codes_for_release([item]) for item in draft_records]}. Refusing to create a duplicate draft."
             )
         all_codes = set()
         has_reviewed_release = False
@@ -152,6 +162,8 @@ def discover_release():
         version_code = highest_code + 1
         if version_code <= 0 or version_code > 2_100_000_000:
             fail(f"Calculated versionCode {version_code} is outside Android's supported positive integer range.")
+        if release_mode == "publish_new_release" and version_code != 418:
+            fail(f"The one-shot clean release is locked to versionCode 418; Play resolved {version_code}.")
 
         version_name = read_release_version()
         release_status = "draft"
@@ -217,6 +229,23 @@ def verify_upload():
         actual_status = str(found.get("status", "")).strip()
         if actual_status != expected_status:
             fail(f"Google Play shows release status '{actual_status}', expected '{expected_status}' for versionCode {expected_code}.")
+
+        draft_releases = [
+            item for item in releases
+            if str(item.get("status", "")).casefold() == "draft" and codes_for_release([item])
+        ]
+        completed_releases = [
+            item for item in releases
+            if str(item.get("status", "")).casefold() == "completed"
+        ]
+        if expected_status == "draft":
+            if len(draft_releases) != 1 or codes_for_release([draft_releases[0]]) != [expected_code]:
+                fail("Draft read-back must show exactly the uploaded versionCode and no other versioned draft.")
+        elif expected_status == "completed":
+            if draft_releases:
+                fail(f"Completed release read-back found pending versioned draft(s): {[codes_for_release([item]) for item in draft_releases]}.")
+            if len(completed_releases) != 1 or codes_for_release([completed_releases[0]]) != [expected_code]:
+                fail("Completed read-back must show exactly one completed release with the expected versionCode.")
 
         production_rows = [row for row in rows if str(row.get("track", "")).casefold() == "production"]
         current_production = sorted({code for row in production_rows for code in codes_for_release(row.get("releases") or [])})
