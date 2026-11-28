@@ -554,7 +554,7 @@ function bindVoiceMic(buttonId, inputId) {
   button.addEventListener('click', () => {
     const language = state.lang === 'AR' ? 'ar-YE' : state.lang === 'TR' ? 'tr-TR' : state.lang === 'FR' ? 'fr-FR' : 'en-US';
     const nativeSpeech = window.HubaishNativeSpeech;
-    if (nativeSpeech && typeof nativeSpeech.startListening === 'function' && window.Capacitor?.getPlatform?.() === 'android') {
+    if (nativeSpeech && typeof nativeSpeech.startListening === 'function') {
       const requestId = window.crypto?.randomUUID?.() || ('speech-' + Date.now() + '-' + Math.random().toString(36).slice(2));
       const receive = event => {
         const result = event.detail || {};
