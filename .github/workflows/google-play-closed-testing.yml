@@ -472,15 +472,6 @@ jobs:
           if-no-files-found: error
           retention-days: 30
 
-      - name: Upload the debug APK validation artifact
-        if: steps.release-mode.outputs.mode == 'verify_only'
-        uses: actions/upload-artifact@v4
-        with:
-          name: hubaish-play-verify-only
-          path: release-out/hubaish-smart-guide-debug.apk
-          if-no-files-found: error
-          retention-days: 14
-
       - name: Upload the signed AAB, listing, graphics and screenshots to Closed testing
         if: steps.release-mode.outputs.mode == 'preview_draft'
         env:
