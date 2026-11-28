@@ -117,9 +117,9 @@ function normalizeState(value) {
   let places = Array.isArray(source.places) ? source.places.slice(0, 200).map(validatePlace).filter(Boolean) : [];
   let history = Array.isArray(source.history) ? source.history.slice(0, 100).map(validateHistory).filter(Boolean) : [];
   // Restore missing built-in records without overwriting saved edits.
-  const excludedLegacyIds = new Set(['p1','p12','p15','\u006a\u0061\u0062\u0061\u006c-\u0064\u0068\u0069-\u0068\u0061\u0072\u0072\u0061\u006e']);
+  const excludedLegacyIds = new Set(['p1','p12','p15','al-dhuhrah-historic-settlement','\u006a\u0061\u0062\u0061\u006c-\u0064\u0068\u0069-\u0068\u0061\u0072\u0072\u0061\u006e']);
   const excludedLegacyHistoryIds = new Set(['h3']);
-  const excludedLocation = /\u0635\u0647\u0628\u0627\u0646|\u0073\u0061\u0068\u0062\u0061\u006e|\u0648\u0627\u062f\u064a\s*\u0628\u0646\u0627\u0621|\u0077\u0061\u0064\u0069\s*\u0062\u0069\u006e\u0061|\u062c\u0628\u0644(?:\s*\u0630\u064a)?\s*\u0647\u0631\u0651?\u0627\u0646|\u006a\u0061\u0062\u0061\u006c\s*(?:\u0064\u0068\u0069\s*)?\u0068\u0061\u0072\u0072\u0061\u006e/i;
+  const excludedLocation = /\u0645\u062f\u064a\u0646\u0629\s*\u0627\u0644\u0638\u0627\u0647\u0631\u0629|\u0635\u0647\u0628\u0627\u0646|\u0073\u0061\u0068\u0062\u0061\u006e|\u0648\u0627\u062f\u064a\s*\u0628\u0646\u0627\u0621|\u0077\u0061\u0064\u0069\s*\u0062\u0069\u006e\u0061|\u062c\u0628\u0644(?:\s*\u0630\u064a)?\s*\u0647\u0631\u0651?\u0627\u0646|\u006a\u0061\u0062\u0061\u006c\s*(?:\u0064\u0068\u0069\s*)?\u0068\u0061\u0072\u0072\u0061\u006e/i;
   places = places.filter(item => !excludedLegacyIds.has(item.id) && !excludedLocation.test([item.title,item.loc,item.body].join(' ')));
   history = history.filter(item => !excludedLegacyHistoryIds.has(item.id) && !excludedLocation.test([item.title,item.period,item.body].join(' ')));
   const basePlaceIds = new Set(DEFAULT_PLACES.map(item => item.id));
