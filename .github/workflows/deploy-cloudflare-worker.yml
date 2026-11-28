@@ -3,20 +3,10 @@ name: Verify Cloudflare Production
 on:
   push:
     branches: [main]
-    paths-ignore:
-      - '.github/workflows/**'
-      - 'docs/google-play-setup.md'
-      - 'AGENTS.md'
-      - 'PROJECT_MEMORY.md'
-      - '.promote-416'
-      - '.promote-416-retry'
-      - '.promote-416-final'
-      - 'fastlane/**'
-      - 'scripts/resolve-play-release.py'
-      - 'scripts/monitor-play-status.py'
-      - 'scripts/audit-runtime.mjs'
-      - 'scripts/verify-build.mjs'
-      - 'scripts/promote-play-draft.py'
+    paths:
+      - 'cloudflare-worker/**'
+      - 'scripts/configure-cloudflare-kv.mjs'
+      - 'scripts/resolve-cloudflare-worker-url.mjs'
   workflow_dispatch:
 
 permissions:

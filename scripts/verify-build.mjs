@@ -361,7 +361,7 @@ if (!runtimeAudit.includes('context.setOffline(true)') ||
     !runtimeAudit.includes('mockedSubmissions.length !== 4') ||
     !runtimeAudit.includes('archive-watermarked-canvas') ||
     !runtimeAudit.includes('knowledgeCached') ||
-    !runtimeAudit.includes('https://hubaish-cms.baraag6.workers.dev') ||
+    !runtimeAudit.includes('https://hubaish-cms.baraagpt6.workers.dev') ||
     !runtimeAudit.includes('/health') ||
     !runtimeAudit.includes('/setup/status')) {
   throw new Error('Runtime audit must enforce zero horizontal overflow, zero JS/network errors, interactive search/assistant/forms/archive, offline knowledge assets and Worker health.');
