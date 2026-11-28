@@ -181,6 +181,7 @@ if(!sw.includes('hubaish-guide-v4.1.6')||!sw.includes("assets/heritage/1183-wood
    !sw.includes("'github-cms.js'")||!sw.includes("'gallery.js'")||!sw.includes("'data/live-content.json'")) {
   throw new Error('The service-worker cache does not include the updated app shell.');
 }
+if(!sw.includes("'hubaish-cms.baraagpt6.workers.dev'")||sw.includes("'hubaish-cms.baraag6.workers.dev'"))throw new Error('The Service Worker must cache images from the canonical Hubaish Worker hostname.');
 if(!worker.includes('LIVE_KEY="live-content:published"')||!worker.includes('/api/live-content')||!worker.includes('/admin/quick-add')||!worker.includes('/public/quick-add-image')||!worker.includes('publishLiveContent(env,live)'))throw new Error('Cloudflare live KV feed, image endpoint or Quick Add endpoint is missing.');
 if(!cms.includes("DEFAULT_WORKER_URL+'/api/live-content'")||!cms.includes("workerRequest('/admin/quick-add'")||!cms.includes('function stampQuickImage')||!cms.includes("180*1024")||!cms.includes("setInterval(()=>{if(document.visibilityState==='visible'){sync(true);refreshSetupStatus();window.HubaishKnowledge?.load?.()}},15000)"))throw new Error('Client live-feed polling, offline refresh or Quick Add publishing path is incomplete.');
 if(!knowledgeJs.includes("setInterval(()=>{if(document.visibilityState==='visible')refreshPublished()},15000)"))throw new Error('Approved archive/family/market content is not refreshed while the app is open.');
