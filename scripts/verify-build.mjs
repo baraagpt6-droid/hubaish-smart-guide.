@@ -64,7 +64,7 @@ for (const file of ['www/app.js','www/catalog.js','www/features.js','www/github-
 for (const fragment of ['./styles.css','./splash.js','./app.js','./catalog.js','./features.js','./github-cms.js','./gallery.js','./knowledge.js','./manifest.webmanifest']) {
   if(!html.includes(fragment))throw new Error('Missing app reference: '+fragment);
 }
-if (!html.includes('id="appSplash"') || !html.includes('id="offlineIndicator"') ||
+if (!html.includes('id="appSplash"') || !html.includes('id="welcomeSkipBtn"') || !html.includes('welcome-graphic') || !html.includes('id="offlineIndicator"') ||
     !html.includes('id="privacyPolicyText"') || !html.includes('id="languagePickerMenu"') ||
     !html.includes('id="readerFontIncrease"') || !html.includes('id="readerOpenFavorites"')) {
   throw new Error('Splash, offline, privacy, custom language or reading controls are missing.');
@@ -151,13 +151,13 @@ if(!runtimeAudit.includes("const assistantReplyText = await assistantReply.inner
 if(!catalog.includes("id:'h8'")||!catalog.includes("17 مايو 1919م")||!catalog.includes('الشيخ عبدالعزيز بن عبدالكريم الحداد'))throw new Error('The seventh evidence-led Hubaish history station is missing.');
 if(!serve.includes("'.webp':'image/webp'")||!knowledgeJs.includes("canvas.dataset.sourceLoaded='true'")||!knowledgeJs.includes("canvas.dataset.sourceError='true'"))throw new Error('The local archive viewer must serve WebP correctly and expose image load state.');
 
-if(!css.includes('env(safe-area-inset-top')||!css.includes('var(--status-bar-height')||
+if(!css.includes('env(safe-area-inset-top')||!css.includes('calc(env(safe-area-inset-top,0px) + 12px)')||!css.includes('var(--status-bar-height')||
    !css.includes('env(safe-area-inset-bottom')||!css.includes('.ai-fab-launcher')||!css.includes('bottom:calc(84px + env(safe-area-inset-bottom,0px))')) {
   throw new Error('Safe-area CSS or floating assistant removal is missing.');
 }
 if(capacitor.appName!=='دليل حبيش'||capacitor.plugins?.StatusBar?.style!=='LIGHT'||
    'overlaysWebView' in (capacitor.plugins?.StatusBar||{})||
-   'backgroundColor' in (capacitor.plugins?.StatusBar||{})||
+   capacitor.plugins?.StatusBar?.backgroundColor!=='#071711'||
    manifest.short_name!=='دليل حبيش'||manifest.name!=='دليل حبيش'||
    manifestJson.short_name!=='دليل حبيش'||manifestJson.name!=='دليل حبيش'||
    !pkg.dependencies?.['@capacitor/status-bar']||
@@ -167,7 +167,7 @@ if(capacitor.appName!=='دليل حبيش'||capacitor.plugins?.StatusBar?.style!
   throw new Error('Unified app branding or native StatusBar configuration is inconsistent.');
 }
 if(!app.includes("statusBar.setStyle?.({ style: dark ? 'LIGHT' : 'DARK' })")||
-   app.includes('setOverlaysWebView')||app.includes('setBackgroundColor?.({ color })')||
+   app.includes('setOverlaysWebView')||!app.includes('setBackgroundColor?.({ color })')||
    !app.includes('setReaderScale')||!app.includes('languagePickerButton')) {
   throw new Error('Runtime status-bar style, reader settings or custom language picker wiring is missing.');
 }
@@ -177,7 +177,7 @@ if(!css.includes('padding-top:max(9px,env(safe-area-inset-top')||
 }
 if(app.includes('innerHTML'))throw new Error('The app must build DOM nodes with textContent instead of innerHTML.');
 if(!prepareAndroid.includes('maven-central.storage-download.googleapis.com/maven2/')||!prepareAndroid.includes('mavenCentral()')||!prepareAndroid.includes('android_dir.rglob("*.gradle")'))throw new Error('Signed Android releases must place the GCS Maven Central mirror ahead of Maven Central in generated Gradle files and retain the fallback.');
-if(!sw.includes('hubaish-guide-v4.1.4')||!sw.includes("assets/heritage/1183-wood-inscription.webp")||!sw.includes("'splash.js'")||
+if(!sw.includes('hubaish-guide-v4.1.5')||!sw.includes("assets/heritage/1183-wood-inscription.webp")||!sw.includes("'splash.js'")||
    !sw.includes("'github-cms.js'")||!sw.includes("'gallery.js'")||!sw.includes("'data/live-content.json'")) {
   throw new Error('The service-worker cache does not include the updated app shell.');
 }
@@ -186,19 +186,19 @@ if(!html.includes('id="hubaishGallery"')||!html.includes('id="galleryFromPlaces"
    !html.includes('id="cloudImageVerified"')||!app.includes("window.HubaishGallery?.render?.()")||
    !app.includes("move('#hubaishGallery',pane('explore'))")||
    !gallery.includes("image_verified===true")||!gallery.includes('heritage-lightbox-thumb')||
-   !gallery.includes("pointerdown")||!gallery.includes("navigator.share")) {
+   !gallery.includes("pointerdown")||!gallery.includes("navigator.share")||!gallery.includes('heritage-lightbox-watermark')) {
   throw new Error('Hubaish heritage gallery, lightbox interactions or admin photo provenance form is incomplete.');
 }
 const verifiedPhotoRows=data.landmarks.filter(row=>row.image_url);
-if(verifiedPhotoRows.length!==4||verifiedPhotoRows.some(row=>row.image_verified!==true||!row.image_source_url||!row.image_photographer||!row.image_license)) {
-  throw new Error('The published image catalogue must contain exactly four sourced and verified Hubaish photo records.');
+if(verifiedPhotoRows.length!==5||verifiedPhotoRows.some(row=>row.image_verified!==true||!row.image_source_url||!row.image_photographer||!row.image_license)) {
+  throw new Error('The published image catalogue must contain exactly five sourced and attributed Hubaish photo records.');
 }
 const blockedImageTerms=['Ibb_1987_01.jpg','Yemen_-_Ibb_IMG_2929A1-1600.jpg','Wide-angle_view_of_Ibb_city','جبلة – محافظة إب'];
 const serializedData=JSON.stringify(data);
 if(blockedImageTerms.some(term=>html.includes(term)||serializedData.includes(term))) {
   throw new Error('A regional photo that is not identified as Hubaish remains in the gallery or data file.');
 }
-if(!cms.includes('safeImageSource')||!cms.includes("image_verified:!!v.imageVerified")||
+if(!cms.includes('safeImageSource')||!cms.includes('bundledHeritageImage')||!cms.includes("image_verified:!!v.imageVerified")||
    !cms.includes('cloudImageFile')||!cms.includes('180*1024')||
    !cms.includes("localeFields(row,'image_caption',v.imageCaption)")) {
   throw new Error('Verified image upload, compression, attribution or locale fields are incomplete.');
@@ -257,13 +257,14 @@ const appDistrictNames=[...uzalBlock.matchAll(/'([^']+)'/g)].map(x=>x[1]);
 const catalogDistrictNames=[...catalogDistrictBlock.matchAll(/^\s*\['([^']+)'/gm)].map(x=>x[1]);
 if(JSON.stringify(appDistrictNames)!==JSON.stringify(expectedSubdistricts)||JSON.stringify(catalogDistrictNames)!==JSON.stringify(expectedSubdistricts))throw new Error('App and catalog must use the exact 22-name reference list from the attached report.');
 if(JSON.stringify(data.subDistricts.map(x=>x.district_name_ar))!==JSON.stringify(expectedSubdistricts)||data.districtProfile.subdistrict_list_status!=='reference_list_pending_district_approval')throw new Error('Live district list must be the report list and disclose pending district confirmation.');
-if(data.relatedHistoricalRegions!==undefined||data.landmarks.some(x=>['p1','p12','p15','jabal-dhi-harran'].includes(x.id))||data.historyEvents.some(x=>x.id==='h3'))throw new Error('Excluded historic region or removed landmark remains in live content.');
+if(data.relatedHistoricalRegions!==undefined||data.landmarks.some(x=>['p1','p12','p15','jabal-dhi-harran','al-dhuhrah-historic-settlement'].includes(x.id))||data.historyEvents.some(x=>x.id==='h3'))throw new Error('Excluded historic region or removed landmark remains in live content.');
+if(knowledge.landmarkRecords.some(x=>x.id==='al-dhuhrah-historic-settlement')||JSON.stringify(knowledge).includes('مدينة الظاهرة')||JSON.stringify(data).includes('قرب قرية ملكان'))throw new Error('The unverified Dhuhrah/Malkan location is still exposed in public Hubaish content.');
 if(/صهبان|Sahban|وادي بناء|Wadi Bina|جبل ذي هران|Jabal Dhi Harran/i.test([app,catalog,features,html,cms].join(' ')))throw new Error('Removed geographic records remain in runtime interface or assistant.');
 if(!app.includes('excludedLegacyIds')||!app.includes('excludedLegacyHistoryIds')||!cms.includes('LEGACY_EXCLUDED_IDS'))throw new Error('Saved local and CMS legacy content is not sanitized.');
 if(!html.includes('id="unverifiedHistoricalRecordsList"')||html.includes('relatedHistoricalRegionsList'))throw new Error('Unverified location section should remain but related-region panel must be removed.');
 if(!html.includes('id="knowledgeLandmarksList"')||!html.includes('id="knowledgeSchoolsList"')||!html.includes('id="knowledgeWorksList"')||!html.includes('id="knowledgePeopleList"')||!html.includes('id="knowledgeFamiliesList"')||!html.includes('id="knowledgeArchiveList"')||!html.includes('id="knowledgeMarketList"'))throw new Error('Knowledge archive panels are incomplete.');
 if(!app.includes('bootReport.landmarks < 13'))throw new Error('Boot integrity threshold must match the 13 active core place cards.');
-if(knowledge.landmarkRecords?.length!==16||!Array.isArray(knowledge.additionalMosques)||!Array.isArray(knowledge.schools)||!Array.isArray(knowledge.people)||!Array.isArray(knowledge.families)||!Array.isArray(knowledge.archives))throw new Error('Knowledge content must include 16 core landmarks, schools, people, families and archive records.');
+if(knowledge.landmarkRecords?.length!==15||!Array.isArray(knowledge.additionalMosques)||!Array.isArray(knowledge.schools)||!Array.isArray(knowledge.people)||!Array.isArray(knowledge.families)||!Array.isArray(knowledge.archives))throw new Error('Knowledge content must include 16 core landmarks, schools, people, families and archive records.');
 if(!html.includes('id="authorSubmissionForm"')||!html.includes('id="familyCvForm"')||!html.includes('id="archiveSubmissionForm"')||!html.includes('name="ownerName"')||!html.includes('id="marketListingForm"')||!html.includes('id="communitySubmissionReview"'))throw new Error('Community submission or admin review forms are incomplete.');
 if(!cms.includes('/public/community-submissions')||!cms.includes('/review/community-submissions')||!cms.includes('DEFAULT_WORKER_URL+item.attachmentUrl')||!worker.includes('/public/community-submissions')||!worker.includes('/review/community-submissions')||!worker.includes('ownerName:type==="archive"?ownerName:""')||!worker.includes('actor.role!=="super_admin"'))throw new Error('Community submissions must use the Worker review queue.');
 if(!app.includes("window.HubaishKnowledge?.answer?.(question)")||!catalog.includes('window.HubaishKnowledge?.answer?.(question)')||!knowledgeJs.includes('archive-watermarked-canvas'))throw new Error('Knowledge assistant and document viewer are not integrated.');
@@ -420,7 +421,7 @@ if(!profile.population.find(x=>x.year===2025).type.includes('HNRP'))throw new Er
 if(profile.weekly_market?.day_ar!=='الجمعة'||!profile.weekly_market?.verification_note_ar)throw new Error('Weekly market day or local confirmation note is missing.');
 if(profile.subdistrict_count!==22||data.subDistricts.length!==22)throw new Error('Hubaish must retain exactly 22 administrative sub-districts.');
 if(profile.tribal_context||profile.geographic_disambiguation?.length!==1||profile.geographic_disambiguation[0]?.name_ar!=='مديرية حبيش'||profile.name_origin_hypotheses?.status!=='research_hypotheses')throw new Error('Hubaish-only geographic scope or name-origin caveat is missing.');
-const requiredHeritage=['khudad-fort','wuhaza-fortress','yaris-fortress','dahran-fort-bani-wail','al-dhuhrah-historic-settlement','al-udadi-fort','musaynia-fort','bayt-al-batul-fort','maghram-khair-fort','bayn-al-dur-dome','al-farawi-mosque-dome','marwaha-mosque','al-jami-mosque','dhulmah-grand-mosque','qubbat-al-zum'];
+const requiredHeritage=['khudad-fort','wuhaza-fortress','yaris-fortress','dahran-fort-bani-wail','al-udadi-fort','musaynia-fort','bayt-al-batul-fort','maghram-khair-fort','bayn-al-dur-dome','al-farawi-mosque-dome','marwaha-mosque','al-jami-mosque','dhulmah-grand-mosque','qubbat-al-zum'];
 for(const id of requiredHeritage)if(!data.landmarks.some(x=>x.id===id))throw new Error('A required historical landmark record is missing: '+id);
 for(const id of ['p1','p12','p15'])if(app.includes("id: '"+id+"'"))throw new Error('Excluded legacy landmark was reintroduced: '+id);
 if(app.includes("id: 'h3'"))throw new Error('Excluded legacy history event was reintroduced.');
