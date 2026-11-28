@@ -239,6 +239,7 @@ if(/صهبان|Sahban|وادي بناء|Wadi Bina|جبل ذي هران|Jabal Dhi
 if(!app.includes('excludedLegacyIds')||!app.includes('excludedLegacyHistoryIds')||!cms.includes('LEGACY_EXCLUDED_IDS'))throw new Error('Saved local and CMS legacy content is not sanitized.');
 if(!html.includes('id="unverifiedHistoricalRecordsList"')||html.includes('relatedHistoricalRegionsList'))throw new Error('Unverified location section should remain but related-region panel must be removed.');
 if(!html.includes('id="knowledgeLandmarksList"')||!html.includes('id="knowledgeSchoolsList"')||!html.includes('id="knowledgeWorksList"')||!html.includes('id="knowledgePeopleList"')||!html.includes('id="knowledgeFamiliesList"')||!html.includes('id="knowledgeArchiveList"')||!html.includes('id="knowledgeMarketList"'))throw new Error('Knowledge archive panels are incomplete.');
+if(!app.includes('bootReport.landmarks < 13'))throw new Error('Boot integrity threshold must match the 13 active core place cards.');
 if(knowledge.landmarkRecords?.length!==16||!Array.isArray(knowledge.additionalMosques)||!Array.isArray(knowledge.schools)||!Array.isArray(knowledge.people)||!Array.isArray(knowledge.families)||!Array.isArray(knowledge.archives))throw new Error('Knowledge content must include 16 core landmarks, schools, people, families and archive records.');
 if(!html.includes('id="authorSubmissionForm"')||!html.includes('id="familyCvForm"')||!html.includes('id="archiveSubmissionForm"')||!html.includes('name="ownerName"')||!html.includes('id="marketListingForm"')||!html.includes('id="communitySubmissionReview"'))throw new Error('Community submission or admin review forms are incomplete.');
 if(!cms.includes('/public/community-submissions')||!cms.includes('/review/community-submissions')||!cms.includes('DEFAULT_WORKER_URL+item.attachmentUrl')||!worker.includes('/public/community-submissions')||!worker.includes('/review/community-submissions')||!worker.includes('ownerName:type==="archive"?ownerName:""')||!worker.includes('actor.role!=="super_admin"'))throw new Error('Community submissions must use the Worker review queue.');
@@ -354,10 +355,16 @@ if (!playMonitorScript.includes('EXPECTED_PACKAGE = "com.hubaish.guide"') ||
 if (!runtimeAudit.includes('context.setOffline(true)') ||
     !runtimeAudit.includes('navigator.serviceWorker.ready') ||
     !runtimeAudit.includes('[360, 390, 768, 1024]') ||
-    !runtimeAudit.includes('https://hubaish-cms.baraagpt6.workers.dev') ||
+    !runtimeAudit.includes('if (overflow > 0)') ||
+    !runtimeAudit.includes('requestFailures.length') ||
+    !runtimeAudit.includes('consoleErrors.length') ||
+    !runtimeAudit.includes('mockedSubmissions.length !== 4') ||
+    !runtimeAudit.includes('archive-watermarked-canvas') ||
+    !runtimeAudit.includes('knowledgeCached') ||
+    !runtimeAudit.includes('https://hubaish-cms.baraag6.workers.dev') ||
     !runtimeAudit.includes('/health') ||
     !runtimeAudit.includes('/setup/status')) {
-  throw new Error('Runtime audit must check responsive layouts, offline cache and the production Worker.');
+  throw new Error('Runtime audit must enforce zero horizontal overflow, zero JS/network errors, interactive search/assistant/forms/archive, offline knowledge assets and Worker health.');
 }
 
 if (!cms.includes("https://hubaish-cms.baraagpt6.workers.dev") ||

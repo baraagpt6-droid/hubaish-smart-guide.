@@ -1033,7 +1033,7 @@ function init() {
     quiz: window.HubaishCatalog?.quiz?.length || 0
   };
   window.HubaishRuntime.bootReport = bootReport;
-  if (bootReport.landmarks < 19 || bootReport.history < 7 || bootReport.subDistricts < 22 || bootReport.people < 4 || bootReport.references < 1 || bootReport.quiz < 10) console.error('[Hubaish] Core catalog incomplete at boot:', bootReport);
+  if (bootReport.landmarks < 13 || bootReport.history < 7 || bootReport.subDistricts < 22 || bootReport.people < 4 || bootReport.references < 1 || bootReport.quiz < 10) console.error('[Hubaish] Core catalog incomplete at boot:', bootReport);
   else console.info('[Hubaish] Boot check passed:', bootReport);
   window.HubaishCloud?.applyCached?.();
   initMoreSmartTabs();

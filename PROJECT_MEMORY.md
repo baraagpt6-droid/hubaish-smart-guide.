@@ -18,7 +18,7 @@ Persistent project reference for future maintenance. It records project identity
 - UI languages: Arabic, English, Turkish, and French.
 - Offline Service Worker and local JSON fallback.
 - Features include place search, category filters, place details, favorites, local assistant, itinerary tools, place comparison, photo gallery, language preference, and estimated prayer times. Confirm current source before claiming any particular behavior is shipped.
-- Project README/build checks document 19 landmarks, 22 current sub-districts, 7 historical stations, 4 historical figures, references, and a 10-question quiz.
+- The primary places catalogue has 13 active Hubaish place cards. The separate evidence-led heritage archive has 16 core historical-landmark cards. It also includes 22 reference sub-district names awaiting district-administration confirmation, 7 historical stations, 4 primary catalogue figures, references, and a 10-question quiz.
 - Excluded legacy geographic records are removed from the public catalog, local assistant, dropdowns, and search. Do not restore them from old cached copies or CMS content.
 - Historical/geographic facts and images must retain their documented sources and provenance. Do not fill evidence gaps with unverified claims.
 - The 22-name reference list from the 27 November 2026 project report is explicitly marked as awaiting district-administration confirmation.
