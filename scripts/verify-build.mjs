@@ -290,7 +290,9 @@ if(!html.includes('name="marketCategory"'))throw new Error('Marketplace category
 if(!worker.includes('value.type!=="archive"')||!worker.includes('image/svg+xml; charset=utf-8')||!worker.includes('actor.role!=="super_admin"')||!worker.includes('marketCategory:type==="marketplace"?marketCategory:""')||!worker.includes('value.status==="approved"'))throw new Error('Archive watermark, approved-only publication, marketplace category or super-admin review control is missing.');
 if(!knowledgeJs.includes("ctx.fillText('أرشيف دليل حبيش الذكي'")||!knowledgeJs.includes("ctx.fillText(item.imageOwner||'صاحب الوثيقة غير محدد',x,y+")||!knowledgeJs.includes('payload.attachment=await filePayload(form,type)')||!knowledgeJs.includes("marketCategory:value('marketCategory')")||knowledgeJs.includes('فتح المرفق المعتمد'))throw new Error('The archive image watermark, second viewer watermark, or protected submission form is incomplete.');
 if(!cms.includes('DEFAULT_WORKER_URL+item.attachmentUrl')||!cms.includes('item.marketCategory'))throw new Error('Published archive URL or marketplace category mapping is missing.');
-if(!sw.includes('hubaish-cms.baraag6.workers.dev'))throw new Error('Service Worker does not cache approved archive images from the Cloudflare Worker.');
+const liveWorkerUrl=cms.match(/const DEFAULT_WORKER_URL\\s*=\\s*['"](https?:\\/\\/[^'"]+)['"]/);
+const liveWorkerHost=liveWorkerUrl?.[1]?.replace(/^https?:\\/\\//,'').split('/')[0];
+if(!liveWorkerHost||!sw.includes(liveWorkerHost))throw new Error('Service Worker does not cache approved archive images from the configured Cloudflare Worker host: '+(liveWorkerHost||'missing Worker URL')+'.');
 const archiveImage=await readFile(resolve(root,'www/assets/heritage/1183-wood-inscription.webp'));
 if(archiveImage.toString('ascii',0,4)!=='RIFF'||archiveImage.toString('ascii',8,12)!=='WEBP'||archiveImage.length>15000)throw new Error('The branded Marwaha WebP image is missing, invalid or exceeds its size target.');
 for(const [file,expected] of [['www/icons/icon-192.png',192],['www/icons/icon-512.png',512]]) {
