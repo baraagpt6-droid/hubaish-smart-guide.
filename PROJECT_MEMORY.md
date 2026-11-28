@@ -201,3 +201,6 @@ Successful preview build run 46038091477:
 - Read-only Google Play monitor run 46126746005 showed only versionCode 418 completed on `Hubaish Closed Test`, zero versioned drafts on that track, highestSeenVersionCode 418 and empty Production. A legacy alternate `Closed testing` record without a versionCode remained untouched.
 - Verify-only run 46125743554 failed during disposable Gradle AAB assembly because Maven Central returned HTTP 429 after four bounded retries. No AAB artifact was created and no Google Play upload or release write occurred. VersionCode 419 is unused.
 - Version 1.0.403 targets versionCode 420, deliberately skipping unused 419. Resolver/promoter must re-check bundle history, target-track state, drafts, in-progress rollout and Production before any write.
+
+
+- Main-branch static verifier alignment fix merged after the 1.0.403 rollout preparation. Keep the next build verification-only until the explicit one-shot `.publish-420` marker is added. Never use a regular preview draft while `release-version.txt` is 1.0.403, because the default resolver would select unused code 419 with the new version name.
