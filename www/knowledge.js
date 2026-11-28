@@ -95,7 +95,7 @@
       }
     }
     for(const x of published){
-      const body=[x.title,x.body,x.name,x.source].filter(Boolean).join(' ');
+      const body=[x.title,x.body,x.name,x.location,x.marketCategory,x.source].filter(Boolean).join(' ');
       if(norm(body).includes(q))rows.push({id:x.id,title:x.title,body:body.slice(0,520),category:x.type});
     }
     return rows.slice(0,10);
