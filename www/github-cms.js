@@ -966,7 +966,7 @@ async function stampQuickImage(file,ownerName){
     localStorage.removeItem('hubaish_direct_github_token');localStorage.removeItem('hubaish_worker_url');
     applyCached();bind();setTimeout(applyCached,0);
     if(navigator.onLine){sync(true);refreshSetupStatus()}
-    window.setInterval(()=>{if(document.visibilityState==='visible'){sync(true);window.HubaishKnowledge?.load?.()}},15000);
+    window.setInterval(()=>{if(document.visibilityState==='visible'){sync(true);window.HubaishKnowledge?.refreshPublished?.()}},15000);
     window.setInterval(()=>{if(document.visibilityState==='visible')refreshSetupStatus()},60000);
     window.addEventListener('online',()=>{sync(true);refreshSetupStatus()});
     document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')sync(true)});
