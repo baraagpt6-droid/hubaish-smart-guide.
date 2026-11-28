@@ -193,6 +193,8 @@ try {
   await page.locator('#view-more.active').waitFor({ state: 'visible', timeout: 10000 });
   const sadiqText = await page.locator('#knowledgePeopleList').innerText();
   if (!sadiqText.includes('صادق محمد محمد الناهي')) throw new Error('The sourced Sadiq profile is missing.');
+  await page.locator('#view-more .more-tab-button[data-more-tab="tools"]').click();
+  await page.locator('#view-more [data-more-panel="tools"].active').waitFor({ state: 'visible', timeout: 10000 });
   await page.locator('#openAiBtn').click();
   await page.locator('#aiModal.open').waitFor({ state: 'visible', timeout: 10000 });
   await page.locator('#aiInput').fill('مدرسة الزواحي');
