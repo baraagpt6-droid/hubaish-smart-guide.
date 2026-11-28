@@ -161,7 +161,7 @@ if(!css.includes('padding-top:max(9px,env(safe-area-inset-top')||
    !css.includes('padding-bottom:max(6px,env(safe-area-inset-bottom')) {
   throw new Error('Android 15/16 top and bottom safe-area padding is missing.');
 }
-if(!sw.includes('hubaish-guide-v4.1.1')||!sw.includes("assets/heritage/1183-wood-inscription.webp")||!sw.includes("'splash.js'")||
+if(!sw.includes('hubaish-guide-v4.1.2')||!sw.includes("assets/heritage/1183-wood-inscription.webp")||!sw.includes("'splash.js'")||
    !sw.includes("'github-cms.js'")||!sw.includes("'gallery.js'")||!sw.includes("'data/live-content.json'")) {
   throw new Error('The service-worker cache does not include the updated app shell.');
 }
@@ -218,6 +218,7 @@ if(androidPatch.includes('android:windowOptOutEdgeToEdgeEnforcement')||
 const districtStart=catalog.indexOf('const D=['),districtEnd=catalog.indexOf('const PN=',districtStart);
 const districtBlock=districtStart>=0&&districtEnd>districtStart?catalog.slice(districtStart,districtEnd):'';
 if([...districtBlock.matchAll(/^\s*\['/gm)].length!==22)throw new Error('The core district list must contain 22 names.');
+if(!/^\\s*\\['الوطئة'[^\\n]*\\],\\s*\\n\\s*\\['قحزة'/m.test(districtBlock))throw new Error('The district array must separate Al-Wat\'ah and Qahzah as distinct entries.');
 const quizStart=catalog.indexOf('const QUIZ=['),quizEnd=catalog.indexOf('  ];',quizStart);
 const quizBlock=quizStart>=0&&quizEnd>quizStart?catalog.slice(quizStart,quizEnd):'';
 if([...quizBlock.matchAll(/^\s*\[\[/gm)].length!==10)throw new Error('The ten-question quiz catalogue is incomplete.');

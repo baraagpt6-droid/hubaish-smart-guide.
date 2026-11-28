@@ -23,7 +23,7 @@
     ['الذارحي','Al-Dharahi (Al-Zarahi)','Ed-Darahi (Ez-Zarahi)','Al-Dharahi (Al-Zarahi)','الحقول والمدرجات','Fields and terraces','Tarlalar ve teraslar','Champs et terrasses'],
     ['التفادي','Al-Tafadi','Et-Tefadi','Al-Tafadi','المشهد الجبلي','Mountain landscape','Dağlık görünüm','Paysage montagneux'],
     ['كومان','Kuman','Kuman','Kuman','المشهد الريفي','Rural landscape','Kırsal görünüm','Paysage rural'],
-    ['الوطئة',"Al-Wat'ah (Al-Watnah)","El-Vat'a (El-Vatna)","Al-Wat'ah (Al-Watnah)",'القرى والسهول الزراعية','Rural settlements and fields','Kırsal yerleşimler ve tarlalar','Villages et terres cultivées']
+    ['الوطئة',"Al-Wat'ah (Al-Watnah)","El-Vat'a (El-Vatna)","Al-Wat'ah (Al-Watnah)",'القرى والسهول الزراعية','Rural settlements and fields','Kırsal yerleşimler ve tarlalar','Villages et terres cultivées'],
     ['قحزة','Qahzah (Jahzah)','Kahza (Cehza)','Qahzah (Jahzah)','الحقول والمواضع الريفية','Fields and rural places','Tarlalar ve kırsal yerler','Champs et lieux ruraux'],
     ['المشيرق','Al-Mushriq','El-Muşrik','Al-Mushriq','القمم والممرات','Peaks and passes','Zirveler ve geçitler','Sommets et cols'],
     ['الصدر','Al-Sadr','Es-Sadr','Al-Sadr','المنحدرات والحقول','Slopes and fields','Yamaçlar ve tarlalar','Versants et champs'],
