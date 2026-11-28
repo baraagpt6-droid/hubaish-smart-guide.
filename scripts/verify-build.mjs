@@ -337,22 +337,22 @@ if (!playWorkflow.includes('workflow_dispatch:') ||
     !playWorkflow.includes("PLAY_ALLOWED_EXISTING_DRAFT_VERSION_CODE") ||
     !playWorkflow.includes("scripts/retire-obsolete-play-draft.py") ||
     !playWorkflow.includes("Verify completed 418, zero pending drafts") ||
-    !playWorkflow.includes(".publish-419") ||
-    !playWorkflow.includes("publish_next_release") ||
-    !playWorkflow.includes("Verify completed 419, zero pending drafts and unchanged Production") ||
-    !playWorkflow.includes("steps.publish-next-release.outputs.release_status") ||
-    !playResolver.includes('release_mode == "publish_next_release"') ||
-    !playResolver.includes("version_code != 419") ||
+    !playWorkflow.includes(".publish-420") ||
+    !playWorkflow.includes("publish_420_release") ||
+    !playWorkflow.includes("Verify completed 420, zero pending drafts and unchanged Production") ||
+    !playWorkflow.includes("steps.publish-420-release.outputs.release_status") ||
+    !playResolver.includes('release_mode == "publish_420_release"') ||
+    !playResolver.includes("version_code != 420") ||
     !playResolver.includes("zero existing versioned drafts on Hubaish Closed Test") ||
     !playPromoter.includes("prior_completed_codes != [418]") ||
-    !playWorkflow.includes(".publish-419") ||
-    !playWorkflow.includes("publish_next_release") ||
-    !playWorkflow.includes("Verify completed 419, zero pending drafts and unchanged Production") ||
-    !playResolver.includes('release_mode == "publish_next_release"') ||
-    !playResolver.includes("version_code != 419") ||
+    !playWorkflow.includes(".publish-420") ||
+    !playWorkflow.includes("publish_420_release") ||
+    !playWorkflow.includes("Verify completed 420, zero pending drafts and unchanged Production") ||
+    !playResolver.includes('release_mode == "publish_420_release"') ||
+    !playResolver.includes("version_code != 420") ||
     !playResolver.includes("zero existing versioned drafts on Hubaish Closed Test") ||
     !playPromoter.includes("prior_completed_codes != [418]") ||
-    !playWorkflow.includes("steps.publish-next-release.outputs.release_status") ||
+    !playWorkflow.includes("steps.publish-420-release.outputs.release_status") ||
     !playRetirer.includes("OBSOLETE_DRAFT_CODE = 417") ||
     !playRetirer.includes("EXPECTED_COMPLETED_CODE = 416") ||
     !playRetirer.includes("No testers resource, tester list, opt-in configuration, or other track was read or modified.") ||
@@ -369,6 +369,7 @@ if (!playWorkflow.includes('workflow_dispatch:') ||
     playWorkflow.includes("approve_draft")) {
   throw new Error('Google Play workflow must upload draft previews on main pushes, require explicit manual approval, use WIF, verify signing and read back the release.');
 }
+if(!playResolver.includes('version_code = 420')||!playResolver.includes('highest_code != 418')||!playPromoter.includes('expected == 420'))throw new Error('One-shot versionCode 420 must skip unused 419, require bundle history to end at 418, and replace only completed 418.');
 if (!playWorkflow.includes('status code 429') ||
     !playWorkflow.includes('Too Many Requests') ||
     !playWorkflow.includes('Gradle remained rate-limited after 4 attempts') ||
