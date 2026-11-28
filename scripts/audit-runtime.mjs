@@ -241,7 +241,6 @@ try {
   if (await galleryCards.count() !== 5) throw new Error('The verified Hubaish gallery must contain five photo cards.');
   const marwahaGalleryCard = galleryCards.filter({ hasText: 'نقش مسجد مروحة الأثري' }).first();
   await marwahaGalleryCard.waitFor({ state: 'visible', timeout: 10000 });
-  const marwahaImage = marwahaGalleryCard.locator('img');
   await page.waitForFunction(() => {
     const card = [...document.querySelectorAll('#heritageGalleryGrid .heritage-gallery-card')]
       .find(node => node.textContent.includes('نقش مسجد مروحة الأثري'));
@@ -259,7 +258,7 @@ try {
     throw new Error('The protected Marwaha gallery exposes a raw local-image link.');
   }
   await page.locator('.heritage-lightbox-close').click();
-  await page.locator('.heritage-lightbox[hidden]').waitFor({ state: 'attached', timeout: 5000 });
+  await page.locator('.heritage-lightbox').waitFor({ state: 'hidden', timeout: 5000 });
 
   const sadiqText = await page.locator('#knowledgePeopleList').innerText();
   if (!sadiqText.includes('صادق محمد محمد الناهي')) throw new Error('The sourced Sadiq profile is missing.');
