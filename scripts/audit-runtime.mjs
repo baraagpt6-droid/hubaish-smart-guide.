@@ -55,6 +55,9 @@ async function checkWorker(path) {
       if (path === '/setup/status' && typeof body.setupRequired !== 'boolean') {
         throw new Error('/setup/status returned an invalid setupRequired field.');
       }
+      if (path === '/api/live-content' && (body.content?.schemaVersion !== 1 || !Array.isArray(body.content?.landmarks) || !Array.isArray(body.content?.historicalFigures))) {
+        throw new Error('/api/live-content returned an invalid published snapshot.');
+      }
       return {
         ok: true,
         status: response.status,
@@ -126,6 +129,15 @@ try {
         contentType: 'application/json',
         body: JSON.stringify({ error: 'Worker test proxy failed: ' + String(error?.message || 'network error') })
       });
+    }
+  });
+  await page.route(workerUrl + '/api/live-content', async route => {
+    try {
+      const upstream = await fetch(workerUrl + '/api/live-content', { headers: { Accept: 'application/json' }, cache: 'no-store', signal: AbortSignal.timeout(10000) });
+      const body = await upstream.text();
+      return route.fulfill({ status: upstream.status, headers: { 'access-control-allow-origin': baseUrl, 'access-control-allow-methods': 'GET,OPTIONS', 'access-control-allow-headers': 'accept', 'content-type': upstream.headers.get('content-type') || 'application/json', 'cache-control': 'no-store' }, body });
+    } catch (error) {
+      return route.fulfill({ status: 502, contentType: 'application/json', body: JSON.stringify({ error: 'Worker live-feed proxy failed: ' + String(error?.message || 'network error') }) });
     }
   });
   const pageErrors = [];
@@ -467,7 +479,7 @@ try {
 }
 
 // The health endpoint uses a short-lived KV key and removes it in a finally block.
-const workerChecks = await Promise.all([checkWorker('/health'), checkWorker('/setup/status')]);
+const workerChecks = await Promise.all([checkWorker('/health'), checkWorker('/setup/status'), checkWorker('/api/live-content')]);
 console.log('CLOUDFLARE_WORKER_CHECKS=' + JSON.stringify(workerChecks));
 if (!workerChecks.every(check => check.ok)) {
   throw new Error('Cloudflare Worker verification failed after bounded DNS/network retries: ' +
