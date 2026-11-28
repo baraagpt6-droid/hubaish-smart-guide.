@@ -21,7 +21,7 @@ const required = [
   'Gemfile','fastlane/Appfile','fastlane/Fastfile',
   'fastlane/metadata/android/ar/title.txt','fastlane/metadata/android/ar/short_description.txt','fastlane/metadata/android/ar/full_description.txt','fastlane/metadata/android/ar/changelogs/default.txt',
   'fastlane/metadata/android/en-US/title.txt','fastlane/metadata/android/en-US/short_description.txt','fastlane/metadata/android/en-US/full_description.txt','fastlane/metadata/android/en-US/changelogs/default.txt',
-  'play-store/feature-graphic.svg','scripts/render-play-feature-graphic.mjs','scripts/prepare-play-store-assets.py','scripts/normalize-play-screenshots.py','scripts/capture-play-screenshots.mjs','scripts/normalize-play-screenshots.py','scripts/verify-play-store.mjs','scripts/prepare-android-release.py','scripts/resolve-play-release.py',
+  'play-store/feature-graphic.svg','scripts/render-play-feature-graphic.mjs','scripts/prepare-play-store-assets.py','scripts/normalize-play-screenshots.py','scripts/capture-play-screenshots.mjs','scripts/normalize-play-screenshots.py','scripts/verify-play-store.mjs','scripts/prepare-android-release.py','scripts/resolve-play-release.py','scripts/retire-obsolete-play-draft.py',
   '.github/workflows/google-play-closed-testing.yml','.github/workflows/play-status-monitor.yml',
   'scripts/monitor-play-status.py','scripts/audit-runtime.mjs','docs/google-play-setup.md'
 ];
@@ -288,6 +288,7 @@ const playFastfile = await read('fastlane/Fastfile');
 const playResolver = await read('scripts/resolve-play-release.py');
 const playStoreVerifier = await read('scripts/verify-play-store.mjs');
 const playPromoter = await read('scripts/promote-play-draft.py');
+const playRetirer = await read('scripts/retire-obsolete-play-draft.py');
 if (!playWorkflow.includes('workflow_dispatch:') ||
     playWorkflow.includes('pull_request:') ||
     !playWorkflow.includes('  push:') || !playWorkflow.includes('branches: [main]') ||
@@ -313,6 +314,15 @@ if (!playWorkflow.includes('workflow_dispatch:') ||
     !playWorkflow.includes(".promote-416-final") ||
     !playWorkflow.includes("git cat-file -e") ||
     !playWorkflow.includes("PLAY_EXPECTED_VERSION_CODE") ||
+    !playWorkflow.includes("publish_new_release") ||
+    !playWorkflow.includes(".publish-418") ||
+    !playWorkflow.includes("PLAY_ALLOWED_EXISTING_DRAFT_VERSION_CODE") ||
+    !playWorkflow.includes("scripts/retire-obsolete-play-draft.py") ||
+    !playWorkflow.includes("Verify completed 418, zero pending drafts") ||
+    !playRetirer.includes("OBSOLETE_DRAFT_CODE = 417") ||
+    !playRetirer.includes("EXPECTED_COMPLETED_CODE = 416") ||
+    !playRetirer.includes("No testers resource, tester list, opt-in configuration, or other track was read or modified.") ||
+    !playRetirer.includes("if production_codes(rows):") ||
     !playPromoter.includes("draft_codes != [expected]") ||
     !playPromoter.includes("prior_completed_codes") ||
     !playPromoter.includes("Replacing the previous completed assignment") ||
