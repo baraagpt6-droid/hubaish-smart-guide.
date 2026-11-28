@@ -185,10 +185,11 @@ function showToast(message) {
 
 function syncNativeStatusBar() {
   const dark = document.documentElement.dataset.theme !== 'light';
-  const color = dark ? '#081812' : '#f2f5ef';
+  const color = dark ? '#071711' : '#f7f5ee';
   document.querySelector('meta[name="theme-color"]')?.setAttribute('content', color);
   const statusBar = window.Capacitor?.Plugins?.StatusBar;
   if (!statusBar) return;
+  Promise.resolve(statusBar.setBackgroundColor?.({ color })).catch(() => {});
   Promise.resolve(statusBar.setStyle?.({ style: dark ? 'LIGHT' : 'DARK' })).catch(() => {});
 }
 function applyTheme(theme) {
@@ -525,6 +526,8 @@ function switchTab(tab) {
 function openModal(id) {
   const modal = document.getElementById(id);
   if (!modal) return;
+  if (modal._closeTimer) window.clearTimeout(modal._closeTimer);
+  modal.classList.remove('is-closing');
   modal.classList.add('open');
   modal.setAttribute('aria-hidden', 'false');
   const firstInput = modal.querySelector('input:not([type=file]), button');
@@ -533,9 +536,15 @@ function openModal(id) {
 
 function closeModal(id) {
   const modal = document.getElementById(id);
-  if (!modal) return;
+  if (!modal || !modal.classList.contains('open')) return;
   modal.classList.remove('open');
+  modal.classList.add('is-closing');
   modal.setAttribute('aria-hidden', 'true');
+  if (modal._closeTimer) window.clearTimeout(modal._closeTimer);
+  modal._closeTimer = window.setTimeout(() => {
+    modal.classList.remove('is-closing');
+    modal._closeTimer = null;
+  }, 230);
 }
 
 function bindVoiceMic(buttonId, inputId) {
@@ -544,8 +553,16 @@ function bindVoiceMic(buttonId, inputId) {
   if (!button || !input) return;
   button.addEventListener('click', () => {
     const SpeechRecognitionApi = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (!SpeechRecognitionApi) return showToast('الإدخال الصوتي غير مدعوم في هذا المتصفح.');
-    const recognition = new SpeechRecognitionApi();
+    if (!SpeechRecognitionApi) {
+      showToast('الإملاء الصوتي غير متاح في WebView هذا الجهاز. استخدم لوحة المفاتيح أو افتح الدليل في متصفح يدعم الإملاء.');
+      return;
+    }
+    let recognition;
+    try { recognition = new SpeechRecognitionApi(); }
+    catch {
+      showToast('تعذر تجهيز الإملاء الصوتي. تحقق من إعدادات الميكروفون أو استخدم لوحة المفاتيح.');
+      return;
+    }
     recognition.lang = state.lang === 'AR' ? 'ar-YE' : state.lang === 'TR' ? 'tr-TR' : state.lang === 'FR' ? 'fr-FR' : 'en-US';
     recognition.interimResults = false;
     recognition.maxAlternatives = 1;
@@ -555,9 +572,27 @@ function bindVoiceMic(buttonId, inputId) {
       input.value = cleanText(event.results?.[0]?.[0]?.transcript, 500);
       input.dispatchEvent(new Event('input', { bubbles: true }));
     };
-    recognition.onerror = () => showToast('تعذر التقاط الصوت. تحقق من إذن الميكروفون.');
+    recognition.onnomatch = () => showToast('لم تتضح الكلمات. حاول التحدث بوضوح وبالقرب من الميكروفون.');
+    recognition.onerror = event => {
+      const messages = {
+        'not-allowed': 'لم يُسمح للمتصفح باستخدام الميكروفون. راجع إذن الميكروفون من إعدادات التطبيق.',
+        'service-not-allowed': 'خدمة الإملاء الصوتي غير متاحة لهذا التطبيق. يمكنك كتابة البحث بدلاً من ذلك.',
+        'audio-capture': 'لم يعثر الجهاز على ميكروفون متاح. تحقق من توصيله وأذوناته.',
+        'no-speech': 'لم نسمع صوتاً. قرّب الهاتف وتحدث ثم أعد المحاولة.',
+        'network': 'تعذر الوصول إلى خدمة الإملاء. تحقق من الإنترنت أو اكتب البحث.',
+        'aborted': 'تم إيقاف الإملاء الصوتي.'
+      };
+      showToast(messages[event?.error] || 'تعذر التقاط الصوت. تحقق من إذن الميكروفون وحاول مرة أخرى.');
+    };
     recognition.onend = () => { button.classList.remove('listening'); button.disabled = false; };
-    try { recognition.start(); } catch { button.classList.remove('listening'); button.disabled = false; showToast('تعذر بدء الإدخال الصوتي.'); }
+    try { recognition.start(); }
+    catch (error) {
+      button.classList.remove('listening');
+      button.disabled = false;
+      showToast(error?.name === 'NotAllowedError'
+        ? 'لم يُسمح باستخدام الميكروفون. فعّل الإذن من إعدادات التطبيق.'
+        : 'تعذر بدء الإملاء الصوتي. استخدم لوحة المفاتيح أو تحقق من أذونات الجهاز.');
+    }
   });
 }
 
@@ -947,6 +982,20 @@ function bindEvents() {
   bindVoiceMic('placeMicBtn', 'placeSearchInput');
   bindVoiceMic('uzalMicBtn', 'uzalSearchInput');
   bindVoiceMic('aiMicBtn', 'aiInput');
+  document.querySelectorAll('[data-hero-tab]').forEach(button => {
+    button.addEventListener('click', () => {
+      const tab = button.dataset.heroTab;
+      switchTab(tab);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  });
+  document.querySelectorAll('[data-hero-target]').forEach(button => {
+    button.addEventListener('click', () => {
+      switchTab('more');
+      const target = document.getElementById(button.dataset.heroTarget);
+      window.setTimeout(() => target?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
+    });
+  });
   // The single visible language selector drives all four interface locales.
   const offlineIndicator = document.getElementById('offlineIndicator');
   const updateNetworkState = () => { if (offlineIndicator) offlineIndicator.hidden = navigator.onLine; };
