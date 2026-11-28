@@ -243,7 +243,8 @@ try {
   await page.locator('#aiForm button[type="submit"]').click();
   const assistantReply = page.locator('#aiChatLog .chat-msg.assistant').last();
   await assistantReply.waitFor({ state: 'visible', timeout: 10000 });
-  if (!(await assistantReply.innerText()).includes('الزواحي')) throw new Error('The local assistant did not answer the Zawahi school query.');
+  const assistantReplyText = await assistantReply.innerText();
+  if (!assistantReplyText.includes('الزواحي')) throw new Error('The local assistant did not answer the Zawahi school query.');
   await page.locator('#aiModal [data-close="aiModal"]').click();
   await page.locator('#aiModal').waitFor({ state: 'hidden', timeout: 5000 });
 
@@ -395,7 +396,7 @@ try {
     httpErrors,
     knowledgeCardCount,
     districtCount,
-    assistantReply: await assistantReply.innerText(),
+    assistantReply: assistantReplyText,
     protectedArchiveViewer: archiveCanvas,
     submittedTypes
   }, null, 2));
