@@ -149,7 +149,6 @@ if [[ "$mode" == "verify_only" ]]; then
 
       - name: Audit navigation, responsive layouts, offline cache and Cloudflare Worker
         timeout-minutes: 15
-        timeout-minutes: 15
         if: steps.release-mode.outputs.mode != 'publish_approved_release'
         run: node scripts/audit-runtime.mjs
 
