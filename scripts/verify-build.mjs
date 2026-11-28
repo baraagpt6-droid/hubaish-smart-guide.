@@ -218,7 +218,10 @@ if(androidPatch.includes('android:windowOptOutEdgeToEdgeEnforcement')||
 const districtStart=catalog.indexOf('const D=['),districtEnd=catalog.indexOf('const PN=',districtStart);
 const districtBlock=districtStart>=0&&districtEnd>districtStart?catalog.slice(districtStart,districtEnd):'';
 if([...districtBlock.matchAll(/^\s*\['/gm)].length!==22)throw new Error('The core district list must contain 22 names.');
-if(!/^\\s*\\['الوطئة'[^\\n]*\\],\\s*\\n\\s*\\['قحزة'/m.test(districtBlock))throw new Error('The district array must separate Al-Wat\'ah and Qahzah as distinct entries.');
+const districtLines=districtBlock.split('\n');
+const watnahLine=districtLines.find(line=>line.includes("['الوطئة'"));
+const qahzahLine=districtLines.find(line=>line.includes("['قحزة'"));
+if(!watnahLine||!watnahLine.trimEnd().endsWith('],')||!qahzahLine)throw new Error("The district array must separate Al-Wat'ah and Qahzah as distinct entries.");
 const quizStart=catalog.indexOf('const QUIZ=['),quizEnd=catalog.indexOf('  ];',quizStart);
 const quizBlock=quizStart>=0&&quizEnd>quizStart?catalog.slice(quizStart,quizEnd):'';
 if([...quizBlock.matchAll(/^\s*\[\[/gm)].length!==10)throw new Error('The ten-question quiz catalogue is incomplete.');
