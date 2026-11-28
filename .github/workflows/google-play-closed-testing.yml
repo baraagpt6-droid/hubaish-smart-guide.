@@ -59,29 +59,35 @@ jobs:
           mode="$INITIAL_PLAY_MODE"
           expected_code="$MANUAL_EXPECTED_VERSION_CODE"
           if [[ "$GITHUB_EVENT_NAME" == "push" ]]; then
-            mode="preview_draft"
             expected_code=""
-            if [[ -f ".promote-416" || -f ".promote-416-retry" ]]; then
-              before_sha="$(jq -r '.before // ""' "$GITHUB_EVENT_PATH")"
-              [[ "$before_sha" =~ ^[0-9a-f]{40}$ ]] || {
-                echo "::error::Push event did not provide a valid parent commit."
-                exit 1
-              }
-              for marker_path in .promote-416 .promote-416-retry .promote-416-final; do
-                if [[ -f "$marker_path" ]]; then
-                  marker_value="$(tr -d '[:space:]' < "$marker_path")"
-                  [[ "$marker_value" == "416" ]] || {
-                    echo "::error::$marker_path must contain exactly versionCode 416."
-                    exit 1
-                  }
-                  if ! git cat-file -e "${before_sha}:${marker_path}" 2>/dev/null; then
-                    mode="publish_approved_release"
-                    expected_code="416"
-                    echo "One-shot marker $marker_path was newly added by this push. AAB creation and upload will be skipped."
-                    break
+            commit_message="$(jq -r '.head_commit.message // ""' "$GITHUB_EVENT_PATH")"
+            if [[ "$commit_message" == *"[verify-only]"* ]]; then
+              mode="verify_only"
+              echo "Verify-only marker detected. Playwright and a disposable signed Gradle bundle will run; Google Play will not be read or written."
+            else
+              mode="preview_draft"
+              if [[ -f ".promote-416" || -f ".promote-416-retry" ]]; then
+                before_sha="$(jq -r '.before // ""' "$GITHUB_EVENT_PATH")"
+                [[ "$before_sha" =~ ^[0-9a-f]{40}$ ]] || {
+                  echo "::error::Push event did not provide a valid parent commit."
+                  exit 1
+                }
+                for marker_path in .promote-416 .promote-416-retry .promote-416-final; do
+                  if [[ -f "$marker_path" ]]; then
+                    marker_value="$(tr -d '[:space:]' < "$marker_path")"
+                    [[ "$marker_value" == "416" ]] || {
+                      echo "::error::$marker_path must contain exactly versionCode 416."
+                      exit 1
+                    }
+                    if ! git cat-file -e "${before_sha}:${marker_path}" 2>/dev/null; then
+                      mode="publish_approved_release"
+                      expected_code="416"
+                      echo "One-shot marker $marker_path was newly added by this push. AAB creation and upload will be skipped."
+                      break
+                    fi
                   fi
-                fi
-              done
+                done
+              fi
             fi
           fi
           if [[ "$mode" == "publish_approved_release" ]]; then
@@ -376,24 +382,83 @@ jobs:
           echo "aab_sha256=$AAB_SHA256" >> "$GITHUB_OUTPUT"
           echo "Signed AAB ready: versionName=$VERSION_NAME versionCode=$ANDROID_VERSION_CODE sha256=$AAB_SHA256"
 
-      - name: Build debug APK for verify-only runs
+      - name: Build a disposable signed Release AAB for verify-only runs
         if: steps.release-mode.outputs.mode == 'verify_only'
+        id: verify-bundle
         shell: bash
+        env:
+          ANDROID_VERSION_CODE: '1'
         run: |
           set -euo pipefail
+          export ANDROID_KEYSTORE_PATH="$RUNNER_TEMP/hubaish-verify-only.jks"
+          export KEYSTORE_PASSWORD="temporary-verify-only-store"
+          export KEY_ALIAS="hubaish-verify-only"
+          export KEY_PASSWORD="temporary-verify-only-key"
+          VERSION_NAME="$(tr -d '[:space:]' < release-version.txt)"
+          [[ "$VERSION_NAME" =~ ^[0-9]+\\.[0-9]+\\.[0-9]+$ ]] || { echo "::error::Invalid release-version.txt"; exit 1; }
+          export ANDROID_VERSION_NAME="$VERSION_NAME"
+
+          keytool -genkeypair -noprompt -keystore "$ANDROID_KEYSTORE_PATH" -storetype JKS \\
+            -storepass "$KEYSTORE_PASSWORD" -keypass "$KEY_PASSWORD" -alias "$KEY_ALIAS" \\
+            -dname "CN=Hubaish Verify Only,O=Hubaish District,C=YE" -keyalg RSA -keysize 2048 -validity 2
+
+          python3 scripts/prepare-android-release.py
+
           python3 - <<'PY'
           from pathlib import Path
           import re
-          path = Path("android/app/build.gradle")
-          source = path.read_text(encoding="utf-8")
-          source, count = re.subn(r"(?m)^(\s*versionCode\s*(?:=\s*)?).+$", r"\g<1>1", source, count=1)
-          if count != 1:
-              raise SystemExit("Generated Android versionCode was not found.")
-          path.write_text(source, encoding="utf-8")
+          mirror = re.compile(r'maven\\s*\\{\\s*url\\s*=\\s*uri\\("https://maven-central\\.storage-download\\.googleapis\\.com/maven2/"\\)\\s*\\}\\s*mavenCentral\\(\\)')
+          total = 0
+          for path in Path("android").rglob("*.gradle"):
+              source = path.read_text(encoding="utf-8")
+              central_count = source.count("mavenCentral()")
+              pairs = len(mirror.findall(source))
+              if central_count and pairs != central_count:
+                  raise SystemExit(f"Maven mirror is not configured before every Maven Central fallback in {path}.")
+              total += pairs
+          if total < 1:
+              raise SystemExit("The generated Android Gradle files contain no verified Maven Central mirror pair.")
+          print(f"PASS: {total} Google Maven mirror/fallback pairs verified.")
           PY
-          (cd android && ./gradlew --no-daemon assembleDebug)
+
+          gradle_success=0
+          for attempt in 1 2 3 4; do
+            gradle_log="$RUNNER_TEMP/hubaish-gradle-verify-$attempt.log"
+            set +e
+            (cd android && ./gradlew --no-daemon --console=plain bundleRelease) > "$gradle_log" 2>&1
+            gradle_status=$?
+            set -e
+            cat "$gradle_log"
+            if [[ "$gradle_status" -eq 0 ]]; then gradle_success=1; break; fi
+            if ! grep -Eiq 'status code 429|HTTP 429|Too Many Requests' "$gradle_log"; then
+              echo "::error::Gradle bundleRelease failed for a reason other than Maven rate limiting."
+              exit "$gradle_status"
+            fi
+            if [[ "$attempt" -lt 4 ]]; then
+              retry_delay=$((attempt * 20))
+              echo "::warning::Maven mirror/fallback rate-limited the build. Waiting ${retry_delay}s before retry."
+              sleep "$retry_delay"
+            fi
+          done
+          [[ "$gradle_success" == "1" ]] || { echo "::error::Gradle remained rate-limited after four attempts."; exit 1; }
+
+          AAB_SOURCE="android/app/build/outputs/bundle/release/app-release.aab"
+          [[ -s "$AAB_SOURCE" ]] || { echo "::error::Release AAB was not produced."; exit 1; }
+          jarsigner -verify "$AAB_SOURCE" >/dev/null
           mkdir -p release-out
-          cp android/app/build/outputs/apk/debug/app-debug.apk release-out/hubaish-smart-guide-debug.apk
+          cp "$AAB_SOURCE" release-out/hubaish-smart-guide-verify.aab
+          AAB_SHA256="$(sha256sum release-out/hubaish-smart-guide-verify.aab | awk '{print $1}')"
+          echo "aab_sha256=$AAB_SHA256" >> "$GITHUB_OUTPUT"
+          echo "PASS: Disposable verify-only AAB signed and verified; sha256=$AAB_SHA256"
+
+      - name: Upload the verify-only AAB validation artifact
+        if: steps.release-mode.outputs.mode == 'verify_only'
+        uses: actions/upload-artifact@v4
+        with:
+          name: hubaish-play-verify-only
+          path: release-out/hubaish-smart-guide-verify.aab
+          if-no-files-found: error
+          retention-days: 7
 
       - name: Upload the AAB and bilingual Play listing artifacts
         if: steps.release-mode.outputs.mode == 'preview_draft'
@@ -445,7 +510,7 @@ jobs:
           PLAY_VERSION_NAME: ${{ steps.play-release.outputs.version_name }}
           PLAY_VERSION_CODE: ${{ steps.play-release.outputs.version_code || steps.approved-release.outputs.version_code }}
           PLAY_RELEASE_STATUS: ${{ steps.approved-release.outputs.release_status || 'draft' }}
-          AAB_SHA256: ${{ steps.signed-release.outputs.aab_sha256 }}
+          AAB_SHA256: ${{ steps.signed-release.outputs.aab_sha256 || steps.verify-bundle.outputs.aab_sha256 }}
         run: |
           {
             echo "## Hubaish Google Play — Closed Testing"
@@ -468,6 +533,6 @@ jobs:
               echo "- AAB built or uploaded: **No**"
               echo "- Production track changed: **No — not accessed**"
             else
-              echo "- Result: verification-only build succeeded. No Google Play upload was attempted."
+              echo "- Result: verification-only build succeeded. A disposable Release AAB was signed for validation; no Google Play API release write or upload was attempted."
             fi
           } >> "$GITHUB_STEP_SUMMARY"

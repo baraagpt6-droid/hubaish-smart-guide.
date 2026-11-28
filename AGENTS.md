@@ -71,6 +71,7 @@ Do not generate or rotate an upload key without an explicit migration plan. Vali
 
 ## Application boundaries and factual integrity
 - The app is a local guide to Hubaish, Yemen. Preserve its historical and geographic scope.
+- Public geography is restricted to Hubaish District, Ibb Governorate. Do not retain comparison entries, historical administrative units, biographies, families, or landmarks from outside the district. Unknown locality must remain unpublished or explicitly unverified.
 - The project has 22 current Hubaish sub-districts. Suhban is a related historical region and must not be inserted into the current 22 sub-district list.
 - Do not present unverified locations, historical claims, sources, images, or attribution details as facts.
 - The 22-name list from the 27 November 2026 project report is a reference list pending district-administration confirmation, not a certified administrative instrument.

@@ -43,6 +43,11 @@ const capacitor=JSON.parse(await read('capacitor.config.json'));
 const pkg=JSON.parse(await read('package.json'));
 const data=JSON.parse(await read('www/data/live-content.json'));
 const knowledge=JSON.parse(await read('www/data/heritage-knowledge.json'));
+const geographyPayload=JSON.stringify(data)+"\\n"+JSON.stringify(knowledge)+"\\n"+readme;
+const forbiddenExternalLabels=["صهبان","وادي بناء","جبل هران","المحويت","سفيان","سحار","مخلاف الحبيشية","ذو حبيش","بنو حبيش"];
+for(const label of forbiddenExternalLabels)if(geographyPayload.includes(label))throw new Error('Out-of-scope geographic label found in public guide data: '+label);
+if(/(?:^|[\\s،؛/])دمت(?=$|[\\s،؛/])/u.test(geographyPayload)||/(?:^|[\\s،؛/])رداع(?=$|[\\s،؛/])/u.test(geographyPayload))throw new Error('Out-of-scope locality label found in public guide data.');
+if(!Array.isArray(data.subDistricts)||data.subDistricts.length!==22||data.subDistricts.some(x=>x.district_name_ar==null))throw new Error('The Hubaish reference district list must contain exactly 22 named entries.');
 const assets = {
   app: await read('www/assets/app.js'),
   catalog: await read('www/assets/catalog.js'),

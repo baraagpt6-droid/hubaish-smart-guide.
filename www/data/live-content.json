@@ -805,8 +805,8 @@
       "title_en": "Wuhaza and Bani Wa'il in the sixth Hijri century",
       "period_ar": "القرن السادس الهجري • رواية تاريخية محلية",
       "period_en": "Sixth Hijri century • local historical account",
-      "body_ar": "تذكر مادة تاريخية محلية أن منطقة وحاظة اشتهرت في القرن السادس الهجري في عهد بني وائل، وأن الحصن كان مقراً لهم، وأن اسم وحاظة أطلق على مناطق أوسع شملت حبيش وحزم العدين وأجزاء من العدين وذي السفال بحسب الرواية. هذه إحالة جغرافية وتاريخية منقولة عن مراجع يمنية؛ لا ينبغي مساواة نطاق المخلاف القديم بحدود مديرية حبيش الحالية.",
-      "body_en": "A local historical account associates Wuhaza with Bani Wa'il in the sixth Hijri century and says the fortress served as their seat. It describes Wuhaza as a wider historical district covering areas beyond modern Hubaish. The historical makhlaf should not be equated with today's administrative boundary.",
+      "body_ar": "تذكر مادة تاريخية محلية أن وحاظة في نطاق جبل حبيش كانت مركزاً علمياً وسياسياً لبني وائل في القرن السادس الهجري. تحفظ البطاقة هذا الخبر في نطاق وحاظة بمديرية حبيش، ولا تعتمد منه حدوداً تاريخية أوسع من نطاق الدليل.",
+      "body_en": "A local historical source describes Wuhaza around Mount Hubaish as a scholarly and political centre associated with Bani Wa'il in the sixth Hijri century. This card keeps the account within Wuhaza in Hubaish and does not extend the guide's geographic scope.",
       "source_text": "مادة «حبيش» في موقع ثور رأين، مع إحالات إلى كتب الهمداني وياقوت الحموي والمقحفي.",
       "source_url": "https://www.thu-raein.com/index.php/ar/makhaleef-ar/hubaish-district-ar?id=17&view=category"
     },
@@ -824,28 +824,15 @@
       "source_url": "https://hekmahyemanya.com/آثار/حُبيش-مُفتتح-المجد-وذروته/"
     },
     {
-      "id": "hubaish-administrative-1357",
-      "era": "modern",
-      "status": "local",
-      "title_ar": "تغيّر التبعية الإدارية لمخلاف الحبيشية",
-      "title_en": "Administrative change of the al-Hubayshiyya district",
-      "period_ar": "1357هـ • نحو 1938م",
-      "period_en": "1357 AH • approximately 1938 CE",
-      "body_ar": "تذكر مادة محلية عن مخلاف الحبيشية أن الإمام يحيى حميد الدين أجرى سنة 1357هـ تغييراً إدارياً فصل بموجبه مخلاف الحبيشية وبعض المناطق المجاورة عن قضاء رداع وربطها بلواء إب. هذا وصف تاريخي من مصدر ثانوي، ويحتاج إلى مقابلة نص القرار الإداري الأصلي قبل اعتماده كتاريخ إداري قطعي.",
-      "body_en": "A local historical account states that in 1357 AH Imam Yahya Hamid al-Din changed the administration of al-Hubayshiyya and nearby areas, linking them to Ibb instead of Rada'a. The original administrative order should be consulted before treating the date as definitive.",
-      "source_text": "مادة مخلاف حبيش في موقع ثور رأين، مع إحالة إلى مراجع تاريخية محلية.",
-      "source_url": "https://www.thu-raein.com/index.php/ar/makhaleef-ar/hubaish-district-ar?id=17&view=category"
-    },
-    {
       "id": "al-shawafi-al-dinwa-18h",
       "era": "modern",
       "status": "local",
-      "title_ar": "مخلاف الشوافي وذكر حصن الدنوة",
-      "title_en": "The al-Shawafi district and al-Dinwah fort",
+      "title_ar": "قرية الشوافي وحصن الدنوة في عزلة الصدر",
+      "title_en": "Al-Shawafi village and al-Dinwah Fort in Al-Sadr",
       "period_ar": "القرن الثاني عشر الهجري • القرن الثامن عشر الميلادي",
       "period_en": "Twelfth Hijri century • eighteenth century CE",
-      "body_ar": "تنقل مادة محلية عن «التاريخ العام لليمن» أن قرية الشوافي تقع إدارياً اليوم ضمن عزلة الصدر في مديرية حبيش، بينما كان مخلاف الشوافي التاريخي نطاقاً أوسع. وتذكر حصن الدنوة وارتباطه بانتفاضة الفقيه سعيد بن ياسين الهتار ضد حكم الأئمة في القرن الثاني عشر الهجري. يجب التمييز بين المخلاف التاريخي وحدود العزلة الإدارية الحالية.",
-      "body_en": "A local historical source says the village of al-Shawafi is now administratively in Al-Sadr sub-district, Hubaish, while the historical al-Shawafi district was wider. It mentions al-Dinwah fort and jurist Saeed bin Yasin al-Hattar's revolt in the twelfth Hijri century. Historical and current administrative boundaries are not the same.",
+      "body_ar": "تذكر المادة المحلية قرية الشوافي ضمن عزلة الصدر في مديرية حبيش، وتشير إلى حصن الدنوة بوصفه معلماً محلياً. تحفظ البطاقة الموضع داخل المديرية فقط؛ أما تفاصيل تاريخ الحصن فتحتاج إلى مقابلة أصل المرجع.",
+      "body_en": "The local account places Al-Shawafi village in Al-Sadr sub-district of Hubaish and mentions al-Dinwah Fort as a local feature. This card retains only the locality within the district; the fort's detailed history needs checking against the original reference.",
       "source_text": "مادة حبيش في موقع ثور رأين تنقل عن «التاريخ العام لليمن» لمحمد يحيى الحداد.",
       "source_url": "https://www.thu-raein.com/index.php/ar/makhaleef-ar/hubaish-district-ar?id=17&view=category"
     },
@@ -1573,33 +1560,10 @@
     },
     "subdistrict_count": 22,
     "subdistrict_name_note_ar": "قائمة الأسماء الـ22 معروضة بوصفها قائمة مرجعية من تقرير «مديرية حبيش لدليل حبيش» المؤرخ 27 نوفمبر 2026، الذي طلب من المديرية اعتمادها وتصويبها. لا تُعرض هذه القائمة على أنها قرار إداري رسمي مصدّق حتى ورود الاعتماد.",
-    "tribal_context": {
-      "groups_ar": [
-        "بطون من همدان",
-        "بطون من خولان العالية"
-      ],
-      "named_branches_ar": [
-        "آل راجح",
-        "بنو الصوفي",
-        "آل أبي حليقة",
-        "بنو السعيدي"
-      ],
-      "source": "محمد بن أحمد الحجري، مجموع بلدان اليمن وقبائلها — إحالات النسب والبطون",
-      "claim_status": "historical_relative_context_only",
-      "note_ar": "عرض نسبي تاريخي منسوب إلى الحجري، لا تعداد قبلي معاصر ولا حدود إدارية أو إثبات أن كل البطون المذكورة تقيم اليوم في نطاق واحد."
-    },
     "geographic_disambiguation": [
       {
         "name_ar": "مديرية حبيش",
-        "note_ar": "حبيش التابعة لمحافظة إب موضوع هذا الدليل."
-      },
-      {
-        "name_ar": "مخلاف الحبيشية",
-        "note_ar": "اسم تاريخي آخر يرد في سياق دمت/رداع؛ لا يساوى بمديرية حبيش الحالية."
-      },
-      {
-        "name_ar": "ذو حبيش",
-        "note_ar": "نسبة/موضع قبلي يرد في سياق سفيان وسحار؛ لا يدمج جغرافياً مع حبيش إب."
+        "note_ar": "مديرية حبيش التابعة لمحافظة إب هي النطاق الجغرافي الوحيد لهذا الدليل."
       }
     ],
     "name_origin_hypotheses": {
@@ -1685,7 +1649,7 @@
     }
   ],
   "referenceNotes": [
-    "لا تخلط حبيش إب بمخلاف الحبيشية في سياق دمت/رداع أو بنسبة ذو حبيش في سفيان وسحار.",
+    "يقتصر هذا الدليل على المواضع والشخصيات والأسر التي يثبت ارتباطها بمديرية حبيش في محافظة إب. لا تُدرج سجلات مقارنة أو أسماء من خارج النطاق.",
     "فرضيات الاسم السبئية والمعينية والحميرية قراءات بحثية غير محسومة."
   ]
 }

@@ -15,6 +15,7 @@ Persistent project reference for future maintenance. It records project identity
 
 ## Functionality and data scope
 - Local guide to Hubaish District, Ibb Governorate, Yemen.
+- Public content is restricted to Hubaish District, Ibb Governorate. Cross-district comparison records and historical administrative units outside the modern district are excluded; `npm run build` checks public data for prohibited geographic labels.
 - UI languages: Arabic, English, Turkish, and French.
 - Offline Service Worker and local JSON fallback.
 - Features include place search, category filters, place details, favorites, local assistant, itinerary tools, place comparison, photo gallery, language preference, and estimated prayer times. Confirm current source before claiming any particular behavior is shipped.
