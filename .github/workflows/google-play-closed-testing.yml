@@ -40,7 +40,7 @@ jobs:
       version_name: ${{ steps.play-release.outputs.version_name }}
       version_code: ${{ steps.play-release.outputs.version_code || steps.approved-release.outputs.version_code }}
       track: ${{ steps.play-release.outputs.track || env.PLAY_TRACK }}
-      release_status: ${{ steps.play-release.outputs.release_status || steps.approved-release.outputs.release_status }}
+      release_status: ${{ steps.publish-new-release.outputs.release_status || steps.approved-release.outputs.release_status || steps.play-release.outputs.release_status }}
     steps:
       - name: Checkout pushed commit
         uses: actions/checkout@v7
@@ -66,7 +66,24 @@ jobs:
               echo "Verify-only marker detected. Playwright and a disposable signed Gradle bundle will run; Google Play will not be read or written."
             else
               mode="preview_draft"
-              if [[ -f ".promote-416" || -f ".promote-416-retry" ]]; then
+              if [[ -f ".publish-418" ]]; then
+                before_sha="$(jq -r '.before // ""' "$GITHUB_EVENT_PATH")"
+                [[ "$before_sha" =~ ^[0-9a-f]{40}$ ]] || {
+                  echo "::error::Push event did not provide a valid parent commit for the 418 one-shot marker."
+                  exit 1
+                }
+                marker_value="$(tr -d '[:space:]' < .publish-418)"
+                [[ "$marker_value" == "418" ]] || {
+                  echo "::error::.publish-418 must contain exactly versionCode 418."
+                  exit 1
+                }
+                if ! git cat-file -e "${before_sha}:.publish-418" 2>/dev/null; then
+                  mode="publish_new_release"
+                  expected_code="418"
+                  echo "New .publish-418 marker detected. Build, sign, upload as draft, then promote only versionCode 418 on Hubaish Closed Test."
+                fi
+              fi
+              if [[ "$mode" == "preview_draft" && ( -f ".promote-416" || -f ".promote-416-retry" || -f ".promote-416-final" ) ]]; then
                 before_sha="$(jq -r '.before // ""' "$GITHUB_EVENT_PATH")"
                 [[ "$before_sha" =~ ^[0-9a-f]{40}$ ]] || {
                   echo "::error::Push event did not provide a valid parent commit."
@@ -90,11 +107,15 @@ jobs:
               fi
             fi
           fi
-          if [[ "$mode" == "publish_approved_release" ]]; then
+          if [[ "$mode" == "publish_approved_release" || "$mode" == "publish_new_release" ]]; then
             [[ "$expected_code" =~ ^[1-9][0-9]*$ ]] || {
               echo "::error::An explicit positive expected_version_code is required."
               exit 1
             }
+          fi
+          if [[ "$mode" == "publish_new_release" && "$expected_code" != "418" ]]; then
+            echo "::error::The one-shot new-release path is locked to versionCode 418."
+            exit 1
           fi
           echo "mode=$mode" >> "$GITHUB_OUTPUT"
           echo "expected_version_code=$expected_code" >> "$GITHUB_OUTPUT"
@@ -171,7 +192,7 @@ jobs:
         run: node scripts/verify-play-store.mjs --require-screenshots
 
       - name: Confirm target and existing upload-signing setup
-        if: steps.release-mode.outputs.mode == 'preview_draft'
+        if: steps.release-mode.outputs.mode == 'preview_draft' || steps.release-mode.outputs.mode == 'publish_new_release'
         shell: bash
         env:
           KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
@@ -193,7 +214,7 @@ jobs:
           echo "Repository, package, Closed-testing preference and all four upload-signing secrets are present."
 
       - name: Authenticate to Google Cloud using GitHub OIDC and WIF
-        if: steps.release-mode.outputs.mode == 'preview_draft' || steps.release-mode.outputs.mode == 'publish_approved_release'
+        if: steps.release-mode.outputs.mode == 'preview_draft' || steps.release-mode.outputs.mode == 'publish_approved_release' || steps.release-mode.outputs.mode == 'publish_new_release'
         id: google-auth
         uses: google-github-actions/auth@v3
         with:
@@ -205,15 +226,17 @@ jobs:
           access_token_scopes: https://www.googleapis.com/auth/androidpublisher
 
       - name: Install Google Play API client dependencies
-        if: steps.release-mode.outputs.mode == 'preview_draft' || steps.release-mode.outputs.mode == 'publish_approved_release'
+        if: steps.release-mode.outputs.mode == 'preview_draft' || steps.release-mode.outputs.mode == 'publish_approved_release' || steps.release-mode.outputs.mode == 'publish_new_release'
         run: python3 -m pip install --disable-pip-version-check "google-auth>=2.40,<3" "requests>=2.32,<3"
 
       - name: Discover actual Closed-testing track and next Play versionCode
-        if: steps.release-mode.outputs.mode == 'preview_draft'
+        if: steps.release-mode.outputs.mode == 'preview_draft' || steps.release-mode.outputs.mode == 'publish_new_release'
         id: play-release
         env:
           PLAY_PACKAGE_NAME: ${{ env.PLAY_PACKAGE_NAME }}
           PLAY_TRACK: ${{ env.PLAY_TRACK }}
+          PLAY_RELEASE_MODE: ${{ steps.release-mode.outputs.mode }}
+          PLAY_ALLOWED_EXISTING_DRAFT_VERSION_CODE: ${{ steps.release-mode.outputs.mode == 'publish_new_release' && '417' || '' }}
         run: python3 scripts/resolve-play-release.py
 
       - name: Publish the explicitly requested existing Closed-testing draft
@@ -266,7 +289,7 @@ jobs:
         run: python3 scripts/apply-android-icons.py
 
       - name: Build and sign the Android App Bundle for Closed testing
-        if: steps.release-mode.outputs.mode == 'preview_draft'
+        if: steps.release-mode.outputs.mode == 'preview_draft' || steps.release-mode.outputs.mode == 'publish_new_release'
         id: signed-release
         shell: bash
         env:
@@ -382,6 +405,14 @@ jobs:
           echo "aab_sha256=$AAB_SHA256" >> "$GITHUB_OUTPUT"
           echo "Signed AAB ready: versionName=$VERSION_NAME versionCode=$ANDROID_VERSION_CODE sha256=$AAB_SHA256"
 
+      - name: Retire only the obsolete 417 draft after the clean 418 bundle is signed
+        if: steps.release-mode.outputs.mode == 'publish_new_release'
+        env:
+          PLAY_PACKAGE_NAME: ${{ env.PLAY_PACKAGE_NAME }}
+          PLAY_TRACK: ${{ env.PLAY_TRACK }}
+          PLAY_OBSOLETE_DRAFT_VERSION_CODE: '417'
+        run: python3 scripts/retire-obsolete-play-draft.py
+
       - name: Build a disposable signed Release AAB for verify-only runs
         if: steps.release-mode.outputs.mode == 'verify_only'
         id: verify-bundle
@@ -461,7 +492,7 @@ jobs:
           retention-days: 7
 
       - name: Upload the AAB and bilingual Play listing artifacts
-        if: steps.release-mode.outputs.mode == 'preview_draft'
+        if: steps.release-mode.outputs.mode == 'preview_draft' || steps.release-mode.outputs.mode == 'publish_new_release'
         uses: actions/upload-artifact@v7
         with:
           name: hubaish-play-closed-testing
@@ -473,7 +504,7 @@ jobs:
           retention-days: 30
 
       - name: Upload the signed AAB, listing, graphics and screenshots to Closed testing
-        if: steps.release-mode.outputs.mode == 'preview_draft'
+        if: steps.release-mode.outputs.mode == 'preview_draft' || steps.release-mode.outputs.mode == 'publish_new_release'
         env:
           AAB_PATH: release-out/hubaish-smart-guide.aab
           PLAY_TRACK: ${{ steps.play-release.outputs.track }}
@@ -481,12 +512,37 @@ jobs:
           PLAY_PACKAGE_NAME: com.hubaish.guide
         run: bundle exec fastlane android upload_closed_testing
 
-      - name: Verify the committed Closed-testing release and protect Production
-        if: steps.release-mode.outputs.mode == 'preview_draft'
+      - name: Verify the uploaded Closed-testing draft and protect Production
+        if: steps.release-mode.outputs.mode == 'preview_draft' || steps.release-mode.outputs.mode == 'publish_new_release'
         env:
           PLAY_PACKAGE_NAME: com.hubaish.guide
           PLAY_TRACK: ${{ steps.play-release.outputs.track }}
           PLAY_RELEASE_STATUS: draft
+          ANDROID_VERSION_CODE: ${{ steps.play-release.outputs.version_code }}
+          PLAY_PRODUCTION_VERSION_CODES: ${{ steps.play-release.outputs.production_version_codes }}
+        run: python3 scripts/resolve-play-release.py --verify-upload
+
+      - name: Promote the newly built 418 draft on the existing Closed Test track
+        id: publish-new-release
+        if: steps.release-mode.outputs.mode == 'publish_new_release'
+        env:
+          PLAY_PACKAGE_NAME: ${{ env.PLAY_PACKAGE_NAME }}
+          PLAY_TRACK: ${{ steps.play-release.outputs.track }}
+          PLAY_EXPECTED_VERSION_CODE: ${{ steps.release-mode.outputs.expected_version_code }}
+        run: |
+          set -euo pipefail
+          [[ "${{ steps.play-release.outputs.version_code }}" == "418" ]] || {
+            echo "::error::Play resolver did not return the locked versionCode 418."
+            exit 1
+          }
+          python3 scripts/promote-play-draft.py
+
+      - name: Verify completed 418, zero pending drafts and unchanged Production
+        if: steps.release-mode.outputs.mode == 'publish_new_release'
+        env:
+          PLAY_PACKAGE_NAME: com.hubaish.guide
+          PLAY_TRACK: ${{ steps.play-release.outputs.track }}
+          PLAY_RELEASE_STATUS: completed
           ANDROID_VERSION_CODE: ${{ steps.play-release.outputs.version_code }}
           PLAY_PRODUCTION_VERSION_CODES: ${{ steps.play-release.outputs.production_version_codes }}
         run: python3 scripts/resolve-play-release.py --verify-upload
@@ -500,7 +556,7 @@ jobs:
           PLAY_TRACK: ${{ env.PLAY_TRACK }}
           PLAY_VERSION_NAME: ${{ steps.play-release.outputs.version_name }}
           PLAY_VERSION_CODE: ${{ steps.play-release.outputs.version_code || steps.approved-release.outputs.version_code }}
-          PLAY_RELEASE_STATUS: ${{ steps.approved-release.outputs.release_status || 'draft' }}
+          PLAY_RELEASE_STATUS: ${{ steps.publish-new-release.outputs.release_status || steps.approved-release.outputs.release_status || steps.play-release.outputs.release_status || 'draft' }}
           AAB_SHA256: ${{ steps.signed-release.outputs.aab_sha256 || steps.verify-bundle.outputs.aab_sha256 }}
         run: |
           {
@@ -516,6 +572,17 @@ jobs:
               echo "- AAB SHA-256: \`$AAB_SHA256\`"
               echo "- Production track changed: **No — verified unchanged**"
               echo "- Review gate: **Draft only** — this upload is not published to testers until the separate manual approval action."
+            elif [[ "$PLAY_MODE" == "publish_new_release" ]]; then
+              echo "- Result: clean AAB built, uploaded as a draft, promoted and verified by fresh Google Play API read-back."
+              echo "- Track: `$PLAY_TRACK`"
+              echo "- Version: `$PLAY_VERSION_NAME`"
+              echo "- versionCode: `$PLAY_VERSION_CODE`"
+              echo "- Release status: **$PLAY_RELEASE_STATUS**"
+              echo "- AAB SHA-256: `$AAB_SHA256`"
+              echo "- Superseded draft 417 removed before upload: **Yes**"
+              echo "- Pending versioned drafts after promotion: **0**"
+              echo "- Production versionCodes: **0 — verified unchanged**"
+              echo "- Tester list and tester configuration: **not accessed or modified**"
             elif [[ "$PLAY_MODE" == "publish_approved_release" ]]; then
               echo "- Result: requested Closed-testing draft promoted and verified by a fresh API read-back."
               echo "- Track: \`$PLAY_TRACK\`"
