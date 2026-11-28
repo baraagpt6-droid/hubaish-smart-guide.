@@ -481,7 +481,7 @@ try {
 }
 
 // The health endpoint uses a short-lived KV key and removes it in a finally block.
-const workerChecks = await Promise.all([checkWorker('/health'), checkWorker('/setup/status')]);
+const workerChecks = await Promise.all([checkWorker('/health'), checkWorker('/setup/status'), checkWorker('/api/live-content')]);
 console.log('CLOUDFLARE_WORKER_CHECKS=' + JSON.stringify(workerChecks));
 if (!workerChecks.every(check => check.ok)) {
   throw new Error('Cloudflare Worker verification failed after bounded DNS/network retries: ' +
