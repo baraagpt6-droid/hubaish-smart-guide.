@@ -25,9 +25,9 @@
     fill($('knowledgeAdditionalMosquesList'),data.additionalMosques,x=>card(x.title,x.summary,x.location+' · '+x.source,'أسماء مساجد وقباب تنتظر المسح الميداني'),'لا توجد سجلات إضافية.');
     fill($('knowledgeSchoolsList'),data.schools,(x)=>card(x.title,x.summary,x.location+' · '+x.period,x.status==='documented_school_founder_conflict_curriculum_pending'?'المؤسس محل اختلاف في النقل؛ المقررات التفصيلية قيد المطابقة':'إحالة تاريخية'), 'لا توجد بيانات مدارس إضافية.');
     fill($('knowledgeWorksList'),data.works,x=>card(x.title,x.description,x.author+' · '+x.source,x.status==='title_variant_needs_collation'?'عنوان العمل يحتاج مقابلة النسخة الأصلية':'عمل تاريخي منسوب'), 'لا توجد أعمال مفهرسة.');
-    fill($('knowledgePeopleList'),data.people,x=>card(x.name,x.bio,x.role+' · '+x.source,x.status==='self_supplied_profile_and_published_initiative'?'السيرة المهنية مقدمة من صاحبها':'ترجمة تاريخية منقولة'), 'لا توجد تراجم في الفهرس المحلي.');
+    fill($('knowledgePeopleList'),data.people,x=>card(x.name,x.bio,[x.role,x.location?'الموضع: '+x.location:'',x.relatedFamily?'ملف الأسرة: '+x.relatedFamily:'',x.source].filter(Boolean).join(' · '),x.status==='self_supplied_profile_and_published_initiative'?'السيرة المهنية مقدمة من صاحبها':x.status==='historical_press_and_family_testimony'?'مصدر صحفي مع شهادة أسرية منسوبة':x.status==='historical_press_account'?'رواية تاريخية منشورة':'ترجمة تاريخية منقولة'), 'لا توجد تراجم في الفهرس المحلي.');
     const familyRows=[...data.families,...published.filter(x=>x.type==='family').map(x=>({name:x.title,note:x.body,status:'approved'}))];
-    fill($('knowledgeFamiliesList'),familyRows,x=>card(x.name,x.note,'ملف الأسرة',x.status==='approved'?'مراجَع للنشر':'لا تنشر شجرة نسب قبل توثيقها وموافقة الأسرة'), 'لم تُعتمد بعد ملفات أسر موثقة.');
+    fill($('knowledgeFamiliesList'),familyRows,x=>card(x.name,x.note,[x.location||'ملف الأسرة',x.source||''].filter(Boolean).join(' · '),x.status==='approved'?'مراجَع للنشر':'سجل تعارف؛ لا تُنشر شجرة نسب قبل توثيقها وموافقة الأسرة'), 'لم تُعتمد بعد ملفات أسر موثقة.');
     const archiveRows=[...data.archives,...published.filter(x=>x.type==='archive').map(x=>({id:x.id,title:x.title,summary:x.body,source:x.source,status:'approved',date:x.createdAt,image:x.attachmentUrl||'',imageOwner:x.ownerName||'صاحب الوثيقة غير محدد'}))];
     fill($('knowledgeArchiveList'),archiveRows,x=>{
       const n=card(x.title,x.summary,(x.location||'')+' '+(x.date||''),x.status==='approved'?'مساهمة راجعها المشرف':x.status==='image_available_literal_transcription_pending'?'صورة متاحة · التفريغ النصي قيد المراجعة':'قيد استلام الأصل');
@@ -82,7 +82,7 @@
     const rows=[];
     for(const group of ['landmarkRecords','additionalMosques','schools','works','people','families','archives']){
       for(const x of data[group]||[]){
-        const title=x.title||x.name||'';const body=[x.summary,x.bio,x.description,x.note,x.location,x.author,x.role,x.source,x.date,x.period,x.transcription].filter(Boolean).join(' ');
+        const title=x.title||x.name||'';const body=[x.summary,x.bio,x.description,x.note,x.location,x.author,x.role,x.source,x.sourceUrl,x.relatedFamily,x.subdistrict,x.date,x.period,x.transcription].filter(Boolean).join(' ');
         if(norm(title+' '+body).includes(q))rows.push({id:x.id||title,title,body:body.slice(0,520),category:group});
       }
     }

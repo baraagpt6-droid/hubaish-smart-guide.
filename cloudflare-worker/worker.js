@@ -10,6 +10,34 @@ function b64bytes(bytes){let binary='';for(let i=0;i<bytes.length;i+=0x8000)bina
 const SECURITY_HEADERS={"X-Content-Type-Options":"nosniff","X-Frame-Options":"DENY","Referrer-Policy":"strict-origin-when-cross-origin","Permissions-Policy":"microphone=(self)","Strict-Transport-Security":"max-age=31536000; includeSubDomains","Cross-Origin-Resource-Policy":"same-site","Content-Security-Policy":"default-src 'none'; frame-ancestors 'none'; base-uri 'none'"};
 const json=(d,s=200,h={})=>new Response(JSON.stringify(d),{status:s,headers:{"Content-Type":"application/json; charset=utf-8","Cache-Control":"no-store",...SECURITY_HEADERS,...h}});
 const enc=s=>new TextEncoder().encode(s),dec=b=>new TextDecoder().decode(b);
+function requestError(status,message){const error=new Error(message);error.status=status;return error}
+async function readJson(req,maxBytes=16384){
+ const contentType=(req.headers.get("Content-Type")||"").toLowerCase();
+ if(!contentType.startsWith("application/json"))throw requestError(415,"Content-Type must be application/json.");
+ const declaredHeader=req.headers.get("Content-Length");
+ if(declaredHeader!==null){
+  const declared=Number(declaredHeader);
+  if(!Number.isSafeInteger(declared)||declared<0)throw requestError(400,"Invalid Content-Length.");
+  if(declared>maxBytes)throw requestError(413,"Request body exceeds the allowed size.");
+ }
+ if(!req.body)throw requestError(400,"JSON request body is required.");
+ const reader=req.body.getReader(),chunks=[];let size=0;
+ try{
+  while(true){
+   const {done,value}=await reader.read();if(done)break;
+   size+=value.byteLength;
+   if(size>maxBytes){await reader.cancel().catch(()=>{});throw requestError(413,"Request body exceeds the allowed size.");}
+   chunks.push(value);
+  }
+ }finally{try{reader.releaseLock()}catch{}}
+ const bytes=new Uint8Array(size);let offset=0;
+ for(const chunk of chunks){bytes.set(chunk,offset);offset+=chunk.byteLength}
+ let raw;
+ try{raw=new TextDecoder("utf-8",{fatal:true}).decode(bytes)}
+ catch{throw requestError(400,"Request body must be valid UTF-8.")}
+ try{return JSON.parse(raw)}
+ catch{throw requestError(400,"Request body must contain valid JSON.")}
+}
 const b64u=b=>btoa(String.fromCharCode(...new Uint8Array(b))).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,"");
 const un64=s=>Uint8Array.from(atob(s.replace(/-/g,"+").replace(/_/g,"/")+"===".slice((s.length+3)%4)),c=>c.charCodeAt(0));
 const random=n=>crypto.getRandomValues(new Uint8Array(n));
@@ -105,12 +133,9 @@ async function route(req,env){
  }
  if(req.method==="POST"&&path==="/public/community-submissions"){
   if(!env.ADMINS)return json({error:"Submission store unavailable."},503);
-  const length=Number(req.headers.get("Content-Length")||0);
-  if(length>480000)return json({error:"Submission exceeds the 480 KB limit."},413);
-  const b=await req.json();
-  if(JSON.stringify(b).length>480000)return json({error:"Submission exceeds the 480 KB limit."},413);
+  const b=await readJson(req,path==="/public/community-submissions"?480000:path==="/content"?700000:16384);
   const types=new Set(["author","family","archive","marketplace"]);
-  const clean=(v,max)=>String(v||"").replace(/[\u0000-\u001F\u007F]/g," ").trim().slice(0,max);
+  const clean=(v,max)=>(typeof v==="string"?v:"").replace(/[\u0000-\u001F\u007F]/g," ").trim().slice(0,max);
   const type=String(b.type||"");
   const name=clean(b.name,120),title=clean(b.title,180),body=clean(b.body,5000),source=clean(b.source,1000),contact=clean(b.contact,160),ownerName=clean(b.ownerName,160),marketCategory=clean(b.marketCategory,40);
   if(!types.has(type)||!name||!title||!body||b.publishConsent!==true)return json({error:"A valid category, name, title, content and rights consent are required."},400);
@@ -139,22 +164,35 @@ async function route(req,env){
   return json({setupRequired:keys.keys.length===0,configured:true,bootstrapKeyConfigured:!!env.BOOTSTRAP_KEY});
  }
  if(req.method==="POST"&&path==="/setup"){
-  const b=await req.json(),keys=await env.ADMINS.list({prefix:UP,limit:1});
+  const b=await readJson(req,path==="/public/community-submissions"?480000:path==="/content"?700000:16384),keys=await env.ADMINS.list({prefix:UP,limit:1});
   if(keys.keys.length)return json({error:"Initial setup already completed."},409);
-  if(!env.BOOTSTRAP_KEY||b.bootstrapKey!==env.BOOTSTRAP_KEY)return json({error:"Invalid bootstrap key."},403);
+  const setupIp=String(req.headers.get("CF-Connecting-IP")||"unknown");
+  const setupIpHash=b64u(await crypto.subtle.digest("SHA-256",enc(setupIp)));
+  const setupRateKey="setup-fail:"+setupIpHash;
+  const setupRate=await env.ADMINS.get(setupRateKey,"json")||{count:0};
+  if(Number(setupRate.count||0)>=6)return json({error:"Initial setup attempts are temporarily limited."},429,{"Retry-After":"900"});
+  if(!env.BOOTSTRAP_KEY||b.bootstrapKey!==env.BOOTSTRAP_KEY){
+   await env.ADMINS.put(setupRateKey,JSON.stringify({count:Number(setupRate.count||0)+1}),{expirationTtl:900});
+   return json({error:"Invalid bootstrap key."},403);
+  }
+  await env.ADMINS.delete(setupRateKey);
   const username=uname(b.username),password=String(b.password||"");if(!username||password.length<12)return json({error:"Username required; password must be at least 12 characters."},400);
   await saveUser(env,{username,displayName:String(b.displayName||username).slice(0,80),role:"super_admin",disabled:false,sessionVersion:sessionVersion(),createdAt:new Date().toISOString()},password);
   await log(env,{actor:username,action:"bootstrap_super_admin"});return json({ok:true,message:"Admin created. Remove BOOTSTRAP_KEY secret now."},201)
  }
  if(req.method==="POST"&&path==="/auth/login"){
-  const b=await req.json(),username=uname(b.username),password=String(b.password||""),user=username?await getUser(env,username):null;
-  const ip=req.headers.get("CF-Connecting-IP")||"unknown",attemptKey="login-fail:"+ip+":"+username;
+  const b=await readJson(req,path==="/public/community-submissions"?480000:path==="/content"?700000:16384),username=uname(b.username),password=String(b.password||""),user=username?await getUser(env,username):null;
+  const ip=String(req.headers.get("CF-Connecting-IP")||"unknown");
+  const ipHash=b64u(await crypto.subtle.digest("SHA-256",enc(ip)));
+  const attemptKey="login-fail:"+ipHash+":"+username,ipAttemptKey="login-ip-fail:"+ipHash;
   const attempts=await env.ADMINS.get(attemptKey,"json")||{count:0};
-  if(attempts.count>=8)return json({error:"تم إيقاف محاولات الدخول مؤقتاً. حاول بعد 15 دقيقة."},429);
+  const ipAttempts=await env.ADMINS.get(ipAttemptKey,"json")||{count:0};
+  if(Number(attempts.count||0)>=8||Number(ipAttempts.count||0)>=30)return json({error:"تم إيقاف محاولات الدخول مؤقتاً. حاول بعد 15 دقيقة."},429,{"Retry-After":"900"});
   let passwordValid=false;
   if(user&&!user.disabled){try{passwordValid=await passwordMatches(password,user)}catch{passwordValid=false}}
   if(!passwordValid){
-   await env.ADMINS.put(attemptKey,JSON.stringify({count:attempts.count+1}),{expirationTtl:900});
+   await env.ADMINS.put(attemptKey,JSON.stringify({count:Number(attempts.count||0)+1}),{expirationTtl:900});
+   await env.ADMINS.put(ipAttemptKey,JSON.stringify({count:Number(ipAttempts.count||0)+1}),{expirationTtl:900});
    return json({error:"اسم المستخدم أو كلمة المرور غير صحيحة."},401);
   }
   await env.ADMINS.delete(attemptKey);
@@ -188,7 +226,7 @@ async function route(req,env){
   return new Response(bytes,{status:200,headers:{...SECURITY_HEADERS,"Content-Type":match[1],"Content-Length":String(bytes.length),"Content-Disposition":"inline; filename*=UTF-8''"+encodeURIComponent(filename),"Cache-Control":"no-store"}});
  }
  if(req.method==="PATCH"&&path==="/review/community-submissions"){
-  const b=await req.json(),id=String(b.id||""),key="community-submission:"+id;
+  const b=await readJson(req,path==="/public/community-submissions"?480000:path==="/content"?700000:16384),id=String(b.id||""),key="community-submission:"+id;
   if(!/^[0-9a-f-]{20,40}$/i.test(id))return json({error:"Invalid submission id."},400);
   const record=await env.ADMINS.get(key,"json");
   if(!record||record.status!=="pending")return json({error:"Pending submission not found."},404);
@@ -212,7 +250,7 @@ async function route(req,env){
   submissions.sort((a,b)=>String(b.submittedAt).localeCompare(String(a.submittedAt)));return json({submissions})
  }
  if((req.method==="PATCH"||req.method==="DELETE")&&path==="/review/photo-submissions"){
-  const b=await req.json(),id=String(b.id||"").trim(),key="photo-submission:"+id;
+  const b=await readJson(req,path==="/public/community-submissions"?480000:path==="/content"?700000:16384),id=String(b.id||"").trim(),key="photo-submission:"+id;
   if(!/^[0-9a-f-]{20,40}$/i.test(id))return json({error:"Invalid submission id."},400);
   const submission=await env.ADMINS.get(key,"json");if(!submission||submission.status!=="pending")return json({error:"Photo submission not found."},404);
   if(req.method==="DELETE"){await env.ADMINS.delete(key);await log(env,{actor:actor.username,action:"reject_visitor_photo",target:id});return json({ok:true})}
@@ -234,7 +272,7 @@ async function route(req,env){
  }
  if(req.method==="GET"&&path==="/auth/me")return json({user:actor});
  if(req.method==="PUT"&&path==="/content"){
-  const d=await req.json(),keys=["landmarks","historyEvents","subDistrictUpdates","subDistricts","historicalFigures","communityLinks"];
+  const d=await readJson(req,path==="/public/community-submissions"?480000:path==="/content"?700000:16384),keys=["landmarks","historyEvents","subDistrictUpdates","subDistricts","historicalFigures","communityLinks"];
   if(!keys.every(k=>Array.isArray(d?.[k]))||d.schemaVersion!==1)return json({error:"Invalid live-content schema."},400);
   if(JSON.stringify(d).length>700000)return json({error:"Content exceeds 700 KB."},413);
   const previous=(await ghRead(env)).data,changes=[];
@@ -256,17 +294,17 @@ async function route(req,env){
   const keys=await env.ADMINS.list({prefix:UP,limit:100}),users=[];for(const k of keys.keys){const x=await getUser(env,k.name.slice(UP.length));if(x)users.push({username:x.username,displayName:x.displayName,role:x.role,disabled:!!x.disabled,createdAt:x.createdAt})}return json({users})
  }
  if(path==="/admin/users"&&actor.role==="super_admin"&&req.method==="POST"){
-  const b=await req.json(),username=uname(b.username),password=String(b.password||""),role=String(b.role||"editor");
+  const b=await readJson(req,path==="/public/community-submissions"?480000:path==="/content"?700000:16384),username=uname(b.username),password=String(b.password||""),role=String(b.role||"editor");
   if(!username||password.length<12||!ROLES.has(role))return json({error:"اسم المستخدم مطلوب وكلمة المرور 12 حرفاً على الأقل."},400);
   if(await getUser(env,username))return json({error:"اسم المستخدم مستخدم بالفعل."},409);
   await saveUser(env,{username,displayName:String(b.displayName||username).slice(0,80),role,disabled:false,sessionVersion:sessionVersion(),createdAt:new Date().toISOString()},password);await log(env,{actor:actor.username,action:"create_admin",target:username,role});return json({ok:true},201)
  }
  if(path==="/admin/users"&&actor.role==="super_admin"&&req.method==="PATCH"){
-  const b=await req.json(),username=uname(b.username),user=await getUser(env,username);if(!user)return json({error:"الحساب غير موجود."},404);if(username===actor.username)return json({error:"لا يمكنك تعطيل حسابك الحالي."},400);
+  const b=await readJson(req,path==="/public/community-submissions"?480000:path==="/content"?700000:16384),username=uname(b.username),user=await getUser(env,username);if(!user)return json({error:"الحساب غير موجود."},404);if(username===actor.username)return json({error:"لا يمكنك تعطيل حسابك الحالي."},400);
   const wasDisabled=!!user.disabled;user.disabled=b.disabled===true;if(user.disabled!==wasDisabled)user.sessionVersion=sessionVersion();user.updatedAt=new Date().toISOString();await env.ADMINS.put(UP+username,JSON.stringify(user));await log(env,{actor:actor.username,action:user.disabled?"disable_admin":"enable_admin",target:username});return json({ok:true})
  }
  if(path==="/admin/users"&&actor.role==="super_admin"&&req.method==="PUT"){
-  const b=await req.json(),username=uname(b.username),user=await getUser(env,username);
+  const b=await readJson(req,path==="/public/community-submissions"?480000:path==="/content"?700000:16384),username=uname(b.username),user=await getUser(env,username);
   if(!user)return json({error:"الحساب غير موجود."},404);
   const role=String(b.role||user.role);if(!ROLES.has(role))return json({error:"الصلاحية المطلوبة غير صالحة."},400);
   if(username===actor.username&&(role!=="super_admin"||b.disabled===true))return json({error:"لا يمكنك تعطيل حسابك أو خفض صلاحيتك."},400);
@@ -278,13 +316,13 @@ async function route(req,env){
   await log(env,{actor:actor.username,action:"update_admin",target:username,role});return json({ok:true})
  }
  if(path==="/admin/users/password"&&actor.role==="super_admin"&&req.method==="POST"){
-  const b=await req.json(),username=uname(b.username),password=String(b.password||""),user=await getUser(env,username);
+  const b=await readJson(req,path==="/public/community-submissions"?480000:path==="/content"?700000:16384),username=uname(b.username),password=String(b.password||""),user=await getUser(env,username);
   if(!user)return json({error:"الحساب غير موجود."},404);
   if(password.length<12)return json({error:"كلمة المرور يجب أن تتكون من 12 حرفاً على الأقل."},400);
   user.sessionVersion=sessionVersion();await saveUser(env,user,password);await log(env,{actor:actor.username,action:"reset_admin_password",target:username});return json({ok:true})
  }
  if(path==="/admin/users"&&actor.role==="super_admin"&&req.method==="DELETE"){
-  const b=await req.json(),username=uname(b.username);if(!username)return json({error:"اسم المستخدم غير صالح."},400);
+  const b=await readJson(req,path==="/public/community-submissions"?480000:path==="/content"?700000:16384),username=uname(b.username);if(!username)return json({error:"اسم المستخدم غير صالح."},400);
   if(username===actor.username)return json({error:"لا يمكنك حذف حسابك الحالي."},400);
   if(!await getUser(env,username))return json({error:"الحساب غير موجود."},404);
   await env.ADMINS.delete(UP+username);await log(env,{actor:actor.username,action:"delete_admin",target:username});return json({ok:true})
@@ -292,4 +330,4 @@ async function route(req,env){
  if(path==="/admin/audit"&&actor.role==="super_admin"&&req.method==="GET")return json({events:(await env.ADMINS.get(AUDIT,"json")||[]).slice(0,100)});
  return json({error:"Not found."},404)
 }
-export default {async fetch(req,env){const h=cors(req,env);const origin=req.headers.get("Origin")||"";if(origin&&!h["Access-Control-Allow-Origin"])return json({error:"Origin not allowed."},403);try{const r=await route(req,env),headers=new Headers(r.headers);for(const [k,v] of Object.entries(h))headers.set(k,v);return new Response(r.body,{status:r.status,headers})}catch(e){return json({error:e.message||"Worker error."},500,h)}}};
+export default {async fetch(req,env){const h=cors(req,env);const origin=req.headers.get("Origin")||"";if(origin&&!h["Access-Control-Allow-Origin"])return json({error:"Origin not allowed."},403);try{const r=await route(req,env),headers=new Headers(r.headers);for(const [k,v] of Object.entries(h))headers.set(k,v);return new Response(r.body,{status:r.status,headers})}catch(e){const status=Number(e?.status)||500;const message=status>=400&&status<500?String(e?.message||"Invalid request.").slice(0,160):"Worker internal error.";return json({error:message},status,h)}}};
