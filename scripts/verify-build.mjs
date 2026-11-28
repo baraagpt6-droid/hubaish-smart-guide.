@@ -181,8 +181,8 @@ if(!sw.includes('hubaish-guide-v4.1.6')||!sw.includes("assets/heritage/1183-wood
    !sw.includes("'github-cms.js'")||!sw.includes("'gallery.js'")||!sw.includes("'data/live-content.json'")) {
   throw new Error('The service-worker cache does not include the updated app shell.');
 }
-if(!worker.includes('LIVE_KEY="live-content:published"')||!worker.includes('/api/live-content')||!worker.includes('/admin/quick-add')||!worker.includes('publishLiveContent(env,live)'))throw new Error('Cloudflare live KV feed or Quick Add endpoint is missing.');
-if(!cms.includes("DEFAULT_WORKER_URL+'/api/live-content'")||!cms.includes("workerRequest('/admin/quick-add'")||!cms.includes('function stampQuickImage')||!cms.includes("setInterval(()=>{if(document.visibilityState==='visible'){sync(true);refreshSetupStatus();window.HubaishKnowledge?.load?.()}},15000)"))throw new Error('Client live-feed polling, offline refresh or Quick Add publishing path is incomplete.');
+if(!worker.includes('LIVE_KEY="live-content:published"')||!worker.includes('/api/live-content')||!worker.includes('/admin/quick-add')||!worker.includes('/public/quick-add-image')||!worker.includes('publishLiveContent(env,live)'))throw new Error('Cloudflare live KV feed, image endpoint or Quick Add endpoint is missing.');
+if(!cms.includes("DEFAULT_WORKER_URL+'/api/live-content'")||!cms.includes("workerRequest('/admin/quick-add'")||!cms.includes('function stampQuickImage')||!cms.includes("180*1024")||!cms.includes("setInterval(()=>{if(document.visibilityState==='visible'){sync(true);refreshSetupStatus();window.HubaishKnowledge?.load?.()}},15000)"))throw new Error('Client live-feed polling, offline refresh or Quick Add publishing path is incomplete.');
 if(!knowledgeJs.includes("setInterval(()=>{if(document.visibilityState==='visible')refreshPublished()},15000)"))throw new Error('Approved archive/family/market content is not refreshed while the app is open.');
 if(!html.includes('id="cloudQuickAddForm"')||!html.includes('id="cloudQuickImageFile"')||!html.includes('id="cloudQuickRights"')||!html.includes('id="cloudQuickPreviewBtn"'))throw new Error('Admin Quick Add Studio or rights confirmation is missing.');
 if(!html.includes('value="figure"')||!html.includes('value="work"')||!worker.includes('"figure","work"')||!knowledgeJs.includes("published.filter(x=>x.type==='figure')")||!knowledgeJs.includes("published.filter(x=>x.type==='work')"))throw new Error('Quick Add historical-figure or library records are not connected to the knowledge index.');
@@ -337,12 +337,12 @@ if (!playWorkflow.includes('workflow_dispatch:') ||
     !playWorkflow.includes("PLAY_ALLOWED_EXISTING_DRAFT_VERSION_CODE") ||
     !playWorkflow.includes("scripts/retire-obsolete-play-draft.py") ||
     !playWorkflow.includes("Verify completed 418, zero pending drafts") ||
-    !playWorkflow.includes(".publish-419") ||
+    !playWorkflow.includes(".publish-420") ||
     !playWorkflow.includes("publish_next_release") ||
-    !playWorkflow.includes("Verify completed 419, zero pending drafts and unchanged Production") ||
+    !playWorkflow.includes("Verify completed 420, zero pending drafts and unchanged Production") ||
     !playWorkflow.includes("steps.publish-next-release.outputs.release_status") ||
     !playResolver.includes('release_mode == "publish_next_release"') ||
-    !playResolver.includes("version_code != 419") ||
+    !playResolver.includes("version_code != 420") ||
     !playResolver.includes("zero existing versioned drafts on Hubaish Closed Test") ||
     !playPromoter.includes("prior_completed_codes != [418]") ||
     !playWorkflow.includes(".publish-419") ||
