@@ -145,6 +145,58 @@ jobs:
               throw new Error('Visitor photo route must reject submissions with HTTP 410.');
             }
             console.log('PASS: visitor photo submissions are disabled (HTTP 410).');
+            const corsOrigins = [
+              'https://localhost',
+              'capacitor://localhost',
+              'https://baraagpt6-droid.github.io'
+            ];
+            const corsRoutes = [
+              { path: '/health', method: 'GET', expectedStatus: 200 },
+              { path: '/auth/login', method: 'POST', body: 'not-json', contentType: 'application/json', expectedStatus: 400 },
+              { path: '/api/live-content', method: 'GET', expectedStatus: 200 },
+              { path: '/admin/quick-add', method: 'POST', body: '{}', contentType: 'application/json', expectedStatus: 401 }
+            ];
+            for (const origin of corsOrigins) {
+              for (const route of corsRoutes) {
+                const preflight = await fetch(base + route.path, {
+                  method: 'OPTIONS',
+                  headers: {
+                    Origin: origin,
+                    'Access-Control-Request-Method': route.method,
+                    'Access-Control-Request-Headers': 'content-type,authorization'
+                  },
+                  cache: 'no-store',
+                  signal: AbortSignal.timeout(15000)
+                });
+                const allowedOrigin = preflight.headers.get('access-control-allow-origin');
+                const allowedMethods = (preflight.headers.get('access-control-allow-methods') || '').toUpperCase();
+                const allowedHeaders = (preflight.headers.get('access-control-allow-headers') || '').toLowerCase();
+                if (preflight.status !== 204 || allowedOrigin !== origin ||
+                    !allowedMethods.split(',').map(value => value.trim()).includes(route.method) ||
+                    !allowedHeaders.includes('content-type') || !allowedHeaders.includes('authorization')) {
+                  throw new Error('CORS preflight failed for ' + origin + ' ' + route.method + ' ' + route.path +
+                    ': HTTP ' + preflight.status + ', allow-origin=' + allowedOrigin);
+                }
+                const headers = { Origin: origin, Accept: 'application/json' };
+                if (route.contentType) headers['Content-Type'] = route.contentType;
+                const actual = await fetch(base + route.path, {
+                  method: route.method,
+                  headers,
+                  ...(route.body !== undefined ? { body: route.body } : {}),
+                  cache: 'no-store',
+                  signal: AbortSignal.timeout(15000)
+                });
+                if (actual.headers.get('access-control-allow-origin') !== origin ||
+                    actual.status !== route.expectedStatus) {
+                  throw new Error('CORS response failed for ' + origin + ' ' + route.method + ' ' + route.path +
+                    ': HTTP ' + actual.status + ', allow-origin=' + actual.headers.get('access-control-allow-origin') +
+                    ', expected HTTP ' + route.expectedStatus);
+                }
+                console.log('PASS: CORS ' + origin + ' ' + route.method + ' ' + route.path +
+                  ' (preflight 204; response ' + actual.status + ').');
+              }
+            }
+            console.log('PASS: all four Worker routes allow the three exact application origins; no wildcard CORS is used.');
           })().catch(error => {
             console.error('FAIL: ' + error.message);
             process.exitCode = 1;

@@ -113,7 +113,7 @@ Fastlane must reject automated upload statuses other than draft. The normal uplo
 - Worker JSON bodies are streamed and size-bounded: 16 KiB by default, 480 KB for community submissions, and 700 KB for live content. Request content type, UTF-8, JSON syntax and body size are validated before persistence.
 - First-admin bootstrap failures are limited to 6 per hashed source IP per 15 minutes. Login failures are limited to 8 per hashed IP/username and 30 per hashed IP per 15 minutes. Cloudflare KV counters are best-effort under concurrency because KV is eventually consistent; they are not a substitute for Cloudflare edge rate-limiting rules.
 - Worker 5xx replies expose generic errors only. Public records remain pending until a super_admin approves them; review/reject routes require the authenticated super_admin role.
-- Production CORS stays restricted to `https://baraagpt6-droid.github.io` and `capacitor://localhost`. Local Playwright does not expand production CORS; it proxies only read-only `/setup/status` through the Node runner, while Node independently checks live `/health` and `/setup/status`.
+- Production CORS is restricted to the three exact application origins `https://baraagpt6-droid.github.io`, `https://localhost` (Android Capacitor WebView), and `capacitor://localhost`. The Worker deployment workflow verifies preflight and actual responses for `/health`, `/auth/login`, `/api/live-content`, and `/admin/quick-add` from all three origins. Local Playwright does not expand production CORS; it proxies only read-only `/setup/status` through the Node runner.
 - All Worker `/review/*` endpoints, including photo review, require `super_admin`; editor role cannot approve or delete moderation items. Anonymous community submissions are limited to 6 per hashed IP per 24 hours by KV (best-effort under KV eventual consistency).
 - Signed Android Play builds inject `https://maven-central.storage-download.googleapis.com/maven2/` before every `mavenCentral()` declaration in generated Android `*.gradle` files to reduce Maven Central HTTP 429 failures; Maven Central remains the fallback. The change belongs in `scripts/prepare-android-release.py`, not committed generated native files.
 
@@ -217,3 +217,10 @@ Successful preview build run 46038091477:
 - Guarded cleanup run 46152855285 updated only the exact `Hubaish Closed Test` track, retaining completed 420. Its post-commit read-back validated the no-draft/420-only state; the workflow summary then failed on a Python tuple-unpacking typo.
 - Independent read-only monitor run 46152895865 confirmed effectiveVersionCode 420, versionName 1.0.403, releaseStatus completed, draftReleaseCount 0 and Production versionCodes []. Tester settings and the 14-day requirement were not accessed or changed.
 - The cleanup script is corrected and idempotent. The consumed `.retire-421` marker is removed from the repository.
+
+
+## 28 November 2026 — Android WebView Cloudflare CORS fix
+- Confirmed `www/github-cms.js` points to `https://hubaish-cms.baraagpt6.workers.dev`; no app-side or `www/` edit is required.
+- Added the exact Android Capacitor WebView origin `https://localhost` alongside `capacitor://localhost` and the GitHub Pages origin in Worker CORS defaults and Wrangler `ALLOWED_ORIGIN`.
+- The Worker deployment workflow now checks preflight and actual responses for `/health`, `/auth/login`, `/api/live-content`, and `/admin/quick-add` from all three exact origins. Login and QuickAdd checks use no credentials and cause no admin or login writes.
+- This is a Worker-only repair for installed versionCode 420; it does not create a new Android release or change Google Play tracks.

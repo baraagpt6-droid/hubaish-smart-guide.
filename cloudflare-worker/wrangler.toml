@@ -4,7 +4,7 @@ workers_dev = true
 compatibility_date = "2024-11-01"
 
 [vars]
-ALLOWED_ORIGIN = "https://baraagpt6-droid.github.io,capacitor://localhost"
+ALLOWED_ORIGIN = "https://baraagpt6-droid.github.io,https://localhost,capacitor://localhost"
 
 # Fixed production namespace: hubaish-admins.
 [[kv_namespaces]]
