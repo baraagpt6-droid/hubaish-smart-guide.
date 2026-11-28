@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-27T18:00:00+08:00",
+  "updatedAt": "2026-11-28T03:30:00+08:00",
   "landmarks": [
     {
       "id": "khudad-fort",
@@ -1220,6 +1220,33 @@
   "communityLinks": [],
   "subDistricts": [
     {
+      "id": "district-9",
+      "district_name_ar": "ربع ظلمة",
+      "title_ar": "ربع ظلمة",
+      "title_en": "Rub' Dhulmah",
+      "title_tr": "Rub' Dhulmah",
+      "title_fr": "Rub' Dhulmah",
+      "body_ar": "ترتبط ظُلمة بمركز مديرية حبيش وفق المراجع المحلية. ويَرِد اسم ربع ظُلمة ضمن قائمة العزل؛ ولا ينبغي الخلط بين العزلة ومركز المديرية أو تعميم معالم المركز على كامل نطاق العزلة.",
+      "body_en": "Local references identify Dhulmah as the district centre. Rub' Dhulmah is listed as a separate sub-district name and should not be conflated with the district centre or its built-up area.",
+      "body_tr": "İdari merkez çevresi",
+      "body_fr": "Environs du centre administratif",
+      "source_text": "مقال حبيش في حكمة يمانية، وبيانات التقسيم الإداري للمركز الوطني للمعلومات. مصادر داعمة: قائمة حبيش المنشورة وفهارس القرى الثانوية؛ الأسماء ليست سجلاً رسمياً.",
+      "source_url": "https://hekmahyemanya.com/آثار/حُبيش-مُفتتح-المجد-وذروته/"
+    },
+    {
+      "id": "district-7",
+      "district_name_ar": "جبل عميقة",
+      "title_ar": "جبل عميقة",
+      "title_en": "Jabal Ameqa (Jabal Anqa)",
+      "title_tr": "Cebel Amika (Anka)",
+      "title_fr": "Jabal Ameqa (Anqa)",
+      "body_ar": "يظهر الاسم بصيغتين في المراجع المنشورة: جبل عميقة وجبل عنقه. أُبقي الاسمان معاً إلى حين التحقق من الاسم الإداري المعتمد وموقع العزلة. لم تتوفر قائمة قرى موثقة في المصادر المفتوحة التي راجعتها.",
+      "body_en": "The published sources use two forms of the name, Jabal Ameqa and Jabal Anqah. Both are retained until the official spelling and location are verified. No verified village list was available in the sources reviewed.",
+      "body_tr": "Zirveler ve su yolları",
+      "body_fr": "Sommets et voies d’eau",
+      "source_text": "وصف تضاريسي استرشادي في ملف المشروع، وليس قائمة موثقة بالقرى التابعة. يلزم التحقق من الحدود والقرى من سجل رسمي أو مسح ميداني. مصادر داعمة: قائمة حبيش المنشورة وفهارس القرى الثانوية؛ الأسماء ليست سجلاً رسمياً."
+    },
+    {
       "id": "district-1",
       "district_name_ar": "بني معين",
       "title_ar": "بني معين",
@@ -1230,32 +1257,6 @@
       "body_en": "A local heritage study and a secondary village index list several place names in Bani Mu'ayn, including Dhi Doman, Dhi al-Maqlih, Dhi Sighar, al-Hussat, al-Raysah, al-Salf, al-Muhajamah, Barakah and Bayt al-Batoul. This is not an official complete village register.",
       "body_tr": "Teraslar ve tarlalar",
       "body_fr": "Terrasses et champs",
-      "source_text": "وصف تضاريسي استرشادي في ملف المشروع، وليس قائمة موثقة بالقرى التابعة. يلزم التحقق من الحدود والقرى من سجل رسمي أو مسح ميداني. مصادر داعمة: قائمة حبيش المنشورة وفهارس القرى الثانوية؛ الأسماء ليست سجلاً رسمياً."
-    },
-    {
-      "id": "district-2",
-      "district_name_ar": "السلق",
-      "title_ar": "السلق",
-      "title_en": "Al-Salaq",
-      "title_tr": "Al-Salak",
-      "title_fr": "Al-Salaq",
-      "body_ar": "يظهر اسم عزلة السلق في قائمة العزل المنشورة لمديرية حبيش. ويرد فهرس سبأفون بأسماء مواضع في نطاقها، لكن أسماء القرى وحدود التبعية تحتاج مطابقة من سجل إداري أو مسح محلي.",
-      "body_en": "Al-Salaq appears in a published list of Hubaish sub-districts. A Sabafon coverage notice lists place names in its area, but village names and administrative boundaries still require official or field verification.",
-      "body_tr": "Kırsal yollar",
-      "body_fr": "Chemins ruraux",
-      "source_text": "وصف تضاريسي استرشادي في ملف المشروع، وليس قائمة موثقة بالقرى التابعة. يلزم التحقق من الحدود والقرى من سجل رسمي أو مسح ميداني. مصادر داعمة: قائمة حبيش المنشورة وفهارس القرى الثانوية؛ الأسماء ليست سجلاً رسمياً."
-    },
-    {
-      "id": "district-3",
-      "district_name_ar": "بني شبيب",
-      "title_ar": "بني شبيب",
-      "title_en": "Bani Shabib",
-      "title_tr": "Bani Şabib",
-      "title_fr": "Bani Shabib",
-      "body_ar": "يورد فهرس ثانوي أسماء الأثلة والسهلة والعارضة والعدن العالي والقطبة والمانمة والنظاري وحبران وموثان ضمن بني شبيب. تُعرض هذه بوصفها أسماء فهرسية تحتاج مراجعة محلية.",
-      "body_en": "A secondary index lists al-Athlah, al-Sahlah, al-Aridah, al-Adn al-Ali, al-Qutbah, al-Manamah, al-Nazari, Hibran and Muthan in Bani Shabib. These names need local verification.",
-      "body_tr": "Yüksek kesimler ve teraslar",
-      "body_fr": "Hauts reliefs et terrasses",
       "source_text": "وصف تضاريسي استرشادي في ملف المشروع، وليس قائمة موثقة بالقرى التابعة. يلزم التحقق من الحدود والقرى من سجل رسمي أو مسح ميداني. مصادر داعمة: قائمة حبيش المنشورة وفهارس القرى الثانوية؛ الأسماء ليست سجلاً رسمياً."
     },
     {
@@ -1272,17 +1273,17 @@
       "source_text": "وصف تضاريسي استرشادي في ملف المشروع، وليس قائمة موثقة بالقرى التابعة. يلزم التحقق من الحدود والقرى من سجل رسمي أو مسح ميداني. مصادر داعمة: قائمة حبيش المنشورة وفهارس القرى الثانوية؛ الأسماء ليست سجلاً رسمياً."
     },
     {
-      "id": "district-5",
-      "district_name_ar": "التفادي",
-      "title_ar": "التفادي",
-      "title_en": "Al-Tafadi",
-      "title_tr": "Et-Tefadi",
-      "title_fr": "Al-Tafadi",
-      "body_ar": "تذكر قائمة تغطية اتصالات أسماء مواضع في التفادي مثل العارضة والظهرة والعدايف وشعبة الضبيع والشعوبة والقرقرة والجيرة وذي كريب والذراع والمحلة والمنازل والطباق والشعبة. القائمة مرتبطة بخبر تغطية اتصالات وليست سجلاً إدارياً كاملاً.",
-      "body_en": "A telecom coverage notice lists places in Al-Tafadi, including al-Aridah, al-Dhuhrah, al-Adayif, Shu'bat al-Dubay', al-Shu'ubah, al-Qarqurah, al-Jirah, Dhi Kurayb, al-Dhira', al-Mahallah, al-Manazil, al-Tabaq and al-Shu'bah. This is not an official complete register.",
-      "body_tr": "Dağlık görünüm",
-      "body_fr": "Paysage montagneux",
-      "source_text": "وصف تضاريسي استرشادي في ملف المشروع، وليس قائمة موثقة بالقرى التابعة. يلزم التحقق من الحدود والقرى من سجل رسمي أو مسح ميداني. مصادر داعمة: قائمة حبيش المنشورة وفهارس القرى الثانوية؛ الأسماء ليست سجلاً رسمياً."
+      "id": "district-12",
+      "district_name_ar": "صائر",
+      "title_ar": "صائر",
+      "title_en": "Sa'ir",
+      "title_tr": "Sair",
+      "title_fr": "Saïr",
+      "body_ar": "تذكر مادة محلية قلعة خدد بين الصائر والصدر، بينما يحددها مصدر آخر ضمن عزلة العارضة. نسجل اختلاف تعيين الموقع ولا ننسب القلعة إلى عزلة واحدة دون إحداثيات أو توثيق ميداني.",
+      "body_en": "A local source places Khudad Fort between al-Sa'ir and al-Sadr, while another places it in al-Aridah. The discrepancy is retained until coordinates or field documentation settle the location.",
+      "body_tr": "Yollar ve yerleşimler",
+      "body_fr": "Routes et villages",
+      "source_text": "وصف تضاريسي استرشادي في ملف المشروع، وليس قائمة موثقة بالقرى التابعة. يلزم التحقق من الحدود والقرى من سجل رسمي أو مسح ميداني. مصادر داعمة: مادة حبيش في ثور رأين ودراسة الفلاحي على كنانة ومقال انتفاضة حبيش؛ وقد تختلف تعيينات بعض المواضع."
     },
     {
       "id": "district-6",
@@ -1299,16 +1300,57 @@
       "source_url": "https://www.thu-raein.com/index.php/ar/makhaleef-ar/hubaish-district-ar?id=17&view=category"
     },
     {
-      "id": "district-7",
-      "district_name_ar": "جبل عميقة (جبل عنقه)",
-      "title_ar": "جبل عميقة (جبل عنقه)",
-      "title_en": "Jabal Ameqa (Jabal Anqa)",
-      "title_tr": "Cebel Amika (Anka)",
-      "title_fr": "Jabal Ameqa (Anqa)",
-      "body_ar": "يظهر الاسم بصيغتين في المراجع المنشورة: جبل عميقة وجبل عنقه. أُبقي الاسمان معاً إلى حين التحقق من الاسم الإداري المعتمد وموقع العزلة. لم تتوفر قائمة قرى موثقة في المصادر المفتوحة التي راجعتها.",
-      "body_en": "The published sources use two forms of the name, Jabal Ameqa and Jabal Anqah. Both are retained until the official spelling and location are verified. No verified village list was available in the sources reviewed.",
-      "body_tr": "Zirveler ve su yolları",
-      "body_fr": "Sommets et voies d’eau",
+      "id": "district-20",
+      "district_name_ar": "نقيل العقاب",
+      "title_ar": "نقيل العقاب",
+      "title_en": "Naqil al-Aqab",
+      "title_tr": "Nakil el-Akab",
+      "title_fr": "Naqil al-Aqab",
+      "body_ar": "تذكر دراسة تاريخية قرية الجراجز ضمن نقيل العقاب، وتسجل مادة محلية مسجد مروحة في قرية مروحة بالعزلة مع نقش تأسيس منقول يعود إلى 811هـ / 1409م وتجديد يعود إلى 1183هـ / 1718م.",
+      "body_en": "A historical study places al-Jarajiz village in Naqil al-Aqab. A local heritage note records Marwaha Mosque with an inscription reportedly dating its foundation to 811 AH / 1409 CE and a rebuilding to 1183 AH / 1718 CE.",
+      "body_tr": "Dağ geçidi",
+      "body_fr": "Col de montagne",
+      "source_text": "بلال الطيب، حبيش.. مفتتح المجد وذروته. مصادر داعمة: مادة حبيش في ثور رأين ودراسة الفلاحي على كنانة ومقال انتفاضة حبيش؛ وقد تختلف تعيينات بعض المواضع.",
+      "source_url": "https://hekmahyemanya.com/آثار/حُبيش-مُفتتح-المجد-وذروته/"
+    },
+    {
+      "id": "district-15",
+      "district_name_ar": "الفراعي",
+      "title_ar": "الفراعي",
+      "title_en": "Al-Fara'i",
+      "title_tr": "El-Ferai",
+      "title_fr": "Al-Fara'i",
+      "body_ar": "تسجل دراسة محلية قرى سموع وذي كربين وذي شاب وذي عقيل وأكمة الأحاضي ضمن مواضع الفراعي، وتذكر المصينعة في السعنة بوصفها موضعاً مرتبطاً باسم حصن. كما توجد صورة منشورة معنونة بقرية الفراعي، مع ضرورة عدم تعميم الصورة على كل قرى العزلة.",
+      "body_en": "A local study lists Samu', Dhi Karbayn, Dhi Shab, Dhi Aqil and Akmat al-Ahadi in Al-Fara'i, and notes al-Masni'ah in al-Sa'nah as a place name associated with a fort. A published photograph is also labelled as Al-Fara'i village.",
+      "body_tr": "Dağ tarımı",
+      "body_fr": "Agriculture de montagne",
+      "source_text": "حكمة يمانية، مقال حبيش – صورة قرية الفراعي. مصادر داعمة: مادة حبيش في ثور رأين ودراسة الفلاحي على كنانة ومقال انتفاضة حبيش؛ وقد تختلف تعيينات بعض المواضع.",
+      "source_url": "https://hekmahyemanya.com/آثار/حُبيش-مُفتتح-المجد-وذروته/"
+    },
+    {
+      "id": "district-2",
+      "district_name_ar": "السلق",
+      "title_ar": "السلق",
+      "title_en": "Al-Salaq",
+      "title_tr": "Al-Salak",
+      "title_fr": "Al-Salaq",
+      "body_ar": "يظهر اسم عزلة السلق في قائمة العزل المنشورة لمديرية حبيش. ويرد فهرس سبأفون بأسماء مواضع في نطاقها، لكن أسماء القرى وحدود التبعية تحتاج مطابقة من سجل إداري أو مسح محلي.",
+      "body_en": "Al-Salaq appears in a published list of Hubaish sub-districts. A Sabafon coverage notice lists place names in its area, but village names and administrative boundaries still require official or field verification.",
+      "body_tr": "Kırsal yollar",
+      "body_fr": "Chemins ruraux",
+      "source_text": "وصف تضاريسي استرشادي في ملف المشروع، وليس قائمة موثقة بالقرى التابعة. يلزم التحقق من الحدود والقرى من سجل رسمي أو مسح ميداني. مصادر داعمة: قائمة حبيش المنشورة وفهارس القرى الثانوية؛ الأسماء ليست سجلاً رسمياً."
+    },
+    {
+      "id": "district-21",
+      "district_name_ar": "وادي المعقاب",
+      "title_ar": "وادي المعقاب",
+      "title_en": "Wadi al-Aqab",
+      "title_tr": "Vadi el-Akab",
+      "title_fr": "Wadi al-Aqab",
+      "body_ar": "يظهر اسم العزلة بصيغتي وادي العقاب ووادي المعقاب في المراجع. وتورد قائمة تغطية اتصالات مواضع حبس الظرائم والسقاعة والمحواشة في نطاق وادي المعقاب. يلزم تثبيت الصيغة الإدارية والحدود من سجل رسمي.",
+      "body_en": "The sub-district appears under both Wadi al-Aqab and Wadi al-Muqab. A telecom coverage notice lists Habs al-Dhara'im, al-Saqa'ah and al-Muhawashah in the Wadi al-Muqab area. Official spelling and boundaries need confirmation.",
+      "body_tr": "Vadiler ve su yatakları",
+      "body_fr": "Vallées et cours d’eau",
       "source_text": "وصف تضاريسي استرشادي في ملف المشروع، وليس قائمة موثقة بالقرى التابعة. يلزم التحقق من الحدود والقرى من سجل رسمي أو مسح ميداني. مصادر داعمة: قائمة حبيش المنشورة وفهارس القرى الثانوية؛ الأسماء ليست سجلاً رسمياً."
     },
     {
@@ -1322,33 +1364,6 @@
       "body_en": "Al-Ja'afirah appears in the Hubaish sub-district list. General village indexes include several places in Hubaish, but the sources reviewed did not establish a specific complete village list for this sub-district.",
       "body_tr": "Kırsal kaynaklar",
       "body_fr": "Ressources rurales",
-      "source_text": "وصف تضاريسي استرشادي في ملف المشروع، وليس قائمة موثقة بالقرى التابعة. يلزم التحقق من الحدود والقرى من سجل رسمي أو مسح ميداني. مصادر داعمة: قائمة حبيش المنشورة وفهارس القرى الثانوية؛ الأسماء ليست سجلاً رسمياً."
-    },
-    {
-      "id": "district-9",
-      "district_name_ar": "ربع ظُلمة",
-      "title_ar": "ربع ظُلمة",
-      "title_en": "Rub' Dhulmah",
-      "title_tr": "Rub' Dhulmah",
-      "title_fr": "Rub' Dhulmah",
-      "body_ar": "ترتبط ظُلمة بمركز مديرية حبيش وفق المراجع المحلية. ويَرِد اسم ربع ظُلمة ضمن قائمة العزل؛ ولا ينبغي الخلط بين العزلة ومركز المديرية أو تعميم معالم المركز على كامل نطاق العزلة.",
-      "body_en": "Local references identify Dhulmah as the district centre. Rub' Dhulmah is listed as a separate sub-district name and should not be conflated with the district centre or its built-up area.",
-      "body_tr": "İdari merkez çevresi",
-      "body_fr": "Environs du centre administratif",
-      "source_text": "مقال حبيش في حكمة يمانية، وبيانات التقسيم الإداري للمركز الوطني للمعلومات. مصادر داعمة: قائمة حبيش المنشورة وفهارس القرى الثانوية؛ الأسماء ليست سجلاً رسمياً.",
-      "source_url": "https://hekmahyemanya.com/آثار/حُبيش-مُفتتح-المجد-وذروته/"
-    },
-    {
-      "id": "district-10",
-      "district_name_ar": "الذارحي (الزراحي)",
-      "title_ar": "الذارحي (الزراحي)",
-      "title_en": "Al-Dharahi (Al-Zarahi)",
-      "title_tr": "Ed-Darahi (Ez-Zarahi)",
-      "title_fr": "Al-Dharahi (Al-Zarahi)",
-      "body_ar": "ترد تسمية العزلة بصيغتي الذارحي والزراحي في الفهارس الثانوية. أُثبتت الصيغتان في الدليل إلى حين مطابقتها مع التقسيم الإداري الرسمي. لا تضاف قرى محددة دون مصدر يربطها بالعزلة.",
-      "body_en": "Secondary indexes use both Al-Dharahi and Al-Zarahi. Both forms are retained pending verification against the official administrative division. No villages are assigned without a source linking them to this sub-district.",
-      "body_tr": "Tarlalar ve teraslar",
-      "body_fr": "Champs et terrasses",
       "source_text": "وصف تضاريسي استرشادي في ملف المشروع، وليس قائمة موثقة بالقرى التابعة. يلزم التحقق من الحدود والقرى من سجل رسمي أو مسح ميداني. مصادر داعمة: قائمة حبيش المنشورة وفهارس القرى الثانوية؛ الأسماء ليست سجلاً رسمياً."
     },
     {
@@ -1366,17 +1381,83 @@
       "source_url": "https://www.thu-raein.com/index.php/ar/makhaleef-ar/hubaish-district-ar?id=17&view=category"
     },
     {
-      "id": "district-12",
-      "district_name_ar": "صائر",
-      "title_ar": "صائر",
-      "title_en": "Sa'ir",
-      "title_tr": "Sair",
-      "title_fr": "Saïr",
-      "body_ar": "تذكر مادة محلية قلعة خدد بين الصائر والصدر، بينما يحددها مصدر آخر ضمن عزلة العارضة. نسجل اختلاف تعيين الموقع ولا ننسب القلعة إلى عزلة واحدة دون إحداثيات أو توثيق ميداني.",
-      "body_en": "A local source places Khudad Fort between al-Sa'ir and al-Sadr, while another places it in al-Aridah. The discrepancy is retained until coordinates or field documentation settle the location.",
-      "body_tr": "Yollar ve yerleşimler",
-      "body_fr": "Routes et villages",
+      "id": "district-10",
+      "district_name_ar": "الذارحي",
+      "title_ar": "الذارحي",
+      "title_en": "Al-Dharahi (Al-Zarahi)",
+      "title_tr": "Ed-Darahi (Ez-Zarahi)",
+      "title_fr": "Al-Dharahi (Al-Zarahi)",
+      "body_ar": "ترد تسمية العزلة بصيغتي الذارحي والزراحي في الفهارس الثانوية. أُثبتت الصيغتان في الدليل إلى حين مطابقتها مع التقسيم الإداري الرسمي. لا تضاف قرى محددة دون مصدر يربطها بالعزلة.",
+      "body_en": "Secondary indexes use both Al-Dharahi and Al-Zarahi. Both forms are retained pending verification against the official administrative division. No villages are assigned without a source linking them to this sub-district.",
+      "body_tr": "Tarlalar ve teraslar",
+      "body_fr": "Champs et terrasses",
+      "source_text": "وصف تضاريسي استرشادي في ملف المشروع، وليس قائمة موثقة بالقرى التابعة. يلزم التحقق من الحدود والقرى من سجل رسمي أو مسح ميداني. مصادر داعمة: قائمة حبيش المنشورة وفهارس القرى الثانوية؛ الأسماء ليست سجلاً رسمياً."
+    },
+    {
+      "id": "district-5",
+      "district_name_ar": "التفادي",
+      "title_ar": "التفادي",
+      "title_en": "Al-Tafadi",
+      "title_tr": "Et-Tefadi",
+      "title_fr": "Al-Tafadi",
+      "body_ar": "تذكر قائمة تغطية اتصالات أسماء مواضع في التفادي مثل العارضة والظهرة والعدايف وشعبة الضبيع والشعوبة والقرقرة والجيرة وذي كريب والذراع والمحلة والمنازل والطباق والشعبة. القائمة مرتبطة بخبر تغطية اتصالات وليست سجلاً إدارياً كاملاً.",
+      "body_en": "A telecom coverage notice lists places in Al-Tafadi, including al-Aridah, al-Dhuhrah, al-Adayif, Shu'bat al-Dubay', al-Shu'ubah, al-Qarqurah, al-Jirah, Dhi Kurayb, al-Dhira', al-Mahallah, al-Manazil, al-Tabaq and al-Shu'bah. This is not an official complete register.",
+      "body_tr": "Dağlık görünüm",
+      "body_fr": "Paysage montagneux",
+      "source_text": "وصف تضاريسي استرشادي في ملف المشروع، وليس قائمة موثقة بالقرى التابعة. يلزم التحقق من الحدود والقرى من سجل رسمي أو مسح ميداني. مصادر داعمة: قائمة حبيش المنشورة وفهارس القرى الثانوية؛ الأسماء ليست سجلاً رسمياً."
+    },
+    {
+      "id": "district-17",
+      "district_name_ar": "كومان",
+      "title_ar": "كومان",
+      "title_en": "Kuman",
+      "title_tr": "Kuman",
+      "title_fr": "Kuman",
+      "body_ar": "تقع قرية الزواحي في عزلة كومان وفق مادة محلية، وتذكر المادة مدرسة الزواحي التي بناها الشيخ قاسم بن حمير الوائلي ووقف لها أوقافاً للعلماء والمتعلمين.",
+      "body_en": "A local source places al-Zawahi village in Kuman and records al-Zawahi School, built by Sheikh Qasim bin Humair al-Wa'ili, with endowments for scholars and students.",
+      "body_tr": "Kırsal görünüm",
+      "body_fr": "Paysage rural",
       "source_text": "وصف تضاريسي استرشادي في ملف المشروع، وليس قائمة موثقة بالقرى التابعة. يلزم التحقق من الحدود والقرى من سجل رسمي أو مسح ميداني. مصادر داعمة: مادة حبيش في ثور رأين ودراسة الفلاحي على كنانة ومقال انتفاضة حبيش؛ وقد تختلف تعيينات بعض المواضع."
+    },
+    {
+      "id": "district-22",
+      "district_name_ar": "الوطئة",
+      "title_ar": "الوطئة",
+      "title_en": "Al-Wat'ah (Al-Watnah)",
+      "title_tr": "El-Vat'a (El-Vatna)",
+      "title_fr": "Al-Wat'ah (Al-Watnah)",
+      "body_ar": "ترد العزلة في مصادر مختلفة بصيغتي الوطئة والوطنة. أُبقي الاسمان معاً حتى تتم المطابقة مع التقسيم الإداري الرسمي. لا تتوفر في المصادر المفتوحة التي راجعتها قائمة قرى موثقة للعزلة.",
+      "body_en": "Sources use both Al-Wat'ah and Al-Watnah. Both spellings are retained pending confirmation from the official administrative register. No verified village list was available in the sources reviewed.",
+      "body_tr": "Kırsal yerleşimler ve tarlalar",
+      "body_fr": "Villages et terres cultivées",
+      "source_text": "وصف تضاريسي استرشادي في ملف المشروع، وليس قائمة موثقة بالقرى التابعة. يلزم التحقق من الحدود والقرى من سجل رسمي أو مسح ميداني. مصادر داعمة: قائمة حبيش المنشورة وفهارس القرى الثانوية؛ الأسماء ليست سجلاً رسمياً."
+    },
+    {
+      "id": "district-16",
+      "district_name_ar": "قحزة",
+      "title_ar": "قحزة",
+      "title_en": "Qahzah (Jahzah)",
+      "title_tr": "Kahza (Cehza)",
+      "title_fr": "Qahzah (Jahzah)",
+      "body_ar": "تذكر دراسة محلية قبة ومسجد بين الدور في قرية بين الدور التابعة لقحزة، مع نقش يؤرخ للبناء سنة 359هـ / 963م بحسب نقل الدراسة. ويظهر الاسم بصيغة جحزة في إحدى قوائم العزل؛ أُبقيت الصيغتان للمراجعة.",
+      "body_en": "A local study records the Bayn al-Dur mosque and funerary dome in a village of Qahzah, reporting an inscription dated 359 AH / 963 CE. One sub-district list spells the name Jahzah; both forms are retained.",
+      "body_tr": "Tarlalar ve kırsal yerler",
+      "body_fr": "Champs et lieux ruraux",
+      "source_text": "وصف تضاريسي استرشادي في ملف المشروع، وليس قائمة موثقة بالقرى التابعة. يلزم التحقق من الحدود والقرى من سجل رسمي أو مسح ميداني. مصادر داعمة: مادة حبيش في ثور رأين ودراسة الفلاحي على كنانة ومقال انتفاضة حبيش؛ وقد تختلف تعيينات بعض المواضع."
+    },
+    {
+      "id": "district-18",
+      "district_name_ar": "المشيرق",
+      "title_ar": "المشيرق",
+      "title_en": "Al-Mushriq",
+      "title_tr": "El-Muşrik",
+      "title_fr": "Al-Mushriq",
+      "body_ar": "تصف دراسة انتفاضة حبيش عزلة المشيرق بأنها أسفل ظُلمة وتطل على قاع السحول، وتذكر امتداد مواجهات 1919م إلى نطاقها. الوصف تاريخي وليس تحديداً مساحياً للحدود.",
+      "body_en": "A study of the Hubaish uprising describes Al-Mushriq below Dhulmah, overlooking the Sahul basin, and records fighting there in 1919. This is a historical description, not a mapped boundary.",
+      "body_tr": "Zirveler ve geçitler",
+      "body_fr": "Sommets et cols",
+      "source_text": "بلال الطيب، حبيش.. مفتتح المجد وذروته. مصادر داعمة: مادة حبيش في ثور رأين ودراسة الفلاحي على كنانة ومقال انتفاضة حبيش؛ وقد تختلف تعيينات بعض المواضع.",
+      "source_url": "https://hekmahyemanya.com/آثار/حُبيش-مُفتتح-المجد-وذروته/"
     },
     {
       "id": "district-13",
@@ -1407,58 +1488,17 @@
       "source_url": "https://www.thu-raein.com/index.php/ar/makhaleef-ar/hubaish-district-ar?id=17&view=category"
     },
     {
-      "id": "district-15",
-      "district_name_ar": "الفراعي",
-      "title_ar": "الفراعي",
-      "title_en": "Al-Fara'i",
-      "title_tr": "El-Ferai",
-      "title_fr": "Al-Fara'i",
-      "body_ar": "تسجل دراسة محلية قرى سموع وذي كربين وذي شاب وذي عقيل وأكمة الأحاضي ضمن مواضع الفراعي، وتذكر المصينعة في السعنة بوصفها موضعاً مرتبطاً باسم حصن. كما توجد صورة منشورة معنونة بقرية الفراعي، مع ضرورة عدم تعميم الصورة على كل قرى العزلة.",
-      "body_en": "A local study lists Samu', Dhi Karbayn, Dhi Shab, Dhi Aqil and Akmat al-Ahadi in Al-Fara'i, and notes al-Masni'ah in al-Sa'nah as a place name associated with a fort. A published photograph is also labelled as Al-Fara'i village.",
-      "body_tr": "Dağ tarımı",
-      "body_fr": "Agriculture de montagne",
-      "source_text": "حكمة يمانية، مقال حبيش – صورة قرية الفراعي. مصادر داعمة: مادة حبيش في ثور رأين ودراسة الفلاحي على كنانة ومقال انتفاضة حبيش؛ وقد تختلف تعيينات بعض المواضع.",
-      "source_url": "https://hekmahyemanya.com/آثار/حُبيش-مُفتتح-المجد-وذروته/"
-    },
-    {
-      "id": "district-16",
-      "district_name_ar": "قحزة (جحزه)",
-      "title_ar": "قحزة (جحزه)",
-      "title_en": "Qahzah (Jahzah)",
-      "title_tr": "Kahza (Cehza)",
-      "title_fr": "Qahzah (Jahzah)",
-      "body_ar": "تذكر دراسة محلية قبة ومسجد بين الدور في قرية بين الدور التابعة لقحزة، مع نقش يؤرخ للبناء سنة 359هـ / 963م بحسب نقل الدراسة. ويظهر الاسم بصيغة جحزة في إحدى قوائم العزل؛ أُبقيت الصيغتان للمراجعة.",
-      "body_en": "A local study records the Bayn al-Dur mosque and funerary dome in a village of Qahzah, reporting an inscription dated 359 AH / 963 CE. One sub-district list spells the name Jahzah; both forms are retained.",
-      "body_tr": "Tarlalar ve kırsal yerler",
-      "body_fr": "Champs et lieux ruraux",
-      "source_text": "وصف تضاريسي استرشادي في ملف المشروع، وليس قائمة موثقة بالقرى التابعة. يلزم التحقق من الحدود والقرى من سجل رسمي أو مسح ميداني. مصادر داعمة: مادة حبيش في ثور رأين ودراسة الفلاحي على كنانة ومقال انتفاضة حبيش؛ وقد تختلف تعيينات بعض المواضع."
-    },
-    {
-      "id": "district-17",
-      "district_name_ar": "كومان",
-      "title_ar": "كومان",
-      "title_en": "Kuman",
-      "title_tr": "Kuman",
-      "title_fr": "Kuman",
-      "body_ar": "تقع قرية الزواحي في عزلة كومان وفق مادة محلية، وتذكر المادة مدرسة الزواحي التي بناها الشيخ قاسم بن حمير الوائلي ووقف لها أوقافاً للعلماء والمتعلمين.",
-      "body_en": "A local source places al-Zawahi village in Kuman and records al-Zawahi School, built by Sheikh Qasim bin Humair al-Wa'ili, with endowments for scholars and students.",
-      "body_tr": "Kırsal görünüm",
-      "body_fr": "Paysage rural",
-      "source_text": "وصف تضاريسي استرشادي في ملف المشروع، وليس قائمة موثقة بالقرى التابعة. يلزم التحقق من الحدود والقرى من سجل رسمي أو مسح ميداني. مصادر داعمة: مادة حبيش في ثور رأين ودراسة الفلاحي على كنانة ومقال انتفاضة حبيش؛ وقد تختلف تعيينات بعض المواضع."
-    },
-    {
-      "id": "district-18",
-      "district_name_ar": "المشيرق",
-      "title_ar": "المشيرق",
-      "title_en": "Al-Mushriq",
-      "title_tr": "El-Muşrik",
-      "title_fr": "Al-Mushriq",
-      "body_ar": "تصف دراسة انتفاضة حبيش عزلة المشيرق بأنها أسفل ظُلمة وتطل على قاع السحول، وتذكر امتداد مواجهات 1919م إلى نطاقها. الوصف تاريخي وليس تحديداً مساحياً للحدود.",
-      "body_en": "A study of the Hubaish uprising describes Al-Mushriq below Dhulmah, overlooking the Sahul basin, and records fighting there in 1919. This is a historical description, not a mapped boundary.",
-      "body_tr": "Zirveler ve geçitler",
-      "body_fr": "Sommets et cols",
-      "source_text": "بلال الطيب، حبيش.. مفتتح المجد وذروته. مصادر داعمة: مادة حبيش في ثور رأين ودراسة الفلاحي على كنانة ومقال انتفاضة حبيش؛ وقد تختلف تعيينات بعض المواضع.",
-      "source_url": "https://hekmahyemanya.com/آثار/حُبيش-مُفتتح-المجد-وذروته/"
+      "id": "district-3",
+      "district_name_ar": "بني شبيب",
+      "title_ar": "بني شبيب",
+      "title_en": "Bani Shabib",
+      "title_tr": "Bani Şabib",
+      "title_fr": "Bani Shabib",
+      "body_ar": "يورد فهرس ثانوي أسماء الأثلة والسهلة والعارضة والعدن العالي والقطبة والمانمة والنظاري وحبران وموثان ضمن بني شبيب. تُعرض هذه بوصفها أسماء فهرسية تحتاج مراجعة محلية.",
+      "body_en": "A secondary index lists al-Athlah, al-Sahlah, al-Aridah, al-Adn al-Ali, al-Qutbah, al-Manamah, al-Nazari, Hibran and Muthan in Bani Shabib. These names need local verification.",
+      "body_tr": "Yüksek kesimler ve teraslar",
+      "body_fr": "Hauts reliefs et terrasses",
+      "source_text": "وصف تضاريسي استرشادي في ملف المشروع، وليس قائمة موثقة بالقرى التابعة. يلزم التحقق من الحدود والقرى من سجل رسمي أو مسح ميداني. مصادر داعمة: قائمة حبيش المنشورة وفهارس القرى الثانوية؛ الأسماء ليست سجلاً رسمياً."
     },
     {
       "id": "district-19",
@@ -1472,46 +1512,6 @@
       "body_tr": "Yerleşimler ve topluluk",
       "body_fr": "Villages et communauté",
       "source_text": "وصف تضاريسي استرشادي في ملف المشروع، وليس قائمة موثقة بالقرى التابعة. يلزم التحقق من الحدود والقرى من سجل رسمي أو مسح ميداني. مصادر داعمة: مادة حبيش في ثور رأين ودراسة الفلاحي على كنانة ومقال انتفاضة حبيش؛ وقد تختلف تعيينات بعض المواضع."
-    },
-    {
-      "id": "district-20",
-      "district_name_ar": "نقيل العقاب",
-      "title_ar": "نقيل العقاب",
-      "title_en": "Naqil al-Aqab",
-      "title_tr": "Nakil el-Akab",
-      "title_fr": "Naqil al-Aqab",
-      "body_ar": "تذكر دراسة تاريخية قرية الجراجز ضمن نقيل العقاب، وتسجل مادة محلية مسجد مروحة في قرية مروحة بالعزلة مع نقش تأسيس منقول يعود إلى 811هـ / 1409م وتجديد يعود إلى 1183هـ / 1718م.",
-      "body_en": "A historical study places al-Jarajiz village in Naqil al-Aqab. A local heritage note records Marwaha Mosque with an inscription reportedly dating its foundation to 811 AH / 1409 CE and a rebuilding to 1183 AH / 1718 CE.",
-      "body_tr": "Dağ geçidi",
-      "body_fr": "Col de montagne",
-      "source_text": "بلال الطيب، حبيش.. مفتتح المجد وذروته. مصادر داعمة: مادة حبيش في ثور رأين ودراسة الفلاحي على كنانة ومقال انتفاضة حبيش؛ وقد تختلف تعيينات بعض المواضع.",
-      "source_url": "https://hekmahyemanya.com/آثار/حُبيش-مُفتتح-المجد-وذروته/"
-    },
-    {
-      "id": "district-21",
-      "district_name_ar": "وادي العقاب (وادي المعقاب)",
-      "title_ar": "وادي العقاب (وادي المعقاب)",
-      "title_en": "Wadi al-Aqab",
-      "title_tr": "Vadi el-Akab",
-      "title_fr": "Wadi al-Aqab",
-      "body_ar": "يظهر اسم العزلة بصيغتي وادي العقاب ووادي المعقاب في المراجع. وتورد قائمة تغطية اتصالات مواضع حبس الظرائم والسقاعة والمحواشة في نطاق وادي المعقاب. يلزم تثبيت الصيغة الإدارية والحدود من سجل رسمي.",
-      "body_en": "The sub-district appears under both Wadi al-Aqab and Wadi al-Muqab. A telecom coverage notice lists Habs al-Dhara'im, al-Saqa'ah and al-Muhawashah in the Wadi al-Muqab area. Official spelling and boundaries need confirmation.",
-      "body_tr": "Vadiler ve su yatakları",
-      "body_fr": "Vallées et cours d’eau",
-      "source_text": "وصف تضاريسي استرشادي في ملف المشروع، وليس قائمة موثقة بالقرى التابعة. يلزم التحقق من الحدود والقرى من سجل رسمي أو مسح ميداني. مصادر داعمة: قائمة حبيش المنشورة وفهارس القرى الثانوية؛ الأسماء ليست سجلاً رسمياً."
-    },
-    {
-      "id": "district-22",
-      "district_name_ar": "الوطئة (الوطنة)",
-      "title_ar": "الوطئة (الوطنة)",
-      "title_en": "Al-Wat'ah (Al-Watnah)",
-      "title_tr": "El-Vat'a (El-Vatna)",
-      "title_fr": "Al-Wat'ah (Al-Watnah)",
-      "body_ar": "ترد العزلة في مصادر مختلفة بصيغتي الوطئة والوطنة. أُبقي الاسمان معاً حتى تتم المطابقة مع التقسيم الإداري الرسمي. لا تتوفر في المصادر المفتوحة التي راجعتها قائمة قرى موثقة للعزلة.",
-      "body_en": "Sources use both Al-Wat'ah and Al-Watnah. Both spellings are retained pending confirmation from the official administrative register. No verified village list was available in the sources reviewed.",
-      "body_tr": "Kırsal yerleşimler ve tarlalar",
-      "body_fr": "Villages et terres cultivées",
-      "source_text": "وصف تضاريسي استرشادي في ملف المشروع، وليس قائمة موثقة بالقرى التابعة. يلزم التحقق من الحدود والقرى من سجل رسمي أو مسح ميداني. مصادر داعمة: قائمة حبيش المنشورة وفهارس القرى الثانوية؛ الأسماء ليست سجلاً رسمياً."
     }
   ],
   "districtProfile": {
@@ -1543,7 +1543,7 @@
       "verification_note_ar": "يورد الجدول يوم الجمعة لحبيش، كما يرد ذكر الاثنين في سطر آخر يجمع حبيش وأسواق مديريات أخرى؛ يجب تأكيد الموعد الحالي محلياً."
     },
     "subdistrict_count": 22,
-    "subdistrict_name_note_ar": "تحفظ قائمة العزل الأساسية ذات 22 اسماً كما هي في سجل المشروع. وترد «الزواحي/يريس» في المادة التاريخية بوصفها قرى/مواضع أو نطاقاً تاريخياً، ولا تضاف عزلة إدارية رقم 23 من دون سجل رسمي.",
+    "subdistrict_name_note_ar": "قائمة الأسماء الـ22 معروضة بوصفها قائمة مرجعية من تقرير «مديرية حبيش لدليل حبيش» المؤرخ 27 نوفمبر 2026، الذي طلب من المديرية اعتمادها وتصويبها. لا تُعرض هذه القائمة على أنها قرار إداري رسمي مصدّق حتى ورود الاعتماد.",
     "tribal_context": {
       "groups_ar": [
         "بطون من همدان",
@@ -1581,7 +1581,8 @@
         "فرضية حميرية"
       ],
       "note_ar": "تُعرض هذه الفرضيات بوصفها قراءات بحثية في أصل الاسم، ولا يعتمد الدليل واحدة منها أصلاً ثابتاً من دون نص لغوي أو نقش مؤرخ قابل للفحص."
-    }
+    },
+    "subdistrict_list_status": "reference_list_pending_district_approval"
   },
   "educationalRecords": [
     {
