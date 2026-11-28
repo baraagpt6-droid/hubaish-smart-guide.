@@ -783,3 +783,20 @@ html{background:var(--hubaish-emerald)}
 
 .heritage-lightbox.is-closing{animation:hubaishBackdropOut .22s ease both;pointer-events:none}
 .heritage-lightbox.is-closing .heritage-lightbox-sheet{animation:hubaishModalOut .2s ease both}
+
+
+.custom-select-overlay{background:rgba(1,9,6,.78);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+.custom-select-sheet{
+  padding-bottom:env(safe-area-inset-bottom,0px);
+  border:1px solid rgba(212,175,55,.35);
+  border-radius:22px 22px 16px 16px;
+  background:rgba(7,23,17,.96);
+  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+  box-shadow:0 25px 70px rgba(0,0,0,.5);
+  animation:hubaishModalIn .28s cubic-bezier(.22,1,.36,1) both
+}
+.custom-select-sheet-head{border-bottom-color:rgba(212,175,55,.3)}
+.custom-select-sheet-head h3{color:#f1d989}
+.custom-select-close{background:#071711;border-color:rgba(212,175,55,.45);color:#f1d989}
+.custom-select-options{padding-bottom:calc(12px + env(safe-area-inset-bottom,0px))}
+@media(prefers-reduced-motion:reduce){.custom-select-sheet{animation:none!important}}
