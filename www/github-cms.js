@@ -824,6 +824,7 @@ async function stampQuickImage(file,ownerName){
     show('cloudQuickPhotoLicense',type==='photo');
     show('cloudQuickPhotoCategory',type==='photo');
     show('cloudQuickMarketMeta',type==='marketplace');
+    show('cloudQuickContactWrap',type==='marketplace');
     show('cloudQuickNameWrap',type==='author'||type==='figure'||type==='work'||type==='family'||type==='marketplace');
     show('cloudQuickPublicContactWrap',type==='marketplace');
   }
