@@ -325,6 +325,7 @@ if (!playWorkflow.includes('workflow_dispatch:') ||
     !playRetirer.includes("if production_codes(rows):") ||
     !playPromoter.includes("draft_codes != [expected]") ||
     !playPromoter.includes("prior_completed_codes") ||
+    !playPromoter.includes("prior_completed_codes != [416]") ||
     !playPromoter.includes("Replacing the previous completed assignment") ||
     !playPromoter.includes("updated_releases.append(promoted_release)") ||
     !playPromoter.includes("Post-commit read-back") ||
