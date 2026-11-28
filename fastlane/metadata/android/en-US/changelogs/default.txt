@@ -1,1 +1,2 @@
-Updated the Hubaish archive with the Marwaha Mosque inscription image, plus refreshed search, navigation and protected viewers.
+Enable native Android speech input and live content sync.
+Improve Quick Add Studio and admin publishing.
