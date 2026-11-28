@@ -58,7 +58,7 @@
   }
   function status(message,error){
     const el=$('cloudStatus');
-    if(el){el.textContent=message;el.classList.toggle('cloud-error',!!error);el.classList.toggle('cloud-ok',!error)}
+    if(el){el.textContent=message;el.classList.toggle('cloud-error',!!error);el.classList.toggle('cloud-ok',!error);el.classList.toggle('cloud-offline',/وضع العمل المحلي دون اتصال بالسحابة/.test(String(message||'')))}
   }
   function adminStatus(){
     const authenticated=!!workerToken&&!!workerUser?.username;
@@ -91,7 +91,8 @@
   }
   function safeImageSource(value){
     const text=String(value||'');
-    return safeUrl(text)||(/^data:image\/(?:jpeg|png|webp);base64,[A-Za-z0-9+/]+={0,2}$/.test(text)&&text.length<=260000);
+    const bundledHeritageImage=/^\.\/assets\/heritage\/[A-Za-z0-9._-]+\.(?:jpg|jpeg|png|webp)$/i.test(text);
+    return safeUrl(text)||bundledHeritageImage||(/^data:image\/(?:jpeg|png|webp);base64,[A-Za-z0-9+/]+={0,2}$/.test(text)&&text.length<=260000);
   }
   function deepCopy(value){return JSON.parse(JSON.stringify(value))}
   function slug(value){
@@ -243,13 +244,13 @@
       }else if(!result.setupRequired&&result.bootstrapKeyConfigured){
         status('احذف BOOTSTRAP_KEY من أسرار Cloudflare الآن.',true);
       }else if(!workerToken){
-        status('خادم المشرفين جاهز. أدخل اسم المستخدم وكلمة المرور.',false);
+        status('السحابة متصلة وجاهزة للدخول.',false);
       }
       return result;
     }catch(error){
-      setupState={checked:true,setupRequired:false,bootstrapKeyConfigured:false,error:error.message||'Worker setup check failed'};
+      setupState={checked:true,setupRequired:false,bootstrapKeyConfigured:false,error:'offline'};
       adminStatus();
-      status('تعذر فحص خادم المشرفين. تحقق من نشر Worker وربط KV باسم ADMINS. '+setupState.error,true);
+      status('وضع العمل المحلي دون اتصال بالسحابة. يمكنك قراءة المحتوى المحفوظ؛ تحقق من الشبكة ثم أعد المحاولة.',false);
       return null;
     }
   }
@@ -311,7 +312,9 @@
     status('جارٍ التحقق من حساب المشرف...',false);
     try{await finishWorkerLogin(username,password,!!$('workerRemember')?.checked);if($('workerPassword'))$('workerPassword').value=''}catch(error){
       workerToken='';workerUser=null;['hubaish_worker_session','hubaish_worker_user'].forEach(key=>{localStorage.removeItem(key);sessionStorage.removeItem(key)});
-      adminStatus();status(error?.name==='AbortError'?'انتهت مهلة الاتصال بخادم الإدارة. تحقق من اتصال الشبكة وربط KV باسم ADMINS ثم حاول مجدداً.':error.message||'تعذر تسجيل الدخول. حاول مرة أخرى.',true);
+      adminStatus();
+      const networkFailure=error?.name==='AbortError'||/failed to fetch|networkerror|load failed|fetch failed/i.test(String(error?.message||''));
+      status(networkFailure?'وضع العمل المحلي دون اتصال بالسحابة. تحقق من اتصال الشبكة ثم حاول الدخول مجدداً.':error.message||'تعذر تسجيل الدخول. حاول مرة أخرى.',!networkFailure);
     }finally{if(submit){submit.disabled=false;submit.textContent=submit.dataset.originalText||'دخول آمن';delete submit.dataset.originalText}}
   }
   async function restoreWorkerSession(){
