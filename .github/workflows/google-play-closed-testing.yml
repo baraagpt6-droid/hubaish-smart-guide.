@@ -25,7 +25,7 @@ permissions:
 
 concurrency:
   group: hubaish-google-play-closed-testing
-  cancel-in-progress: false
+  cancel-in-progress: ${{ contains(github.event.head_commit.message || '', '[verify-only]') }}
 
 jobs:
   build-and-publish:
