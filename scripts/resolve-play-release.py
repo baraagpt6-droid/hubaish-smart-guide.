@@ -127,9 +127,9 @@ def discover_release():
                     f"found {[codes_for_release([item]) for item in draft_records]}."
                 )
         elif release_mode == "publish_420_release":
-            if draft_records:
+            if len(draft_records) > 1 or (draft_records and codes_for_release([draft_records[0]]) != [419]):
                 fail(
-                    "The one-shot 420 release requires zero existing versioned drafts on Hubaish Closed Test; "
+                    "The one-shot 420 release may clean up only one exact 419 preview draft before continuing; "
                     f"found {[codes_for_release([item]) for item in draft_records]}."
                 )
             completed_records = [
@@ -180,8 +180,9 @@ def discover_release():
 
         highest_code = max(all_codes, default=0)
         if release_mode == "publish_420_release":
-            if highest_code != 418 or 420 in all_codes:
-                fail(f"The one-shot 420 release requires Play bundle history to end at 418 and versionCode 420 to be unused; highest={highest_code}.")
+            allowed_highest = 419 if draft_records else 418
+            if highest_code != allowed_highest or 420 in all_codes:
+                fail(f"The one-shot 420 release requires bundle history to end at 418, or at one exact 419 draft being retired, and code 420 unused; highest={highest_code}.")
             version_code = 420
         else:
             version_code = highest_code + 1
