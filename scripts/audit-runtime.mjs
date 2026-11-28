@@ -235,6 +235,17 @@ try {
   }
   await page.waitForFunction(() => window.HubaishKnowledge?.getData?.()?.landmarkRecords?.length === 15, { timeout: 15000 });
   await page.waitForFunction(() => window.HubaishKnowledge?.getLiveData?.()?.landmarks?.some(item => item.id === 'qubbat-al-zum'), { timeout: 15000 });
+  await page.waitForFunction(() => document.querySelectorAll('#knowledgePublicPlacesList .knowledge-card').length >= 15, { timeout: 10000 });
+  await page.locator('#knowledgePublicPlaceFilters [data-heritage-filter="fort"]').click();
+  if (await page.locator('#knowledgePublicPlacesList .knowledge-card').count() < 5 ||
+      await page.locator('#knowledgePublicPlacesList .knowledge-card:not([data-knowledge-category="fort"])').count() !== 0) {
+    throw new Error('The heritage category filter did not isolate the fort and castle records.');
+  }
+  await page.locator('#knowledgePublicPlaceFilters [data-heritage-filter="all"]').click();
+  if (await page.locator('#knowledgePublicPlacesList .knowledge-card').count() < 15) {
+    throw new Error('Restoring the full heritage catalogue did not show all core landmark cards.');
+  }
+
   const knowledgeCardCount = await page.locator('#knowledgeLandmarksList .knowledge-card').count();
   if (knowledgeCardCount !== 15) throw new Error('Expected 15 in-district core landmark cards; received ' + knowledgeCardCount + '.');
   const globalSearch = page.locator('#globalSearchInput');
