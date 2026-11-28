@@ -27,14 +27,14 @@ const required = [
 ];
 for (const file of required) await access(resolve(root,file));
 const read = file => readFile(resolve(root,file),'utf8');
-const [html,css,app,catalog,features,cms,sw,worker,wrangler,workflow,readme,workerReadme,androidPatch,cloudflareDeployWorkflow,kvSetupScript,gallery,knowledgeJs,playMonitorWorkflow,playMonitorScript,runtimeAudit,workerHealthWorkflow,workerUrlResolver] = await Promise.all([
+const [html,css,app,catalog,features,cms,sw,worker,wrangler,workflow,readme,workerReadme,androidPatch,cloudflareDeployWorkflow,kvSetupScript,gallery,knowledgeJs,playMonitorWorkflow,playMonitorScript,runtimeAudit,workerHealthWorkflow,workerUrlResolver,serve] = await Promise.all([
   read('www/index.html'),read('www/styles.css'),read('www/app.js'),read('www/catalog.js'),
   read('www/features.js'),read('www/github-cms.js'),read('www/sw.js'),
   read('cloudflare-worker/worker.js'),read('cloudflare-worker/wrangler.toml'),
   read('.github/workflows/build-and-deploy.yml'),read('README.md'),
   read('cloudflare-worker/README.md'),read('scripts/patch-android-config.py'),read('.github/workflows/deploy-cloudflare-worker.yml'),read('scripts/configure-cloudflare-kv.mjs'),read('www/gallery.js'),read('www/knowledge.js'),
   read('.github/workflows/play-status-monitor.yml'),read('scripts/monitor-play-status.py'),read('scripts/audit-runtime.mjs'),
-  read('.github/workflows/worker-production-health.yml'),read('scripts/resolve-cloudflare-worker-url.mjs')
+  read('.github/workflows/worker-production-health.yml'),read('scripts/resolve-cloudflare-worker-url.mjs'),read('scripts/serve.mjs')
 ]);
 const manifest=JSON.parse(await read('www/manifest.webmanifest'));
 const manifestJson=JSON.parse(await read('www/manifest.json'));
@@ -139,6 +139,7 @@ if(!cms.includes('function fetchWithTimeout(')||!cms.includes("'/auth/login'")||
 }
 if(!worker.includes('http://127.0.0.1:4174')||!wrangler.includes('http://127.0.0.1:4174'))throw new Error('Worker CORS must allow the exact local runtime-audit origin.');
 if(!catalog.includes("id:'h8'")||!catalog.includes("17 مايو 1919م")||!catalog.includes('الشيخ عبدالعزيز بن عبدالكريم الحداد'))throw new Error('The seventh evidence-led Hubaish history station is missing.');
+if(!serve.includes("'.webp':'image/webp'")||!knowledgeJs.includes("canvas.dataset.sourceLoaded='true'")||!knowledgeJs.includes("canvas.dataset.sourceError='true'"))throw new Error('The local archive viewer must serve WebP correctly and expose image load state.');
 
 if(!css.includes('env(safe-area-inset-top')||!css.includes('var(--status-bar-height')||
    !css.includes('env(safe-area-inset-bottom')||!css.includes('.ai-fab-launcher')||!css.includes('bottom:calc(84px + env(safe-area-inset-bottom,0px))')) {

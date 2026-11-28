@@ -70,8 +70,9 @@
         }
       }
       ctx.restore();
+      canvas.dataset.sourceLoaded='true';
     };
-    image.onload=draw;image.onerror=()=>{caption.textContent='تعذر تحميل صورة الوثيقة من الحزمة المحلية.'};image.src=item.image;
+    image.onload=draw;image.onerror=()=>{canvas.dataset.sourceError='true';caption.textContent='تعذر تحميل صورة الوثيقة من الحزمة المحلية.'};image.src=item.image;
     zoom.addEventListener('input',()=>{canvas.style.transform='scale('+zoom.value+')';canvas.style.transformOrigin='top center'});
     close.addEventListener('click',()=>modal.remove());modal.addEventListener('click',e=>{if(e.target===modal)modal.remove()});
     modal.addEventListener('contextmenu',e=>e.preventDefault());canvas.addEventListener('contextmenu',e=>e.preventDefault());canvas.addEventListener('dragstart',e=>e.preventDefault());

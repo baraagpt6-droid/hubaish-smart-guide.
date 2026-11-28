@@ -77,6 +77,19 @@ async function checkWorker(path) {
 let browser;
 try {
   await waitForServer();
+  const archiveAssetResponse = await fetch(baseUrl + '/assets/heritage/1183-wood-inscription.webp', {
+    cache: 'no-store',
+    signal: AbortSignal.timeout(10000)
+  });
+  const archiveAssetType = (archiveAssetResponse.headers.get('content-type') || '').split(';')[0].trim().toLowerCase();
+  const archiveAssetBytes = new Uint8Array(await archiveAssetResponse.arrayBuffer());
+  const archiveAssetFormat = archiveAssetBytes.length >= 12
+    ? new TextDecoder().decode(archiveAssetBytes.slice(8, 12))
+    : '';
+  if (!archiveAssetResponse.ok || archiveAssetType !== 'image/webp' || archiveAssetFormat !== 'WEBP') {
+    throw new Error('Local archive image must be served as a valid image/webp asset; HTTP ' +
+      archiveAssetResponse.status + ', type=' + archiveAssetType + ', format=' + archiveAssetFormat + '.');
+  }
   browser = await chromium.launch({ headless: true, args: ['--no-sandbox'] });
   const context = await browser.newContext({
     viewport: { width: 390, height: 844 },
@@ -209,15 +222,18 @@ try {
   await page.locator('.archive-viewer').waitFor({ state: 'visible', timeout: 10000 });
   await page.waitForFunction(() => {
     const canvas = document.querySelector('.archive-watermarked-canvas');
-    return !!canvas && canvas.width > 0 && canvas.height > 0;
+    return canvas?.dataset.sourceLoaded === 'true' || canvas?.dataset.sourceError === 'true';
   }, { timeout: 10000 });
   const archiveCanvas = await page.locator('.archive-watermarked-canvas').evaluate(canvas => ({
     width: canvas.width,
     height: canvas.height,
+    sourceLoaded: canvas.dataset.sourceLoaded === 'true',
+    sourceError: canvas.dataset.sourceError === 'true',
     rendered: canvas.getContext('2d')?.getImageData(Math.floor(canvas.width / 2), Math.floor(canvas.height / 2), 1, 1).data[3] > 0
   }));
-  if (archiveCanvas.width < 100 || archiveCanvas.height < 100 || !archiveCanvas.rendered) {
-    throw new Error('The double-watermarked archive viewer did not render the source image.');
+  if (!archiveCanvas.sourceLoaded || archiveCanvas.sourceError ||
+      archiveCanvas.width < 100 || archiveCanvas.height < 100 || !archiveCanvas.rendered) {
+    throw new Error('The double-watermarked archive viewer did not render the source image: ' + JSON.stringify(archiveCanvas));
   }
   if (await page.locator('#knowledgeArchiveList a[href*="1183-wood-inscription"]').count()) {
     throw new Error('A raw Marwaha image link is exposed outside the protected viewer.');
