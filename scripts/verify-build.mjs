@@ -355,7 +355,7 @@ if (!playMonitorWorkflow.includes('workflow_dispatch:') ||
     !playMonitorWorkflow.includes("cron: '0 1 * * *'") ||
     !playMonitorWorkflow.includes('workflow_run:') ||
     !playMonitorWorkflow.includes('Google Play Closed Testing') ||
-    !playMonitorWorkflow.includes('google-github-actions/auth@v2') ||
+    !playMonitorWorkflow.includes('google-github-actions/auth@v3') && !playMonitorWorkflow.includes('google-github-actions/auth@v2') ||
     !playMonitorWorkflow.includes('projects/28058491662/locations/global/workloadIdentityPools/github-pool/providers/github-provider') ||
     !playMonitorWorkflow.includes('dalilna-play-automation@dalilna-play-automation-516000.iam.gserviceaccount.com') ||
     !playMonitorWorkflow.includes('scripts/monitor-play-status.py')) {
