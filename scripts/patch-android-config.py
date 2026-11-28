@@ -273,15 +273,20 @@ manifest = ROOT / "AndroidManifest.xml"
 tree = ET.parse(manifest)
 manifest_root = tree.getroot()
 android_name = "{" + ANDROID_NS + "}name"
+application_node = manifest_root.find("application")
+if application_node is None:
+    raise SystemExit("Android application node is missing.")
+application_index = list(manifest_root).index(application_node)
 if not any(item.get(android_name) == "android.permission.RECORD_AUDIO" for item in manifest_root.findall("uses-permission")):
-    ET.SubElement(manifest_root, "uses-permission", {android_name: "android.permission.RECORD_AUDIO"})
+    manifest_root.insert(application_index, ET.Element("uses-permission", {android_name: "android.permission.RECORD_AUDIO"}))
+    application_index += 1
 if not any(item.get(android_name) == "android.hardware.microphone" for item in manifest_root.findall("uses-feature")):
-    ET.SubElement(manifest_root, "uses-feature", {android_name: "android.hardware.microphone", "{" + ANDROID_NS + "}required": "false"})
+    manifest_root.insert(application_index, ET.Element("uses-feature", {android_name: "android.hardware.microphone", "{" + ANDROID_NS + "}required": "false"}))
+    application_index += 1
 queries = manifest_root.find("queries")
 if queries is None:
     queries = ET.Element("queries")
-    application_node = manifest_root.find("application")
-    manifest_root.insert(list(manifest_root).index(application_node), queries)
+    manifest_root.insert(application_index, queries)
 recognition_query = False
 for query_intent in queries.findall("intent"):
     action = query_intent.find("action")
