@@ -49,6 +49,7 @@
     fill($('knowledgeAuthorsList'),published.filter(x=>x.type==='author').map(x=>({...x,title:x.title,body:x.body,source:x.source})),x=>card(x.title,x.body,x.name+' · '+(x.source||'مساهمة منشورة'),'مساهمة راجعها المشرف'),'لا توجد كتب أو أبحاث مقدمة ومعتمدة بعد. استخدم نموذج النشر لإضافة عملك.');
     const honors=$('knowledgeHonorRoll');fill(honors,data.honorRoll,x=>card(x.name,x.contribution,x.source||'إسناد مقترح من فريق المشروع',x.status==='attributed_in_report'?'إسناد في التقرير':'بانتظار تأكيد المساهمة وموافقة صاحب الاسم'),'لا توجد أسماء إسناد.');
     const friday=$('knowledgeFridayMarket');if(friday){friday.replaceChildren(el('strong','market-day',data.market.day),el('p','knowledge-body',data.market.summary),el('p','knowledge-source',data.market.source),el('p','knowledge-status','موقع السوق وساعات نشاطه تحتاج إلى تأكيد محلي.'))}
+    renderReviewRecords();
   }
   function openArchiveViewer(item){
     const modal=el('div','archive-viewer');modal.setAttribute('role','dialog');modal.setAttribute('aria-modal','true');modal.setAttribute('aria-label',item.title);
