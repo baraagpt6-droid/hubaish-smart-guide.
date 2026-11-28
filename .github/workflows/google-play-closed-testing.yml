@@ -11,6 +11,7 @@ on:
           - verify_only
           - preview_draft
           - publish_approved_release
+          - retire_421_preview_draft
         default: verify_only
         required: true
       expected_version_code:
@@ -100,6 +101,23 @@ jobs:
                   echo "New .publish-420 marker detected. Build and sign 420, upload as draft, then promote only 420 on Hubaish Closed Test."
                 fi
               fi
+              if [[ "$mode" == "preview_draft" && -f ".retire-421" ]]; then
+                before_sha="$(jq -r '.before // ""' "$GITHUB_EVENT_PATH")"
+                [[ "$before_sha" =~ ^[0-9a-f]{40}$ ]] || {
+                  echo "::error::Push event did not provide a valid parent commit for the 421 cleanup marker."
+                  exit 1
+                }
+                marker_value="$(tr -d '[:space:]' < .retire-421)"
+                [[ "$marker_value" == "421" ]] || {
+                  echo "::error::.retire-421 must contain exactly versionCode 421."
+                  exit 1
+                }
+                if ! git cat-file -e "${before_sha}:.retire-421" 2>/dev/null; then
+                  mode="retire_421_preview_draft"
+                  expected_code="421"
+                  echo "New .retire-421 marker detected. Remove only the exact 421 draft while retaining completed 420 on Hubaish Closed Test."
+                fi
+              fi
               if [[ "$mode" == "preview_draft" && ( -f ".promote-416" || -f ".promote-416-retry" || -f ".promote-416-final" ) ]]; then
                 before_sha="$(jq -r '.before // ""' "$GITHUB_EVENT_PATH")"
                 [[ "$before_sha" =~ ^[0-9a-f]{40}$ ]] || {
@@ -138,6 +156,10 @@ jobs:
             echo "::error::The one-shot next-release path is locked to versionCode 420."
             exit 1
           fi
+          if [[ "$mode" == "retire_421_preview_draft" && "$expected_code" != "421" ]]; then
+            echo "::error::The 421 cleanup path is locked to versionCode 421."
+            exit 1
+          fi
           echo "mode=$mode" >> "$GITHUB_OUTPUT"
           echo "expected_version_code=$expected_code" >> "$GITHUB_OUTPUT"
           echo "Resolved mode=$mode; expected versionCode=${expected_code:-not applicable}."
@@ -160,7 +182,7 @@ jobs:
         run: python3 -m py_compile scripts/resolve-play-release.py scripts/promote-play-draft.py scripts/monitor-play-status.py
 
       - name: Install icon rendering dependencies
-        if: steps.release-mode.outputs.mode != 'publish_approved_release'
+        if: steps.release-mode.outputs.mode != 'publish_approved_release' && steps.release-mode.outputs.mode != 'retire_421_preview_draft'
         run: |
           set -euo pipefail
           for source in /etc/apt/sources.list.d/*; do
@@ -172,52 +194,52 @@ jobs:
           sudo apt-get install -y python3-cairosvg python3-pil fonts-noto-core
 
       - name: Install app dependencies
-        if: steps.release-mode.outputs.mode != 'publish_approved_release'
+        if: steps.release-mode.outputs.mode != 'publish_approved_release' && steps.release-mode.outputs.mode != 'retire_421_preview_draft'
         run: npm install --no-audit --no-fund
 
       - name: Generate PWA and Capacitor icon source images
-        if: steps.release-mode.outputs.mode != 'publish_approved_release'
+        if: steps.release-mode.outputs.mode != 'publish_approved_release' && steps.release-mode.outputs.mode != 'retire_421_preview_draft'
         run: python3 scripts/generate-icons.py
 
       - name: Run project build and verification
-        if: steps.release-mode.outputs.mode != 'publish_approved_release'
+        if: steps.release-mode.outputs.mode != 'publish_approved_release' && steps.release-mode.outputs.mode != 'retire_421_preview_draft'
         run: npm run build
 
       - name: Install Playwright for app screenshots and feature graphic
-        if: steps.release-mode.outputs.mode != 'publish_approved_release'
+        if: steps.release-mode.outputs.mode != 'publish_approved_release' && steps.release-mode.outputs.mode != 'retire_421_preview_draft'
         run: npm install --no-save --package-lock=false playwright@1.56.1
 
       - name: Install Chromium
-        if: steps.release-mode.outputs.mode != 'publish_approved_release'
+        if: steps.release-mode.outputs.mode != 'publish_approved_release' && steps.release-mode.outputs.mode != 'retire_421_preview_draft'
         run: npx playwright install --with-deps chromium
 
       - name: Audit navigation, responsive layouts, offline cache and Cloudflare Worker
         timeout-minutes: 15
-        if: steps.release-mode.outputs.mode != 'publish_approved_release'
+        if: steps.release-mode.outputs.mode != 'publish_approved_release' && steps.release-mode.outputs.mode != 'retire_421_preview_draft'
         run: node scripts/audit-runtime.mjs
 
       - name: Render Arabic and English feature graphic
-        if: steps.release-mode.outputs.mode != 'publish_approved_release'
+        if: steps.release-mode.outputs.mode != 'publish_approved_release' && steps.release-mode.outputs.mode != 'retire_421_preview_draft'
         run: node scripts/render-play-feature-graphic.mjs
 
       - name: Generate Google Play listing graphics
-        if: steps.release-mode.outputs.mode != 'publish_approved_release'
+        if: steps.release-mode.outputs.mode != 'publish_approved_release' && steps.release-mode.outputs.mode != 'retire_421_preview_draft'
         run: python3 scripts/prepare-play-store-assets.py
 
       - name: Verify Play listing text and graphics
-        if: steps.release-mode.outputs.mode != 'publish_approved_release'
+        if: steps.release-mode.outputs.mode != 'publish_approved_release' && steps.release-mode.outputs.mode != 'retire_421_preview_draft'
         run: node scripts/verify-play-store.mjs
 
       - name: Capture actual app screens in Arabic and English
-        if: steps.release-mode.outputs.mode != 'publish_approved_release'
+        if: steps.release-mode.outputs.mode != 'publish_approved_release' && steps.release-mode.outputs.mode != 'retire_421_preview_draft'
         run: node scripts/capture-play-screenshots.mjs
 
       - name: Normalize screenshots to RGB PNG
-        if: steps.release-mode.outputs.mode != 'publish_approved_release'
+        if: steps.release-mode.outputs.mode != 'publish_approved_release' && steps.release-mode.outputs.mode != 'retire_421_preview_draft'
         run: python3 scripts/normalize-play-screenshots.py
 
       - name: Validate all Play phone screenshots
-        if: steps.release-mode.outputs.mode != 'publish_approved_release'
+        if: steps.release-mode.outputs.mode != 'publish_approved_release' && steps.release-mode.outputs.mode != 'retire_421_preview_draft'
         run: node scripts/verify-play-store.mjs --require-screenshots
 
       - name: Confirm target and existing upload-signing setup
@@ -243,7 +265,7 @@ jobs:
           echo "Repository, package, Closed-testing preference and all four upload-signing secrets are present."
 
       - name: Authenticate to Google Cloud using GitHub OIDC and WIF
-        if: steps.release-mode.outputs.mode == 'preview_draft' || steps.release-mode.outputs.mode == 'publish_approved_release' || steps.release-mode.outputs.mode == 'publish_new_release' || steps.release-mode.outputs.mode == 'publish_420_release'
+        if: steps.release-mode.outputs.mode == 'preview_draft' || steps.release-mode.outputs.mode == 'publish_approved_release' || steps.release-mode.outputs.mode == 'publish_new_release' || steps.release-mode.outputs.mode == 'publish_420_release' || steps.release-mode.outputs.mode == 'retire_421_preview_draft'
         id: google-auth
         uses: google-github-actions/auth@v3
         with:
@@ -255,8 +277,18 @@ jobs:
           access_token_scopes: https://www.googleapis.com/auth/androidpublisher
 
       - name: Install Google Play API client dependencies
-        if: steps.release-mode.outputs.mode == 'preview_draft' || steps.release-mode.outputs.mode == 'publish_approved_release' || steps.release-mode.outputs.mode == 'publish_new_release' || steps.release-mode.outputs.mode == 'publish_420_release'
+        if: steps.release-mode.outputs.mode == 'preview_draft' || steps.release-mode.outputs.mode == 'publish_approved_release' || steps.release-mode.outputs.mode == 'publish_new_release' || steps.release-mode.outputs.mode == 'publish_420_release' || steps.release-mode.outputs.mode == 'retire_421_preview_draft'
         run: python3 -m pip install --disable-pip-version-check "google-auth>=2.40,<3" "requests>=2.32,<3"
+
+      - name: Remove only the exact accidental 421 draft and verify completed 420
+        id: retire-421
+        if: steps.release-mode.outputs.mode == 'retire_421_preview_draft'
+        env:
+          PLAY_PACKAGE_NAME: com.hubaish.guide
+          PLAY_TRACK: Hubaish Closed Test
+          PLAY_EXPECTED_DRAFT_VERSION_CODE: '421'
+        run: python3 scripts/retire-421-preview-draft.py
+
 
       - name: Discover actual Closed-testing track and next Play versionCode
         if: steps.release-mode.outputs.mode == 'preview_draft' || steps.release-mode.outputs.mode == 'publish_new_release' || steps.release-mode.outputs.mode == 'publish_420_release'
@@ -278,43 +310,43 @@ jobs:
         run: python3 scripts/promote-play-draft.py
 
       - name: Set up Ruby and Fastlane
-        if: steps.release-mode.outputs.mode != 'publish_approved_release'
+        if: steps.release-mode.outputs.mode != 'publish_approved_release' && steps.release-mode.outputs.mode != 'retire_421_preview_draft'
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: '3.3'
           bundler-cache: true
 
       - name: Set up Java
-        if: steps.release-mode.outputs.mode != 'publish_approved_release'
+        if: steps.release-mode.outputs.mode != 'publish_approved_release' && steps.release-mode.outputs.mode != 'retire_421_preview_draft'
         uses: actions/setup-java@v6
         with:
           distribution: temurin
           java-version: '21'
 
       - name: Set up Android SDK
-        if: steps.release-mode.outputs.mode != 'publish_approved_release'
+        if: steps.release-mode.outputs.mode != 'publish_approved_release' && steps.release-mode.outputs.mode != 'retire_421_preview_draft'
         uses: android-actions/setup-android@v4
         with:
           packages: 'platform-tools'
 
       - name: Create the Capacitor Android project
-        if: steps.release-mode.outputs.mode != 'publish_approved_release'
+        if: steps.release-mode.outputs.mode != 'publish_approved_release' && steps.release-mode.outputs.mode != 'retire_421_preview_draft'
         run: npx cap add android
 
       - name: Generate native launcher and splash assets
-        if: steps.release-mode.outputs.mode != 'publish_approved_release'
+        if: steps.release-mode.outputs.mode != 'publish_approved_release' && steps.release-mode.outputs.mode != 'retire_421_preview_draft'
         run: npx capacitor-assets generate --android
 
       - name: Sync Capacitor Android
-        if: steps.release-mode.outputs.mode != 'publish_approved_release'
+        if: steps.release-mode.outputs.mode != 'publish_approved_release' && steps.release-mode.outputs.mode != 'retire_421_preview_draft'
         run: npx cap sync android
 
       - name: Patch Android app label and system bars
-        if: steps.release-mode.outputs.mode != 'publish_approved_release'
+        if: steps.release-mode.outputs.mode != 'publish_approved_release' && steps.release-mode.outputs.mode != 'retire_421_preview_draft'
         run: python3 scripts/patch-android-config.py
 
       - name: Apply generated app launcher icons
-        if: steps.release-mode.outputs.mode != 'publish_approved_release'
+        if: steps.release-mode.outputs.mode != 'publish_approved_release' && steps.release-mode.outputs.mode != 'retire_421_preview_draft'
         run: python3 scripts/apply-android-icons.py
 
       - name: Build and sign the Android App Bundle for Closed testing

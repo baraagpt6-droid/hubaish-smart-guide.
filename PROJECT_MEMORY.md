@@ -204,3 +204,9 @@ Successful preview build run 46038091477:
 
 
 - Main-branch static verifier alignment fix merged after the 1.0.403 rollout preparation. Keep the next build verification-only until the explicit one-shot `.publish-420` marker is added. Never use a regular preview draft while `release-version.txt` is 1.0.403, because the default resolver would select unused code 419 with the new version name.
+
+ 
+## 28 November 2026 — cleanup of accidental 421 preview
+- Google Play read-only monitor run 46152354276 found versionCode 420 / versionName 1.0.403 completed on Hubaish Closed Test, plus one unintended 421 draft. Production versionCodes remained empty.
+- The previous preview workflow was cancelled at the Play upload step, but the Play API read-back established that its upload had in fact created draft 421. Use only the exact one-shot `.retire-421` marker and the guarded script to remove it, preserving completed 420.
+- Cleanup must verify a fresh read-back, keep Production empty, and not access tester settings, tester allow-lists, opt-in state, any other track or the 14-day requirement.
