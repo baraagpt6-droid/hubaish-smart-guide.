@@ -800,3 +800,5 @@ html{background:var(--hubaish-emerald)}
 .custom-select-close{background:#071711;border-color:rgba(212,175,55,.45);color:#f1d989}
 .custom-select-options{padding-bottom:calc(12px + env(safe-area-inset-bottom,0px))}
 @media(prefers-reduced-motion:reduce){.custom-select-sheet{animation:none!important}}
+
+.cloud-quick-preview-image{display:block;width:min(100%,520px);max-height:340px;object-fit:contain;margin:10px auto;border:1px solid var(--border);border-radius:14px;background:var(--elevated)}
