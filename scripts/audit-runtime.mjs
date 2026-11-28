@@ -308,7 +308,7 @@ try {
     Object.defineProperty(window, 'webkitSpeechRecognition', { configurable: true, value: undefined });
   });
   await page.locator('#aiMicBtn').click();
-  if (!(await page.locator('#toast').innerText()).includes('غير متاح في WebView')) {
+  if (!(await page.locator('#toast').innerText()).includes('غير متاح في هذا المتصفح')) {
     throw new Error('Unavailable speech recognition must show a helpful WebView message instead of failing.');
   }
   await page.locator('#aiInput').fill('مدرسة الزواحي');
