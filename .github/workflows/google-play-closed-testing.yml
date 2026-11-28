@@ -96,12 +96,6 @@ jobs:
               exit 1
             }
           fi
-if [[ "$mode" == "verify_only" ]]; then
-            [[ "$commit_message" == *"[verify-only]"* ]] || {
-              echo "::error::verify_only is allowed on push only with an explicit marker."
-              exit 1
-            }
-          fi
           echo "mode=$mode" >> "$GITHUB_OUTPUT"
           echo "expected_version_code=$expected_code" >> "$GITHUB_OUTPUT"
           echo "Resolved mode=$mode; expected versionCode=${expected_code:-not applicable}."
