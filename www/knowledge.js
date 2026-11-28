@@ -178,7 +178,7 @@
     try{published=JSON.parse(localStorage.getItem(CACHE_KEY)||'[]')}catch{published=[]}
     render();await refreshPublished();
   }
-  window.HubaishKnowledge={search,answer,load,getData:()=>data};
+  window.HubaishKnowledge={search,answer,load,refreshPublished,getData:()=>data};
   document.addEventListener('DOMContentLoaded',()=>{
     load();
     bindForm('authorSubmissionForm','author');
@@ -187,7 +187,6 @@
     bindForm('marketListingForm','marketplace');
     window.addEventListener('online',refreshPublished);
     window.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')refreshPublished()});
-    window.setInterval(()=>{if(document.visibilityState==='visible')refreshPublished()},15000);
     window.addEventListener('hubaish:languagechange',render);
   },{once:true});
 })();
