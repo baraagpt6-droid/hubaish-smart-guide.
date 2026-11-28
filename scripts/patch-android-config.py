@@ -226,10 +226,11 @@ public final class HubaishSpeechBridge {
     }
 
     private void releaseRecognizer() {
-        if (recognizer == null) return;
-        try { recognizer.cancel(); } catch (Exception ignored) {}
-        try { recognizer.destroy(); } catch (Exception ignored) {}
+        SpeechRecognizer current = recognizer;
         recognizer = null;
+        if (current == null) return;
+        try { current.cancel(); } catch (Exception ignored) {}
+        try { current.destroy(); } catch (Exception ignored) {}
     }
 }
 """
