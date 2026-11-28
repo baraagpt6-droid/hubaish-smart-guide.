@@ -235,6 +235,8 @@ try {
   }
   await page.waitForFunction(() => window.HubaishKnowledge?.getData?.()?.landmarkRecords?.length === 15, { timeout: 15000 });
   await page.waitForFunction(() => window.HubaishKnowledge?.getLiveData?.()?.landmarks?.some(item => item.id === 'qubbat-al-zum'), { timeout: 15000 });
+  await page.locator('.nav-btn[data-tab="places"]').click();
+  await page.locator('#view-places.active').waitFor({ state: 'visible', timeout: 10000 });
   await page.waitForFunction(() => document.querySelectorAll('#knowledgePublicPlacesList .knowledge-card').length >= 15, { timeout: 10000 });
   await page.locator('#knowledgePublicPlaceFilters [data-heritage-filter="fort"]').click();
   if (await page.locator('#knowledgePublicPlacesList .knowledge-card').count() < 5 ||
@@ -245,6 +247,8 @@ try {
   if (await page.locator('#knowledgePublicPlacesList .knowledge-card').count() < 15) {
     throw new Error('Restoring the full heritage catalogue did not show all core landmark cards.');
   }
+  await page.locator('.nav-btn[data-tab="home"]').click();
+  await page.locator('#view-home.active').waitFor({ state: 'visible', timeout: 10000 });
 
   const knowledgeCardCount = await page.locator('#knowledgeLandmarksList .knowledge-card').count();
   if (knowledgeCardCount !== 15) throw new Error('Expected 15 in-district core landmark cards; received ' + knowledgeCardCount + '.');
