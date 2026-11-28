@@ -26,6 +26,8 @@ if svg.count(background_rect) != 1 or 'viewBox="0 0 512 512"' not in svg or 'id=
 foreground_svg = svg.replace(background_rect, "", 1)
 foreground_png = cairosvg.svg2png(bytestring=foreground_svg.encode("utf-8"), output_width=1024, output_height=1024)
 foreground = Image.open(BytesIO(foreground_png)).convert("RGBA")
+if foreground.getchannel("A").getextrema()[0] != 0:
+    raise SystemExit("Adaptive foreground must retain a transparent canvas after removing the emerald background.")
 foreground.save(assets / "icon-foreground.png", format="PNG", optimize=True)
 
 # Android 12+ uses a centered mark on a solid color. Older Android versions
