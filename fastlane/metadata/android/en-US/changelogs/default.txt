@@ -1,4 +1,1 @@
-• Updated area and population data, keeping the 2004 census separate from the 2025 HNRP/OCHA estimate.
-• Added historic forts, mosques, Wuhaza learning centre and scholarly activity records from Al-Mushriq.
-• Expanded scholar biographies and clarified source status for Al-Zawahi School claims.
-• Clarified the Friday market note and separated historic Sahban from present-day Hubaish.
+Updated the Hubaish archive with the Marwaha Mosque inscription image, plus refreshed search, navigation and protected viewers.
