@@ -822,7 +822,7 @@ async function stampQuickImage(file,ownerName){
     show('cloudQuickOwnerWrap',type==='archive');
     show('cloudQuickPhotoMeta',type==='photo');
     show('cloudQuickPhotoLicense',type==='photo');
-    show('cloudQuickPhotoCategory',type==='photo');
+    show('cloudQuickPhotoCategoryWrap',type==='photo');
     show('cloudQuickMarketMeta',type==='marketplace');
     show('cloudQuickContactWrap',type==='marketplace');
     show('cloudQuickNameWrap',type==='author'||type==='figure'||type==='work'||type==='family'||type==='marketplace');
