@@ -16,6 +16,9 @@ on:
       - 'scripts/monitor-play-status.py'
       - 'scripts/audit-runtime.mjs'
       - 'scripts/promote-play-draft.py'
+      - 'scripts/retire-obsolete-play-draft.py'
+      - 'scripts/verify-build.mjs'
+      - '.publish-418'
       - 'scripts/resolve-cloudflare-worker-url.mjs'
       - 'cloudflare-worker/**'
   workflow_dispatch:
