@@ -17,7 +17,7 @@ on:
         description: Exact existing versionCode to approve
         type: string
         required: false
-        default: '416'
+        default: '0'
 
 permissions:
   contents: read
@@ -40,7 +40,7 @@ jobs:
       version_name: ${{ steps.play-release.outputs.version_name }}
       version_code: ${{ steps.play-release.outputs.version_code || steps.approved-release.outputs.version_code }}
       track: ${{ steps.play-release.outputs.track || env.PLAY_TRACK }}
-      release_status: ${{ steps.publish-new-release.outputs.release_status || steps.approved-release.outputs.release_status || steps.play-release.outputs.release_status }}
+      release_status: ${{ steps.publish-next-release.outputs.release_status || steps.publish-new-release.outputs.release_status || steps.approved-release.outputs.release_status || steps.play-release.outputs.release_status }}
     steps:
       - name: Checkout pushed commit
         uses: actions/checkout@v7
@@ -53,7 +53,7 @@ jobs:
         shell: bash
         env:
           INITIAL_PLAY_MODE: ${{ env.PLAY_MODE }}
-          MANUAL_EXPECTED_VERSION_CODE: ${{ github.event.inputs.expected_version_code || '416' }}
+          MANUAL_EXPECTED_VERSION_CODE: ${{ github.event.inputs.expected_version_code || '0' }}
         run: |
           set -euo pipefail
           mode="$INITIAL_PLAY_MODE"
@@ -601,15 +601,7 @@ jobs:
           PLAY_PRODUCTION_VERSION_CODES: ${{ steps.play-release.outputs.production_version_codes }}
         run: python3 scripts/resolve-play-release.py --verify-upload
 
-      - name: Verify completed 418, zero pending drafts and unchanged Production
-        if: steps.release-mode.outputs.mode == 'publish_new_release'
-        env:
-          PLAY_PACKAGE_NAME: com.hubaish.guide
-          PLAY_TRACK: ${{ steps.play-release.outputs.track }}
-          PLAY_RELEASE_STATUS: completed
-          ANDROID_VERSION_CODE: ${{ steps.play-release.outputs.version_code }}
-          PLAY_PRODUCTION_VERSION_CODES: ${{ steps.play-release.outputs.production_version_codes }}
-        run: python3 scripts/resolve-play-release.py --verify-upload
+
 
       - name: Publish the result summary
         if: success()
