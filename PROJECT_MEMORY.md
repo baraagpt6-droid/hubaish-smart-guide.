@@ -126,12 +126,13 @@ On 2026-11-27, the previous Play workflow succeeded for this package:
 - versionCode: 413.
 - Google Play API read-back reported status completed and confirmed Production versionCodes were unchanged.
 
-That result is historical context only. It does not authorize future automatic completed releases. Every future main push defaults to creating a draft; the newly-added `.promote-416` one-shot marker is the only push-triggered approval exception.
+That result is historical context only. Every ordinary main push defaults to creating a draft. The `.promote-416` marker was a separate one-shot approval exception for the existing 416 draft. On 2026-11-28, the owner separately authorized one clean build-and-publish run for versionCode 418 through the newly-added `.publish-418` marker. That marker is single-use by parent-commit comparison and must not become a general auto-publish policy.
 
 ## Maintenance files
 - .github/workflows/google-play-closed-testing.yml — draft upload, read-back, separate manual approval.
 - scripts/resolve-play-release.py — exact track selection, versionCode allocation, upload verification.
-- scripts/promote-play-draft.py — manual promotion of one existing draft.
+- scripts/promote-play-draft.py — exact-code promotion of one existing draft.
+- scripts/retire-obsolete-play-draft.py — one-shot retirement of only the exact 417 draft before the clean 418 upload; fails closed unless 416 is the sole completed target-track release and Production remains empty. It does not access tester resources.
 - fastlane/Fastfile — draft-only upload guard.
 - scripts/verify-build.mjs — static project and Play policy checks.
 - docs/google-play-setup.md — WIF and Google Play setup.
@@ -146,6 +147,7 @@ That result is historical context only. It does not authorize future automatic c
 - 2026-11-27: Added the separate publish_approved_release manual action and exact-track guardrails in resolver, Fastlane, and promoter.
 - 2026-11-27: Added static build checks and prevented documentation-only changes from running Pages/Cloudflare deployments.
 - 2026-11-28: Added one-shot versionCode 416 approval, exact-code promotion with fresh API read-back, and dynamic latest-active/latest-draft monitoring.
+- 2026-11-28: Added a separately owner-authorized, single-use `.publish-418` path. It runs the full app build/Playwright/Gradle signing workflow, removes only obsolete draft 417 after the new signed 418 bundle is ready, uploads 418 as draft, promotes exact 418 to completed on Hubaish Closed Test, and verifies zero versioned drafts plus empty Production. The path never accesses `edits.testers` or modifies testers, other tracks, or Production.
 
 ## Google Play status monitoring and app audit
 - .github/workflows/play-status-monitor.yml supports manual dispatch, a daily 09:00 Asia/Kuala_Lumpur schedule (01:00 UTC), and a run after each Google Play Closed Testing workflow completes.
