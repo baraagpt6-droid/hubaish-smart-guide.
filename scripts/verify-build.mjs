@@ -236,7 +236,9 @@ if(!workflow.includes('actions/checkout@v7')||!workflow.includes('actions/setup-
 }
 if(androidPatch.includes('android:windowOptOutEdgeToEdgeEnforcement')||
    !androidPatch.includes('WindowCompat.setDecorFitsSystemWindows(getWindow(), false)')||
-   !androidPatch.includes('Color.TRANSPARENT')||
+   !androidPatch.includes('Color.parseColor("#071711")')||
+   !androidPatch.includes('"android:statusBarColor": "#071711"')||
+   !androidPatch.includes('"android:windowSplashScreenBackground": "#071711"')||
    !androidPatch.includes('WindowInsetsControllerCompat')||
    !androidPatch.includes('دليل حبيش')) {
   throw new Error('Android 15/16 edge-to-edge safe-area and app-name patch is incomplete.');
