@@ -126,6 +126,26 @@ def discover_release():
                     "The one-shot 418 release requires exactly one obsolete 417 draft before cleanup; "
                     f"found {[codes_for_release([item]) for item in draft_records]}."
                 )
+        elif release_mode == "publish_next_release":
+            if draft_records:
+                fail(
+                    "The one-shot 419 release requires zero existing versioned drafts on Hubaish Closed Test; "
+                    f"found {[codes_for_release([item]) for item in draft_records]}."
+                )
+            completed_records = [
+                release
+                for row in selected_rows
+                for release in (row.get("releases") or [])
+                if str(release.get("status", "")).strip().casefold() == "completed"
+            ]
+            if len(completed_records) != 1 or codes_for_release([completed_records[0]]) != [418]:
+                fail(
+                    "The one-shot 419 release may replace only the sole completed Hubaish Closed Test versionCode 418; "
+                    f"found {[codes_for_release([item]) for item in completed_records]}."
+                )
+            if any(str(release.get("status", "")).strip().casefold() == "inprogress"
+                   for row in selected_rows for release in (row.get("releases") or [])):
+                fail("An in-progress Closed Test release exists. Refusing to overlap rollouts.")
         elif draft_records:
             fail(
                 f"Closed-testing track '{selected_track}' already contains draft versionCode(s) "
@@ -164,6 +184,10 @@ def discover_release():
             fail(f"Calculated versionCode {version_code} is outside Android's supported positive integer range.")
         if release_mode == "publish_new_release" and version_code != 418:
             fail(f"The one-shot clean release is locked to versionCode 418; Play resolved {version_code}.")
+        if release_mode == "publish_next_release" and version_code != 419:
+            fail(f"The one-shot clean release is locked to versionCode 419; Play resolved {version_code}.")
+        if release_mode == "publish_next_release" and production_codes:
+            fail(f"Production must remain empty before the 419 release; found {production_codes}.")
 
         version_name = read_release_version()
         release_status = "draft"
