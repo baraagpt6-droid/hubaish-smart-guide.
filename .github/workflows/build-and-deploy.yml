@@ -35,12 +35,12 @@ jobs:
       pages: write
       id-token: write
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Install SVG icon renderer
         run: sudo apt-get update && sudo apt-get install -y python3-cairosvg python3-pil
       - name: Generate PWA and favicon icons
         run: python3 scripts/generate-icons.py
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           node-version: 22
       - name: Install dependencies
@@ -48,9 +48,9 @@ jobs:
       - name: Verify website
         run: npm run build
       - name: Configure GitHub Pages
-        uses: actions/configure-pages@v5
+        uses: actions/configure-pages@v6
       - name: Upload website
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v5
         with:
           path: ./www
 
@@ -68,7 +68,7 @@ jobs:
     steps:
       - name: Deploy website
         id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5
 
   build-android:
     if: ${{ !contains(github.event.head_commit.message, '[pages-only]') }}
@@ -77,15 +77,15 @@ jobs:
       signed: ${{ steps.apk.outputs.signed }}
       version_name: ${{ steps.apk.outputs.version_name }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Install SVG icon renderer
         run: sudo apt-get update && sudo apt-get install -y python3-cairosvg python3-pil
       - name: Generate PWA and favicon icons
         run: python3 scripts/generate-icons.py
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           node-version: 22
-      - uses: actions/setup-java@v4
+      - uses: actions/setup-java@v6
         with:
           distribution: temurin
           java-version: '21'
@@ -204,7 +204,7 @@ jobs:
             echo "signed=false" >> "$GITHUB_OUTPUT"
           fi
       - name: Upload Android artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: daleel-hubaish-android
           path: release-out/*
@@ -218,7 +218,7 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v7
         with:
           name: daleel-hubaish-android
           path: ./release
