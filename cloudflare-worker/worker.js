@@ -318,7 +318,7 @@ async function route(req,env){
  if(req.method==="POST"&&path==="/admin/quick-add"){
   const b=await readJson(req,700000);
   const type=String(b.type||"").trim(),title=String(b.title||"").trim().slice(0,180),name=String(b.name||"").trim().slice(0,120),body=String(b.body||"").trim().slice(0,5000),location=String(b.location||"").trim().slice(0,120),source=String(b.source||"").trim().slice(0,1000);
-  if(!["photo","archive","author","family","marketplace"].includes(type)||!title||!body||!location||b.rightsConsent!==true)return json({error:"أكمل النوع والعنوان والوصف والعزلة وتأكيد حق النشر."},400);
+  if(!["photo","archive","author","figure","work","family","marketplace"].includes(type)||!title||!body||!location||b.rightsConsent!==true)return json({error:"أكمل النوع والعنوان والوصف والعزلة وتأكيد حق النشر."},400);
   let attachment=null;
   if(type==="photo"||type==="archive"){
    const file=b.attachment||{},mime=String(file.mimeType||"");
@@ -356,7 +356,7 @@ async function route(req,env){
   }
   if(type==="archive"&&!attachment)return json({error:"اختر صورة الوثيقة حتى تُحفظ بعلامتها المائية."},400);
   if(type==="archive"&&!String(b.ownerName||"").trim())return json({error:"أدخل اسم صاحب الوثيقة أو الجهة المالكة."},400);
-  if(type==="author"&&!name)return json({error:"أدخل اسم المؤلف أو صاحب العمل."},400);
+  if((type==="author"||type==="figure"||type==="work")&&!name)return json({error:"أدخل اسم صاحب السجل أو المؤلف."},400);
   if(type==="family"&&!name)return json({error:"أدخل اسم الأسرة أو العائلة."},400);
   const marketCategory=String(b.marketCategory||"");
   if(type==="marketplace"&&!["shop","artisan","service","weekly_market","sale","wanted"].includes(marketCategory))return json({error:"اختر تصنيف إعلان السوق."},400);
