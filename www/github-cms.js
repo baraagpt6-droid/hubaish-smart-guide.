@@ -822,7 +822,7 @@ async function stampQuickImage(file,ownerName){
     show('cloudQuickPhotoLicense',type==='photo');
     show('cloudQuickPhotoCategory',type==='photo');
     show('cloudQuickMarketMeta',type==='marketplace');
-    show('cloudQuickNameWrap',type==='author'||type==='family'||type==='marketplace');
+    show('cloudQuickNameWrap',type==='author'||type==='figure'||type==='work'||type==='family'||type==='marketplace');
     show('cloudQuickPublicContactWrap',type==='marketplace');
   }
   function renderQuickAddPreview(){
@@ -845,7 +845,7 @@ async function stampQuickImage(file,ownerName){
     if((type==='photo'||type==='archive')&&!file){toast('اختر صورة أولاً.');return}
     if(type==='photo'&&(!val('cloudQuickSource')||!val('cloudQuickPhotographer')||!val('cloudQuickLicense'))){toast('أدخل مصدر الصورة والمصور والرخصة.');return}
     if(type==='archive'&&!val('cloudQuickOwner')){toast('أدخل مالك الوثيقة أو الجهة التي حفظتها.');return}
-    if((type==='author'||type==='family'||type==='marketplace')&&!val('cloudQuickName')){toast('أدخل الاسم المطلوب لهذا السجل.');return}
+    if((type==='author'||type==='figure'||type==='work'||type==='family'||type==='marketplace')&&!val('cloudQuickName')){toast('أدخل الاسم المطلوب لهذا السجل.');return}
     const button=$('cloudQuickSubmitBtn');if(button)button.disabled=true;
     try{
       const attachment=file?await stampQuickImage(file,type==='archive'?val('cloudQuickOwner'):val('cloudQuickPhotographer')):null;
