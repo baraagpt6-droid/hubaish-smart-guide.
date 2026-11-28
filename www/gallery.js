@@ -7,7 +7,7 @@
     FR:{title:'Galerie photo patrimoniale de Hubaish',sub:'Photos attribuées des forts, villages et vallées de Hubaish',all:'Tout',forts:'Forts et châteaux',valleys:'Vallées et terrasses',villages:'Villages et sous-districts',heritage:'Patrimoine et mosquées',count:'photos vérifiées',empty:'Les photos exclusives du district de Hubaish sont en cours de documentation par l’équipe éditoriale',emptyFilter:'Aucune photo dans cette catégorie pour le moment.',add:'Ajouter la première photo',place:'Monument',district:'Sous-district / lieu',height:'Altitude',photographer:'Photographe',source:'Source et licence',license:'Licence',share:'Partager la photo',close:'Fermer',prev:'Précédent',next:'Suivant',zoom:'Agrandir',reset:'Réinitialiser',copied:'Lien source copié',unknown:'Non indiqué par la source',sourceLabel:'Ouvrir la source et la licence'}
   };
   const categories=['all','forts','valleys','villages','heritage'];
-  let active='all',items=[],index=0,overlay=null,zoom=1,x=0,y=0,pointers=new Map(),gesture=null,pinch=null,clickSuppressed=false;
+  let active='all',items=[],index=0,overlay=null,overlayCloseTimer=null,zoom=1,x=0,y=0,pointers=new Map(),gesture=null,pinch=null,clickSuppressed=false;
   const lang=()=>String(document.documentElement.lang||'ar').toUpperCase();
   const t=()=>T[lang()]||T.AR;
   const el=(tag,cls,value)=>{const n=document.createElement(tag);if(cls)n.className=cls;if(value!==undefined)n.textContent=String(value);return n};
@@ -107,8 +107,8 @@
     overlay.addEventListener('contextmenu',event=>event.preventDefault());img.addEventListener('contextmenu',event=>event.preventDefault());img.addEventListener('dragstart',event=>event.preventDefault());
     document.body.append(overlay);
   }
-  function openAt(i){if(!items.length)return;buildOverlay();index=(i+items.length)%items.length;overlay.hidden=false;document.body.classList.add('gallery-lightbox-open');renderCurrent();overlay.querySelector('.heritage-lightbox-close')?.focus({preventScroll:true})}
-  function closeOverlay(){if(!overlay)return;overlay.hidden=true;document.body.classList.remove('gallery-lightbox-open');resetZoom()}
+  function openAt(i){if(!items.length)return;buildOverlay();if(overlayCloseTimer){window.clearTimeout(overlayCloseTimer);overlayCloseTimer=null}index=(i+items.length)%items.length;overlay.classList.remove('is-closing');overlay.hidden=false;document.body.classList.add('gallery-lightbox-open');renderCurrent();overlay.querySelector('.heritage-lightbox-close')?.focus({preventScroll:true})}
+  function closeOverlay(){if(!overlay||overlay.hidden||overlay.classList.contains('is-closing'))return;overlay.classList.add('is-closing');document.body.classList.remove('gallery-lightbox-open');resetZoom();overlayCloseTimer=window.setTimeout(()=>{if(overlay){overlay.hidden=true;overlay.classList.remove('is-closing')}overlayCloseTimer=null},220)}
   function move(delta){if(!items.length)return;index=(index+delta+items.length)%items.length;renderCurrent()}
   function renderCurrent(){
     const row=items[index];if(!row||!overlay)return;
