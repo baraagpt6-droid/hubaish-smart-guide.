@@ -246,12 +246,12 @@ function normalizeArabic(value) {
   return String(value ?? '').toLocaleLowerCase()
     .replace(/[إأآٱا]/g, 'ا').replace(/ى/g, 'ي').replace(/ة/g, 'ه')
     .replace(/ؤ/g, 'و').replace(/ئ/g, 'ي')
-    .replace(/[\\u064B-\\u065F\\u0670\\u06D6-\\u06EDـ]/g, '')
-    .replace(/[^\\p{L}\\p{N}\\s]/gu, ' ').replace(/\\s+/g, ' ').trim();
+    .replace(/[\u064B-\u065F\u0670\u06D6-\u06EDـ]/g, '')
+    .replace(/[^\p{L}\p{N}\s]/gu, ' ').replace(/\s+/g, ' ').trim();
 }
 const ARABIC_SEARCH_STOP_WORDS = new Set(['ابحث','اعطني','اعطيني','اعرض','وين','فين','ايش','ماذا','ما','هي','هو','عن','لي','من','في','هل','قصة','صورة','افتح','انتقل','اذهب','روح','اريد','اريدك','لو','سمحت','ممكن','فضلا','رجاء','اخبرني','عرفني','علمني','عزله']);
 function normalizeSearchQuery(value) {
-  const parts=normalizeArabic(value).split(/\\s+/).filter(Boolean);
+  const parts=normalizeArabic(value).split(/\s+/).filter(Boolean);
   const useful=parts.filter(x=>!ARABIC_SEARCH_STOP_WORDS.has(x));
   return (useful.length?useful:parts).join(' ');
 }
@@ -271,8 +271,8 @@ function fuzzyArabicMatch(haystack,query) {
   const h=normalizeArabic(haystack),q=normalizeSearchQuery(query);
   if(!h||!q)return false;
   if(h.includes(q))return true;
-  const words=h.split(/\\s+/).filter(Boolean);
-  return q.split(/\\s+/).filter(Boolean).every(term=>words.some(word=>word.includes(term)||term.includes(word)||(Math.min(word.length,term.length)>=4&&editDistanceAtMostOne(word,term)<=1)));
+  const words=h.split(/\s+/).filter(Boolean);
+  return q.split(/\s+/).filter(Boolean).every(term=>words.some(word=>word.includes(term)||term.includes(word)||(Math.min(word.length,term.length)>=4&&editDistanceAtMostOne(word,term)<=1)));
 }
 window.normalizeArabicText=normalizeArabic;
 window.HubaishSearch={normalize:normalizeArabic,query:normalizeSearchQuery,matches:fuzzyArabicMatch};
