@@ -74,9 +74,14 @@
     };
     image.onload=draw;image.onerror=()=>{canvas.dataset.sourceError='true';caption.textContent='تعذر تحميل صورة الوثيقة من الحزمة المحلية.'};image.src=item.image;
     zoom.addEventListener('input',()=>{canvas.style.transform='scale('+zoom.value+')';canvas.style.transformOrigin='top center'});
-    close.addEventListener('click',()=>modal.remove());modal.addEventListener('click',e=>{if(e.target===modal)modal.remove()});
+    const dismiss=()=>{
+      if(!document.body.contains(modal)||modal.classList.contains('is-closing'))return;
+      modal.classList.add('is-closing');
+      window.setTimeout(()=>modal.remove(),220);
+    };
+    close.addEventListener('click',dismiss);modal.addEventListener('click',e=>{if(e.target===modal)dismiss()});
     modal.addEventListener('contextmenu',e=>e.preventDefault());canvas.addEventListener('contextmenu',e=>e.preventDefault());canvas.addEventListener('dragstart',e=>e.preventDefault());
-    document.addEventListener('keydown',function esc(e){if(e.key==='Escape'&&document.body.contains(modal)){modal.remove();document.removeEventListener('keydown',esc)}});
+    document.addEventListener('keydown',function esc(e){if(e.key==='Escape'&&document.body.contains(modal)){dismiss();document.removeEventListener('keydown',esc)}});
   }
   function search(query){
     if(!data)return[];const q=norm(query);if(!q)return[];
