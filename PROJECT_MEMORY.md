@@ -77,7 +77,7 @@ Document secret names only. Never print or copy secret values. Do not rotate the
 - The pipeline prepares and validates bilingual listing text, icon/feature graphic, and eight phone screenshots.
 
 ### Automatic draft preview on every main push
-Every ordinary push to main defaults to preview_draft mode. Push-triggered publication requires a separately owner-authorized, exact-code one-shot marker absent from the push parent commit. Legacy `.promote-416` markers were approval-only and are historical. The `.publish-418` marker was a one-time clean build-and-publish path, now consumed. The `.publish-419` marker authorizes the current full 1.0.402 build-and-publish run only.
+Every ordinary push to main defaults to preview_draft mode. Push-triggered publication requires a separately owner-authorized, exact-code one-shot marker absent from the push parent commit. Legacy `.promote-416` markers were approval-only and are historical. The `.publish-418` marker was a one-time clean build-and-publish path, now consumed. The failed 419 verify-only attempt created no AAB and no Play release. The one-shot `.publish-420` marker is the current owner-authorized 1.0.403 full build-and-publish path.
 1. Checkout main, install Node dependencies, run npm run build.
 2. Generate app icons and bilingual listing graphics.
 3. Capture Arabic/English screens from the app and validate all eight phone screenshots.
@@ -186,3 +186,18 @@ Successful preview build run 46038091477:
 - AAB uploaded only as a draft on Hubaish Closed Test; read-back confirmed draft status and unchanged Production versionCodes.
 - Runtime audit passed responsive widths with zero horizontal overflow, Service Worker cache v4.0.8, 19 cached assets, offline home and zero browser errors.
 - Cloudflare Worker /health and /setup/status returned HTTP 200.
+
+
+## Standing owner-submitted source integration rule
+- For future owner-supplied photos, scans, biographies, family records and heritage facts, use the material as project intake without asking for the standing instruction again. Preserve provenance, owner/source attribution and evidence status, then prepare updates to project data, knowledge index, gallery/archive, search and local assistant within Hubaish District, Ibb Governorate only.
+- Public disclosure still requires publication rights and relevant consent. Family and personal profiles remain private/unpublished until authorized consent is clear. Keep uncertain locations and claims labelled rather than promoted as facts.
+
+## Live content and native Android speech
+- Public endpoint `GET /api/live-content` reads the `live-content:published` snapshot from the existing Cloudflare `ADMINS` KV binding and uses GitHub live-content JSON for initial bootstrap. CMS writes update GitHub and KV; `github-cms.js` polls every 15 seconds while visible, stores the last copy in localStorage and retains offline fallback. Cloudflare KV is eventually consistent, so propagation is near-real-time rather than a guarantee of same-millisecond global delivery.
+- Authenticated `/admin/quick-add` creates gallery photos, archived image scans, author profiles, family cards and marketplace listings. Image scans receive bilingual watermarks before storage and archive images receive the in-app viewer watermark. Public family/profile records require consent.
+- Android microphone handling uses generated `HubaishSpeechBridge.java`, `SpeechRecognizer`, runtime `RECORD_AUDIO` permission and JS callbacks used by the main search and local assistant.
+
+## 28 November 2026 — versionCode 420 release preparation
+- Read-only Google Play monitor run 46126746005 showed only versionCode 418 completed on `Hubaish Closed Test`, zero versioned drafts on that track, highestSeenVersionCode 418 and empty Production. A legacy alternate `Closed testing` record without a versionCode remained untouched.
+- Verify-only run 46125743554 failed during disposable Gradle AAB assembly because Maven Central returned HTTP 429 after four bounded retries. No AAB artifact was created and no Google Play upload or release write occurred. VersionCode 419 is unused.
+- Version 1.0.403 targets versionCode 420, deliberately skipping unused 419. Resolver/promoter must re-check bundle history, target-track state, drafts, in-progress rollout and Production before any write.
