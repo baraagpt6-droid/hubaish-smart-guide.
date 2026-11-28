@@ -405,7 +405,7 @@ if(!profile||profile.area_km2?.value!==228||profile.population?.find(x=>x.year==
 if(!profile.population.find(x=>x.year===2025).type.includes('HNRP'))throw new Error('2025 population must remain an HNRP estimate, not a census.');
 if(profile.weekly_market?.day_ar!=='الجمعة'||!profile.weekly_market?.verification_note_ar)throw new Error('Weekly market day or local confirmation note is missing.');
 if(profile.subdistrict_count!==22||data.subDistricts.length!==22)throw new Error('Hubaish must retain exactly 22 administrative sub-districts.');
-if(!profile.tribal_context?.named_branches_ar?.includes('آل راجح')||!profile.geographic_disambiguation?.some(x=>x.name_ar==='مخلاف الحبيشية')||profile.name_origin_hypotheses?.status!=='research_hypotheses')throw new Error('Tribal lineage, geographic distinction or name-origin caveat is missing.');
+if(profile.tribal_context||profile.geographic_disambiguation?.length!==1||profile.geographic_disambiguation[0]?.name_ar!=='مديرية حبيش'||profile.name_origin_hypotheses?.status!=='research_hypotheses')throw new Error('Hubaish-only geographic scope or name-origin caveat is missing.');
 const requiredHeritage=['khudad-fort','wuhaza-fortress','yaris-fortress','dahran-fort-bani-wail','al-dhuhrah-historic-settlement','al-udadi-fort','musaynia-fort','bayt-al-batul-fort','maghram-khair-fort','bayn-al-dur-dome','al-farawi-mosque-dome','marwaha-mosque','al-jami-mosque','dhulmah-grand-mosque','qubbat-al-zum'];
 for(const id of requiredHeritage)if(!data.landmarks.some(x=>x.id===id))throw new Error('A required historical landmark record is missing: '+id);
 for(const id of ['p1','p12','p15'])if(app.includes("id: '"+id+"'"))throw new Error('Excluded legacy landmark was reintroduced: '+id);
