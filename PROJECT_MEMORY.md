@@ -72,7 +72,7 @@ Document secret names only. Never print or copy secret values. Do not rotate the
 - The pipeline prepares and validates bilingual listing text, icon/feature graphic, and eight phone screenshots.
 
 ### Automatic draft preview on every main push
-Every push to main starts .github/workflows/google-play-closed-testing.yml in preview_draft mode.
+Every push to main defaults to preview_draft mode. The narrowly scoped one-shot approval marker is the only push-triggered exception.
 1. Checkout main, install Node dependencies, run npm run build.
 2. Generate app icons and bilingual listing graphics.
 3. Capture Arabic/English screens from the app and validate all eight phone screenshots.
@@ -91,7 +91,9 @@ workflow_dispatch has three choices and defaults to verify_only:
 - preview_draft: manually request another draft upload.
 - publish_approved_release: explicitly promote one existing draft to completed on Hubaish Closed Test; it does not build or upload a new AAB.
 
-The manual approval script is scripts/promote-play-draft.py. It requires exactly one existing draft containing versionCodes. It fails closed if there are zero/multiple drafts or package/track validation fails. The script only reads and updates Hubaish Closed Test and does not touch Production. It is the only mode permitted to promote a draft to completed. Google Play review and rollout processing remain separate from GitHub Actions.
+The manual approval script is scripts/promote-play-draft.py. It requires exactly one existing draft whose complete versionCodes list equals the explicit PLAY_EXPECTED_VERSION_CODE. It verifies package, exact repository, main ref, target track and duplicate-code safety. After committing, it opens a fresh Play edit and verifies that the requested release is completed. It never builds or uploads an AAB or accesses Production.
+
+A push-triggered approval exception is allowed only when `.promote-416` is newly added in the pushed commit, contains exactly `416`, and was absent from the parent commit. The workflow compares the pushed commit with its parent using full Git history. An existing marker is ignored on later pushes, which return to preview_draft.
 
 Fastlane must reject automated upload statuses other than draft. The normal upload resolver is scripts/resolve-play-release.py.
 
@@ -113,7 +115,7 @@ On 2026-11-27, the previous Play workflow succeeded for this package:
 - versionCode: 413.
 - Google Play API read-back reported status completed and confirmed Production versionCodes were unchanged.
 
-That result is historical context only. It does not authorize future automatic completed releases. Every future main push must create a draft.
+That result is historical context only. It does not authorize future automatic completed releases. Every future main push defaults to creating a draft; the newly-added `.promote-416` one-shot marker is the only push-triggered approval exception.
 
 ## Maintenance files
 - .github/workflows/google-play-closed-testing.yml — draft upload, read-back, separate manual approval.
@@ -130,26 +132,31 @@ That result is historical context only. It does not authorize future automatic c
 - 2026-11-27: Changed every future main push to draft-only preview.
 - 2026-11-27: Added the separate publish_approved_release manual action and exact-track guardrails in resolver, Fastlane, and promoter.
 - 2026-11-27: Added static build checks and prevented documentation-only changes from running Pages/Cloudflare deployments.
+- 2026-11-28: Added one-shot versionCode 416 approval, exact-code promotion with fresh API read-back, and dynamic latest-active/latest-draft monitoring.
 
 ## Google Play status monitoring and app audit
 - .github/workflows/play-status-monitor.yml supports manual dispatch, a daily 09:00 Asia/Kuala_Lumpur schedule (01:00 UTC), and a run after each Google Play Closed Testing workflow completes.
 - scripts/monitor-play-status.py uses the fixed Hubaish WIF/OIDC configuration and Google Android Publisher API scope. It reads tracks/bundles only, discards its temporary inspection edit, and never updates, commits, promotes or deletes releases.
-- Its Arabic Actions summary and JSON artifact report the effective Hubaish Closed Test version, explicit states for 413 and 414, draft count, non-target tracks with version codes, Production state, and tester/store URL formats.
+- Its Arabic Actions summary and JSON artifact dynamically report the latest active Hubaish Closed Test release and latest draft selected from versionCodes, draft count, non-target tracks with version codes, read-only Production state, and tester/store URL formats. Historical codes are not hardcoded.
 - Important API limitation: Edits.tracks does not expose a separate Play policy-review queue or a closed-test tester email allow-list. A track status is not enough to independently assert that every tester can install.
 - scripts/audit-runtime.mjs exercises the local app with Playwright at mobile, tablet and desktop widths; checks language switching, navigation, Service Worker activation, cached app shell, offline home rendering and browser errors; and calls the Worker health/setup endpoints read-only apart from its health endpoint's temporary KV self-test.
 - The Google Play preview workflow runs this audit before AAB build/upload. Failure blocks the draft upload. Existing 413 is not modified and Production remains prohibited.
 
-## Live Google Play and audit checkpoint
-Read-only Google Play Status Monitor run 46031294660 at 2026-11-27T16:10:27Z:
-- Effective versionCode on Hubaish Closed Test: 413.
-- versionCode 413, versionName 1.0.401: status completed.
-- versionCode 414, versionName 1.0.401: status draft.
-- Draft count on the exact Hubaish Closed Test track: 1.
-- Other track version codes: none. Legacy Closed testing has an empty draft record with no versionCode; it was not modified.
-- Production versionCodes/statuses: none.
-- The API cannot provide a separate Play policy-review queue state or tester allow-list.
-Runtime audit run 46030839266:
-- Passed app navigation, AR/EN switching, responsive width checks at 360/390/768/1024 (0 px overflow), Service Worker activation, 23 cached assets, offline home and zero browser errors.
-- Initial ready time 1.95s; DOMContentLoaded 66ms; window load 74ms; transfer size reported 51,964 bytes.
-- Cloudflare Worker /health and /setup/status requests from the GitHub runner failed with fetch failed. This means external Worker connectivity is unverified, not proof that the Worker is down.
-- Android AAB build then failed on Maven Central HTTP 429 dependency rate limiting, before any AAB upload. A bounded HTTP 429 retry has been added; no app release was committed by that failed attempt.
+## Google Play checkpoints
+
+Historical monitor snapshot on 2026-11-27:
+- At that time, 413 was completed and 414 was draft on Hubaish Closed Test.
+- This was a read-only historical snapshot. A legacy Closed testing record had no versionCode and was not changed.
+
+Pre-approval live checkpoint — read-only monitor run 46038683976, attempt 2, checked at 2026-11-28T01:12:14Z:
+- Latest active Hubaish Closed Test versionCode: 413, status completed.
+- Latest draft on the exact target track: versionCode 416, status draft; one version-coded draft.
+- No version-coded releases were reported on alternate tracks. The legacy Closed testing row was empty and untouched.
+- Production versionCodes/statuses were empty in that snapshot.
+- The API does not expose a separate policy-review queue state or tester allow-list.
+
+Successful preview build run 46038091477:
+- versionName 1.0.401, versionCode 416; AAB SHA-256 e994a8dc2661f42008d68bcd17627062c7710d1a46e33d81b43de9c7d19d22fa.
+- AAB uploaded only as a draft on Hubaish Closed Test; read-back confirmed draft status and unchanged Production versionCodes.
+- Runtime audit passed responsive widths with zero horizontal overflow, Service Worker cache v4.0.8, 19 cached assets, offline home and zero browser errors.
+- Cloudflare Worker /health and /setup/status returned HTTP 200.

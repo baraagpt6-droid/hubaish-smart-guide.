@@ -1,63 +1,139 @@
 #!/usr/bin/env python3
-"""Promote exactly one existing Closed-testing draft after explicit manual dispatch. Legacy alpha/beta tracks are allowed."""
+"""Promote only the explicitly requested Hubaish Closed Test draft and verify the committed state."""
 import os
-import re
 from urllib.parse import quote
 import google.auth
 from google.auth.transport.requests import AuthorizedSession
 
-PACKAGE = os.environ.get("PLAY_PACKAGE_NAME", "").strip()
-TRACK = os.environ.get("PLAY_TRACK", "Hubaish Closed Test").strip()
 EXPECTED_PACKAGE = "com.hubaish.guide"
 EXPECTED_TRACK = "Hubaish Closed Test"
+EXPECTED_REPOSITORY = "baraagpt6-droid/hubaish-smart-guide."
+EXPECTED_REF = "refs/heads/main"
 SCOPE = "https://www.googleapis.com/auth/androidpublisher"
 API_ROOT = "https://androidpublisher.googleapis.com/androidpublisher/v3"
-RESERVED = {"internal", "beta", "production", "qa", "closed", "open", "closed-testing", "open-testing"}
+
 
 def fail(message):
     raise SystemExit(message)
 
-def main():
-    if PACKAGE != EXPECTED_PACKAGE:
-        fail(f"Package lock failed: expected {EXPECTED_PACKAGE}.")
-    if TRACK.casefold() != EXPECTED_TRACK.casefold():
-        fail(f"Only the {EXPECTED_TRACK} track can be manually approved.")
-    if not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_. -]{2,59}", TRACK):
-        fail("Invalid Closed testing track name.")
-    if TRACK.lower() in RESERVED or ":" in TRACK or TRACK.lower().endswith((":production", ":qa", ":internal", ":open")):
-        fail("Refusing reserved, Production, internal, open, or form-factor track.")
-    credentials, _ = google.auth.default(scopes=[SCOPE])
-    session = AuthorizedSession(credentials)
-    app = quote(PACKAGE, safe="")
-    edits = f"{API_ROOT}/applications/{app}/edits"
-    created = session.post(edits, json={}, timeout=60)
-    if not created.ok:
-        fail(f"Could not open Play edit ({created.status_code}): {created.text[:1000]}")
-    edit_id = created.json().get("id")
+
+def codes(release):
+    out = set()
+    for item in release.get("versionCodes") or []:
+        try:
+            code = int(item)
+        except (TypeError, ValueError):
+            continue
+        if code > 0:
+            out.add(code)
+    return sorted(out)
+
+
+def request(session, method, url, *, payload=None, purpose):
+    response = session.request(method, url, json=payload, timeout=60)
+    if not response.ok:
+        fail(f"{purpose} failed ({response.status_code}): {response.text[:1000]}")
+    return response.json() if response.content else {}
+
+
+def open_edit(session, url, purpose):
+    data = request(session, "POST", url, payload={}, purpose=purpose)
+    edit_id = data.get("id")
     if not edit_id:
         fail("Google Play returned no edit ID.")
-    base = f"{edits}/{quote(str(edit_id), safe='')}"
-    track_url = f"{base}/tracks/{quote(TRACK, safe='')}"
-    response = session.get(track_url, timeout=60)
-    if not response.ok:
-        fail(f"Could not read Closed testing track ({response.status_code}): {response.text[:1000]}")
-    data = response.json()
-    releases = data.get("releases") or []
-    drafts = [release for release in releases if str(release.get("status", "")).lower() == "draft"]
-    if len(drafts) != 1:
-        fail(f"Expected exactly one draft on '{TRACK}', found {len(drafts)}. No changes made.")
-    draft = drafts[0]
-    if not draft.get("versionCodes"):
-        fail("Draft has no versionCodes. No changes made.")
-    draft["status"] = "completed"
-    saved = session.put(track_url, json={"track": TRACK, "releases": releases}, timeout=60)
-    if not saved.ok:
-        fail(f"Could not update draft ({saved.status_code}): {saved.text[:1000]}")
-    committed = session.post(f"{base}:commit", json={}, timeout=60)
-    if not committed.ok:
-        fail(f"Could not commit manual approval ({committed.status_code}): {committed.text[:1000]}")
-    print(f"Manually approved Closed testing draft on {TRACK}; versionCodes={','.join(map(str, draft['versionCodes']))}.")
-    print("No AAB was uploaded. Production was not accessed.")
+    return f"{url}/{quote(str(edit_id), safe='')}"
+
+
+def discard_edit(session, url):
+    try:
+        response = session.delete(url, timeout=30)
+        if not response.ok and response.status_code not in (404, 410):
+            print(f"::warning::Play edit cleanup returned HTTP {response.status_code}.")
+    except Exception as exc:
+        print(f"::warning::Play edit cleanup failed: {exc}")
+
+
+def main():
+    package = os.environ.get("PLAY_PACKAGE_NAME", "").strip()
+    track = os.environ.get("PLAY_TRACK", "").strip()
+    raw_code = os.environ.get("PLAY_EXPECTED_VERSION_CODE", "").strip()
+    if package != EXPECTED_PACKAGE:
+        fail(f"Package lock failed: expected {EXPECTED_PACKAGE}.")
+    if track != EXPECTED_TRACK:
+        fail(f"Only the exact {EXPECTED_TRACK} track is permitted.")
+    if os.environ.get("GITHUB_REPOSITORY") != EXPECTED_REPOSITORY:
+        fail("Repository identity lock failed.")
+    if os.environ.get("GITHUB_REF") != EXPECTED_REF:
+        fail("Approval is restricted to refs/heads/main.")
+    if not raw_code.isdigit():
+        fail("PLAY_EXPECTED_VERSION_CODE must name the exact existing draft.")
+    expected = int(raw_code)
+    if expected < 1 or expected > 2_100_000_000:
+        fail("Requested versionCode is outside the valid Android range.")
+
+    credentials, _ = google.auth.default(scopes=[SCOPE])
+    session = AuthorizedSession(credentials)
+    app = quote(package, safe="")
+    edits_url = f"{API_ROOT}/applications/{app}/edits"
+    track_path = f"/tracks/{quote(track, safe='')}"
+
+    approval_edit = open_edit(session, edits_url, "Opening approval edit")
+    try:
+        track_url = approval_edit + track_path
+        data = request(session, "GET", track_url, purpose="Reading target Closed Test track")
+        releases = data.get("releases") or []
+        drafts = [(i, item) for i, item in enumerate(releases)
+                  if str(item.get("status") or "").casefold() == "draft"]
+        if len(drafts) != 1:
+            fail(f"Expected exactly one draft on {EXPECTED_TRACK}; found {len(drafts)}.")
+        index, draft = drafts[0]
+        draft_codes = codes(draft)
+        if draft_codes != [expected]:
+            fail(f"Expected draft versionCodes [{expected}], received {draft_codes}. No change committed.")
+        duplicates = [item for i, item in enumerate(releases)
+                      if i != index and expected in codes(item)]
+        if duplicates:
+            fail(f"versionCode {expected} also exists in another target-track release. No change committed.")
+
+        updated = [dict(item) for item in releases]
+        updated[index]["status"] = "completed"
+        saved = request(
+            session, "PUT", track_url,
+            payload={"track": EXPECTED_TRACK, "releases": updated},
+            purpose="Updating exact requested Closed Test draft",
+        )
+        if str(saved.get("track") or EXPECTED_TRACK) != EXPECTED_TRACK:
+            fail("Google Play update returned an unexpected track.")
+        request(session, "POST", f"{approval_edit}:commit", payload={}, purpose="Committing approval")
+    finally:
+        discard_edit(session, approval_edit)
+
+    # Read the persisted release from a new edit after commit.
+    readback_edit = open_edit(session, edits_url, "Opening fresh post-commit read-back")
+    try:
+        after = request(
+            session, "GET", readback_edit + track_path,
+            purpose="Reading persisted Closed Test track",
+        )
+        found = [item for item in (after.get("releases") or []) if expected in codes(item)]
+        if len(found) != 1:
+            fail(f"Post-commit read-back expected one release with {expected}, found {len(found)}.")
+        actual_status = str(found[0].get("status") or "").casefold()
+        if actual_status != "completed":
+            fail(f"Post-commit read-back did not return completed for versionCode {expected}.")
+        if codes(found[0]) != [expected]:
+            fail("Post-commit read-back returned unexpected versionCodes.")
+    finally:
+        discard_edit(session, readback_edit)
+
+    print(f"VERIFIED: versionCode {expected} is completed on {EXPECTED_TRACK} after a fresh API read-back.")
+    print("No AAB build/upload. No other package or Play track accessed.")
+    output = os.environ.get("GITHUB_OUTPUT")
+    if output:
+        with open(output, "a", encoding="utf-8") as handle:
+            handle.write(f"version_code={expected}\n")
+            handle.write("release_status=completed\n")
+
 
 if __name__ == "__main__":
     main()

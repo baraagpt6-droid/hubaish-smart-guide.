@@ -252,6 +252,7 @@ const playWorkflow = await read('.github/workflows/google-play-closed-testing.ym
 const playFastfile = await read('fastlane/Fastfile');
 const playResolver = await read('scripts/resolve-play-release.py');
 const playStoreVerifier = await read('scripts/verify-play-store.mjs');
+const playPromoter = await read('scripts/promote-play-draft.py');
 if (!playWorkflow.includes('workflow_dispatch:') ||
     playWorkflow.includes('pull_request:') ||
     !playWorkflow.includes('  push:') || !playWorkflow.includes('branches: [main]') ||
@@ -272,6 +273,12 @@ if (!playWorkflow.includes('workflow_dispatch:') ||
     !playWorkflow.includes("- publish_approved_release") ||
     !playWorkflow.includes("PLAY_RELEASE_STATUS: draft") ||
     !playWorkflow.includes("python3 scripts/promote-play-draft.py") ||
+    !playWorkflow.includes(".promote-416") ||
+    !playWorkflow.includes("git cat-file -e") ||
+    !playWorkflow.includes("PLAY_EXPECTED_VERSION_CODE") ||
+    !playPromoter.includes("draft_codes != [expected]") ||
+    !playPromoter.includes("Post-commit read-back") ||
+    !playPromoter.includes('actual_status != "completed"') ||
     playWorkflow.includes("publish_closed_testing") ||
     playWorkflow.includes("approve_draft")) {
   throw new Error('Google Play workflow must upload draft previews on main pushes, require explicit manual approval, use WIF, verify signing and read back the release.');
@@ -315,8 +322,12 @@ if (!playMonitorWorkflow.includes('workflow_dispatch:') ||
 }
 if (!playMonitorScript.includes('EXPECTED_PACKAGE = "com.hubaish.guide"') ||
     !playMonitorScript.includes('EXPECTED_TRACK = "Hubaish Closed Test"') ||
-    !playMonitorScript.includes('"versionCode413"') ||
-    !playMonitorScript.includes('"versionCode414"') ||
+    !playMonitorScript.includes('"latestActiveRelease"') ||
+    !playMonitorScript.includes('"latestDraftRelease"') ||
+    !playMonitorScript.includes("latest_active = max(active_releases") ||
+    !playMonitorScript.includes("latest_draft = max(draft_releases") ||
+    playMonitorScript.includes('"versionCode413"') ||
+    playMonitorScript.includes('"versionCode414"') ||
     !playMonitorScript.includes('"alternateTracksWithVersionCodes"') ||
     !playMonitorScript.includes('production_codes') ||
     playMonitorScript.includes('session.put(') ||

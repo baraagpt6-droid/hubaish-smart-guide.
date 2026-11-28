@@ -13,6 +13,11 @@ on:
           - publish_approved_release
         default: verify_only
         required: true
+      expected_version_code:
+        description: Exact existing versionCode to approve
+        type: string
+        required: false
+        default: '416'
 
 permissions:
   contents: read
@@ -33,22 +38,70 @@ jobs:
       PLAY_MODE: ${{ github.event_name == 'push' && 'preview_draft' || inputs.mode || 'verify_only' }}
     outputs:
       version_name: ${{ steps.play-release.outputs.version_name }}
-      version_code: ${{ steps.play-release.outputs.version_code }}
-      track: ${{ steps.play-release.outputs.track }}
-      release_status: ${{ steps.play-release.outputs.release_status }}
+      version_code: ${{ steps.play-release.outputs.version_code || steps.approved-release.outputs.version_code }}
+      track: ${{ steps.play-release.outputs.track || env.PLAY_TRACK }}
+      release_status: ${{ steps.play-release.outputs.release_status || steps.approved-release.outputs.release_status }}
     steps:
-      - name: Checkout main
+      - name: Checkout pushed commit
         uses: actions/checkout@v4
         with:
-          ref: main
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+
+      - name: Resolve release mode and one-shot approval signal
+        id: release-mode
+        shell: bash
+        env:
+          INITIAL_PLAY_MODE: ${{ env.PLAY_MODE }}
+          MANUAL_EXPECTED_VERSION_CODE: ${{ github.event.inputs.expected_version_code || '416' }}
+        run: |
+          set -euo pipefail
+          mode="$INITIAL_PLAY_MODE"
+          expected_code="$MANUAL_EXPECTED_VERSION_CODE"
+          if [[ "$GITHUB_EVENT_NAME" == "push" ]]; then
+            mode="preview_draft"
+            expected_code=""
+            if [[ -f ".promote-416" ]]; then
+              marker_value="$(tr -d '[:space:]' < .promote-416)"
+              [[ "$marker_value" == "416" ]] || {
+                echo "::error::.promote-416 must contain exactly versionCode 416."
+                exit 1
+              }
+              before_sha="$(jq -r '.before // ""' "$GITHUB_EVENT_PATH")"
+              [[ "$before_sha" =~ ^[0-9a-f]{40}$ ]] || {
+                echo "::error::Push event did not provide a valid parent commit."
+                exit 1
+              }
+              if ! git cat-file -e "${before_sha}:.promote-416" 2>/dev/null; then
+                mode="publish_approved_release"
+                expected_code="416"
+                echo "One-shot marker was newly added by this push. AAB creation and upload will be skipped."
+              else
+                echo "Marker already existed in parent commit; retaining the default draft-preview mode."
+              fi
+            fi
+          fi
+          if [[ "$mode" == "publish_approved_release" ]]; then
+            [[ "$expected_code" =~ ^[1-9][0-9]*$ ]] || {
+              echo "::error::An explicit positive expected_version_code is required."
+              exit 1
+            }
+          fi
+          echo "mode=$mode" >> "$GITHUB_OUTPUT"
+          echo "expected_version_code=$expected_code" >> "$GITHUB_OUTPUT"
+          echo "Resolved mode=$mode; expected versionCode=${expected_code:-not applicable}."
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '22'
 
+      - name: Validate Play helpers on the approval-only path
+        if: steps.release-mode.outputs.mode == 'publish_approved_release'
+        run: python3 -m py_compile scripts/promote-play-draft.py scripts/monitor-play-status.py
+
       - name: Install icon rendering dependencies
-        if: env.PLAY_MODE != 'publish_approved_release'
+        if: steps.release-mode.outputs.mode != 'publish_approved_release'
         run: |
           set -euo pipefail
           for source in /etc/apt/sources.list.d/*; do
@@ -60,55 +113,55 @@ jobs:
           sudo apt-get install -y python3-cairosvg python3-pil fonts-noto-core
 
       - name: Install app dependencies
-        if: env.PLAY_MODE != 'publish_approved_release'
+        if: steps.release-mode.outputs.mode != 'publish_approved_release'
         run: npm install --no-audit --no-fund
 
       - name: Generate PWA and Capacitor icon source images
-        if: env.PLAY_MODE != 'publish_approved_release'
+        if: steps.release-mode.outputs.mode != 'publish_approved_release'
         run: python3 scripts/generate-icons.py
 
       - name: Run project build and verification
-        if: env.PLAY_MODE != 'publish_approved_release'
+        if: steps.release-mode.outputs.mode != 'publish_approved_release'
         run: npm run build
 
       - name: Install Playwright for app screenshots and feature graphic
-        if: env.PLAY_MODE != 'publish_approved_release'
+        if: steps.release-mode.outputs.mode != 'publish_approved_release'
         run: npm install --no-save --package-lock=false playwright@1.56.1
 
       - name: Install Chromium
-        if: env.PLAY_MODE != 'publish_approved_release'
+        if: steps.release-mode.outputs.mode != 'publish_approved_release'
         run: npx playwright install --with-deps chromium
 
       - name: Audit navigation, responsive layouts, offline cache and Cloudflare Worker
-        if: env.PLAY_MODE != 'publish_approved_release'
+        if: steps.release-mode.outputs.mode != 'publish_approved_release'
         run: node scripts/audit-runtime.mjs
 
       - name: Render Arabic and English feature graphic
-        if: env.PLAY_MODE != 'publish_approved_release'
+        if: steps.release-mode.outputs.mode != 'publish_approved_release'
         run: node scripts/render-play-feature-graphic.mjs
 
       - name: Generate Google Play listing graphics
-        if: env.PLAY_MODE != 'publish_approved_release'
+        if: steps.release-mode.outputs.mode != 'publish_approved_release'
         run: python3 scripts/prepare-play-store-assets.py
 
       - name: Verify Play listing text and graphics
-        if: env.PLAY_MODE != 'publish_approved_release'
+        if: steps.release-mode.outputs.mode != 'publish_approved_release'
         run: node scripts/verify-play-store.mjs
 
       - name: Capture actual app screens in Arabic and English
-        if: env.PLAY_MODE != 'publish_approved_release'
+        if: steps.release-mode.outputs.mode != 'publish_approved_release'
         run: node scripts/capture-play-screenshots.mjs
 
       - name: Normalize screenshots to RGB PNG
-        if: env.PLAY_MODE != 'publish_approved_release'
+        if: steps.release-mode.outputs.mode != 'publish_approved_release'
         run: python3 scripts/normalize-play-screenshots.py
 
       - name: Validate all Play phone screenshots
-        if: env.PLAY_MODE != 'publish_approved_release'
+        if: steps.release-mode.outputs.mode != 'publish_approved_release'
         run: node scripts/verify-play-store.mjs --require-screenshots
 
       - name: Confirm target and existing upload-signing setup
-        if: env.PLAY_MODE == 'preview_draft'
+        if: steps.release-mode.outputs.mode == 'preview_draft'
         shell: bash
         env:
           KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
@@ -130,7 +183,7 @@ jobs:
           echo "Repository, package, Closed-testing preference and all four upload-signing secrets are present."
 
       - name: Authenticate to Google Cloud using GitHub OIDC and WIF
-        if: env.PLAY_MODE == 'preview_draft' || env.PLAY_MODE == 'publish_approved_release'
+        if: steps.release-mode.outputs.mode == 'preview_draft' || steps.release-mode.outputs.mode == 'publish_approved_release'
         id: google-auth
         uses: google-github-actions/auth@v2
         with:
@@ -142,66 +195,68 @@ jobs:
           access_token_scopes: https://www.googleapis.com/auth/androidpublisher
 
       - name: Install Google Play API client dependencies
-        if: env.PLAY_MODE == 'preview_draft' || env.PLAY_MODE == 'publish_approved_release'
+        if: steps.release-mode.outputs.mode == 'preview_draft' || steps.release-mode.outputs.mode == 'publish_approved_release'
         run: python3 -m pip install --disable-pip-version-check "google-auth>=2.40,<3" "requests>=2.32,<3"
 
       - name: Discover actual Closed-testing track and next Play versionCode
-        if: env.PLAY_MODE == 'preview_draft'
+        if: steps.release-mode.outputs.mode == 'preview_draft'
         id: play-release
         env:
           PLAY_PACKAGE_NAME: ${{ env.PLAY_PACKAGE_NAME }}
           PLAY_TRACK: ${{ env.PLAY_TRACK }}
         run: python3 scripts/resolve-play-release.py
 
-      - name: Publish an approved existing Closed-testing draft
-        if: env.PLAY_MODE == 'publish_approved_release'
+      - name: Publish the explicitly requested existing Closed-testing draft
+        id: approved-release
+        if: steps.release-mode.outputs.mode == 'publish_approved_release'
         env:
           PLAY_PACKAGE_NAME: ${{ env.PLAY_PACKAGE_NAME }}
           PLAY_TRACK: ${{ env.PLAY_TRACK }}
+          PLAY_EXPECTED_VERSION_CODE: ${{ steps.release-mode.outputs.expected_version_code }}
         run: python3 scripts/promote-play-draft.py
 
       - name: Set up Ruby and Fastlane
-        if: env.PLAY_MODE != 'publish_approved_release'
+        if: steps.release-mode.outputs.mode != 'publish_approved_release'
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: '3.3'
           bundler-cache: true
 
       - name: Set up Java
-        if: env.PLAY_MODE != 'publish_approved_release'
+        if: steps.release-mode.outputs.mode != 'publish_approved_release'
         uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: '21'
 
       - name: Set up Android SDK
-        if: env.PLAY_MODE != 'publish_approved_release'
+        if: steps.release-mode.outputs.mode != 'publish_approved_release'
         uses: android-actions/setup-android@v4
         with:
           packages: 'platform-tools'
 
       - name: Create the Capacitor Android project
-        if: env.PLAY_MODE != 'publish_approved_release'
+        if: steps.release-mode.outputs.mode != 'publish_approved_release'
         run: npx cap add android
 
       - name: Generate native launcher and splash assets
-        if: env.PLAY_MODE != 'publish_approved_release'
+        if: steps.release-mode.outputs.mode != 'publish_approved_release'
         run: npx capacitor-assets generate --android
 
       - name: Sync Capacitor Android
-        if: env.PLAY_MODE != 'publish_approved_release'
+        if: steps.release-mode.outputs.mode != 'publish_approved_release'
         run: npx cap sync android
 
       - name: Patch Android app label and system bars
-        if: env.PLAY_MODE != 'publish_approved_release'
+        if: steps.release-mode.outputs.mode != 'publish_approved_release'
         run: python3 scripts/patch-android-config.py
 
       - name: Apply generated app launcher icons
-        if: env.PLAY_MODE != 'publish_approved_release'
+        if: steps.release-mode.outputs.mode != 'publish_approved_release'
         run: python3 scripts/apply-android-icons.py
 
       - name: Build and sign the Android App Bundle for Closed testing
-        if: env.PLAY_MODE == 'preview_draft'
+        if: steps.release-mode.outputs.mode == 'preview_draft'
         id: signed-release
         shell: bash
         env:
@@ -318,7 +373,7 @@ jobs:
           echo "Signed AAB ready: versionName=$VERSION_NAME versionCode=$ANDROID_VERSION_CODE sha256=$AAB_SHA256"
 
       - name: Build debug APK for verify-only runs
-        if: env.PLAY_MODE == 'verify_only'
+        if: steps.release-mode.outputs.mode == 'verify_only'
         shell: bash
         run: |
           set -euo pipefail
@@ -337,7 +392,7 @@ jobs:
           cp android/app/build/outputs/apk/debug/app-debug.apk release-out/hubaish-smart-guide-debug.apk
 
       - name: Upload the AAB and bilingual Play listing artifacts
-        if: env.PLAY_MODE == 'preview_draft'
+        if: steps.release-mode.outputs.mode == 'preview_draft'
         uses: actions/upload-artifact@v4
         with:
           name: hubaish-play-closed-testing
@@ -349,7 +404,7 @@ jobs:
           retention-days: 30
 
       - name: Upload the debug APK validation artifact
-        if: env.PLAY_MODE == 'verify_only'
+        if: steps.release-mode.outputs.mode == 'verify_only'
         uses: actions/upload-artifact@v4
         with:
           name: hubaish-play-verify-only
@@ -358,7 +413,7 @@ jobs:
           retention-days: 14
 
       - name: Upload the signed AAB, listing, graphics and screenshots to Closed testing
-        if: env.PLAY_MODE == 'preview_draft'
+        if: steps.release-mode.outputs.mode == 'preview_draft'
         env:
           AAB_PATH: release-out/hubaish-smart-guide.aab
           PLAY_TRACK: ${{ steps.play-release.outputs.track }}
@@ -367,7 +422,7 @@ jobs:
         run: bundle exec fastlane android upload_closed_testing
 
       - name: Verify the committed Closed-testing release and protect Production
-        if: env.PLAY_MODE == 'preview_draft'
+        if: steps.release-mode.outputs.mode == 'preview_draft'
         env:
           PLAY_PACKAGE_NAME: com.hubaish.guide
           PLAY_TRACK: ${{ steps.play-release.outputs.track }}
@@ -380,12 +435,12 @@ jobs:
         if: success()
         shell: bash
         env:
-          PLAY_MODE: ${{ env.PLAY_MODE }}
+          PLAY_MODE: ${{ steps.release-mode.outputs.mode }}
           PLAY_PACKAGE_NAME: ${{ env.PLAY_PACKAGE_NAME }}
           PLAY_TRACK: ${{ env.PLAY_TRACK }}
           PLAY_VERSION_NAME: ${{ steps.play-release.outputs.version_name }}
-          PLAY_VERSION_CODE: ${{ steps.play-release.outputs.version_code }}
-          PLAY_RELEASE_STATUS: draft
+          PLAY_VERSION_CODE: ${{ steps.play-release.outputs.version_code || steps.approved-release.outputs.version_code }}
+          PLAY_RELEASE_STATUS: ${{ steps.approved-release.outputs.release_status || 'draft' }}
           AAB_SHA256: ${{ steps.signed-release.outputs.aab_sha256 }}
         run: |
           {
@@ -402,9 +457,12 @@ jobs:
               echo "- Production track changed: **No — verified unchanged**"
               echo "- Review gate: **Draft only** — this upload is not published to testers until the separate manual approval action."
             elif [[ "$PLAY_MODE" == "publish_approved_release" ]]; then
-              echo "- Result: existing Closed-testing draft promoted by explicit manual dispatch."
+              echo "- Result: requested Closed-testing draft promoted and verified by a fresh API read-back."
               echo "- Track: \`$PLAY_TRACK\`"
-              echo "- Production track changed: **No**"
+              echo "- versionCode: \`$PLAY_VERSION_CODE\`"
+              echo "- Release status: **$PLAY_RELEASE_STATUS**"
+              echo "- AAB built or uploaded: **No**"
+              echo "- Production track changed: **No — not accessed**"
             else
               echo "- Result: verification-only build succeeded. No Google Play upload was attempted."
             fi

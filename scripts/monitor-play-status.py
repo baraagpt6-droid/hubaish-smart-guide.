@@ -51,13 +51,6 @@ def version_codes(releases):
     return sorted(values)
 
 
-def release_for_code(releases, version_code):
-    for release in releases or []:
-        if version_code in version_codes([release]):
-            return release
-    return None
-
-
 def status_label(status):
     return {
         "completed": "مكتمل على مسار الاختبار",
@@ -114,20 +107,31 @@ def main():
         fail(f"Expected one {EXPECTED_TRACK} track in Google Play API, found {len(matching)}.")
     target = matching[0]
     releases = target.get("releases") or []
-    code_413 = release_for_code(releases, 413)
-    code_414 = release_for_code(releases, 414)
-
-    active_codes = set()
-    for release in releases:
-        if str(release.get("status") or "").casefold() in {"completed", "inprogress"}:
-            active_codes.update(version_codes([release]))
-    effective_code = max(active_codes, default=None)
-
-    drafts = [
-        {"name": str(release.get("name") or ""), "versionCodes": version_codes([release])}
-        for release in releases
-        if str(release.get("status") or "").casefold() == "draft"
+    active_releases = [
+        release for release in releases
+        if str(release.get("status") or "").casefold() in {"completed", "inprogress"}
+        and version_codes([release])
     ]
+    draft_releases = [
+        release for release in releases
+        if str(release.get("status") or "").casefold() == "draft"
+        and version_codes([release])
+    ]
+    latest_active = max(active_releases, key=lambda item: max(version_codes([item]), default=0), default=None)
+    latest_draft = max(draft_releases, key=lambda item: max(version_codes([item]), default=0), default=None)
+    effective_code = max(
+        (code for release in active_releases for code in version_codes([release])),
+        default=None,
+    )
+    drafts = [
+        {
+            "name": str(release.get("name") or ""),
+            "versionCodes": version_codes([release]),
+            "latestVersionCode": max(version_codes([release]), default=None),
+        }
+        for release in draft_releases
+    ]
+    drafts.sort(key=lambda item: item["latestVersionCode"] or 0, reverse=True)
 
     production_rows = [row for row in rows if str(row.get("track") or "").casefold() == "production"]
     production_releases = [release for row in production_rows for release in (row.get("releases") or [])]
@@ -178,9 +182,12 @@ def main():
         "packageName": package,
         "track": EXPECTED_TRACK,
         "effectiveVersionCode": effective_code,
-        "versionCode413": summary_release(code_413),
-        "versionCode414": summary_release(code_414),
-        "draftReleaseCount": len(drafts),
+        "activeVersionCodes": sorted({
+            code for release in active_releases for code in version_codes([release])
+        }),
+        "latestActiveRelease": summary_release(latest_active),
+        "latestDraftRelease": summary_release(latest_draft),
+        "draftReleaseCount": len(draft_releases),
         "drafts": drafts,
         "trackReadyByApi": bool(effective_code),
         "trackReleases": safe_release_rows([target]),
@@ -202,31 +209,17 @@ def main():
         f"- مسار الاختبار: {EXPECTED_TRACK}",
         f"- الإصدار الفعّال وفق حالة المسار: {effective_code if effective_code is not None else 'لا يوجد إصدار مكتمل أو قيد الطرح'}",
         "",
-        "## حالة الإصدارات المطلوبة",
+        "## أحدث الإصدارات",
         "",
-        "| الإصدار | حالة Google Play API |",
-        "|---|---|",
+        f"- أحدث إصدار فعّال: {max(version_codes([latest_active]), default='لا يوجد') if latest_active else 'لا يوجد'}",
+        f"- حالته: {latest_active.get('status') if latest_active else 'لا توجد حالة'}",
+        f"- أحدث مسودة: {max(version_codes([latest_draft]), default='لا توجد مسودة') if latest_draft else 'لا توجد مسودة'}",
+        f"- عدد المسودات ذات أرقام الإصدارات: {len(draft_releases)}",
+        "",
     ]
-    for code, release in [(413, code_413), (414, code_414)]:
-        if release:
-            lines.append(f"| {code} | {status_label(release.get('status'))} ({release.get('status')}) |")
-        else:
-            lines.append(f"| {code} | غير موجود في بيانات المسار الحالي |")
-
     lines += ["", "## جاهزية المختبرين", ""]
-    if code_413 and str(code_413.get("status") or "").casefold() == "completed":
-        lines.append("- 413 حالته completed على مسار الاختبار. هذا يثبت اكتمال حالة الإصدار في سجل المسار، لكنه ليس حقلاً مستقلاً يؤكد قرار مراجعة السياسات.")
-        lines.append("- واجهة Edits.tracks لا تعرض حالة طابور المراجعة أو قائمة حسابات المختبرين. يجب أن تكون صفحة التطبيق بحالة Published وأن يكون حساب المختبر ضمن قائمة الاختبار حتى يعمل رابط الانضمام.")
-    elif code_413:
-        lines.append(f"- 413 ليس بحالة مكتملة؛ الحالة الحالية {code_413.get('status') or 'غير محددة'}.")
-    else:
-        lines.append("- لم يظهر 413 في المسار المحدد.")
-    if code_414 and str(code_414.get("status") or "").casefold() == "draft":
-        lines.append("- 414 مسودة معاينة، وليست الإصدار المتاح للمختبرين.")
-    elif code_414:
-        lines.append(f"- حالة 414 الحالية هي {code_414.get('status') or 'غير محددة'}.")
-    else:
-        lines.append("- لا يوجد سجل 414 في المسار الحالي.")
+    lines.append("- حالة المسار هي حالة Google Play API فقط. لا تثبت وحدها انتهاء مراجعة السياسات أو أهلية كل حساب مختبر.")
+    lines.append("- واجهة Edits.tracks لا تعرض حالة طابور المراجعة أو قائمة حسابات المختبرين. يجب أن يكون حساب المختبر ضمن قائمة الاختبار وأن تكون صفحة التطبيق مؤهلة للانضمام.")
 
     lines += ["", "## تعارض المسارات", ""]
     if alternate_track_releases:
@@ -237,12 +230,12 @@ def main():
     if ignored_empty_tracks:
         for row in ignored_empty_tracks:
             lines.append(f"- المسار {row['track']} يحتوي سجلاً بلا versionCode ({', '.join(row['statuses'])}); لم يُستخدم ولم يُعدّل.")
-    if len(drafts) == 1:
-        lines.append("- يوجد مسودة واحدة على المسار المحدد؛ خيار الاعتماد اليدوي يستطيع استهدافها.")
-    elif len(drafts) == 0:
-        lines.append("- لا توجد مسودة حالياً على المسار المحدد.")
+    if len(draft_releases) == 1:
+        lines.append("- يوجد سجل مسودة واحد ذو versionCode على المسار المحدد.")
+    elif len(draft_releases) == 0:
+        lines.append("- لا توجد مسودات ذات versionCode على المسار المحدد.")
     else:
-        lines.append(f"- يوجد {len(drafts)} مسودات على المسار المحدد. الاعتماد اليدوي متوقف احترازياً حتى يبقى اختيار واحد فقط.")
+        lines.append(f"- يوجد {len(draft_releases)} مسودات ذات versionCode؛ لا يُختار إصدار للاعتماد تلقائياً.")
 
     lines += [
         "",

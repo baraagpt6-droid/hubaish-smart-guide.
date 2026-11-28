@@ -8,6 +8,7 @@ on:
       - 'docs/google-play-setup.md'
       - 'AGENTS.md'
       - 'PROJECT_MEMORY.md'
+      - '.promote-416'
       - 'fastlane/**'
       - 'scripts/resolve-play-release.py'
       - 'scripts/monitor-play-status.py'

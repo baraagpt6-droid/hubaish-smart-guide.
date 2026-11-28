@@ -41,12 +41,12 @@ Do not generate or rotate an upload key without an explicit migration plan. Vali
 - Package: com.hubaish.guide.
 - The only permitted Google Play track is exactly Hubaish Closed Test.
 - PLAY_TRACK is pinned in the workflow. Do not replace it with a repository variable or add a fallback to alpha, beta, internal, open, QA, form-factor, or Production tracks.
-- Every push to main automatically runs the preview_draft mode.
-- Every automatic AAB upload must use release status draft, regardless of prior reviewed releases.
-- A draft is a preview and is not the same as a published or tester-available release.
-- workflow_dispatch choices are verify_only, preview_draft, and publish_approved_release. The default is verify_only.
-- publish_approved_release is an explicit human action. It promotes exactly one existing draft on Hubaish Closed Test to completed; it does not build or upload another AAB.
-- Manual promotion must fail closed if there are zero or multiple drafts, if the draft has no versionCodes, or if package/track identity differs from this project.
+- Every push to main defaults to preview_draft.
+- A push-triggered exception is permitted only when root marker `.promote-416` is newly added in that push (absent from its parent commit) and contains exactly `416`. This approval-only path skips app dependencies, app build, screenshots, signing, AAB creation, artifacts and upload.
+- The marker is one-shot by parent-commit comparison. Its continued presence does not affect future pushes; later pushes return to preview_draft.
+- workflow_dispatch defaults to verify_only and supports an explicit expected_version_code for promotion.
+- Promotion requires exactly one target-track draft whose complete versionCodes list equals the explicit expected code. It fails closed on draft count, duplicate code, package, repository, ref or track mismatch.
+- After commit, the promoter opens a fresh Play edit and verifies that the requested code is completed. It never builds or uploads an AAB.
 - Fastlane's automated upload lane must reject every release status other than draft.
 - Production is prohibited. No workflow, Fastlane lane, or helper may upload to, promote, modify, or publish on Production. A read-only Production versionCode snapshot is permitted only to prove that a Closed-testing upload did not alter Production.
 - Never infer Google Play review completion from a successful GitHub Actions run or API commit. Report the state returned by Google Play.
@@ -107,10 +107,10 @@ Do not generate or rotate an upload key without an explicit migration plan. Vali
 - Monitor entry point: scripts/monitor-play-status.py.
 - Run it manually with workflow_dispatch or automatically every day at 09:00 Asia/Kuala_Lumpur (01:00 UTC), and after each Google Play Closed Testing workflow run completes.
 - Monitor uses the same fixed WIF provider/service account and Android Publisher scope. It must remain read-only: open a temporary Play edit, GET tracks/bundles only, then discard that temporary edit. It must never PUT a track, commit a release, or promote a draft.
-- Report package com.hubaish.guide, exact track Hubaish Closed Test, versionCodes 413 and 414, active version, draft count, alternate testing tracks containing version codes, and Production status. It must call out that Edits.tracks does not expose a separate policy-review queue state or tester email list.
+- Report package com.hubaish.guide, exact track Hubaish Closed Test, latest active release, latest draft, draft count, alternate testing tracks containing version codes, and read-only Production status. Derive latest records dynamically from versionCodes; do not hardcode historical codes. Preserve the Edits.tracks review-queue and tester-list limitation.
 - Runtime quality check: scripts/audit-runtime.mjs. It verifies mobile/tablet overflow, language/navigation, Service Worker activation, cache contents, offline home rendering, browser errors, and read-only Cloudflare /health and /setup/status checks.
 - The Google Play preview workflow runs the runtime audit before generating/uploading its AAB. A failed app/UI/offline test must block the draft upload.
-- Do not change or remove release 413 as part of monitoring or runtime audit. Never modify Production.
+- Monitoring is read-only and must not alter releases. Never modify Production.
 - Any app-store listing or rollout change that could affect an active review must wait until the current release status has been checked; do not claim review completion from a track status alone.
 
 ## Build reliability and live monitor findings
