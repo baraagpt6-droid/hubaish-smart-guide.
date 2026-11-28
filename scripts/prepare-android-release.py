@@ -24,10 +24,10 @@ for gradle_file in android_dir.rglob("*.gradle"):
 
     def add_mirror(match):
         indent = match.group(1)
-        return indent + 'maven { url "' + maven_mirror + '" }\n' + indent + "mavenCentral()"
+        return indent + 'maven { url = uri("' + maven_mirror + '") }\n' + indent + "mavenCentral()"
 
     gradle_source, count = re.subn(
-        r"(?m)^(\s*)mavenCentral\s*\(\s*\)",
+        r"(?m)^([ \t]*)mavenCentral[ \t]*\([ \t]*\)",
         add_mirror,
         gradle_source,
     )
