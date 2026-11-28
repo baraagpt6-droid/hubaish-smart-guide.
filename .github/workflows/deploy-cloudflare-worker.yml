@@ -120,7 +120,15 @@ jobs:
               throw new Error('/setup/status returned HTTP 200 but setupRequired was invalid');
             }
 
-            console.log('PASS: production /health and /setup/status both returned HTTP 200.');
+            const live = await check('/api/live-content');
+            const collections = ['landmarks', 'historyEvents', 'subDistrictUpdates', 'subDistricts', 'historicalFigures', 'communityLinks'];
+            if (live.body.content?.schemaVersion !== 1 ||
+                !collections.every(key => Array.isArray(live.body.content?.[key])) ||
+                typeof live.body.updatedAt !== 'string' || !live.body.updatedAt) {
+              throw new Error('/api/live-content returned an invalid or incomplete live-content KV snapshot');
+            }
+            console.log('PASS: /api/live-content is public and returns the six Hubaish CMS collections from KV.');
+            console.log('PASS: production /health, /setup/status and /api/live-content checks passed.');
             console.log('PASS: health, ADMINS KV, GitHub CMS read, and SESSION_SECRET checks passed.');
             const photoUpload = await fetch(base + '/public/photo-submissions', {
               method: 'POST',
