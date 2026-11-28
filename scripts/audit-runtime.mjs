@@ -193,6 +193,16 @@ try {
     return route.continue();
   });
 
+  // Exercise the first-run cinematic intro explicitly; normal automated runs skip it.
+  await page.goto(baseUrl + '/?intro-test=1', { waitUntil: 'domcontentloaded', timeout: 30000 });
+  await page.locator('#appSplash').waitFor({ state: 'visible', timeout: 5000 });
+  if (!(await page.locator('#welcomeTitle').innerText()).includes('دليل حبيش الذكي') ||
+      !(await page.locator('#welcomeCopy').innerText()).includes('موسوعة رقمية لتاريخ ومعالم وعُزل')) {
+    throw new Error('The cinematic intro is missing its approved Hubaish title or subtitle.');
+  }
+  await page.locator('#welcomeSkipBtn').click();
+  await page.locator('#appSplash').waitFor({ state: 'detached', timeout: 3000 });
+
   const started = Date.now();
   const response = await page.goto(baseUrl, { waitUntil: 'domcontentloaded', timeout: 30000 });
   if (!response?.ok()) throw new Error('App shell returned HTTP ' + (response?.status() ?? 'no response'));
@@ -231,6 +241,16 @@ try {
   await page.locator('#globalSearchResults .search-result-card').first().waitFor({ state: 'visible', timeout: 10000 });
   if (!(await page.locator('#globalSearchResults').innerText()).includes('مصنعة وحاظة')) {
     throw new Error('Unified search did not return the Wuhaza heritage record.');
+  }
+  await globalSearch.fill('عزله جبل عميقه');
+  await page.locator('#globalSearchResults .search-result-card').first().waitFor({ state: 'visible', timeout: 10000 });
+  if (!(await page.locator('#globalSearchResults').innerText()).includes('جبل عميقة')) {
+    throw new Error('Arabic search normalization did not match عزله جبل عميقه to جبل عميقة.');
+  }
+  await globalSearch.fill('ظلمه');
+  await page.locator('#globalSearchResults .search-result-card').first().waitFor({ state: 'visible', timeout: 10000 });
+  if (!(await page.locator('#globalSearchResults').innerText()).includes('ظلمة')) {
+    throw new Error('Arabic search did not match the local spelling ظلمه to ظُلمة.');
   }
   await globalSearch.fill('آل الناهي');
   await page.locator('#globalSearchResults .search-result-card').first().waitFor({ state: 'visible', timeout: 10000 });
@@ -304,6 +324,33 @@ try {
   await page.locator('#openAiBtn').click();
   await page.locator('#aiModal.open').waitFor({ state: 'visible', timeout: 10000 });
   await page.evaluate(() => {
+    window.__mockSpeechText = 'مدرسة الزواحي';
+    class MockSpeechRecognition {
+      start() { this.onresult?.({ results: [[{ transcript: window.__mockSpeechText }]] }); this.onend?.(); }
+    }
+    Object.defineProperty(window, 'SpeechRecognition', { configurable: true, value: MockSpeechRecognition });
+    Object.defineProperty(window, 'webkitSpeechRecognition', { configurable: true, value: undefined });
+  });
+  await page.locator('#aiMicBtn').click();
+  const assistantReply = page.locator('#aiChatLog .chat-msg.assistant').last();
+  await assistantReply.waitFor({ state: 'visible', timeout: 10000 });
+  await page.waitForFunction(() => document.querySelector('#aiChatLog .assistant-action-row button')?.textContent?.includes('مدرسة الزواحي'), { timeout: 10000 });
+  const assistantReplyText = await assistantReply.innerText();
+  if (!assistantReplyText.includes('الزواحي')) throw new Error('Voice recognition did not auto-submit the Zawahi query to the assistant.');
+  const actionChip = page.locator('#aiChatLog .assistant-action-row button').first();
+  await actionChip.click();
+  await page.locator('#detailModal.open').waitFor({ state: 'visible', timeout: 5000 });
+  await page.locator('#detailModal [data-close="detailModal"]').click();
+  await page.locator('#detailModal').waitFor({ state: 'hidden', timeout: 5000 });
+  await page.evaluate(() => { window.__mockSpeechText = 'افتح بوابة المشرفين'; });
+  await page.locator('#aiMicBtn').click();
+  await page.locator('#aiModal').waitFor({ state: 'hidden', timeout: 5000 });
+  await page.locator('#view-more.active').waitFor({ state: 'visible', timeout: 5000 });
+  await page.locator('#cloudAdminCard').waitFor({ state: 'visible', timeout: 5000 });
+  if (await page.locator('#workerLoginForm').count() !== 1) throw new Error('Voice navigation to the admin portal must not bypass its login.');
+  await page.locator('#openAiBtn').click();
+  await page.locator('#aiModal.open').waitFor({ state: 'visible', timeout: 5000 });
+  await page.evaluate(() => {
     Object.defineProperty(window, 'SpeechRecognition', { configurable: true, value: undefined });
     Object.defineProperty(window, 'webkitSpeechRecognition', { configurable: true, value: undefined });
   });
@@ -313,10 +360,9 @@ try {
   }
   await page.locator('#aiInput').fill('مدرسة الزواحي');
   await page.locator('#aiForm button[type="submit"]').click();
-  const assistantReply = page.locator('#aiChatLog .chat-msg.assistant').last();
-  await assistantReply.waitFor({ state: 'visible', timeout: 10000 });
-  const assistantReplyText = await assistantReply.innerText();
-  if (!assistantReplyText.includes('الزواحي')) throw new Error('The local assistant did not answer the Zawahi school query.');
+  const fallbackReply = page.locator('#aiChatLog .chat-msg.assistant').last();
+  await fallbackReply.waitFor({ state: 'visible', timeout: 10000 });
+  if (!(await fallbackReply.innerText()).includes('الزواحي')) throw new Error('The local assistant did not answer the Zawahi school query.');
   await page.locator('#aiModal [data-close="aiModal"]').click();
   await page.locator('#aiModal').waitFor({ state: 'hidden', timeout: 5000 });
 
