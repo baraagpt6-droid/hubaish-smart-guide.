@@ -113,6 +113,7 @@ Fastlane must reject automated upload statuses other than draft. The normal uplo
 - First-admin bootstrap failures are limited to 6 per hashed source IP per 15 minutes. Login failures are limited to 8 per hashed IP/username and 30 per hashed IP per 15 minutes. Cloudflare KV counters are best-effort under concurrency because KV is eventually consistent; they are not a substitute for Cloudflare edge rate-limiting rules.
 - Worker 5xx replies expose generic errors only. Public records remain pending until a super_admin approves them; review/reject routes require the authenticated super_admin role.
 - Production CORS stays restricted to `https://baraagpt6-droid.github.io` and `capacitor://localhost`. Local Playwright does not expand production CORS; it proxies only read-only `/setup/status` through the Node runner, while Node independently checks live `/health` and `/setup/status`.
+- All Worker `/review/*` endpoints, including photo review, require `super_admin`; editor role cannot approve or delete moderation items. Anonymous community submissions are limited to 6 per hashed IP per 24 hours by KV (best-effort under KV eventual consistency).
 
 ## Verified historical baseline before this policy update
 On 2026-11-27, the previous Play workflow succeeded for this package:

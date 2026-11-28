@@ -200,7 +200,7 @@ async function route(req,env){
   await log(env,{actor:username,action:"login"});return json({token,expiresIn:ttl,user:{username,displayName:user.displayName,role:user.role}})
  }
  const actor=await auth(req,env);if(!actor)return json({error:"انتهت الجلسة أو بيانات الدخول غير صالحة."},401);
- if(path.startsWith("/review/community-submissions")&&actor.role!=="super_admin")return json({error:"يتطلب هذا الإجراء صلاحية المشرف العام."},403);
+ if(path.startsWith("/review/")&&actor.role!=="super_admin")return json({error:"يتطلب هذا الإجراء صلاحية المشرف العام."},403);
  if(req.method==="GET"&&path==="/review/community-submissions"){
   const keys=await env.ADMINS.list({prefix:"community-submission:",limit:100}),submissions=[];
   for(const key of keys.keys){

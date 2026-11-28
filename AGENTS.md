@@ -80,6 +80,7 @@ Do not generate or rotate an upload key without an explicit migration plan. Vali
 - Bootstrap failures are rate-limited per hashed source IP (6 per 15 minutes); login failures are limited per hashed IP/username (8) and per hashed IP (30) in a 15-minute window. These KV counters are best-effort under concurrent requests because KV is eventually consistent; do not describe them as strict edge-level rate limits.
 - Worker 5xx responses must not reveal internal exception messages. Keep public submission state pending and require authenticated super_admin approval for publish/reject actions.
 - Production Worker CORS allowlist is limited to the GitHub Pages origin and Capacitor app origin. Never add loopback or local preview origins to production CORS; proxy read-only Worker checks through the Node Playwright harness instead.
+- Every `/review/*` route, including visitor-photo review, is super_admin-only. Public community submissions are capped at 6 per 24 hours per hashed source IP using KV; because KV is eventually consistent, this remains a best-effort limit rather than an atomic global rate limiter.
 - Preserve provenance rules in README.md and app data.
 - App features include place search and filters, detail pages, favorites, a local assistant, itinerary tools, language selection, offline support, and estimated prayer times. Verify source before claiming any feature has shipped.
 - UI languages currently include Arabic, English, Turkish, and French.
