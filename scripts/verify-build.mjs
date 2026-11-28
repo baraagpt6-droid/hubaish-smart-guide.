@@ -6,7 +6,7 @@ import { fileURLToPath } from 'node:url';
 const root = resolve(fileURLToPath(new URL('../', import.meta.url)));
 const required = [
   'www/index.html','www/styles.css','www/app.js','www/upgrade-400.js','www/catalog.js','www/features.js',
-  'www/github-cms.js','www/gallery.js','www/knowledge.js','www/splash.js','www/data/live-content.json','www/data/heritage-knowledge.json','www/assets/heritage/1183-wood-inscription.webp','www/sw.js',
+  'www/github-cms.js','www/gallery.js','www/knowledge.js','www/splash.js','www/data/live-content.json','www/data/heritage-knowledge.json','www/data/geography-review.json','www/assets/heritage/1183-wood-inscription.webp','www/sw.js',
   'www/manifest.json','www/manifest.webmanifest','www/icons/icon.svg',
   'www/icons/icon-192.png','www/icons/icon-512.png','www/icons/apple-touch-icon.png',
   'www/icons/favicon-32.png','www/icons/photo-fallback.svg','www/assets/app.js',
@@ -43,6 +43,7 @@ const capacitor=JSON.parse(await read('capacitor.config.json'));
 const pkg=JSON.parse(await read('package.json'));
 const data=JSON.parse(await read('www/data/live-content.json'));
 const knowledge=JSON.parse(await read('www/data/heritage-knowledge.json'));
+const geographyReview=JSON.parse(await read('www/data/geography-review.json'));
 const geographyPayload=JSON.stringify(data)+"\\n"+JSON.stringify(knowledge)+"\\n"+readme;
 const forbiddenExternalLabels=["صهبان","وادي بناء","جبل هران","المحويت","سفيان","سحار","مخلاف الحبيشية","ذو حبيش","بنو حبيش"];
 for(const label of forbiddenExternalLabels)if(geographyPayload.includes(label))throw new Error('Out-of-scope geographic label found in public guide data: '+label);
@@ -66,7 +67,7 @@ for (const fragment of ['./styles.css','./splash.js','./app.js','./catalog.js','
 }
 if (!html.includes('id="appSplash"') || !html.includes('id="welcomeSkipBtn"') || !html.includes('welcome-graphic') || !html.includes('id="offlineIndicator"') ||
     !html.includes('id="privacyPolicyText"') || !html.includes('id="languagePickerMenu"') ||
-    !html.includes('id="readerFontIncrease"') || !html.includes('id="readerOpenFavorites"')) {
+    !html.includes('id="readerFontIncrease"') || !html.includes('id="readerOpenFavorites"') || !html.includes('id="welcomeGreeting"')) {
   throw new Error('Splash, offline, privacy, custom language or reading controls are missing.');
 }
 const loginStart=html.indexOf('<form id="workerLoginForm"'),loginEnd=html.indexOf('</form>',loginStart);
@@ -165,12 +166,12 @@ if(!css.includes('env(safe-area-inset-top')||!css.includes('calc(env(safe-area-i
 }
 if(capacitor.appName!=='دليل حبيش'||capacitor.plugins?.StatusBar?.style!=='LIGHT'||
    'overlaysWebView' in (capacitor.plugins?.StatusBar||{})||
-   capacitor.plugins?.StatusBar?.backgroundColor!=='#071711'||
+   capacitor.plugins?.StatusBar?.backgroundColor!=='#081C15'||
    manifest.short_name!=='دليل حبيش'||manifest.name!=='دليل حبيش'||
    manifestJson.short_name!=='دليل حبيش'||manifestJson.name!=='دليل حبيش'||
    !pkg.dependencies?.['@capacitor/status-bar']||
    !html.includes('<title>دليل حبيش | Hubaish Guide</title>')||
-   html.includes('دليل حبيش الذكي')||app.includes('Hubaish Smart Guide')||
+   app.includes('Hubaish Smart Guide')||
    features.includes('Hubaish Smart Guide')) {
   throw new Error('Unified app branding or native StatusBar configuration is inconsistent.');
 }
@@ -185,8 +186,8 @@ if(!css.includes('padding-top:max(9px,env(safe-area-inset-top')||
 }
 if(app.includes('innerHTML'))throw new Error('The app must build DOM nodes with textContent instead of innerHTML.');
 if(!prepareAndroid.includes('maven-central.storage-download.googleapis.com/maven2/')||!prepareAndroid.includes('mavenCentral()')||!prepareAndroid.includes('android_dir.rglob("*.gradle")'))throw new Error('Signed Android releases must place the GCS Maven Central mirror ahead of Maven Central in generated Gradle files and retain the fallback.');
-if(!sw.includes('hubaish-guide-v4.1.6')||!sw.includes("assets/heritage/1183-wood-inscription.webp")||!sw.includes("'splash.js'")||
-   !sw.includes("'github-cms.js'")||!sw.includes("'gallery.js'")||!sw.includes("'data/live-content.json'")) {
+if(!sw.includes('hubaish-guide-v4.1.7')||!sw.includes("assets/heritage/1183-wood-inscription.webp")||!sw.includes("'splash.js'")||
+   !sw.includes("'github-cms.js'")||!sw.includes("'gallery.js'")||!sw.includes("'data/live-content.json'")||!sw.includes("'data/geography-review.json'")) {
   throw new Error('The service-worker cache does not include the updated app shell.');
 }
 if(!worker.includes('LIVE_KEY="live-content:published"')||!worker.includes('/api/live-content')||!worker.includes('/admin/quick-add')||!worker.includes('publishLiveContent(env,live)'))throw new Error('Cloudflare live KV feed or Quick Add endpoint is missing.');
@@ -251,9 +252,9 @@ if(!workflow.includes('actions/checkout@v7')||!workflow.includes('actions/setup-
 }
 if(androidPatch.includes('android:windowOptOutEdgeToEdgeEnforcement')||
    !androidPatch.includes('WindowCompat.setDecorFitsSystemWindows(getWindow(), false)')||
-   !androidPatch.includes('Color.parseColor("#071711")')||
-   !androidPatch.includes('"android:statusBarColor": "#071711"')||
-   !androidPatch.includes('"android:windowSplashScreenBackground": "#071711"')||
+   !androidPatch.includes('Color.parseColor("#081C15")')||
+   !androidPatch.includes('"android:statusBarColor": "#081C15"')||
+   !androidPatch.includes('"android:windowSplashScreenBackground": "#081C15"')||
    !androidPatch.includes('WindowInsetsControllerCompat')||
    !androidPatch.includes('دليل حبيش')) {
   throw new Error('Android 15/16 edge-to-edge safe-area and app-name patch is incomplete.');
@@ -282,11 +283,11 @@ const catalogDistrictNames=[...catalogDistrictBlock.matchAll(/^\s*\['([^']+)'/gm
 if(JSON.stringify(appDistrictNames)!==JSON.stringify(expectedSubdistricts)||JSON.stringify(catalogDistrictNames)!==JSON.stringify(expectedSubdistricts))throw new Error('App and catalog must use the exact 22-name reference list from the attached report.');
 if(JSON.stringify(data.subDistricts.map(x=>x.district_name_ar))!==JSON.stringify(expectedSubdistricts)||data.districtProfile.subdistrict_list_status!=='reference_list_pending_district_approval')throw new Error('Live district list must be the report list and disclose pending district confirmation.');
 if(data.relatedHistoricalRegions!==undefined||data.landmarks.some(x=>['p1','p12','p15','jabal-dhi-harran','al-dhuhrah-historic-settlement'].includes(x.id))||data.historyEvents.some(x=>x.id==='h3'))throw new Error('Excluded historic region or removed landmark remains in live content.');
-if(knowledge.landmarkRecords.some(x=>x.id==='al-dhuhrah-historic-settlement')||JSON.stringify(knowledge).includes('مدينة الظاهرة')||JSON.stringify(data).includes('قرب قرية ملكان'))throw new Error('The unverified Dhuhrah/Malkan location is still exposed in public Hubaish content.');
+if(knowledge.landmarkRecords.some(x=>x.id==='al-dhuhrah-historic-settlement')||JSON.stringify(knowledge).includes('مدينة الظاهرة')||JSON.stringify(data).includes('قرب قرية ملكان')||!geographyReview.records?.some(x=>x.id==='dhuhrah-historical-geographic-review'&&x.visible_in_landmarks===false&&x.visible_in_current_geography===false))throw new Error('Dhuhrah must exist only in the separate non-public geography-review file, not in the public Hubaish index.');
 if(!app.includes('al-dhuhrah-historic-settlement')||!cms.includes('al-dhuhrah-historic-settlement')||!app.includes('excludedLegacyIds')||!cms.includes('LEGACY_EXCLUDED_IDS'))throw new Error('Legacy cached Dhuhrah records are not excluded from local or CMS snapshots.');
 if(/صهبان|Sahban|وادي بناء|Wadi Bina|جبل ذي هران|Jabal Dhi Harran/i.test([app,catalog,features,html,cms].join(' ')))throw new Error('Removed geographic records remain in runtime interface or assistant.');
 if(!app.includes('excludedLegacyIds')||!app.includes('excludedLegacyHistoryIds')||!cms.includes('LEGACY_EXCLUDED_IDS'))throw new Error('Saved local and CMS legacy content is not sanitized.');
-if(!html.includes('id="unverifiedHistoricalRecordsList"')||html.includes('relatedHistoricalRegionsList'))throw new Error('Unverified location section should remain but related-region panel must be removed.');
+if(!html.includes('id="unverifiedHistoricalRecordsList"')||html.includes('relatedHistoricalRegionsList')||!html.includes('id="knowledgeResearchNotesList"'))throw new Error('Unverified geography and source research sections must remain separated.');
 if(!html.includes('id="knowledgeLandmarksList"')||!html.includes('id="knowledgeSchoolsList"')||!html.includes('id="knowledgeWorksList"')||!html.includes('id="knowledgePeopleList"')||!html.includes('id="knowledgeFamiliesList"')||!html.includes('id="knowledgeArchiveList"')||!html.includes('id="knowledgeMarketList"'))throw new Error('Knowledge archive panels are incomplete.');
 if(!app.includes('bootReport.landmarks < 13'))throw new Error('Boot integrity threshold must match the 13 active core place cards.');
 if(knowledge.landmarkRecords?.length!==15||!Array.isArray(knowledge.additionalMosques)||!Array.isArray(knowledge.schools)||!Array.isArray(knowledge.people)||!Array.isArray(knowledge.families)||!Array.isArray(knowledge.archives))throw new Error('Knowledge content must include 15 in-district core landmarks, schools, people, families and archive records.');
@@ -482,8 +483,8 @@ if(!data.landmarks.some(x=>x.id==='zawahi-islamic-school'&&x.category==='school'
 const wuhaza=data.landmarks.find(x=>x.id==='hijra-wuhaza-learning-centre');
 if(!wuhaza||wuhaza.category!=='school'||wuhaza.status!=='documented'||wuhaza.scope!=='hubaish_district'||!wuhaza.source_text.includes('ص 2329'))throw new Error('Wuhaza learning centre record is invalid.');
 if(!Array.isArray(data.educationalRecords)||data.educationalRecords.length<7)throw new Error('Educational evidence catalogue is incomplete.');
-for(const id of ['isa-al-rubai-wuhazi','ismail-al-wuhazi','zayd-al-faishi','asad-ibn-wa-il','qasim-ibn-humayr-al-waili','sadiq-mohammed-al-nahi'])if(!data.historicalFigures.some(x=>x.id===id))throw new Error('A required historical figure profile is missing: '+id);
-if(!catalog.includes('162,023')||!catalog.includes('Engineer Sadiq Mohammed')||!catalog.includes('Shaykh Qasim ibn Humayr'))throw new Error('Assistant answers or additional profiles were not added to the catalog.');
+for(const id of ['isa-al-rubai-wuhazi','ismail-al-wuhazi','zayd-al-faishi','asad-ibn-wa-il','qasim-ibn-humayr-al-waili','sadiq-mohammed-al-nahi','muhammad-mansur-al-junaid-al-futuhi'])if(!data.historicalFigures.some(x=>x.id===id))throw new Error('A required historical figure profile is missing: '+id);
+if(!catalog.includes('162,023')||!catalog.includes('Engineer Sadiq Mohammed')||!catalog.includes('Shaykh Qasim ibn Humayr')||!catalog.includes('Al-Hajri cites Hamdan'))throw new Error('Assistant answers or additional profiles were not added to the catalog.');
 const zawahiRecord=data.landmarks.find(x=>x.id==='zawahi-islamic-school');
 const sadiq=data.historicalFigures.find(x=>x.id==='sadiq-mohammed-al-nahi');
 if(!zawahiRecord?.description_ar.includes('عبد الرحمن بن عمران')||!zawahiRecord?.description_ar.includes('يوسف بن علي بن عبيد الله بن الهيثم'))throw new Error('Al-Zawahi student evidence is incomplete.');
@@ -491,4 +492,9 @@ if(!sadiq?.biography_ar.includes('شلمبرجر')||sadiq?.biography_ar.includes
 
 if(!html.includes('id="geoAdminContext"')||!html.includes('id="geoTribalContext"')||!app.includes('geoAdminContext')||!app.includes('geoTribalContext'))throw new Error('Administrative and tribal profile panels are missing.');
 
-console.log('Build check passed: Hubaish 22-name reference list, 16-landmark knowledge archive, moderated community submissions, offline archive assets, four locales and draft-only Android workflow.');
+const uniqueLandmarkIds=new Set(knowledge.landmarkRecords.map(x=>x.id));
+if(uniqueLandmarkIds.size!==knowledge.landmarkRecords.length||knowledge.landmarkRecords.some(x=>!x.title||!x.category||!x.source||!x.era_year_ar||!x.cuzla||!x.source_year_ar||JSON.stringify(x).includes('undefined')||JSON.stringify(x).includes('null')))throw new Error('Heritage records must have unique IDs and complete title/category/source/era/cuzla/source-year metadata.');
+if(!knowledge.researchNotes?.some(x=>x.id==='al-hajri-tribal-reference-scope')||!knowledge.researchNotes?.some(x=>x.id==='al-nahi-family-disambiguation'))throw new Error('Historical genealogy references and family-name disambiguation notes are missing.');
+if(!html.includes('class="search-results-dock"')||!app.includes('fuzzyArabicMatch')||!app.includes('navigateByVoiceIntent')||!app.includes('assistant-action-row')||!knowledgeJs.includes('getLiveData')||!knowledgeJs.includes('getReviewRecords'))throw new Error('Instant search, voice intent, assistant actions or live/review knowledge wiring is missing.');
+if(!workflow.includes('.publish-422')||!workflow.includes('publish_422_release')||!workflow.includes('Verify completed 422, zero pending drafts and unchanged Production')||!playResolver.includes('version_code = 422')||!playPromoter.includes('expected == 422'))throw new Error('Guarded Google Play versionCode 422 workflow is incomplete.');
+console.log('Build check passed: Hubaish 22-name reference list, 15 sourced core landmarks, separate geography-review register, live KV knowledge index, voice/search assistant, offline assets, four locales and guarded 422 Closed Test workflow.');
