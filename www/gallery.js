@@ -13,7 +13,7 @@
   const el=(tag,cls,value)=>{const n=document.createElement(tag);if(cls)n.className=cls;if(value!==undefined)n.textContent=String(value);return n};
   const http=value=>{try{const u=new URL(String(value||''));return u.protocol==='https:'||u.protocol==='http:'}catch{return false}};
   const source=row=>http(row.image_source_url)?row.image_source_url:(http(row.source_url)?row.source_url:'');
-  const safeImage=value=>http(value)||/^\.\.\/assets\/heritage\/[A-Za-z0-9._-]+\.(?:jpg|jpeg|png|webp)$/i.test(String(value||''))||/^\.\/*assets\/heritage\/[A-Za-z0-9._-]+\.(?:jpg|jpeg|png|webp)$/i.test(String(value||''))||/^data:image\/(?:jpeg|png|webp);base64,[A-Za-z0-9+/]+={0,2}$/.test(String(value||''));
+  const safeImage=value=>http(value)||/^\.\/assets\/heritage\/[A-Za-z0-9._-]+\.(?:jpg|jpeg|png|webp)$/i.test(String(value||''))||/^data:image\/(?:jpeg|png|webp);base64,[A-Za-z0-9+/]+={0,2}$/.test(String(value||''));
   const localized=(row,key)=>String(row?.[key+'_'+lang().toLowerCase()]||row?.[key+'_ar']||row?.[key+'_en']||'');
   const galleryTitle=row=>String(row?.['image_title_'+lang().toLowerCase()]||row?.image_title_ar||localized(row,'title'));
   const district=row=>String(row['image_district_'+lang().toLowerCase()]||row.image_district_ar||localized(row,'location')||'');
