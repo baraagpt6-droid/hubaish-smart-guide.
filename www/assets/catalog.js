@@ -124,7 +124,7 @@
   ];
   const CACHE='hubaish_admin_translation_cache_v1',USAGE='hubaish_translation_usage_v1';
   const txt=(key,lang)=>((I[lang]||I.AR)[key]||I.AR[key]||key);
-  const norm=s=>window.normalizeArabicText?window.normalizeArabicText(s):String(s||'').toLowerCase().replace(/[إأآٱا]/g,'ا').replace(/ى/g,'ي').replace(/ة/g,'ه').replace(/ؤ/g,'و').replace(/ئ/g,'ي').replace(/[\\u064b-\\u065f\\u0670\\u06d6-\\u06edـ]/g,'').replace(/[^\\p{L}\\p{N}\\s]/gu,' ').replace(/\\s+/g,' ').trim();
+  const norm=s=>window.normalizeArabicText?window.normalizeArabicText(s):String(s||'').toLowerCase().replace(/[إأآٱا]/g,'ا').replace(/ى/g,'ي').replace(/ة/g,'ه').replace(/ؤ/g,'و').replace(/ئ/g,'ي').replace(/[\u064b-\u065f\u0670\u06d6-\u06edـ]/g,'').replace(/[^\p{L}\p{N}\s]/gu,' ').replace(/\s+/g,' ').trim();
   function cacheRead(){try{return JSON.parse(localStorage.getItem(CACHE)||'{}')}catch{return {}}}
   function itemKey(item){return JSON.stringify([item.title||'',item.body||'',item.loc||'',item.period||'',item.importance||''])}
   function localize(item,lang){
