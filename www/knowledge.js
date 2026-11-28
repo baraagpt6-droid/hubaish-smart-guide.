@@ -49,6 +49,7 @@
     fill($('knowledgeAuthorsList'),published.filter(x=>x.type==='author').map(x=>({...x,title:x.title,body:x.body,source:x.source})),x=>card(x.title,x.body,x.name+' · '+(x.source||'مساهمة منشورة'),'مساهمة راجعها المشرف'),'لا توجد كتب أو أبحاث مقدمة ومعتمدة بعد. استخدم نموذج النشر لإضافة عملك.');
     const honors=$('knowledgeHonorRoll');fill(honors,data.honorRoll,x=>card(x.name,x.contribution,x.source||'إسناد مقترح من فريق المشروع',x.status==='attributed_in_report'?'إسناد في التقرير':'بانتظار تأكيد المساهمة وموافقة صاحب الاسم'),'لا توجد أسماء إسناد.');
     const friday=$('knowledgeFridayMarket');if(friday){friday.replaceChildren(el('strong','market-day',data.market.day),el('p','knowledge-body',data.market.summary),el('p','knowledge-source',data.market.source),el('p','knowledge-status','موقع السوق وساعات نشاطه تحتاج إلى تأكيد محلي.'))}
+    renderPublicPlaces();
     renderReviewRecords();
   }
   function openArchiveViewer(item){
@@ -130,6 +131,43 @@
     if(!data)return[];
     const q=queryForSearch(query);if(!q)return[];
     return allRecords().filter(x=>matches([x.title,x.body,x.meta,x.source,x.location,x.cuzla,x.era].filter(Boolean).join(' '),q)).slice(0,16);
+  }
+  function heritageCategory(x){
+    const kind=safe(x.kind||x.category||x.title);
+    if(/حصن|قلعة|قلعه/.test(kind))return'fort';
+    if(/مسجد|قبة|قبه|جامع/.test(kind))return'mosque';
+    if(/جبل|وادي|مدرج|منظر/.test(kind))return'landform';
+    return'heritage';
+  }
+  function renderPublicPlaces(){
+    const root=$('knowledgePublicPlacesList'),filters=$('knowledgePublicPlaceFilters');
+    if(!root||!filters||!data)return;
+    const source=[...(data.landmarkRecords||[]),...(data.additionalMosques||[])],seen=new Set();
+    const rows=source.filter(x=>{const key=norm(x.title);if(!key||seen.has(key))return false;seen.add(key);return true;});
+    const labels={all:'الكل',fort:'الحصون والقلاع',mosque:'المساجد والقباب',landform:'الجبال والأودية',heritage:'معالم أخرى'};
+    const types=['all','fort','mosque','landform','heritage'];
+    filters.replaceChildren();
+    let active='all';
+    const draw=()=>{
+      const visible=active==='all'?rows:rows.filter(x=>heritageCategory(x)===active);
+      fill(root,visible,x=>{
+        const meta=[x.kind,x.location,x.cuzla?'العزلة: '+x.cuzla:'',x.era_year_ar,x.source].filter(Boolean).join(' · ');
+        const n=card(x.title,x.summary,meta,x.evidence||x.status||'إحالة تاريخية');
+        n.dataset.knowledgeCategory=heritageCategory(x);
+        const actions=el('div','card-actions');
+        const open=el('button','btn-sm','فتح البطاقة');open.type='button';
+        open.addEventListener('click',()=>window.HubaishOpenKnowledgeRecord?.(x.id));
+        const ask=el('button','btn-sm','اسأل المساعد');ask.type='button';ask.dataset.ask=x.title;
+        actions.append(open,ask);n.append(actions);return n;
+      },'لا توجد بطاقات في هذا التصنيف.');
+      filters.querySelectorAll('[data-heritage-filter]').forEach(b=>b.classList.toggle('active',b.dataset.heritageFilter===active));
+    };
+    types.forEach(type=>{
+      const b=el('button','filter-pill'+(type==='all'?' active':''),labels[type]);
+      b.type='button';b.dataset.heritageFilter=type;
+      b.addEventListener('click',()=>{active=type;draw();});filters.append(b);
+    });
+    draw();
   }
   function renderReviewRecords(){
     const root=$('unverifiedHistoricalRecordsList');if(!root||!reviewData)return;
