@@ -803,4 +803,4 @@ html{background:var(--hubaish-emerald)}
 
 .cloud-quick-preview-image{display:block;width:min(100%,520px);max-height:340px;object-fit:contain;margin:10px auto;border:1px solid var(--border);border-radius:14px;background:var(--elevated)}
 
-/* Hubaish 1.0.403 live sync and Quick Add preview deployment */
+/* Hubaish 1.0.403 verify-only Pages sync and preview deployment */
