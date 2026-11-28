@@ -114,6 +114,18 @@ async function route(req,env){
  const u=new URL(req.url),path=u.pathname;
  if(req.method==="OPTIONS")return new Response(null,{status:204});
  if(req.method==="GET"&&(path==="/health"||path==="/api/health"))return healthStatus(env);
+ if(req.method==="GET"&&path==="/public/quick-add-image"){
+  if(!env.ADMINS)return json({error:"Image store unavailable."},503);
+  const id=String(u.searchParams.get("id")||"");
+  if(!/^quick-[0-9a-f-]{36}$/i.test(id))return json({error:"Invalid image id."},400);
+  const stored=await env.ADMINS.get("quick-image:"+id,"json");
+  if(!stored||!/^image\/(?:jpeg|png|webp)$/.test(String(stored.mimeType||""))||typeof stored.dataUrl!=="string")return json({error:"Published image not found."},404);
+  const match=stored.dataUrl.match(/^data:(image\/(?:jpeg|png|webp));base64,([A-Za-z0-9+/]+={0,2})$/);
+  if(!match||match[1]!==stored.mimeType)return json({error:"Stored image is invalid."},415);
+  const bytes=Uint8Array.from(atob(match[2]),ch=>ch.charCodeAt(0));
+  const headers={...cors(req,env),...SECURITY_HEADERS,"Content-Type":match[1],"Content-Length":String(bytes.length),"Cache-Control":"public, max-age=86400, immutable","Cross-Origin-Resource-Policy":"cross-origin","X-Content-Type-Options":"nosniff"};
+  return new Response(bytes,{status:200,headers});
+ }
  if(req.method==="GET"&&path==="/api/live-content"){
   try{
    const content=await readLiveContent(env);
@@ -295,7 +307,7 @@ async function route(req,env){
     location_ar:location+"، مديرية حبيش",location_en:location+", Hubaish District",location_tr:location+", Hubaish",location_fr:location+", Hubaish",
     description_ar:body,description_en:body,description_tr:body,description_fr:body,
     source_text:source,source_url:source,
-    image_url:attachment.dataUrl,image_verified:true,image_category:category,
+    image_url:new URL("/public/quick-add-image?id="+encodeURIComponent(id),u.origin).href,image_verified:true,image_category:category,
     image_photographer:String(b.photographer).trim().slice(0,160),image_credit:String(b.photographer).trim().slice(0,160),
     image_license:String(b.license).trim().slice(0,120),image_source_url:source,
     image_alt_ar:title,image_alt_en:title,image_alt_tr:title,image_alt_fr:title,
@@ -304,7 +316,10 @@ async function route(req,env){
    });
    if(JSON.stringify(live).length>700000)return json({error:"ملف المحتوى تجاوز الحد المسموح."},413);
    live.updatedAt=now;live.updatedBy={username:actor.username,displayName:actor.displayName,role:actor.role};
-   const result=await ghWrite(env,live,actor),liveFeedUpdated=await publishLiveContent(env,live).catch(()=>false);
+   await env.ADMINS.put("quick-image:"+id,JSON.stringify(attachment),{expirationTtl:60*60*24*365});
+   let result;
+   try{result=await ghWrite(env,live,actor)}catch(error){await env.ADMINS.delete("quick-image:"+id);throw error}
+   const liveFeedUpdated=await publishLiveContent(env,live).catch(()=>false);
    await log(env,{actor:actor.username,action:"quick_add_photo",target:id,location,commit:result.commit?.sha||null,liveFeedUpdated});
    return json({ok:true,id,type,updatedAt:live.updatedAt,liveFeedUpdated},201);
   }
