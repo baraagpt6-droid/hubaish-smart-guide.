@@ -299,7 +299,16 @@
     adminStatus();
     try{documentData=await publicFetch();saveCache();applyCached()}catch{applyCached()}
     renderAdminList();
-    if(workerUser.role==='super_admin'){try{await loadWorkerAdminData()}catch(error){status('تم الدخول، لكن تعذر تحميل إدارة الحسابات: '+error.message,true)}}
+    if(workerUser.role==='super_admin'){
+      try{await loadWorkerAdminData()}
+      catch(error){
+        const networkFailure=error?.name==='AbortError'||/failed to fetch|networkerror|load failed|fetch failed/i.test(String(error?.message||''));
+        status(networkFailure
+          ?'وضع العمل المحلي دون اتصال بالسحابة. تم التحقق من دخولك، لكن تعذر تحميل أدوات المشرف. تحقق من الشبكة ثم حدّث اللوحة.'
+          :'تم الدخول، لكن تعذر تحميل إدارة الحسابات. '+String(error?.message||'حاول التحديث مرة أخرى.'),
+          !networkFailure);
+      }
+    }
     await loadCommunitySubmissions();
     adminStatus();status('تم تسجيل الدخول والتحقق من الصلاحيات.',false);toast('مرحباً '+(workerUser.displayName||workerUser.username));
   }
