@@ -137,6 +137,9 @@ if(!worker.includes('ITER=100000')||!worker.includes('hashIterations:ITER')||
 if(!cms.includes('function fetchWithTimeout(')||!cms.includes("'/auth/login'")||!worker.includes('path==="/health"')) {
   throw new Error('Worker login timeouts or the public production health endpoint are missing.');
 }
+if(!worker.includes('http://127.0.0.1:4174')||!wrangler.includes('http://127.0.0.1:4174'))throw new Error('Worker CORS must allow the exact local runtime-audit origin.');
+if(!catalog.includes("id:'h8'")||!catalog.includes("17 مايو 1919م")||!catalog.includes('الشيخ عبدالعزيز بن عبدالكريم الحداد'))throw new Error('The seventh evidence-led Hubaish history station is missing.');
+
 if(!css.includes('env(safe-area-inset-top')||!css.includes('var(--status-bar-height')||
    !css.includes('env(safe-area-inset-bottom')||!css.includes('.ai-fab-launcher')||!css.includes('bottom:calc(84px + env(safe-area-inset-bottom,0px))')) {
   throw new Error('Safe-area CSS or floating assistant removal is missing.');
@@ -161,7 +164,7 @@ if(!css.includes('padding-top:max(9px,env(safe-area-inset-top')||
    !css.includes('padding-bottom:max(6px,env(safe-area-inset-bottom')) {
   throw new Error('Android 15/16 top and bottom safe-area padding is missing.');
 }
-if(!sw.includes('hubaish-guide-v4.1.2')||!sw.includes("assets/heritage/1183-wood-inscription.webp")||!sw.includes("'splash.js'")||
+if(!sw.includes('hubaish-guide-v4.1.3')||!sw.includes("assets/heritage/1183-wood-inscription.webp")||!sw.includes("'splash.js'")||
    !sw.includes("'github-cms.js'")||!sw.includes("'gallery.js'")||!sw.includes("'data/live-content.json'")) {
   throw new Error('The service-worker cache does not include the updated app shell.');
 }

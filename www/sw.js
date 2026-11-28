@@ -1,6 +1,6 @@
 'use strict';
 
-const CACHE_NAME = 'hubaish-guide-v4.1.2';
+const CACHE_NAME = 'hubaish-guide-v4.1.3';
 const BASE_URL = new URL('./', self.registration.scope);
 const INDEX_URL = new URL('index.html', BASE_URL).href;
 const REMOTE_IMAGE_HOSTS = new Set(['upload.wikimedia.org', 'al-jandprovince.com', 'hekmahyemanya.com', 'hubaish-cms.baraag6.workers.dev']);
