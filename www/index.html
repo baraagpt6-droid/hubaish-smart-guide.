@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#081812">
+  <meta name="theme-color" content="#071711">
   <meta name="description" content="دليل مديرية حبيش، موسوعة جغرافية وتاريخية للعزل والمعالم والتاريخ والمجتمع ومواقيت الصلاة.">
   <meta name="referrer" content="strict-origin-when-cross-origin">
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https://upload.wikimedia.org https://al-jandprovince.com https://hekmahyemanya.com; connect-src 'self' https://api.mymemory.translated.net https://api.github.com https://raw.githubusercontent.com https://*.workers.dev; worker-src 'self'; manifest-src 'self'; upgrade-insecure-requests">
@@ -26,7 +26,27 @@
   <script src="./upgrade-400.js" defer></script>
 </head>
 <body>
-  <div id="appSplash" class="app-splash" role="status" aria-label="دليل حبيش"><div class="app-splash-inner"><img src="./icons/icon.svg" alt=""><strong>دليل حبيش</strong><span>HUBAISH SMART GUIDE</span></div></div>
+  <div id="appSplash" class="app-splash" role="dialog" aria-modal="true" aria-labelledby="welcomeTitle" aria-describedby="welcomeCopy">
+    <div class="app-splash-inner">
+      <svg class="welcome-graphic" viewBox="0 0 420 280" role="img" aria-label="قمم جبال حبيش وقوس حصن ذهبي">
+        <defs>
+          <linearGradient id="welcomeGold" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#fff0b0"/><stop offset=".48" stop-color="#d4af37"/><stop offset="1" stop-color="#9b6b1d"/></linearGradient>
+          <linearGradient id="welcomePeak" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#23704b"/><stop offset="1" stop-color="#0b281c"/></linearGradient>
+        </defs>
+        <path d="M18 214 92 124l38 42 56-94 58 92 48-56 112 106v38H18Z" fill="url(#welcomePeak)" stroke="#2b875c" stroke-width="2"/>
+        <path d="m42 218 86-34 57 18 72-35 58 35 60-25 27 17" fill="none" stroke="url(#welcomeGold)" stroke-width="3" opacity=".8"/>
+        <path d="M142 214v-61a68 68 0 0 1 136 0v61" fill="none" stroke="url(#welcomeGold)" stroke-width="13" stroke-linecap="round"/>
+        <path d="M160 214v-60a50 50 0 0 1 100 0v60" fill="none" stroke="#e5c66b" stroke-width="2" opacity=".8"/>
+        <path d="M210 91V59m0 0 20-10m-20 10-20-10" fill="none" stroke="url(#welcomeGold)" stroke-width="3" stroke-linecap="round"/>
+        <g fill="none" stroke="#d4af37" stroke-width="1.5" opacity=".6"><path d="M42 70h36m-18-18v36m-12-12 24-24m0 24L48 52"/><path d="M342 75h36m-18-18v36m-12-12 24-24m0 24-24-24"/></g>
+        <path d="M22 244Q105 223 210 244t188 0" fill="none" stroke="url(#welcomeGold)" stroke-width="2" opacity=".65"/>
+      </svg>
+      <span class="welcome-kicker">HUBAISH HERITAGE ARCHIVE</span>
+      <strong id="welcomeTitle">مرحباً بكم في رحاب مديرية حبيش</strong>
+      <p id="welcomeCopy">التاريخ، المعالم، والإنسان</p>
+      <button id="welcomeSkipBtn" class="welcome-skip" type="button">تخطي</button>
+    </div>
+  </div>
   <div id="offlineIndicator" class="offline-indicator" role="status" hidden>أنت دون اتصال. المحتوى المحفوظ متاح.</div>
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
   <div id="swUpdateBanner" class="sw-update-banner hidden" role="status" aria-live="polite"><span>يتوفر تحديث جديد</span><button id="swUpdateBtn" type="button" class="btn-secondary">اضغط للتحديث الفوري</button></div>
@@ -55,7 +75,19 @@
         <p class="hero-desc" data-i18n="heroDesc">موسوعة جغرافية وتاريخية لعزل حبيش وقراها ومعالمها ومجتمعها.</p>
         <div class="terrain-strip"><span class="terrain-icon"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m2 20 7-12 4 7 3-5 6 10H2ZM9 8l2-4 3 5"/></svg></span><div><strong data-i18n="westIbbMountains">جبال إب الغربية</strong><small>إحداثيات تقريبية 14°07′N · 44°05′E</small></div><b>1,550–2,450 م</b></div>
         <label class="search-box"><span aria-hidden="true">⌕</span><input id="globalSearchInput" class="search-input" type="search" placeholder="ابحث عن عزلة أو قرية أو حصن أو حدث..." data-i18n-placeholder="searchPlaceholder"><button class="mic-btn" id="globalMicBtn" type="button" aria-label="بحث صوتي"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="2.5" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3m-4 0h8"/></svg></button></label>
-        <div class="quick-searches"><button class="quick-chip" data-query="ظُلمة">مدينة ظُلمة</button><button class="quick-chip" data-query="مصنعة وحاظة">مصنعة وحاظة</button><button class="quick-chip" data-query="جبل عميقة">جبل عميقة</button><button class="quick-chip" data-query="وادي المعقاب">وادي المعقاب</button></div>
+        <div class="quick-searches" aria-label="بحث سريع في مواضع حبيش">
+          <button class="quick-chip" data-query="حصن يريس">حصن يريس</button>
+          <button class="quick-chip" data-query="عزلة شباع">عزلة شباع</button>
+          <button class="quick-chip" data-query="مسجد مروحة">مسجد مروحة</button>
+          <button class="quick-chip" data-query="مدرسة وحاظة">مدرسة وحاظة</button>
+        </div>
+        <div class="hero-shortcuts" aria-label="أقسام الدليل السريعة">
+          <button class="hero-shortcut" type="button" data-hero-tab="uzal"><span class="hero-shortcut-icon">⌘</span><strong>22 عزلة</strong></button>
+          <button class="hero-shortcut" type="button" data-hero-target="knowledgeLandmarksList"><span class="hero-shortcut-icon">⌂</span><strong>المعالم</strong></button>
+          <button class="hero-shortcut" type="button" data-hero-target="knowledgePeopleList"><span class="hero-shortcut-icon">♙</span><strong>الأعلام والأسر</strong></button>
+          <button class="hero-shortcut" type="button" data-hero-target="knowledgeArchiveList"><span class="hero-shortcut-icon">▤</span><strong>الأرشيف المحمي</strong></button>
+          <button class="hero-shortcut" type="button" data-hero-target="knowledgeMarketList"><span class="hero-shortcut-icon">◈</span><strong>السوق المفتوح</strong></button>
+        </div>
         <div class="bento-stats">
           <div class="stat-tile"><b class="stat-num" data-count="22">22</b><span data-i18n="statUzal">عزلة إدارية</span></div>
           <div class="stat-tile"><b class="stat-num" data-count="228">228</b><span data-i18n="statArea">كم² المساحة</span></div>
@@ -142,7 +174,7 @@
       <article class="item-card hub-panel"><h3 class="item-title" id="peopleSectionTitle">أعلام وشخصيات مرتبطة بحبيش ومخلاف وحاظة</h3><div id="peopleList" class="people-grid"></div></article>
       <section id="heritageKnowledgePanel" class="knowledge-panel">
 <header class="knowledge-header"><span class="tag tag-gold">HUBAISH KNOWLEDGE ARCHIVE</span><h3 class="item-title">موسوعة حبيش التاريخية والمجتمعية</h3><p class="item-body">المعلومات التالية من التقارير والمراجع المرفقة. تظهر درجة الدليل والموقع واسم المصدر في كل بطاقة، وتبقى المواضع المختلف عليها أو غير المعاينة موسومة بذلك.</p><p class="knowledge-status">قائمة العزل الـ22 تتبع قائمة التقرير المرجعي المؤرخ 27 نوفمبر 2026، وهي بانتظار اعتماد مديرية حبيش وتصويبها.</p></header>
-<section class="knowledge-section"><h4 class="item-title">المعالم التاريخية والأثرية – 16 بطاقة</h4><div id="knowledgeLandmarksList" class="knowledge-grid"></div><div id="knowledgeAdditionalMosquesList" class="knowledge-grid"></div></section>
+<section class="knowledge-section"><h4 class="item-title">المعالم التاريخية والأثرية داخل مديرية حبيش – 15 بطاقة</h4><div id="knowledgeLandmarksList" class="knowledge-grid"></div><div id="knowledgeAdditionalMosquesList" class="knowledge-grid"></div></section>
 <section class="knowledge-section"><h4 class="item-title">هجر العلم والمدارس ومجالس القراءة</h4><div id="knowledgeSchoolsList" class="knowledge-grid"></div></section>
 <section class="knowledge-section"><h4 class="item-title">مكتبة المؤلفات المنسوبة إلى علماء حبيش</h4><div id="knowledgeWorksList" class="knowledge-grid"></div><p class="small muted">تُفهرس الأعمال المنقولة مع اختلاف عناوينها، ولا تُعرض نسخة رقمية ما لم يودعها مالك الحقوق أو يثبت الإذن.</p><div id="knowledgeAuthorsList" class="knowledge-grid"></div></section>
 <section class="knowledge-section"><h4 class="item-title">الأعلام والسير المهنية</h4><div id="knowledgePeopleList" class="knowledge-grid"></div></section>
