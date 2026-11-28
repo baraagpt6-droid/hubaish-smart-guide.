@@ -107,6 +107,8 @@ def validate(rows):
     ]
     if in_progress:
         fail("An in-progress Hubaish Closed Test rollout exists. No change committed.")
+    if len(releases) == 1 and len(completed) == 1 and codes(completed[0]) == [ACTIVE_CODE]:
+        return target, None, completed[0]
     if len(releases) != 2 or len(drafts) != 1 or len(completed) != 1:
         fail(
             "Expected exactly two target-track release records: one draft 421 and one completed 420; "
@@ -138,41 +140,49 @@ def main():
     edits_url = f"{API}/applications/{app}/edits"
     target_url = f"{quote(TRACK, safe='')}"
     edit_url = open_edit(session, edits_url, "Opening exact 421 cleanup edit")
+    draft = None
+    removed = False
+    committed = False
     try:
         _, draft, completed = validate(read_tracks(session, edit_url))
-        retained = [dict(completed)]
-        saved = request(
-            session,
-            "PUT",
-            f"{edit_url}/tracks/{target_url}",
-            payload={"track": TRACK, "releases": retained},
-            purpose=f"Removing only draft versionCode {DRAFT_CODE}",
-        )
-        if str(saved.get("track") or TRACK) != TRACK:
-            fail("Google Play returned an unexpected track after cleanup.")
-        request(
-            session, "POST", f"{edit_url}:commit", payload={},
-            purpose=f"Committing removal of draft {DRAFT_CODE}",
-        )
+        if draft is not None:
+            retained = [dict(completed)]
+            saved = request(
+                session,
+                "PUT",
+                f"{edit_url}/tracks/{target_url}",
+                payload={"track": TRACK, "releases": retained},
+                purpose=f"Removing only draft versionCode {DRAFT_CODE}",
+            )
+            if str(saved.get("track") or TRACK) != TRACK:
+                fail("Google Play returned an unexpected track after cleanup.")
+            request(
+                session, "POST", f"{edit_url}:commit", payload={},
+                purpose=f"Committing removal of draft {DRAFT_CODE}",
+            )
+            committed = True
+            removed = True
     finally:
-        discard_edit(session, edit_url)
+        if not committed or draft is None:
+            discard_edit(session, edit_url)
 
     readback = open_edit(session, edits_url, "Opening fresh 421 cleanup read-back")
     try:
         rows = read_tracks(session, readback)
-        _, _, completed = validate_after_cleanup(rows)
+        _, completed = validate_after_cleanup(rows)
     finally:
         discard_edit(session, readback)
 
     print(
-        f"VERIFIED: draft {DRAFT_CODE} removed from {TRACK}; "
-        f"completed {ACTIVE_CODE} retained; Production versionCodes=0."
+        f"VERIFIED: draft {DRAFT_CODE} removed={removed} from {TRACK}; "
+        f"completed {ACTIVE_CODE} retained; versioned drafts=0; Production versionCodes=0."
     )
     print("Tester list, opt-in URL, tester eligibility and every other Play track were not changed.")
     output = os.environ.get("GITHUB_OUTPUT")
     if output:
         with open(output, "a", encoding="utf-8") as handle:
-            handle.write("removed_draft_version_code=421\n")
+            handle.write(f"removed_draft_version_code={'421' if removed else ''}\n")
+            handle.write(f"draft_421_removed={'true' if removed else 'false'}\n")
             handle.write("completed_version_code=420\n")
             handle.write("production_version_codes=0\n")
 

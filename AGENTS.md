@@ -151,3 +151,9 @@ Do not generate or rotate an upload key without an explicit migration plan. Vali
 - The exact `.retire-421` marker is a one-time request to remove only a single accidental draft versionCode 421 from `Hubaish Closed Test`.
 - `scripts/retire-421-preview-draft.py` must first confirm the same track contains exactly draft 421 plus completed 420, no in-progress release, and Production has no versionCodes. It must fail closed on any other state.
 - After update, a fresh Google Play API read-back must show only completed 420 and no versioned drafts. Do not access or modify tester lists, opt-in configuration, the 14-day closed-test requirement, Production, or another application/track.
+
+ 
+## 28 November 2026 — verified 421 draft cleanup
+- The one-shot `.retire-421` action was consumed. Read-only monitor run 46152895865 independently confirmed `Hubaish Closed Test` contains only completed versionCode 420 (version 1.0.403), zero drafts, and Production contains zero versionCodes.
+- Cleanup workflow 46152855285 reached its post-commit read-back; it reported failure only because the final Python result unpack expected three values where the verifier returned two. The helper is corrected and idempotent: a future exact invocation verifies the already-clean 420 state without writing anything.
+- The `.retire-421` marker is removed after completion. Do not repeat cleanup unless a fresh, exact draft 421 is independently observed.

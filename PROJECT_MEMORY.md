@@ -210,3 +210,10 @@ Successful preview build run 46038091477:
 - Google Play read-only monitor run 46152354276 found versionCode 420 / versionName 1.0.403 completed on Hubaish Closed Test, plus one unintended 421 draft. Production versionCodes remained empty.
 - The previous preview workflow was cancelled at the Play upload step, but the Play API read-back established that its upload had in fact created draft 421. Use only the exact one-shot `.retire-421` marker and the guarded script to remove it, preserving completed 420.
 - Cleanup must verify a fresh read-back, keep Production empty, and not access tester settings, tester allow-lists, opt-in state, any other track or the 14-day requirement.
+
+ 
+## 28 November 2026 — 421 preview draft cleanup confirmed
+- Canceled preview run 46151970957 nevertheless uploaded versionCode 421 as a draft on `Hubaish Closed Test`. Monitor run 46152354276 recorded completed 420 plus draft 421, with Production empty.
+- Guarded cleanup run 46152855285 updated only the exact `Hubaish Closed Test` track, retaining completed 420. Its post-commit read-back validated the no-draft/420-only state; the workflow summary then failed on a Python tuple-unpacking typo.
+- Independent read-only monitor run 46152895865 confirmed effectiveVersionCode 420, versionName 1.0.403, releaseStatus completed, draftReleaseCount 0 and Production versionCodes []. Tester settings and the 14-day requirement were not accessed or changed.
+- The cleanup script is corrected and idempotent. The consumed `.retire-421` marker is removed from the repository.
