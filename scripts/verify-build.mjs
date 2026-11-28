@@ -143,7 +143,15 @@ if(!worker.includes('ITER=100000')||!worker.includes('hashIterations:ITER')||
 if(!cms.includes('function fetchWithTimeout(')||!cms.includes("'/auth/login'")||!worker.includes('path==="/health"')) {
   throw new Error('Worker login timeouts or the public production health endpoint are missing.');
 }
-if(/http:\/\/localhost|https:\/\/localhost|127\.0\.0\.1/i.test(worker)||/http:\/\/localhost|https:\/\/localhost|127\.0\.0\.1/i.test(wrangler))throw new Error('Production Worker CORS must not allow loopback origins.');
+// Permit only Capacitor's exact Android WebView origin; arbitrary localhost ports and loopback hosts remain prohibited.
+const stripAndroidWebViewOrigin=value=>value.replace(/https:\/\/localhost(?=["',\s])/gi,"");
+if(/http:\/\/localhost|https:\/\/localhost|127\.0\.0\.1/i.test(stripAndroidWebViewOrigin(worker))||
+   /http:\/\/localhost|https:\/\/localhost|127\.0\.0\.1/i.test(stripAndroidWebViewOrigin(wrangler))) {
+  throw new Error('Production Worker CORS must not allow arbitrary loopback origins.');
+}
+if(!worker.includes('"https://localhost"')||!wrangler.includes('https://localhost')) {
+  throw new Error('Production Worker CORS must explicitly allow the exact Android Capacitor WebView origin.');
+}
 if(!runtimeAudit.includes("page.route(workerUrl + '/setup/status'")||!runtimeAudit.includes("await fetch(workerUrl + '/setup/status'"))throw new Error('The runtime audit must proxy the real read-only setup-status response through Node instead of widening production CORS.');
 if(!worker.includes('path.startsWith("/review/")&&actor.role!=="super_admin"')||worker.includes('path.startsWith("/review/community-submissions")&&actor.role!=="super_admin"'))throw new Error('Every review endpoint must require super_admin; editor roles must never change moderation state.');
 if(!worker.includes('community-submit-rate:')||!worker.includes('Number(rate.count||0)>=6')||!worker.includes('expirationTtl:86400'))throw new Error('Public community intake must have the hashed-IP daily rate limit.');
