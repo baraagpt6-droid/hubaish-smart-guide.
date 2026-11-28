@@ -105,6 +105,11 @@ def main():
                 "The one-shot 418 release may replace only the existing completed versionCode 416; "
                 f"found {prior_completed_codes}. No change committed."
             )
+        if expected == 419 and prior_completed_codes != [418]:
+            fail(
+                "The one-shot 419 release may replace only the existing completed versionCode 418; "
+                f"found {prior_completed_codes}. No change committed."
+            )
         if any(not codes(item) for _, item in completed_releases):
             fail("The existing completed target-track release has no versionCodes. No change committed.")
         if any(str(item.get("status") or "").casefold() == "inprogress" for item in releases):
