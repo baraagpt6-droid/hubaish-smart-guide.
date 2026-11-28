@@ -86,21 +86,52 @@ def main():
                   if str(item.get("status") or "").casefold() == "draft"]
         if len(drafts) != 1:
             fail(f"Expected exactly one draft on {EXPECTED_TRACK}; found {len(drafts)}.")
-        index, draft = drafts[0]
+        draft_index, draft = drafts[0]
         draft_codes = codes(draft)
         if draft_codes != [expected]:
             fail(f"Expected draft versionCodes [{expected}], received {draft_codes}. No change committed.")
-        duplicates = [item for i, item in enumerate(releases)
-                      if i != index and expected in codes(item)]
+
+        completed_releases = [
+            (index, item) for index, item in enumerate(releases)
+            if str(item.get("status") or "").casefold() == "completed"
+        ]
+        if len(completed_releases) > 1:
+            fail("The target track already contains multiple completed release records. No change committed.")
+        if any(not codes(item) for _, item in completed_releases):
+            fail("A completed target-track release has no versionCodes to retain. No change committed.")
+        if any(str(item.get("status") or "").casefold() == "inprogress" for item in releases):
+            fail("An in-progress release exists on the target track. Refusing to overlap rollouts.")
+
+        duplicates = [
+            item for index, item in enumerate(releases)
+            if index != draft_index and expected in codes(item)
+        ]
         if duplicates:
             fail(f"versionCode {expected} also exists in another target-track release. No change committed.")
 
-        updated = [dict(item) for item in releases]
-        updated[index]["status"] = "completed"
+        retained_codes = sorted({
+            code
+            for _, previous_completed in completed_releases
+            for code in codes(previous_completed)
+        })
+        merged_codes = sorted(set(retained_codes) | set(draft_codes))
+        promoted_release = dict(draft)
+        promoted_release["versionCodes"] = [str(code) for code in merged_codes]
+        promoted_release["status"] = "completed"
+
+        # Track update requests represent the desired release set. Retain all
+        # prior completed version codes in the single new completed release.
+        updated_releases = [
+            dict(item)
+            for index, item in enumerate(releases)
+            if index != draft_index
+            and str(item.get("status") or "").casefold() not in {"completed", "draft"}
+        ]
+        updated_releases.append(promoted_release)
         saved = request(
             session, "PUT", track_url,
-            payload={"track": EXPECTED_TRACK, "releases": updated},
-            purpose="Updating exact requested Closed Test draft",
+            payload={"track": EXPECTED_TRACK, "releases": updated_releases},
+            purpose="Updating the exact Closed Test release while retaining prior completed versionCodes",
         )
         if str(saved.get("track") or EXPECTED_TRACK) != EXPECTED_TRACK:
             fail("Google Play update returned an unexpected track.")
@@ -121,13 +152,20 @@ def main():
         actual_status = str(found[0].get("status") or "").casefold()
         if actual_status != "completed":
             fail(f"Post-commit read-back did not return completed for versionCode {expected}.")
-        if codes(found[0]) != [expected]:
-            fail("Post-commit read-back returned unexpected versionCodes.")
+        if codes(found[0]) != merged_codes:
+            fail(
+                f"Post-commit read-back expected retained versionCodes {merged_codes}, "
+                f"received {codes(found[0])}."
+            )
     finally:
         discard_edit(session, readback_edit)
 
-    print(f"VERIFIED: versionCode {expected} is completed on {EXPECTED_TRACK} after a fresh API read-back.")
-    print("No AAB build/upload. No other package or Play track accessed.")
+    print(
+        f"VERIFIED: versionCode {expected} is completed on {EXPECTED_TRACK}; "
+        f"retained previous completed versionCodes={retained_codes}."
+    )
+    print(f"Completed release versionCodes={merged_codes}. No AAB build/upload.")
+    print("No other package or Play track accessed.")
     output = os.environ.get("GITHUB_OUTPUT")
     if output:
         with open(output, "a", encoding="utf-8") as handle:

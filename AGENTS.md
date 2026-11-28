@@ -42,11 +42,11 @@ Do not generate or rotate an upload key without an explicit migration plan. Vali
 - The only permitted Google Play track is exactly Hubaish Closed Test.
 - PLAY_TRACK is pinned in the workflow. Do not replace it with a repository variable or add a fallback to alpha, beta, internal, open, QA, form-factor, or Production tracks.
 - Every push to main defaults to preview_draft.
-- A push-triggered exception is permitted only when root marker `.promote-416` is newly added in that push (absent from its parent commit) and contains exactly `416`. This approval-only path skips app dependencies, app build, screenshots, signing, AAB creation, artifacts and upload.
-- The marker is one-shot by parent-commit comparison. Its continued presence does not affect future pushes; later pushes return to preview_draft.
+- A push-triggered exception is permitted only when one of the root markers `.promote-416` or `.promote-416-retry` is newly added in that push (absent from its parent commit) and contains exactly `416`. This approval-only path skips app dependencies, app build, screenshots, signing, AAB creation, artifacts and upload.
+- Each marker is one-shot by parent-commit comparison. Existing markers do not affect future pushes; later pushes return to preview_draft.
 - workflow_dispatch defaults to verify_only and supports an explicit expected_version_code for promotion.
 - Promotion requires exactly one target-track draft whose complete versionCodes list equals the explicit expected code. It fails closed on draft count, duplicate code, package, repository, ref or track mismatch.
-- After commit, the promoter opens a fresh Play edit and verifies that the requested code is completed. It never builds or uploads an AAB.
+- To satisfy Google's one-completed-release rule, the promoter carries versionCodes from the previous completed target-track release into the single promoted release record alongside the requested draft code. It then opens a fresh Play edit and verifies the requested code and retained codes. It never builds or uploads an AAB.
 - Fastlane's automated upload lane must reject every release status other than draft.
 - Production is prohibited. No workflow, Fastlane lane, or helper may upload to, promote, modify, or publish on Production. A read-only Production versionCode snapshot is permitted only to prove that a Closed-testing upload did not alter Production.
 - Never infer Google Play review completion from a successful GitHub Actions run or API commit. Report the state returned by Google Play.

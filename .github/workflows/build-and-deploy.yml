@@ -9,6 +9,7 @@ on:
       - 'AGENTS.md'
       - 'PROJECT_MEMORY.md'
       - '.promote-416'
+      - '.promote-416-retry'
       - 'fastlane/**'
       - 'scripts/resolve-play-release.py'
       - 'scripts/monitor-play-status.py'

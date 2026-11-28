@@ -61,24 +61,27 @@ jobs:
           if [[ "$GITHUB_EVENT_NAME" == "push" ]]; then
             mode="preview_draft"
             expected_code=""
-            if [[ -f ".promote-416" ]]; then
-              marker_value="$(tr -d '[:space:]' < .promote-416)"
-              [[ "$marker_value" == "416" ]] || {
-                echo "::error::.promote-416 must contain exactly versionCode 416."
-                exit 1
-              }
+            if [[ -f ".promote-416" || -f ".promote-416-retry" ]]; then
               before_sha="$(jq -r '.before // ""' "$GITHUB_EVENT_PATH")"
               [[ "$before_sha" =~ ^[0-9a-f]{40}$ ]] || {
                 echo "::error::Push event did not provide a valid parent commit."
                 exit 1
               }
-              if ! git cat-file -e "${before_sha}:.promote-416" 2>/dev/null; then
-                mode="publish_approved_release"
-                expected_code="416"
-                echo "One-shot marker was newly added by this push. AAB creation and upload will be skipped."
-              else
-                echo "Marker already existed in parent commit; retaining the default draft-preview mode."
-              fi
+              for marker_path in .promote-416 .promote-416-retry; do
+                if [[ -f "$marker_path" ]]; then
+                  marker_value="$(tr -d '[:space:]' < "$marker_path")"
+                  [[ "$marker_value" == "416" ]] || {
+                    echo "::error::$marker_path must contain exactly versionCode 416."
+                    exit 1
+                  }
+                  if ! git cat-file -e "${before_sha}:${marker_path}" 2>/dev/null; then
+                    mode="publish_approved_release"
+                    expected_code="416"
+                    echo "One-shot marker $marker_path was newly added by this push. AAB creation and upload will be skipped."
+                    break
+                  fi
+                fi
+              done
             fi
           fi
           if [[ "$mode" == "publish_approved_release" ]]; then

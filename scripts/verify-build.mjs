@@ -274,9 +274,13 @@ if (!playWorkflow.includes('workflow_dispatch:') ||
     !playWorkflow.includes("PLAY_RELEASE_STATUS: draft") ||
     !playWorkflow.includes("python3 scripts/promote-play-draft.py") ||
     !playWorkflow.includes(".promote-416") ||
+    !playWorkflow.includes(".promote-416-retry") ||
     !playWorkflow.includes("git cat-file -e") ||
     !playWorkflow.includes("PLAY_EXPECTED_VERSION_CODE") ||
     !playPromoter.includes("draft_codes != [expected]") ||
+    !playPromoter.includes("retained_codes") ||
+    !playPromoter.includes("merged_codes") ||
+    !playPromoter.includes("updated_releases.append(promoted_release)") ||
     !playPromoter.includes("Post-commit read-back") ||
     !playPromoter.includes('actual_status != "completed"') ||
     playWorkflow.includes("publish_closed_testing") ||
