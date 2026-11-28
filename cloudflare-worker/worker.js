@@ -55,7 +55,7 @@ async function log(env,event){const a=await env.ADMINS.get(AUDIT,"json")||[];a.u
 function cors(req,env){
  const origin=req.headers.get("Origin")||"";
  const configured=String(env.ALLOWED_ORIGIN||"").split(",").map(x=>x.trim()).filter(x=>x&&x!=="*");
- const defaults=["https://baraagpt6-droid.github.io","capacitor://localhost","http://localhost","https://localhost","http://127.0.0.1:4174"];
+ const defaults=["https://baraagpt6-droid.github.io","capacitor://localhost"];
  const allowed=new Set([...defaults,...configured]);
  const permitted=!origin||allowed.has(origin);
  return {

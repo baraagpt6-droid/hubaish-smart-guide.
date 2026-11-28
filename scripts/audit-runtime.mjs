@@ -99,6 +99,35 @@ try {
     reducedMotion: 'reduce'
   });
   const page = await context.newPage();
+  // The app preview is local, but production CORS must not allow loopback origins.
+  // Proxy the real read-only setup-status response through the Node test runner.
+  await page.route(workerUrl + '/setup/status', async route => {
+    try {
+      const upstream = await fetch(workerUrl + '/setup/status', {
+        headers: { Accept: 'application/json' },
+        cache: 'no-store',
+        signal: AbortSignal.timeout(10000)
+      });
+      const body = await upstream.text();
+      return route.fulfill({
+        status: upstream.status,
+        headers: {
+          'access-control-allow-origin': baseUrl,
+          'access-control-allow-methods': 'GET,OPTIONS',
+          'access-control-allow-headers': 'accept',
+          'content-type': upstream.headers.get('content-type') || 'application/json',
+          'cache-control': 'no-store'
+        },
+        body
+      });
+    } catch (error) {
+      return route.fulfill({
+        status: 502,
+        contentType: 'application/json',
+        body: JSON.stringify({ error: 'Worker test proxy failed: ' + String(error?.message || 'network error') })
+      });
+    }
+  });
   const pageErrors = [];
   const consoleErrors = [];
   const requestFailures = [];

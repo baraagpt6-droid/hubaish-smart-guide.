@@ -137,7 +137,8 @@ if(!worker.includes('ITER=100000')||!worker.includes('hashIterations:ITER')||
 if(!cms.includes('function fetchWithTimeout(')||!cms.includes("'/auth/login'")||!worker.includes('path==="/health"')) {
   throw new Error('Worker login timeouts or the public production health endpoint are missing.');
 }
-if(!worker.includes('http://127.0.0.1:4174')||!wrangler.includes('http://127.0.0.1:4174'))throw new Error('Worker CORS must allow the exact local runtime-audit origin.');
+if(/http:\/\/localhost|https:\/\/localhost|127\.0\.0\.1/i.test(worker)||/http:\/\/localhost|https:\/\/localhost|127\.0\.0\.1/i.test(wrangler))throw new Error('Production Worker CORS must not allow loopback origins.');
+if(!runtimeAudit.includes("page.route(workerUrl + '/setup/status'")||!runtimeAudit.includes("await fetch(workerUrl + '/setup/status'"))throw new Error('The runtime audit must proxy the real read-only setup-status response through Node instead of widening production CORS.');
 if(!catalog.includes("id:'h8'")||!catalog.includes("17 مايو 1919م")||!catalog.includes('الشيخ عبدالعزيز بن عبدالكريم الحداد'))throw new Error('The seventh evidence-led Hubaish history station is missing.');
 if(!serve.includes("'.webp':'image/webp'")||!knowledgeJs.includes("canvas.dataset.sourceLoaded='true'")||!knowledgeJs.includes("canvas.dataset.sourceError='true'"))throw new Error('The local archive viewer must serve WebP correctly and expose image load state.');
 
