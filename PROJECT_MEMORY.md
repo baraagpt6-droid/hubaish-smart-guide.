@@ -109,6 +109,9 @@ Fastlane must reject automated upload statuses other than draft. The normal uplo
 - Pin every Play upload to Hubaish Closed Test.
 - Do not automate Production uploads or promotions.
 - If the configured track is absent or Play returns an unexpected release state, stop instead of falling back or creating a duplicate.
+- Worker JSON bodies are streamed and size-bounded: 16 KiB by default, 480 KB for community submissions, and 700 KB for live content. Request content type, UTF-8, JSON syntax and body size are validated before persistence.
+- First-admin bootstrap failures are limited to 6 per hashed source IP per 15 minutes. Login failures are limited to 8 per hashed IP/username and 30 per hashed IP per 15 minutes. Cloudflare KV counters are best-effort under concurrency because KV is eventually consistent; they are not a substitute for Cloudflare edge rate-limiting rules.
+- Worker 5xx replies expose generic errors only. Public records remain pending until a super_admin approves them; review/reject routes require the authenticated super_admin role.
 
 ## Verified historical baseline before this policy update
 On 2026-11-27, the previous Play workflow succeeded for this package:
@@ -133,6 +136,7 @@ That result is historical context only. It does not authorize future automatic c
 
 ## Durable change log
 - 2026-11-28: Added evidence-led heritage knowledge records, 16 core landmark cards, academic and biography records, family and archive intake forms, the super-admin moderation queue, and an active local marketplace submission path. The Service Worker caches the new knowledge module, JSON, and branded archive image. New pushes remain preview-draft only.
+- 2026-11-28: Hardened Cloudflare Worker request boundaries with streamed payload limits, hashed-IP bootstrap/login throttles, and sanitized 5xx responses. Verified live `/health` and `/setup/status` returned HTTP 200 with KV, GitHub content-read and session-secret checks passing. Added Hubaish-only 1919 biographies and completed locality/source metadata for the existing knowledge entries; lineage remains explicitly unverified where no family documents are supplied. Service-worker cache advanced to v4.1.1.
 - 2026-11-27: Documented the exact repository, package, WIF provider, service account, signing-secret names, and Hubaish Closed Test track.
 - 2026-11-27: Changed every future main push to draft-only preview.
 - 2026-11-27: Added the separate publish_approved_release manual action and exact-track guardrails in resolver, Fastlane, and promoter.

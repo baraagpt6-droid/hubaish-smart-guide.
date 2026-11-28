@@ -15,7 +15,6 @@ on:
       - 'scripts/resolve-play-release.py'
       - 'scripts/monitor-play-status.py'
       - 'scripts/audit-runtime.mjs'
-      - 'scripts/verify-build.mjs'
       - 'scripts/promote-play-draft.py'
       - 'scripts/resolve-cloudflare-worker-url.mjs'
       - 'cloudflare-worker/**'

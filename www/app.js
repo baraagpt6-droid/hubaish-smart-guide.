@@ -517,7 +517,6 @@ function switchTab(tab) {
   const valid = ['home', 'history', 'places', 'uzal', 'more'];
   if (!valid.includes(tab)) return;
   state.tab = tab;
-  if (tab === 'uzal') renderUzal(document.getElementById('uzalSearchInput')?.value || '');
   document.querySelectorAll('.view-section').forEach(section => section.classList.toggle('active', section.id === `view-${tab}`));
   document.querySelectorAll('.nav-btn').forEach(button => button.classList.toggle('active', button.dataset.tab === tab));
   saveState();

@@ -76,6 +76,9 @@ Do not generate or rotate an upload key without an explicit migration plan. Vali
 - The 22-name list from the 27 November 2026 project report is a reference list pending district-administration confirmation, not a certified administrative instrument.
 - Heritage knowledge lives in www/data/heritage-knowledge.json and is rendered by www/knowledge.js. The Marwaha wood-inscription image must remain branded and opened through the watermarked viewer; never add a public raw-image link.
 - Community author, family/CV, archive, and marketplace submissions are private Cloudflare KV moderation records. Public output includes approved records only. Super-admin review is required. Preserve owner/investigator attribution and explicit publishing consent.
+- Worker request bodies use a bounded streaming JSON reader: 16 KiB for ordinary/auth/admin requests, 480 KB for community submissions, and 700 KB for published content. Reject invalid content types, malformed UTF-8/JSON, and over-limit bodies before KV writes.
+- Bootstrap failures are rate-limited per hashed source IP (6 per 15 minutes); login failures are limited per hashed IP/username (8) and per hashed IP (30) in a 15-minute window. These KV counters are best-effort under concurrent requests because KV is eventually consistent; do not describe them as strict edge-level rate limits.
+- Worker 5xx responses must not reveal internal exception messages. Keep public submission state pending and require authenticated super_admin approval for publish/reject actions.
 - Preserve provenance rules in README.md and app data.
 - App features include place search and filters, detail pages, favorites, a local assistant, itinerary tools, language selection, offline support, and estimated prayer times. Verify source before claiming any feature has shipped.
 - UI languages currently include Arabic, English, Turkish, and French.
@@ -86,6 +89,7 @@ Do not generate or rotate an upload key without an explicit migration plan. Vali
 - GitHub Pages serves the public web app.
 - Do not expose Cloudflare credentials, administrator passwords, GitHub tokens, or Android signing secrets.
 - Keep service bindings aligned with cloudflare-worker/wrangler.toml and deployment workflows.
+- After Worker code changes, verify both `/health` and `/setup/status`; a passing health response must include KV, GitHub content-read, and session-secret checks.
 - Documentation-only changes to AGENTS.md and PROJECT_MEMORY.md must not trigger Pages or Cloudflare deployment.
 
 ## Engineering rules
