@@ -186,8 +186,22 @@ try {
   if (!response?.ok()) throw new Error('App shell returned HTTP ' + (response?.status() ?? 'no response'));
   await page.locator('#view-home.active').waitFor({ state: 'visible', timeout: 15000 });
   await page.locator('#globalSearchInput').waitFor({ state: 'visible', timeout: 10000 });
-  const heroShortcuts = page.locator('.hero-shortcuts .hero-shortcut');
-  if (await heroShortcuts.count() !== 5) throw new Error('The smart home hero must expose five direct section shortcuts.');
+  const heroShortcuts = page.locator('#view-home [data-hero-tab], #view-home [data-hero-target]');
+  await page.waitForFunction(() =>
+    document.querySelectorAll('#view-home [data-hero-tab], #view-home [data-hero-target]').length === 5,
+    { timeout: 5000 }
+  );
+  if (await heroShortcuts.count() !== 5) {
+    const diagnostic = await page.locator('#view-home').evaluate(node => ({
+      hero: node.querySelector('.hero-shortcuts')?.outerHTML || null,
+      directActions: node.querySelectorAll('[data-hero-tab], [data-hero-target]').length
+    }));
+    throw new Error('The smart home hero must expose five direct section actions. Found ' + JSON.stringify(diagnostic));
+  }
+  await page.locator('#view-home [data-hero-tab="uzal"]').click();
+  await page.locator('#view-uzal.active').waitFor({ state: 'visible', timeout: 5000 });
+  await page.locator('.nav-btn[data-tab="home"]').click();
+  await page.locator('#view-home.active').waitFor({ state: 'visible', timeout: 5000 });
   if (await page.locator('.quick-searches [data-query]').count() < 4) throw new Error('Hubaish local quick-search shortcuts are missing.');
   const topbarState = await page.locator('.topbar').evaluate(node => ({
     minHeight: getComputedStyle(node).minHeight,
