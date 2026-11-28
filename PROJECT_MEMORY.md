@@ -77,7 +77,7 @@ Document secret names only. Never print or copy secret values. Do not rotate the
 - The pipeline prepares and validates bilingual listing text, icon/feature graphic, and eight phone screenshots.
 
 ### Automatic draft preview on every main push
-Every push to main defaults to preview_draft mode. The only push-triggered exceptions are exact, newly-added one-shot markers with owner authorization: legacy `.promote-416` approval-only markers and the separately authorized `.publish-418` clean-build-and-publish marker.
+Every ordinary push to main defaults to preview_draft mode. Push-triggered publication requires a separately owner-authorized, exact-code one-shot marker absent from the push parent commit. Legacy `.promote-416` markers were approval-only and are historical. The `.publish-418` marker was a one-time clean build-and-publish path, now consumed. The `.publish-419` marker authorizes the current full 1.0.402 build-and-publish run only.
 1. Checkout main, install Node dependencies, run npm run build.
 2. Generate app icons and bilingual listing graphics.
 3. Capture Arabic/English screens from the app and validate all eight phone screenshots.
@@ -98,7 +98,7 @@ workflow_dispatch has three choices and defaults to verify_only:
 
 The manual approval script is scripts/promote-play-draft.py. It requires exactly one existing draft whose complete versionCodes list equals the explicit PLAY_EXPECTED_VERSION_CODE. It verifies package, exact repository, main ref, target track and duplicate-code safety. To satisfy Google's one-completed-release rule, it replaces the previous completed target-track assignment with the requested newer versionCode as the single completed release. The old bundle remains in Play's uploaded-bundle history, but its lower code is no longer assigned to the active track. After commit, a fresh edit verifies the exact new release state. It never builds or uploads an AAB or accesses Production.
 
-The legacy approval-only path is allowed only when one of `.promote-416`, `.promote-416-retry` or `.promote-416-final` is newly added in the pushed commit, contains exactly `416`, and was absent from the parent commit. The separate 418 path is allowed only when `.publish-418` is newly added, contains exactly `418`, and was absent from its parent commit. It performs the complete verified build, signs 418, retires only draft 417 after signing, uploads 418 as draft, promotes exact 418 to completed, then verifies zero versioned drafts and unchanged empty Production. The 417 retirement helper requires exactly 417 draft and 416 completed on the target track and never reads or modifies tester configuration. The workflow compares each marker with its parent commit using full Git history. Existing markers are ignored on later pushes, which return to preview_draft.
+The legacy approval-only path is allowed only when one of `.promote-416`, `.promote-416-retry` or `.promote-416-final` is newly added in the pushed commit, contains exactly `416`, and was absent from the parent commit. The 418 path is historical and consumed. The separate 419 path is allowed only when `.publish-419` is newly added, contains exactly `419`, and was absent from its parent commit. It requires 418 to be the sole completed Hubaish Closed Test release, zero versioned drafts, no in-progress release, and empty Production; it builds/signs 419, uploads 419 as draft, promotes exact 419 to completed, then verifies zero versioned drafts and unchanged empty Production. The 419 promoter may replace only completed 418. Neither path reads or modifies `edits.testers`, tester lists, opt-in configuration, other testing tracks, or Production. The workflow uses full Git parent-commit comparison; existing markers are ignored on later pushes, which return to preview_draft.
 
 Fastlane must reject automated upload statuses other than draft. The normal upload resolver is scripts/resolve-play-release.py.
 
@@ -126,7 +126,7 @@ On 2026-11-27, the previous Play workflow succeeded for this package:
 - versionCode: 413.
 - Google Play API read-back reported status completed and confirmed Production versionCodes were unchanged.
 
-That result is historical context only. Every ordinary main push defaults to creating a draft. The `.promote-416` marker was a separate one-shot approval exception for the existing 416 draft. On 2026-11-28, the owner separately authorized one clean build-and-publish run for versionCode 418 through the newly-added `.publish-418` marker. That marker is single-use by parent-commit comparison and must not become a general auto-publish policy.
+That result is historical context only. Ordinary pushes default to creating a draft. The one-shot `.publish-418` action completed on 2026-11-28. The owner subsequently authorized the new 1.0.402 feature release through `.publish-419`; this marker is single-use by parent-commit comparison and must not become a general auto-publish policy.
 
 ## Maintenance files
 - .github/workflows/google-play-closed-testing.yml — draft upload, read-back, separate manual approval.
@@ -148,6 +148,7 @@ That result is historical context only. Every ordinary main push defaults to cre
 - 2026-11-27: Added static build checks and prevented documentation-only changes from running Pages/Cloudflare deployments.
 - 2026-11-28: Added one-shot versionCode 416 approval, exact-code promotion with fresh API read-back, and dynamic latest-active/latest-draft monitoring.
 - 2026-11-28: Added a separately owner-authorized, single-use `.publish-418` path. It runs the full app build/Playwright/Gradle signing workflow, removes only obsolete draft 417 after the new signed 418 bundle is ready, uploads 418 as draft, promotes exact 418 to completed on Hubaish Closed Test, and verifies zero versioned drafts plus empty Production. The path never accesses `edits.testers` or modifies testers, other tracks, or Production.
+- 2026-11-28: Added a separately owner-authorized, single-use `.publish-419` path for Hubaish 1.0.402. It requires 418 as the sole completed target-track release, zero versioned drafts, no in-progress rollout, and empty Production; it builds/signs 419, uploads as draft, promotes 419 to completed on the same Hubaish Closed Test track, and verifies zero drafts plus unchanged empty Production. It does not access testers or other tracks.
 
 ## Google Play status monitoring and app audit
 - .github/workflows/play-status-monitor.yml supports manual dispatch, a daily 09:00 Asia/Kuala_Lumpur schedule (01:00 UTC), and a run after each Google Play Closed Testing workflow completes.
