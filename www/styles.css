@@ -780,3 +780,6 @@ html{background:var(--hubaish-emerald)}
   .modal-backdrop,.archive-viewer,.heritage-lightbox{animation:none!important}
   .hero-shortcut,.item-card,.smart-tool-card,.btn-primary,.btn-secondary,.btn-sm,.quick-chip,.nav-btn{transition:none!important}
 }
+
+.heritage-lightbox.is-closing{animation:hubaishBackdropOut .22s ease both;pointer-events:none}
+.heritage-lightbox.is-closing .heritage-lightbox-sheet{animation:hubaishModalOut .2s ease both}
