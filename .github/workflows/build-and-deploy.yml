@@ -19,6 +19,7 @@ on:
       - 'scripts/retire-obsolete-play-draft.py'
       - 'scripts/verify-build.mjs'
       - '.publish-418'
+      - '.publish-419'
       - 'scripts/resolve-cloudflare-worker-url.mjs'
       - 'cloudflare-worker/**'
   workflow_dispatch:
