@@ -330,6 +330,14 @@ if (!playWorkflow.includes('workflow_dispatch:') ||
     !playWorkflow.includes(".publish-419") ||
     !playWorkflow.includes("publish_next_release") ||
     !playWorkflow.includes("Verify completed 419, zero pending drafts and unchanged Production") ||
+    !playWorkflow.includes("steps.publish-next-release.outputs.release_status") ||
+    !playResolver.includes('release_mode == "publish_next_release"') ||
+    !playResolver.includes("version_code != 419") ||
+    !playResolver.includes("zero existing versioned drafts on Hubaish Closed Test") ||
+    !playPromoter.includes("prior_completed_codes != [418]") ||
+    !playWorkflow.includes(".publish-419") ||
+    !playWorkflow.includes("publish_next_release") ||
+    !playWorkflow.includes("Verify completed 419, zero pending drafts and unchanged Production") ||
     !playResolver.includes('release_mode == "publish_next_release"') ||
     !playResolver.includes("version_code != 419") ||
     !playResolver.includes("zero existing versioned drafts on Hubaish Closed Test") ||
