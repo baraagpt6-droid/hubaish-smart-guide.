@@ -806,14 +806,15 @@ async function stampQuickImage(file,ownerName){
           }
         }
         ctx.restore();
-        for(const quality of [.76,.66,.56]){blob=await new Promise(resolve=>canvas.toBlob(resolve,'image/webp',quality));if(blob&&blob.size<=245*1024)break}
-        if(blob&&blob.size<=245*1024)break;scale*=.82;
+        for(const quality of [.76,.66,.56]){blob=await new Promise(resolve=>canvas.toBlob(resolve,'image/webp',quality));if(blob&&blob.size<=180*1024)break}
+        if(blob&&blob.size<=180*1024)break;scale*=.82;
       }
-      if(!blob||blob.size>245*1024)throw new Error('تعذر ضغط الصورة وختمها إلى الحجم المسموح.');
+      if(!blob||blob.size>180*1024)throw new Error('تعذر ضغط الصورة وختمها إلى أقل من 180 كيلوبايت.');
       const dataUrl=await new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>resolve(String(reader.result||''));reader.onerror=()=>reject(new Error('تعذرت قراءة الصورة.'));reader.readAsDataURL(blob)});
       return {name:file.name.replace(/\.[^.]+$/,'')+'.webp',mimeType:'image/webp',dataUrl};
     }finally{bitmap.close?.()}
   }
+  let quickPreparedAttachment=null,quickPreparedFile=null,quickPreparedOwner='';
   function quickAddTypeChanged(){
     const type=val('cloudQuickType');
     const show=(id,on)=>$(id)?.classList.toggle('hidden',!on);
@@ -826,7 +827,7 @@ async function stampQuickImage(file,ownerName){
     show('cloudQuickNameWrap',type==='author'||type==='figure'||type==='work'||type==='family'||type==='marketplace');
     show('cloudQuickPublicContactWrap',type==='marketplace');
   }
-  function renderQuickAddPreview(){
+  async function renderQuickAddPreview(){
     const root=$('cloudQuickPreview');if(!root)return;
     root.replaceChildren();
     const title=document.createElement('strong');title.textContent=val('cloudQuickTitle')||'معاينة العنوان';
@@ -834,7 +835,17 @@ async function stampQuickImage(file,ownerName){
     const body=document.createElement('p');body.textContent=val('cloudQuickDescription')||'سيظهر الوصف هنا.';
     root.append(title,meta,body);
     const file=$('cloudQuickImageFile')?.files?.[0];
-    if(file){const label=document.createElement('p');label.className='small muted';label.textContent='المرفق المختار: '+file.name;root.append(label)}
+    if(file){
+      try{
+        const owner=val('cloudQuickType')==='archive'?val('cloudQuickOwner'):val('cloudQuickPhotographer');
+        quickPreparedAttachment=await stampQuickImage(file,owner);
+        quickPreparedFile=file;quickPreparedOwner=owner;
+        const preview=document.createElement('img');preview.className='cloud-quick-preview-image';preview.alt='معاينة الصورة بعد إضافة العلامة المائية';
+        preview.src=quickPreparedAttachment.dataUrl;preview.loading='lazy';preview.draggable=false;
+        root.append(preview);
+        const label=document.createElement('p');label.className='small muted';label.textContent='الصورة بعد الختم · '+Math.round(quickPreparedAttachment.dataUrl.length*0.75/1024)+' KB';root.append(label);
+      }catch(error){quickPreparedAttachment=null;quickPreparedFile=null;const label=document.createElement('p');label.className='small cloud-error';label.textContent=error.message||'تعذرت معاينة الصورة.';root.append(label)}
+    }
     $('cloudQuickPreviewPanel')?.classList.remove('hidden');
   }
   async function submitQuickAdd(event){
@@ -849,7 +860,8 @@ async function stampQuickImage(file,ownerName){
     if((type==='author'||type==='figure'||type==='work'||type==='family'||type==='marketplace')&&!val('cloudQuickName')){toast('أدخل الاسم المطلوب لهذا السجل.');return}
     const button=$('cloudQuickSubmitBtn');if(button)button.disabled=true;
     try{
-      const attachment=file?await stampQuickImage(file,type==='archive'?val('cloudQuickOwner'):val('cloudQuickPhotographer')):null;
+      const stampOwner=type==='archive'?val('cloudQuickOwner'):val('cloudQuickPhotographer');
+      const attachment=file?(quickPreparedFile===file&&quickPreparedOwner===stampOwner&&quickPreparedAttachment?quickPreparedAttachment:await stampQuickImage(file,stampOwner)):null;
       const payload={
         type,title,body,location,name:val('cloudQuickName'),source:val('cloudQuickSource'),
         ownerName:val('cloudQuickOwner'),photographer:val('cloudQuickPhotographer'),license:val('cloudQuickLicense'),
@@ -862,7 +874,7 @@ async function stampQuickImage(file,ownerName){
       if(type==='photo'){
         documentData=await publicFetch();saveCache();applyCached();renderAdminList();window.HubaishRuntime?.renderAll?.();window.HubaishGallery?.render?.();
       }else await window.HubaishKnowledge?.load?.();
-      $('cloudQuickAddForm')?.reset();quickAddTypeChanged();$('cloudQuickPreviewPanel')?.classList.add('hidden');
+      quickPreparedAttachment=null;quickPreparedFile=null;quickPreparedOwner='';$('cloudQuickAddForm')?.reset();quickAddTypeChanged();$('cloudQuickPreviewPanel')?.classList.add('hidden');
       const statusNode=$('cloudQuickStatus');if(statusNode)statusNode.textContent='تم الحفظ. سيظهر المحتوى بعد تحديث المزامنة لدى المستخدمين.';
       toast('تمت الإضافة إلى محتوى دليل حبيش.');
       status('اكتمل النشر السحابي · '+result.type,false);
@@ -876,6 +888,7 @@ async function stampQuickImage(file,ownerName){
     $('cloudQuickType')?.addEventListener('change',quickAddTypeChanged);
     $('cloudQuickPreviewBtn')?.addEventListener('click',renderQuickAddPreview);
     $('cloudQuickAddForm')?.addEventListener('submit',submitQuickAdd);
+    $('cloudQuickImageFile')?.addEventListener('change',()=>{quickPreparedAttachment=null;quickPreparedFile=null;quickPreparedOwner='';$('cloudQuickPreviewPanel')?.classList.add('hidden')});
     quickAddTypeChanged();
     $('workerLoginForm')?.addEventListener('submit',workerLogin);
     $('workerSetupForm')?.addEventListener('submit',firstAdminSetup);
