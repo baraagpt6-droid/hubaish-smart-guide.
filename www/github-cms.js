@@ -185,6 +185,7 @@
     window.HubaishFeatures?.setCommunityUrl?.(mainLink&&safeUrl(mainLink.url)?mainLink.url:'');
     window.HubaishFeatures?.renderSmartItineraries?.();
     window.HubaishFeatures?.renderSmartCompare?.();
+    window.HubaishGallery?.render?.();
   }
   function districtUpdates(name,l){
     return documentData.subDistrictUpdates.filter(x=>String(x.district_name_ar||'').trim()===String(name||'').trim()).map(x=>({
