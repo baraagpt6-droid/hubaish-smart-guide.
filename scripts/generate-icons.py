@@ -17,13 +17,13 @@ for size, name in [(192, "icon-192.png"), (512, "icon-512.png"), (180, "apple-to
 assets = root / "assets"
 assets.mkdir(parents=True, exist_ok=True)
 image.save(assets / "icon-only.png", format="PNG", optimize=True)
-Image.new("RGB", (1024, 1024), "#07543d").save(assets / "icon-background.png", optimize=True)
+Image.new("RGB", (1024, 1024), "#071711").save(assets / "icon-background.png", optimize=True)
 
 svg = source.read_text(encoding="utf-8")
-background_rect = '<rect width="512" height="512" rx="104" fill="url(#bg)"/>'
-if background_rect not in svg:
-    raise SystemExit("Brand SVG background shape changed; cannot safely create transparent adaptive foreground.")
-foreground_svg = svg.replace(background_rect, "")
+background_rect = '<rect width="512" height="512" rx="112" fill="url(#emerald)"/>'
+if svg.count(background_rect) != 1 or 'viewBox="0 0 512 512"' not in svg or 'id="emerald"' not in svg:
+    raise SystemExit("The Hubaish SVG must contain one known deep-emerald canvas before deriving a transparent adaptive foreground.")
+foreground_svg = svg.replace(background_rect, "", 1)
 foreground_png = cairosvg.svg2png(bytestring=foreground_svg.encode("utf-8"), output_width=1024, output_height=1024)
 foreground = Image.open(BytesIO(foreground_png)).convert("RGBA")
 foreground.save(assets / "icon-foreground.png", format="PNG", optimize=True)
@@ -32,7 +32,7 @@ foreground.save(assets / "icon-foreground.png", format="PNG", optimize=True)
 # use the full-canvas splash image generated from the same visual identity.
 def create_splash(path: Path):
     size = 2732
-    canvas = Image.new("RGB", (size, size), "#052d24")
+    canvas = Image.new("RGB", (size, size), "#071711")
     draw = ImageDraw.Draw(canvas)
     # Quiet topographic rings keep the image restrained behind the emblem.
     for inset in range(180, 1120, 150):
