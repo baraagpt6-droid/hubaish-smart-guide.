@@ -108,6 +108,19 @@ def discover_release():
     try:
         tracks = api_json(session, "GET", f"{edit_url}/tracks").get("tracks") or []
         selected_track, track_names = choose_track(tracks)
+        selected_rows = [row for row in tracks if str(row.get("track", "")).strip().casefold() == selected_track.casefold()]
+        existing_drafts = [
+            code
+            for row in selected_rows
+            for release in (row.get("releases") or [])
+            if str(release.get("status", "")).strip().casefold() == "draft"
+            for code in codes_for_release([release])
+        ]
+        if existing_drafts:
+            fail(
+                f"Closed-testing track '{selected_track}' already contains draft versionCode(s) "
+                f"{sorted(set(existing_drafts))}. Refusing to create a duplicate draft."
+            )
         all_codes = set()
         has_reviewed_release = False
         production_codes = []
