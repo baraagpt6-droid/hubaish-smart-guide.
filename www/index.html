@@ -4,8 +4,8 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#071711">
-  <meta name="application-release" content="1.0.402">
-  <meta name="application-version-code" content="419">
+  <meta name="application-release" content="1.0.403">
+  <meta name="application-version-code" content="420">
   <meta name="description" content="دليل مديرية حبيش، موسوعة جغرافية وتاريخية للعزل والمعالم والتاريخ والمجتمع ومواقيت الصلاة ومعرض الصور الموثقة والأرشيف الوثائقي.">
   <meta name="referrer" content="strict-origin-when-cross-origin">
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https://upload.wikimedia.org https://al-jandprovince.com https://hekmahyemanya.com; connect-src 'self' https://api.mymemory.translated.net https://api.github.com https://raw.githubusercontent.com https://*.workers.dev; worker-src 'self'; manifest-src 'self'; upgrade-insecure-requests">
@@ -253,7 +253,33 @@
             <h4 class="item-title">سجل التدقيق</h4><div id="cloudAuditList" class="cloud-list"></div><div class="cloud-backup-tools"><h4 class="item-title">النسخ الاحتياطي</h4><div class="card-actions"><button class="btn-sm" id="exportJsonBtn" type="button">تصدير نسخة كاملة</button><label class="btn-sm file-label">استعادة نسخة<input id="importJsonInput" type="file" accept="application/json,.json"></label></div></div>
           </section>
           <p class="small muted">اختر سجلاً لتعديله. السجلات الأساسية لا تُحذف؛ حذف تعديلها يعيد النص الأصلي. الإضافات والقرى والروابط المضافة يمكن حذفها.</p>
-          <section id="cloudContentEditor" class="cloud-editor"><h4 class="item-title">إضافة أو تعديل محتوى منشور</h4>
+<section id="cloudQuickAddStudio" class="cloud-editor" aria-labelledby="cloudQuickAddTitle">
+            <h4 class="item-title" id="cloudQuickAddTitle">استوديو الإضافة السريعة</h4>
+            <p class="small muted">أضف صورة موثقة أو وثيقة مصورة أو سيرة أو ملف أسرة أو إعلان سوق. تُحفظ نسبة المصدر وتُحدّث أقسام التطبيق تلقائياً.</p>
+            <form id="cloudQuickAddForm">
+              <div class="cloud-fields-grid">
+                <label>القسم<select id="cloudQuickType" class="input-field" required><option value="photo">صورة للمعرض الموثق</option><option value="archive">وثيقة للأرشيف المحمي</option><option value="figure">علم أو سيرة شخصية</option><option value="author">مؤلف أو صاحب عمل</option><option value="work">كتاب أو مادة للمكتبة</option><option value="family">بطاقة أسرة</option><option value="marketplace">إعلان السوق المفتوح</option></select></label>
+                <label>العنوان<input id="cloudQuickTitle" class="input-field" maxlength="180" required></label>
+                <label id="cloudQuickNameWrap" class="hidden">الاسم / المؤلف / الأسرة / البائع<input id="cloudQuickName" class="input-field" maxlength="120"></label>
+                <label>العزلة<select id="cloudQuickLocation" class="input-field" required><option value="">اختر عزلة حبيش</option><option value="ربع ظلمة">ربع ظلمة</option><option value="جبل عميقة">جبل عميقة</option><option value="بني معين">بني معين</option><option value="بني الضاحيتين">بني الضاحيتين</option><option value="صائر">صائر</option><option value="جبل خضراء">جبل خضراء</option><option value="نقيل العقاب">نقيل العقاب</option><option value="الفراعي">الفراعي</option><option value="السلق">السلق</option><option value="وادي المعقاب">وادي المعقاب</option><option value="الجعافرة">الجعافرة</option><option value="شباع">شباع</option><option value="الذارحي">الذارحي</option><option value="التفادي">التفادي</option><option value="كومان">كومان</option><option value="الوطئة">الوطئة</option><option value="قحزة">قحزة</option><option value="المشيرق">المشيرق</option><option value="الصدر">الصدر</option><option value="العارضة">العارضة</option><option value="بني شبيب">بني شبيب</option><option value="الناحية">الناحية</option></select></label>
+                <label>المصدر أو رابط المرجع<input id="cloudQuickSource" class="input-field" type="text" maxlength="1000" placeholder="رابط المصدر أو وصف المرجع"></label>
+                <label id="cloudQuickOwnerWrap" class="hidden">مالك الوثيقة / الجهة الحافظة<input id="cloudQuickOwner" class="input-field" maxlength="160"></label>
+                <label id="cloudQuickPhotoMeta">اسم المصور<input id="cloudQuickPhotographer" class="input-field" maxlength="160"></label>
+                <label id="cloudQuickPhotoLicense">الرخصة / إذن النشر<input id="cloudQuickLicense" class="input-field" maxlength="120" placeholder="مثال: موافقة خطية من المصور"></label>
+                <label id="cloudQuickPhotoCategory">تصنيف المعرض<select id="cloudQuickPhotoCategory" class="input-field"><option value="heritage">الآثار والمساجد</option><option value="forts">الحصون والقلاع</option><option value="valleys">الأودية والمدرجات</option><option value="villages">القرى والعزل</option></select></label>
+                <label id="cloudQuickMarketMeta" class="hidden">تصنيف السوق<select id="cloudQuickMarketCategory" class="input-field"><option value="shop">محل تجاري</option><option value="artisan">حرفة ومنتج محلي</option><option value="service">خدمة</option><option value="weekly_market">سوق أسبوعي</option><option value="sale">عرض للبيع</option><option value="wanted">طلب شراء</option></select></label>
+                <label id="cloudQuickContactWrap" class="hidden">وسيلة التواصل<input id="cloudQuickContact" class="input-field" maxlength="160"></label>
+              </div>
+              <label>الوصف والتفاصيل<textarea id="cloudQuickDescription" class="input-field" rows="3" maxlength="5000" required></textarea></label>
+              <label id="cloudQuickImageWrap">الصورة أو مسح الوثيقة (JPEG أو PNG أو WebP)<input id="cloudQuickImageFile" type="file" class="input-field" accept="image/jpeg,image/png,image/webp"></label>
+              <label id="cloudQuickPublicContactWrap" class="hidden"><input id="cloudQuickPublicContact" type="checkbox"> إظهار وسيلة التواصل في إعلان السوق</label>
+              <label class="small"><input id="cloudQuickRights" type="checkbox" required> أؤكد أن لدي حق نشر هذه المادة وموافقة صاحب الصورة أو الوثيقة أو الأشخاص المذكورين، وأن موضعها ضمن مديرية حبيش.</label>
+              <div class="cloud-config-actions"><button class="btn-sm" id="cloudQuickPreviewBtn" type="button">معاينة الإضافة</button><button class="btn-primary" id="cloudQuickSubmitBtn" type="submit">حفظ ونشر</button></div>
+              <p id="cloudQuickStatus" class="small muted" aria-live="polite"></p>
+              <section id="cloudQuickPreviewPanel" class="cloud-preview-panel hidden"><h4 class="item-title">معاينة المحتوى</h4><div id="cloudQuickPreview"></div></section>
+            </form>
+          </section>
+                    <section id="cloudContentEditor" class="cloud-editor"><h4 class="item-title">إضافة أو تعديل محتوى منشور</h4>
             <form id="cloudContentForm"><input id="cloudRecordId" type="hidden"><input id="cloudContributionId" type="hidden">
               <label>نوع المحتوى<select id="cloudRecordType" class="input-field"><option value="landmark">معلم</option><option value="history_event">محطة تاريخية</option><option value="sub_district">تعديل إحدى العزل الـ22</option><option value="sub_district_update">قرية أو موضع داخل عزلة</option><option value="historical_figure">شخصية أو علم</option><option value="community_link">رابط مجتمع</option></select></label>
               <div class="cloud-fields-grid">

@@ -177,13 +177,20 @@ if(!css.includes('padding-top:max(9px,env(safe-area-inset-top')||
 }
 if(app.includes('innerHTML'))throw new Error('The app must build DOM nodes with textContent instead of innerHTML.');
 if(!prepareAndroid.includes('maven-central.storage-download.googleapis.com/maven2/')||!prepareAndroid.includes('mavenCentral()')||!prepareAndroid.includes('android_dir.rglob("*.gradle")'))throw new Error('Signed Android releases must place the GCS Maven Central mirror ahead of Maven Central in generated Gradle files and retain the fallback.');
-if(!sw.includes('hubaish-guide-v4.1.5')||!sw.includes("assets/heritage/1183-wood-inscription.webp")||!sw.includes("'splash.js'")||
+if(!sw.includes('hubaish-guide-v4.1.6')||!sw.includes("assets/heritage/1183-wood-inscription.webp")||!sw.includes("'splash.js'")||
    !sw.includes("'github-cms.js'")||!sw.includes("'gallery.js'")||!sw.includes("'data/live-content.json'")) {
   throw new Error('The service-worker cache does not include the updated app shell.');
 }
+if(!worker.includes('LIVE_KEY="live-content:published"')||!worker.includes('/api/live-content')||!worker.includes('/admin/quick-add')||!worker.includes('publishLiveContent(env,live)'))throw new Error('Cloudflare live KV feed or Quick Add endpoint is missing.');
+if(!cms.includes("DEFAULT_WORKER_URL+'/api/live-content'")||!cms.includes("workerRequest('/admin/quick-add'")||!cms.includes('function stampQuickImage')||!cms.includes("setInterval(()=>{if(document.visibilityState==='visible'){sync(true);refreshSetupStatus();window.HubaishKnowledge?.load?.()}},15000)"))throw new Error('Client live-feed polling, offline refresh or Quick Add publishing path is incomplete.');
+if(!knowledgeJs.includes("setInterval(()=>{if(document.visibilityState==='visible')refreshPublished()},15000)"))throw new Error('Approved archive/family/market content is not refreshed while the app is open.');
+if(!html.includes('id="cloudQuickAddForm"')||!html.includes('id="cloudQuickImageFile"')||!html.includes('id="cloudQuickRights"')||!html.includes('id="cloudQuickPreviewBtn"'))throw new Error('Admin Quick Add Studio or rights confirmation is missing.');
+if(!html.includes('value="figure"')||!html.includes('value="work"')||!worker.includes('"figure","work"')||!knowledgeJs.includes("published.filter(x=>x.type==='figure')")||!knowledgeJs.includes("published.filter(x=>x.type==='work')"))throw new Error('Quick Add historical-figure or library records are not connected to the knowledge index.');
+if(!androidPatch.includes('android.permission.RECORD_AUDIO')||!androidPatch.includes('HubaishSpeechBridge.java')||!androidPatch.includes('SpeechRecognizer')||!androidPatch.includes('HubaishNativeSpeech'))throw new Error('Native Android microphone permission or SpeechRecognizer bridge is missing.');
+if(!app.includes('window.HubaishNativeSpeech')||!app.includes("hubaish:native-speech")||!app.includes('permission-denied'))throw new Error('Search/assistant controls are not wired to the native Android speech bridge.');
 if(!html.includes('data-query="حصن يريس"')||!html.includes('data-query="عزلة شباع"')||!html.includes('data-query="مسجد مروحة"')||!html.includes('data-query="مدرسة وحاظة"')||
    html.includes('data-query="صهبان"')||html.includes('data-query="وادي بناء"'))throw new Error('Home quick-search chips must stay within documented Hubaish localities.');
-if(!html.includes('<meta name="application-release" content="1.0.402">')||!html.includes('<meta name="application-version-code" content="419">')||!html.includes('id="hubaishGallery"')||!html.includes('id="galleryFromPlaces"')||
+if(!html.includes('<meta name="application-release" content="1.0.403">')||!html.includes('<meta name="application-version-code" content="420">')||!html.includes('id="hubaishGallery"')||!html.includes('id="galleryFromPlaces"')||
    !html.includes('id="galleryHomeOpen"')||!html.includes('id="cloudImageFile"')||
    !html.includes('id="cloudImageVerified"')||!app.includes("window.HubaishGallery?.render?.()")||
    !app.includes("move('#hubaishGallery',pane('explore'))")||

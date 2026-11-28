@@ -552,9 +552,50 @@ function bindVoiceMic(buttonId, inputId) {
   const input = document.getElementById(inputId);
   if (!button || !input) return;
   button.addEventListener('click', () => {
+    const language = state.lang === 'AR' ? 'ar-YE' : state.lang === 'TR' ? 'tr-TR' : state.lang === 'FR' ? 'fr-FR' : 'en-US';
+    const nativeSpeech = window.HubaishNativeSpeech;
+    if (nativeSpeech && typeof nativeSpeech.startListening === 'function' && window.Capacitor?.getPlatform?.() === 'android') {
+      const requestId = window.crypto?.randomUUID?.() || ('speech-' + Date.now() + '-' + Math.random().toString(36).slice(2));
+      const receive = event => {
+        const result = event.detail || {};
+        if (result.requestId !== requestId) return;
+        window.removeEventListener('hubaish:native-speech', receive);
+        button.classList.remove('listening');
+        button.disabled = false;
+        if (result.error) {
+          const messages = {
+            'permission-denied': 'لم يتم منح إذن الميكروفون. يمكنك تفعيله من إعدادات التطبيق ثم المحاولة مرة أخرى.',
+            'unavailable': 'خدمة التعرف الصوتي غير متاحة على هذا الجهاز حالياً.',
+            'no-speech': 'لم نسمع صوتاً. تحدث ثم أعد المحاولة.',
+            'network': 'تعذر الوصول إلى خدمة التعرف الصوتي. تحقق من الاتصال أو اكتب النص.',
+            'busy': 'الميكروفون قيد الاستخدام. أغلق التطبيق الذي يستخدمه ثم حاول.',
+            'cancelled': 'تم إيقاف الاستماع.'
+          };
+          showToast(messages[result.error] || 'تعذر التقاط الصوت. يمكنك كتابة النص بدلاً من ذلك.');
+          return;
+        }
+        const transcript = cleanText(result.transcript || '', 500);
+        if (transcript) {
+          input.value = transcript;
+          input.dispatchEvent(new Event('input', { bubbles: true }));
+          input.focus({ preventScroll: true });
+        } else showToast('لم تتضح الكلمات. حاول مرة أخرى.');
+      };
+      window.addEventListener('hubaish:native-speech', receive);
+      button.classList.add('listening');
+      button.disabled = true;
+      try { nativeSpeech.startListening(requestId, language); }
+      catch {
+        window.removeEventListener('hubaish:native-speech', receive);
+        button.classList.remove('listening');
+        button.disabled = false;
+        showToast('تعذر تشغيل الميكروفون. تحقق من إذن التسجيل في إعدادات التطبيق.');
+      }
+      return;
+    }
     const SpeechRecognitionApi = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!SpeechRecognitionApi) {
-      showToast('الإملاء الصوتي غير متاح في WebView هذا الجهاز. استخدم لوحة المفاتيح أو افتح الدليل في متصفح يدعم الإملاء.');
+      showToast('الإملاء الصوتي غير متاح في هذا المتصفح. استخدم لوحة المفاتيح للبحث.');
       return;
     }
     let recognition;
@@ -563,7 +604,7 @@ function bindVoiceMic(buttonId, inputId) {
       showToast('تعذر تجهيز الإملاء الصوتي. تحقق من إعدادات الميكروفون أو استخدم لوحة المفاتيح.');
       return;
     }
-    recognition.lang = state.lang === 'AR' ? 'ar-YE' : state.lang === 'TR' ? 'tr-TR' : state.lang === 'FR' ? 'fr-FR' : 'en-US';
+    recognition.lang = language;
     recognition.interimResults = false;
     recognition.maxAlternatives = 1;
     button.classList.add('listening');

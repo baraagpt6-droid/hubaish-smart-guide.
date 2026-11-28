@@ -103,13 +103,13 @@
     return 'cms-'+type+'-'+suffix;
   }
   async function publicFetch(){
-    const candidates=[RAW_URL+'?v='+Date.now(),new URL('./data/live-content.json',document.baseURI).href];
+    const candidates=[DEFAULT_WORKER_URL+'/api/live-content',RAW_URL+'?v='+Date.now(),new URL('./data/live-content.json',document.baseURI).href];
     let lastError=null;
     for(const url of candidates){
       try{
         const response=await fetchWithTimeout(url,{cache:'no-store',headers:{Accept:'application/json','Cache-Control':'no-cache'}},12000);
         if(!response.ok)throw new Error('HTTP '+response.status);
-        const parsed=normalizeDocument(await response.json());
+        const incoming=await response.json();const parsed=normalizeDocument(incoming?.content||incoming);
         const incomingTime=parsed.updatedAt?Date.parse(parsed.updatedAt):0;
         const cachedTime=documentData.updatedAt?Date.parse(documentData.updatedAt):0;
         if(incomingTime&&cachedTime&&incomingTime<cachedTime)throw new Error('تم تجاهل نسخة أقدم من الكاش المحلي.');
@@ -185,6 +185,7 @@
     window.HubaishFeatures?.setCommunityUrl?.(mainLink&&safeUrl(mainLink.url)?mainLink.url:'');
     window.HubaishFeatures?.renderSmartItineraries?.();
     window.HubaishFeatures?.renderSmartCompare?.();
+    window.HubaishGallery?.render?.();
   }
   function districtUpdates(name,l){
     return documentData.subDistrictUpdates.filter(x=>String(x.district_name_ar||'').trim()===String(name||'').trim()).map(x=>({
@@ -785,8 +786,97 @@
     }
     panel.classList.remove('hidden');panel.scrollIntoView({behavior:'smooth',block:'nearest'});
   }
-  function bind(){
+async function stampQuickImage(file,ownerName){
+    if(typeof createImageBitmap!=='function')throw new Error('هذا الجهاز لا يدعم معاينة وختم الصورة.');
+    if(!/^image\/(jpeg|png|webp)$/i.test(file.type)||file.size>12*1024*1024)throw new Error('اختر صورة JPEG أو PNG أو WebP لا تتجاوز 12 ميغابايت.');
+    const bitmap=await createImageBitmap(file);
+    try{
+      const canvas=document.createElement('canvas');let scale=Math.min(1,1500/Math.max(bitmap.width,bitmap.height)),blob=null;
+      for(let pass=0;pass<8;pass++){
+        canvas.width=Math.max(1,Math.round(bitmap.width*scale));canvas.height=Math.max(1,Math.round(bitmap.height*scale));
+        const ctx=canvas.getContext('2d',{alpha:false});if(!ctx)throw new Error('تعذر تجهيز العلامة المائية.');
+        ctx.fillStyle='#fff';ctx.fillRect(0,0,canvas.width,canvas.height);ctx.drawImage(bitmap,0,0,canvas.width,canvas.height);
+        ctx.save();ctx.translate(canvas.width/2,canvas.height/2);ctx.rotate(-Math.PI/7);ctx.textAlign='center';
+        ctx.font='bold '+Math.max(16,canvas.width*.034)+'px sans-serif';
+        for(let y=-canvas.height*1.5;y<canvas.height*1.5;y+=Math.max(145,canvas.width*.28)){
+          for(let x=-canvas.width*1.5;x<canvas.width*1.5;x+=Math.max(210,canvas.width*.55)){
+            ctx.fillStyle='rgba(212,175,55,.28)';ctx.fillText('أرشيف دليل حبيش الذكي',x,y);
+            ctx.fillStyle='rgba(255,255,255,.30)';ctx.fillText('HUBAISH HERITAGE ARCHIVE',x,y+Math.max(24,canvas.width*.045));
+            if(ownerName){ctx.font='bold '+Math.max(12,canvas.width*.022)+'px sans-serif';ctx.fillStyle='rgba(255,255,255,.26)';ctx.fillText(ownerName,x,y+Math.max(45,canvas.width*.075));ctx.font='bold '+Math.max(16,canvas.width*.034)+'px sans-serif'}
+          }
+        }
+        ctx.restore();
+        for(const quality of [.76,.66,.56]){blob=await new Promise(resolve=>canvas.toBlob(resolve,'image/webp',quality));if(blob&&blob.size<=245*1024)break}
+        if(blob&&blob.size<=245*1024)break;scale*=.82;
+      }
+      if(!blob||blob.size>245*1024)throw new Error('تعذر ضغط الصورة وختمها إلى الحجم المسموح.');
+      const dataUrl=await new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>resolve(String(reader.result||''));reader.onerror=()=>reject(new Error('تعذرت قراءة الصورة.'));reader.readAsDataURL(blob)});
+      return {name:file.name.replace(/\.[^.]+$/,'')+'.webp',mimeType:'image/webp',dataUrl};
+    }finally{bitmap.close?.()}
+  }
+  function quickAddTypeChanged(){
+    const type=val('cloudQuickType');
+    const show=(id,on)=>$(id)?.classList.toggle('hidden',!on);
+    show('cloudQuickImageWrap',type==='photo'||type==='archive');
+    show('cloudQuickOwnerWrap',type==='archive');
+    show('cloudQuickPhotoMeta',type==='photo');
+    show('cloudQuickPhotoLicense',type==='photo');
+    show('cloudQuickPhotoCategory',type==='photo');
+    show('cloudQuickMarketMeta',type==='marketplace');
+    show('cloudQuickNameWrap',type==='author'||type==='figure'||type==='work'||type==='family'||type==='marketplace');
+    show('cloudQuickPublicContactWrap',type==='marketplace');
+  }
+  function renderQuickAddPreview(){
+    const root=$('cloudQuickPreview');if(!root)return;
+    root.replaceChildren();
+    const title=document.createElement('strong');title.textContent=val('cloudQuickTitle')||'معاينة العنوان';
+    const meta=document.createElement('p');meta.textContent=val('cloudQuickLocation')+' · '+val('cloudQuickType');
+    const body=document.createElement('p');body.textContent=val('cloudQuickDescription')||'سيظهر الوصف هنا.';
+    root.append(title,meta,body);
+    const file=$('cloudQuickImageFile')?.files?.[0];
+    if(file){const label=document.createElement('p');label.className='small muted';label.textContent='المرفق المختار: '+file.name;root.append(label)}
+    $('cloudQuickPreviewPanel')?.classList.remove('hidden');
+  }
+  async function submitQuickAdd(event){
+    event.preventDefault();
+    if(!isAdmin()){toast('سجّل الدخول إلى بوابة المشرفين أولاً.');return}
+    const type=val('cloudQuickType'),title=val('cloudQuickTitle'),body=val('cloudQuickDescription'),location=val('cloudQuickLocation');
+    if(!title||!body||!location||!$('cloudQuickRights')?.checked){toast('أكمل العنوان والوصف والعزلة وتأكيد حق النشر.');return}
+    const file=$('cloudQuickImageFile')?.files?.[0];
+    if((type==='photo'||type==='archive')&&!file){toast('اختر صورة أولاً.');return}
+    if(type==='photo'&&(!val('cloudQuickSource')||!val('cloudQuickPhotographer')||!val('cloudQuickLicense'))){toast('أدخل مصدر الصورة والمصور والرخصة.');return}
+    if(type==='archive'&&!val('cloudQuickOwner')){toast('أدخل مالك الوثيقة أو الجهة التي حفظتها.');return}
+    if((type==='author'||type==='figure'||type==='work'||type==='family'||type==='marketplace')&&!val('cloudQuickName')){toast('أدخل الاسم المطلوب لهذا السجل.');return}
+    const button=$('cloudQuickSubmitBtn');if(button)button.disabled=true;
+    try{
+      const attachment=file?await stampQuickImage(file,type==='archive'?val('cloudQuickOwner'):val('cloudQuickPhotographer')):null;
+      const payload={
+        type,title,body,location,name:val('cloudQuickName'),source:val('cloudQuickSource'),
+        ownerName:val('cloudQuickOwner'),photographer:val('cloudQuickPhotographer'),license:val('cloudQuickLicense'),
+        category:val('cloudQuickPhotoCategory'),marketCategory:val('cloudQuickMarketCategory'),
+        contact:val('cloudQuickContact'),publicContact:$('cloudQuickPublicContact')?.checked===true,
+        rightsConsent:true,attachment
+      };
+      const response=await workerRequest('/admin/quick-add',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+      const result=await readWorkerJson(response,'تعذر حفظ الإضافة السريعة.');
+      if(type==='photo'){
+        documentData=await publicFetch();saveCache();applyCached();renderAdminList();window.HubaishRuntime?.renderAll?.();window.HubaishGallery?.render?.();
+      }else await window.HubaishKnowledge?.load?.();
+      $('cloudQuickAddForm')?.reset();quickAddTypeChanged();$('cloudQuickPreviewPanel')?.classList.add('hidden');
+      const statusNode=$('cloudQuickStatus');if(statusNode)statusNode.textContent='تم الحفظ. سيظهر المحتوى بعد تحديث المزامنة لدى المستخدمين.';
+      toast('تمت الإضافة إلى محتوى دليل حبيش.');
+      status('اكتمل النشر السحابي · '+result.type,false);
+    }catch(error){
+      const statusNode=$('cloudQuickStatus');if(statusNode)statusNode.textContent=error.message||'تعذر الحفظ.';
+      status(error.message||'تعذر حفظ الإضافة.',true);toast('لم يتم تأكيد حفظ الإضافة.');
+    }finally{if(button)button.disabled=false}
+  }
+    function bind(){
     $('communitySubmissionRefresh')?.addEventListener('click',loadCommunitySubmissions);
+    $('cloudQuickType')?.addEventListener('change',quickAddTypeChanged);
+    $('cloudQuickPreviewBtn')?.addEventListener('click',renderQuickAddPreview);
+    $('cloudQuickAddForm')?.addEventListener('submit',submitQuickAdd);
+    quickAddTypeChanged();
     $('workerLoginForm')?.addEventListener('submit',workerLogin);
     $('workerSetupForm')?.addEventListener('submit',firstAdminSetup);
     $('cloudCreateAdminForm')?.addEventListener('submit',createWorkerAdmin);
@@ -862,7 +952,7 @@
     localStorage.removeItem('hubaish_direct_github_token');localStorage.removeItem('hubaish_worker_url');
     applyCached();bind();setTimeout(applyCached,0);
     if(navigator.onLine){sync(true);refreshSetupStatus()}
-    window.setInterval(()=>{if(document.visibilityState==='visible'){sync(true);refreshSetupStatus()}},60000);
+    window.setInterval(()=>{if(document.visibilityState==='visible'){sync(true);refreshSetupStatus();window.HubaishKnowledge?.load?.()}},15000);
     window.addEventListener('online',()=>{sync(true);refreshSetupStatus()});
     document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')sync(true)});
     renderAdminList();adminStatus();restoreWorkerSession();

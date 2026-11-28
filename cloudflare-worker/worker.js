@@ -5,7 +5,7 @@
  * BOOTSTRAP_KEY is required only for first-admin setup and must be removed afterward.
  */
 const OWNER="baraagpt6-droid",REPO="hubaish-smart-guide.",BRANCH="main",FILE="www/data/live-content.json";
-const ROLES=new Set(["super_admin","editor"]),ITER=100000,UP="user:",AUDIT="audit:latest";
+const ROLES=new Set(["super_admin","editor"]),ITER=100000,UP="user:",AUDIT="audit:latest",LIVE_KEY="live-content:published";
 function b64bytes(bytes){let binary='';for(let i=0;i<bytes.length;i+=0x8000)binary+=String.fromCharCode(...bytes.subarray(i,Math.min(i+0x8000,bytes.length)));return btoa(binary)}
 const SECURITY_HEADERS={"X-Content-Type-Options":"nosniff","X-Frame-Options":"DENY","Referrer-Policy":"strict-origin-when-cross-origin","Permissions-Policy":"microphone=(self)","Strict-Transport-Security":"max-age=31536000; includeSubDomains","Cross-Origin-Resource-Policy":"same-site","Content-Security-Policy":"default-src 'none'; frame-ancestors 'none'; base-uri 'none'"};
 const json=(d,s=200,h={})=>new Response(JSON.stringify(d),{status:s,headers:{"Content-Type":"application/json; charset=utf-8","Cache-Control":"no-store",...SECURITY_HEADERS,...h}});
@@ -69,6 +69,22 @@ function cors(req,env){
 async function auth(req,env){const t=(req.headers.get("Authorization")||"").replace(/^Bearer\s+/i,""),p=await check(t,env.SESSION_SECRET);if(!p?.sub)return null;const u=await getUser(env,p.sub);if(!u||u.disabled||u.role!==p.role||String(p.ver||"legacy")!==versionOf(u))return null;return {username:u.username,displayName:u.displayName,role:u.role}}
 async function ghRead(env){const url="https://api.github.com/repos/"+OWNER+"/"+REPO+"/contents/"+FILE+"?ref="+BRANCH;const r=await fetch(url,{headers:{Authorization:"Bearer "+env.GITHUB_TOKEN,Accept:"application/vnd.github+json","X-GitHub-Api-Version":"2022-11-28","User-Agent":"Hubaish-CMS-Worker"}}),p=await r.json();if(!r.ok)throw Error("GitHub read failed: "+(p.message||r.status));const raw=atob(p.content.replace(/\s/g,"")),bytes=Uint8Array.from(raw,c=>c.charCodeAt(0));return {sha:p.sha,data:JSON.parse(dec(bytes))}}
 async function ghWrite(env,data,actor){const old=await ghRead(env),url="https://api.github.com/repos/"+OWNER+"/"+REPO+"/contents/"+FILE,content=b64bytes(enc(JSON.stringify(data,null,2)+"\n"));const r=await fetch(url,{method:"PUT",headers:{Authorization:"Bearer "+env.GITHUB_TOKEN,Accept:"application/vnd.github+json","X-GitHub-Api-Version":"2022-11-28","Content-Type":"application/json","User-Agent":"Hubaish-CMS-Worker"},body:JSON.stringify({message:"CMS: update live content by "+actor.username,content,sha:old.sha,branch:BRANCH,committer:{name:"Hubaish CMS — "+(actor.displayName||actor.username),email:"41898282+github-actions[bot]@users.noreply.github.com"}})}),p=await r.json();if(!r.ok)throw Error("GitHub write failed: "+(p.message||r.status));return p}
+async function publishLiveContent(env,data){
+ if(!env.ADMINS)return false;
+ const snapshot={...data,schemaVersion:1,updatedAt:data.updatedAt||new Date().toISOString()};
+ await env.ADMINS.put(LIVE_KEY,JSON.stringify(snapshot));
+ return true;
+}
+async function readLiveContent(env){
+ let snapshot=env.ADMINS?await env.ADMINS.get(LIVE_KEY,"json"):null;
+ if(!snapshot||snapshot.schemaVersion!==1){
+  snapshot=(await ghRead(env)).data;
+  const keys=["landmarks","historyEvents","subDistrictUpdates","subDistricts","historicalFigures","communityLinks"];
+  if(!snapshot||snapshot.schemaVersion!==1||!keys.every(key=>Array.isArray(snapshot[key])))throw Error("Live content schema is invalid.");
+  if(env.ADMINS)await env.ADMINS.put(LIVE_KEY,JSON.stringify(snapshot));
+ }
+ return snapshot;
+}
 async function healthKV(env){
  if(!env.ADMINS)throw Error("ADMINS binding missing.");
  const key="healthcheck:"+b64u(random(16));let created=false;
@@ -98,6 +114,15 @@ async function route(req,env){
  const u=new URL(req.url),path=u.pathname;
  if(req.method==="OPTIONS")return new Response(null,{status:204});
  if(req.method==="GET"&&(path==="/health"||path==="/api/health"))return healthStatus(env);
+ if(req.method==="GET"&&path==="/api/live-content"){
+  try{
+   const content=await readLiveContent(env);
+   const updatedAt=String(content.updatedAt||"");
+   return json({content,updatedAt,revision:updatedAt||"initial",source:"cloudflare-kv"},200,{"Cache-Control":"no-store","X-Hubaish-Live-Feed":"1"});
+  }catch{
+   return json({error:"Live content is temporarily unavailable."},503,{"Cache-Control":"no-store"});
+  }
+ }
  if(req.method==="POST"&&path==="/public/photo-submissions"){
   return json({ok:false,error:"Visitor photo submissions are temporarily disabled."},410);
  }
@@ -124,7 +149,7 @@ async function route(req,env){
    if(value&&value.status==="approved")submissions.push({
     id:value.id,type:value.type,name:value.name,title:value.title,body:value.body,source:value.source,
     createdAt:value.reviewedAt||value.submittedAt,
-    contactPublic:value.type==="marketplace"&&value.contactPublic===true?value.contactPublicValue:"",ownerName:value.type==="archive"?(value.ownerName||""):"",marketCategory:value.marketCategory||"",
+    contactPublic:value.type==="marketplace"&&value.contactPublic===true?value.contactPublicValue:"",ownerName:value.type==="archive"?(value.ownerName||""):"",marketCategory:value.marketCategory||"",location:value.location||"",
     hasAttachment:!!value.attachment,attachmentName:value.attachment?.name||"",attachmentUrl:value.type==="archive"&&["image/jpeg","image/png","image/webp"].includes(value.attachment?.mimeType)?"/public/community-submissions/attachment?id="+encodeURIComponent(value.id):""
    });
   }
@@ -238,10 +263,63 @@ async function route(req,env){
   const approved={id,type:record.type,name:record.name,title:record.title,body:record.body,source:record.source,ownerName:record.ownerName||"",marketCategory:record.marketCategory||"",
    contactPublic:record.type==="marketplace"&&record.publicContact===true,
    contactPublicValue:record.type==="marketplace"&&record.publicContact===true?record.contact:"",
-   attachment:record.attachment||null,submittedAt:record.submittedAt,reviewedAt:new Date().toISOString(),reviewedBy:actor.username,status:"approved"};
+   attachment:record.attachment||null,location:record.location||"",submittedAt:record.submittedAt,reviewedAt:new Date().toISOString(),reviewedBy:actor.username,status:"approved"};
   await env.ADMINS.put("community-published:"+id,JSON.stringify(approved),{expirationTtl:60*60*24*365});
   await env.ADMINS.delete(key);await log(env,{actor:actor.username,action:"approve_community_submission",target:id,type:record.type});
   return json({ok:true,status:"approved",id});
+ }
+ if(req.method==="POST"&&path==="/admin/quick-add"){
+  if(!["super_admin","editor"].includes(actor.role))return json({error:"لا تملك صلاحية إضافة المحتوى."},403);
+  const b=await readJson(req,700000);
+  const type=String(b.type||"").trim(),title=String(b.title||"").trim().slice(0,180),name=String(b.name||"").trim().slice(0,120),body=String(b.body||"").trim().slice(0,5000),location=String(b.location||"").trim().slice(0,120),source=String(b.source||"").trim().slice(0,1000);
+  if(!["photo","archive","author","figure","work","family","marketplace"].includes(type)||!title||!body||!location||b.rightsConsent!==true)return json({error:"أكمل النوع والعنوان والوصف والعزلة وتأكيد حق النشر."},400);
+  let attachment=null;
+  if(type==="photo"||type==="archive"){
+   const file=b.attachment||{},mime=String(file.mimeType||"");
+   const match=String(file.dataUrl||"").match(/^data:(image\/(?:jpeg|png|webp));base64,([A-Za-z0-9+/]+={0,2})$/);
+   if(!match||match[1]!==mime||match[2].length>390000)return json({error:"ارفع صورة JPEG أو PNG أو WebP بعد ختمها، وبحجم مناسب."},400);
+   attachment={name:String(file.name||"image.webp").slice(0,120),mimeType:mime,dataUrl:file.dataUrl};
+  }
+  const live=(await ghRead(env)).data;
+  const knownDistricts=(live.subDistricts||[]).map(x=>String(x.district_name_ar||"").trim()).filter(Boolean);
+  if(!knownDistricts.includes(location))return json({error:"اختر عزلة من قائمة مديرية حبيش المعتمدة داخل التطبيق."},400);
+  const id="quick-"+crypto.randomUUID(),now=new Date().toISOString();
+  if(type==="photo"){
+   if(!attachment||!source||!/^https?:\/\//i.test(source)||!String(b.photographer||"").trim()||!String(b.license||"").trim())return json({error:"الصورة تحتاج مصدراً ومصوراً ورخصة موثقة."},400);
+   const category=String(b.category||"heritage");
+   const categoryMap={forts:"fort",valleys:"valley",villages:"village",heritage:"mosque"};
+   if(!categoryMap[category])return json({error:"تصنيف الصورة غير صالح."},400);
+   live.landmarks.push({
+    id,category:categoryMap[category],scope:"hubaish_district",
+    title_ar:title,title_en:title,title_tr:title,title_fr:title,
+    location_ar:location+"، مديرية حبيش",location_en:location+", Hubaish District",location_tr:location+", Hubaish",location_fr:location+", Hubaish",
+    description_ar:body,description_en:body,description_tr:body,description_fr:body,
+    source_text:source,source_url:source,
+    image_url:attachment.dataUrl,image_verified:true,image_category:category,
+    image_photographer:String(b.photographer).trim().slice(0,160),image_credit:String(b.photographer).trim().slice(0,160),
+    image_license:String(b.license).trim().slice(0,120),image_source_url:source,
+    image_alt_ar:title,image_alt_en:title,image_alt_tr:title,image_alt_fr:title,
+    image_caption_ar:body,image_caption_en:body,image_caption_tr:body,image_caption_fr:body,
+    image_district_ar:location,image_district_en:location+", Hubaish District"
+   });
+   if(JSON.stringify(live).length>700000)return json({error:"ملف المحتوى تجاوز الحد المسموح."},413);
+   live.updatedAt=now;live.updatedBy={username:actor.username,displayName:actor.displayName,role:actor.role};
+   const result=await ghWrite(env,live,actor),liveFeedUpdated=await publishLiveContent(env,live).catch(()=>false);
+   await log(env,{actor:actor.username,action:"quick_add_photo",target:id,location,commit:result.commit?.sha||null,liveFeedUpdated});
+   return json({ok:true,id,type,updatedAt:live.updatedAt,liveFeedUpdated},201);
+  }
+  if(type==="archive"&&!attachment)return json({error:"اختر صورة الوثيقة حتى تُحفظ بعلامتها المائية."},400);
+  if(type==="archive"&&!String(b.ownerName||"").trim())return json({error:"أدخل اسم صاحب الوثيقة أو الجهة المالكة."},400);
+  if((type==="author"||type==="figure"||type==="work")&&!name)return json({error:"أدخل اسم صاحب السجل أو المؤلف."},400);
+  if(type==="family"&&!name)return json({error:"أدخل اسم الأسرة أو العائلة."},400);
+  const marketCategory=String(b.marketCategory||"");
+  if(type==="marketplace"&&!["shop","artisan","service","weekly_market","sale","wanted"].includes(marketCategory))return json({error:"اختر تصنيف إعلان السوق."},400);
+  const contact=String(b.contact||"").trim().slice(0,160);
+  const publicContact=b.publicContact===true&&type==="marketplace"&&!!contact;
+  const record={id,type,name:name||String(b.ownerName||actor.displayName||actor.username).slice(0,120),title,body,source,location,ownerName:type==="archive"?String(b.ownerName).trim().slice(0,160):"",marketCategory:type==="marketplace"?marketCategory:"",publicContact,contact,contactPublic:publicContact,contactPublicValue:publicContact?contact:"",attachment,submittedAt:now,reviewedAt:now,reviewedBy:actor.username,status:"approved",publishConsent:true};
+  await env.ADMINS.put("community-published:"+id,JSON.stringify(record),{expirationTtl:60*60*24*365});
+  await log(env,{actor:actor.username,action:"quick_add_"+type,target:id,location});
+  return json({ok:true,id,type,updatedAt:now},201);
  }
  if(path.startsWith("/admin/")&&actor.role!=="super_admin")return json({error:"يتطلب هذا الإجراء صلاحية المشرف العام."},403);
  if(req.method==="GET"&&path==="/review/photo-submissions"){
@@ -268,7 +346,7 @@ async function route(req,env){
    image_district_ar:submission.location,image_district_en:submission.location,image_district_tr:submission.location,image_district_fr:submission.location});
   if(JSON.stringify(doc).length>680000)return json({error:"Photo exceeds live content storage limit."},413);
   doc.updatedAt=new Date().toISOString();doc.updatedBy={username:actor.username,displayName:actor.displayName,role:actor.role};
-  const result=await ghWrite(env,doc,actor);await env.ADMINS.delete(key);await log(env,{actor:actor.username,action:"approve_visitor_photo",target:id,commit:result.commit?.sha||null});return json({ok:true,commit:result.commit?.sha||null})
+  const result=await ghWrite(env,doc,actor);const liveFeedUpdated=await publishLiveContent(env,doc).catch(()=>false);await env.ADMINS.delete(key);await log(env,{actor:actor.username,action:"approve_visitor_photo",target:id,commit:result.commit?.sha||null,liveFeedUpdated});return json({ok:true,commit:result.commit?.sha||null,liveFeedUpdated})
  }
  if(req.method==="GET"&&path==="/auth/me")return json({user:actor});
  if(req.method==="PUT"&&path==="/content"){
@@ -287,9 +365,10 @@ async function route(req,env){
    for(const [id,item] of before)if(!after.has(id))changes.push({collection:key,id,action:"delete",title:String(item.title_ar||item.name_ar||item.district_name_ar||id).slice(0,120)});
   }
   d.updatedAt=new Date().toISOString();d.updatedBy={username:actor.username,displayName:actor.displayName,role:actor.role};
-  const result=await ghWrite(env,d,actor);await log(env,{actor:actor.username,displayName:actor.displayName,role:actor.role,action:"publish_content",changes:changes.slice(0,100),commit:result.commit?.sha||null});
-  return json({ok:true,updatedAt:d.updatedAt,updatedBy:d.updatedBy,commit:result.commit?.sha||null})
+  const result=await ghWrite(env,d,actor);const liveFeedUpdated=await publishLiveContent(env,d).catch(()=>false);await log(env,{actor:actor.username,displayName:actor.displayName,role:actor.role,action:"publish_content",changes:changes.slice(0,100),commit:result.commit?.sha||null,liveFeedUpdated});
+  return json({ok:true,updatedAt:d.updatedAt,updatedBy:d.updatedBy,commit:result.commit?.sha||null,liveFeedUpdated})
  }
+
  if(path==="/admin/users"&&actor.role==="super_admin"&&req.method==="GET"){
   const keys=await env.ADMINS.list({prefix:UP,limit:100}),users=[];for(const k of keys.keys){const x=await getUser(env,k.name.slice(UP.length));if(x)users.push({username:x.username,displayName:x.displayName,role:x.role,disabled:!!x.disabled,createdAt:x.createdAt})}return json({users})
  }
