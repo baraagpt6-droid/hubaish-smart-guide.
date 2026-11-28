@@ -218,11 +218,14 @@ if(!wrangler.includes('workers_dev = true')||
    !cloudflareDeployWorkflow.includes("check('/health')")) {
   throw new Error('The fixed ADMINS KV namespace, credential-independent validation, conditional deployment or production health check is incomplete.');
 }
-if(!workflow.includes('actions/deploy-pages@v4')||!workflow.includes('assembleRelease')||
-   !workflow.includes('bundleRelease')||!workflow.includes('Daleel-Hubaish-v')||
-   !workflow.includes('Daleel-Hubaish-release.aab')||
-   !workflow.includes('patch-android-config.py')||!workflow.includes('upload-artifact@v4')) {
-  throw new Error('The signed APK/AAB and Pages release workflow is incomplete.');
+if(!workflow.includes('actions/checkout@v7')||!workflow.includes('actions/setup-node@v7')||
+   !workflow.includes('actions/setup-java@v6')||!workflow.includes('actions/configure-pages@v6')||
+   !workflow.includes('actions/upload-pages-artifact@v5')||!workflow.includes('actions/deploy-pages@v5')||
+   !workflow.includes('actions/upload-artifact@v7')||!workflow.includes('actions/download-artifact@v7')||
+   !workflow.includes('assembleRelease')||!workflow.includes('bundleRelease')||
+   !workflow.includes('Daleel-Hubaish-v')||!workflow.includes('Daleel-Hubaish-release.aab')||
+   !workflow.includes('patch-android-config.py')) {
+  throw new Error('The signed APK/AAB and Node 24 Pages release workflow is incomplete.');
 }
 if(androidPatch.includes('android:windowOptOutEdgeToEdgeEnforcement')||
    !androidPatch.includes('WindowCompat.setDecorFitsSystemWindows(getWindow(), false)')||
