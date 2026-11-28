@@ -67,7 +67,7 @@ jobs:
                 echo "::error::Push event did not provide a valid parent commit."
                 exit 1
               }
-              for marker_path in .promote-416 .promote-416-retry; do
+              for marker_path in .promote-416 .promote-416-retry .promote-416-final; do
                 if [[ -f "$marker_path" ]]; then
                   marker_value="$(tr -d '[:space:]' < "$marker_path")"
                   [[ "$marker_value" == "416" ]] || {

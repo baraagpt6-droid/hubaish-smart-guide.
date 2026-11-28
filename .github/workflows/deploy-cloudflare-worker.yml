@@ -10,6 +10,7 @@ on:
       - 'PROJECT_MEMORY.md'
       - '.promote-416'
       - '.promote-416-retry'
+      - '.promote-416-final'
       - 'fastlane/**'
       - 'scripts/resolve-play-release.py'
       - 'scripts/monitor-play-status.py'

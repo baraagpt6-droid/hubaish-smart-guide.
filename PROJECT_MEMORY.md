@@ -91,9 +91,9 @@ workflow_dispatch has three choices and defaults to verify_only:
 - preview_draft: manually request another draft upload.
 - publish_approved_release: explicitly promote one existing draft to completed on Hubaish Closed Test; it does not build or upload a new AAB.
 
-The manual approval script is scripts/promote-play-draft.py. It requires exactly one existing draft whose complete versionCodes list equals the explicit PLAY_EXPECTED_VERSION_CODE. It verifies package, exact repository, main ref, target track and duplicate-code safety. To satisfy Google's one-completed-release rule, it retains the versionCodes from the prior completed release inside the single promoted release record together with the requested draft code. After committing, it opens a fresh Play edit and verifies the requested status and retained codes. It never builds or uploads an AAB or accesses Production.
+The manual approval script is scripts/promote-play-draft.py. It requires exactly one existing draft whose complete versionCodes list equals the explicit PLAY_EXPECTED_VERSION_CODE. It verifies package, exact repository, main ref, target track and duplicate-code safety. To satisfy Google's one-completed-release rule, it replaces the previous completed target-track assignment with the requested newer versionCode as the single completed release. The old bundle remains in Play's uploaded-bundle history, but its lower code is no longer assigned to the active track. After commit, a fresh edit verifies the exact new release state. It never builds or uploads an AAB or accesses Production.
 
-A push-triggered approval exception is allowed only when one of `.promote-416` or `.promote-416-retry` is newly added in the pushed commit, contains exactly `416`, and was absent from the parent commit. The workflow compares the pushed commit with its parent using full Git history. Existing markers are ignored on later pushes, which return to preview_draft.
+A push-triggered approval exception is allowed only when one of `.promote-416`, `.promote-416-retry` or `.promote-416-final` is newly added in the pushed commit, contains exactly `416`, and was absent from the parent commit. The workflow compares the pushed commit with its parent using full Git history. Existing markers are ignored on later pushes, which return to preview_draft.
 
 Fastlane must reject automated upload statuses other than draft. The normal upload resolver is scripts/resolve-play-release.py.
 
@@ -159,6 +159,11 @@ Promotion attempt run 46093490012 on 2026-11-28:
 - The one-shot path resolved to publish_approved_release and skipped every build, signing, bundle and upload step.
 - Google Play rejected the first track update with HTTP 400 because the request contained two separate completed release records. The temporary edit was discarded before commit.
 - Read-only monitor run 46093519311 confirmed the target track remained unchanged: 413 completed and 416 draft. Production remained empty; no new bundle was uploaded.
+
+Second promotion attempt run 46093818831 on 2026-11-28:
+- The one-shot approval path again skipped every build, signing, bundle and upload step.
+- The API accepted the replacement-shaped update in the temporary edit, but commit returned HTTP 403 because versionCode 413 cannot be delivered once 416 is the higher compatible artifact.
+- The temporary edit was discarded before commit. Read-only monitor run 46093863834 confirmed 413 remained completed and 416 remained draft; Production remained unchanged and no new bundle was uploaded.
 
 Successful preview build run 46038091477:
 - versionName 1.0.401, versionCode 416; AAB SHA-256 e994a8dc2661f42008d68bcd17627062c7710d1a46e33d81b43de9c7d19d22fa.

@@ -275,14 +275,16 @@ if (!playWorkflow.includes('workflow_dispatch:') ||
     !playWorkflow.includes("python3 scripts/promote-play-draft.py") ||
     !playWorkflow.includes(".promote-416") ||
     !playWorkflow.includes(".promote-416-retry") ||
+    !playWorkflow.includes(".promote-416-final") ||
     !playWorkflow.includes("git cat-file -e") ||
     !playWorkflow.includes("PLAY_EXPECTED_VERSION_CODE") ||
     !playPromoter.includes("draft_codes != [expected]") ||
-    !playPromoter.includes("retained_codes") ||
-    !playPromoter.includes("merged_codes") ||
+    !playPromoter.includes("prior_completed_codes") ||
+    !playPromoter.includes("Replacing the previous completed assignment") ||
     !playPromoter.includes("updated_releases.append(promoted_release)") ||
     !playPromoter.includes("Post-commit read-back") ||
     !playPromoter.includes('actual_status != "completed"') ||
+    !playPromoter.includes("completed_after") ||
     playWorkflow.includes("publish_closed_testing") ||
     playWorkflow.includes("approve_draft")) {
   throw new Error('Google Play workflow must upload draft previews on main pushes, require explicit manual approval, use WIF, verify signing and read back the release.');
