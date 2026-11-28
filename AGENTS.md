@@ -42,8 +42,10 @@ Do not generate or rotate an upload key without an explicit migration plan. Vali
 - The only permitted Google Play track is exactly Hubaish Closed Test.
 - PLAY_TRACK is pinned in the workflow. Do not replace it with a repository variable or add a fallback to alpha, beta, internal, open, QA, form-factor, or Production tracks.
 - Every push to main defaults to preview_draft.
-- A push-triggered exception is permitted only when one of the root markers `.promote-416`, `.promote-416-retry` or `.promote-416-final` is newly added in that push (absent from its parent commit) and contains exactly `416`. This approval-only path skips app dependencies, app build, screenshots, signing, AAB creation, artifacts and upload.
-- Each marker is one-shot by parent-commit comparison. Existing markers do not affect future pushes; later pushes return to preview_draft.
+- The legacy root markers `.promote-416`, `.promote-416-retry` and `.promote-416-final` are one-shot approval-only paths for the exact existing 416 draft. They skip app build, screenshots, signing, AAB creation, artifacts and upload.
+- The root marker `.publish-418` is a separately authorized, one-shot exception for the 28 November 2026 clean 418 release only. It must be newly added by the push (absent from its parent commit) and contain exactly `418`. It runs the complete source build, Playwright runtime audit, listing/screenshots validation, Android sync, signed Gradle `bundleRelease`, then retires only the exact obsolete 417 draft, uploads 418 as draft and promotes that exact draft to completed on `Hubaish Closed Test`.
+- The 418 path is fail-closed: the resolver must find exactly one 417 draft and calculate 418; the retirement helper must find exactly 417 draft plus 416 completed, require Production to be empty, and verify 416 remains active after the draft removal. After the upload, the promoter requires exactly one 418 draft and replaces the previous completed track assignment; final API read-back must show exactly one completed 418 and zero versioned drafts. Any unexpected release code, status, track, package, repository or Production state aborts the operation.
+- The `.publish-418` path must never read or modify `edits.testers`, the tester list, opt-in configuration, other testing tracks, or Production. The marker is consumed by parent-commit comparison; existing markers do not affect future pushes, which return to preview_draft.
 - workflow_dispatch defaults to verify_only and supports an explicit expected_version_code for promotion.
 - Promotion requires exactly one target-track draft whose complete versionCodes list equals the explicit expected code. It fails closed on draft count, duplicate code, package, repository, ref or track mismatch.
 - Google permits one completed release per track. Promotion replaces the previous completed track assignment with the requested newer versionCode as the single completed release. The older bundle remains in Play's uploaded-bundle history, but its lower code is no longer assigned to the active target track. The promoter verifies the exact state after commit and never builds or uploads an AAB.
@@ -58,6 +60,7 @@ Do not generate or rotate an upload key without an explicit migration plan. Vali
 - Upload lane: android upload_closed_testing in fastlane/Fastfile.
 - Track/version resolver: scripts/resolve-play-release.py.
 - Manual approval script: scripts/promote-play-draft.py.
+- One-shot old-draft retirement helper: scripts/retire-obsolete-play-draft.py. It removes only versionCode 417 from the exact target track after a signed 418 AAB has passed all app tests; it never touches tester settings or Production.
 - Build/static verifier: scripts/verify-build.mjs.
 - Inspect these files together before changing release logic.
 - Resolver must find the exact Hubaish Closed Test track or fail. It must never silently fall back to another track.
@@ -111,7 +114,7 @@ Do not generate or rotate an upload key without an explicit migration plan. Vali
 4. Sign the AAB with the existing upload key.
 5. Upload only as draft.
 6. Read back the draft and confirm Production is unchanged.
-7. Leave publication to the separate publish_approved_release manual action.
+7. Leave ordinary draft publication to the separate publish_approved_release manual action. A one-shot exception requires a newly-added, exact-code marker and an explicit owner authorization; never generalize it to future pushes.
 
 ## Play status monitor and runtime audit
 - Read-only monitor workflow: .github/workflows/play-status-monitor.yml.
