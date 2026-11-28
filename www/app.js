@@ -453,7 +453,7 @@ function renderUzal(query = '') {
   target.replaceChildren();
   if (!items.length) return appendEmpty(target, state.lang==='EN'?'No matching sub-district.':state.lang==='TR'?'Eşleşen bucak yok.':state.lang==='FR'?'Aucun sous-district correspondant.':'لا توجد عزلة مطابقة.');
   items.forEach(item => {
-    const card = element('article', 'item-card');
+    const card = element('article', 'item-card uzal-card');
     const row = element('div', 'item-meta');
     row.append(makeTag(labels.number+' #'+item.number, true));
     card.dataset.exploreId = item.name;
@@ -517,6 +517,7 @@ function switchTab(tab) {
   const valid = ['home', 'history', 'places', 'uzal', 'more'];
   if (!valid.includes(tab)) return;
   state.tab = tab;
+  if (tab === 'uzal') renderUzal(document.getElementById('uzalSearchInput')?.value || '');
   document.querySelectorAll('.view-section').forEach(section => section.classList.toggle('active', section.id === `view-${tab}`));
   document.querySelectorAll('.nav-btn').forEach(button => button.classList.toggle('active', button.dataset.tab === tab));
   saveState();

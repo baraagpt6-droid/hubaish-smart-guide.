@@ -1137,7 +1137,9 @@
       "biography_ar": "ولد سنة 458هـ وتوفي سنة 528هـ بحسب الترجمة المنقولة. ينسب إلى وحاظة، وألف «نظام الغريب» في اللغة وغريب الألفاظ. تذكر الروايات دفنه في جامع الجعامي. تحفظ البطاقة التواريخ والنسبة بحسب مصادر التراجم، مع الحاجة إلى مراجعة النصوص الأصلية.",
       "biography_en": "Biographical accounts report that he lived from 458 to 528 AH, was associated with Wuhaza and authored Nizam al-Gharib on Arabic language and unusual expressions. The accounts place his burial at Al-Jaami Mosque; original biographical sources should be checked.",
       "source_text": "مادة حبيش في ثور رأين؛ الأكوع؛ الجندي؛ ومصادر الفكر العربي والإسلامي في اليمن.",
-      "source_url": "https://www.thu-raein.com/index.php/ar/makhaleef-ar/hubaish-district-ar?id=17&view=category"
+      "source_url": "https://www.thu-raein.com/index.php/ar/makhaleef-ar/hubaish-district-ar?id=17&view=category",
+      "location_ar": "وحاظة – جبل حبيش، عزلة شباع، مديرية حبيش",
+      "subdistrict_ar": "شباع"
     },
     {
       "id": "ismail-al-wuhazi",
@@ -1148,7 +1150,9 @@
       "biography_ar": "أخو عيسى بن إبراهيم الوحاظي. تذكر التراجم أنه عمل مؤدباً لأبناء الملوك الصليحيين، وتنسب إليه قصيدة «الأوابد» وشرحها. يرد في بعض النقل عنوان القصيدة بصيغة «قيد الأوابد»؛ تحفظ اختلاف التسمية حتى مراجعة النسخة الأصلية.",
       "biography_en": "Brother of Isa al-Wuhazi. Biographical accounts say he tutored children of Sulayhid rulers and attribute to him the poem al-Awabid and its commentary. Some secondary quotations use the title Qayd al-Awabid; the title variation is retained pending collation.",
       "source_text": "هجر العلم ومعاقله؛ مصادر التراجم والأدب اليمنية؛ مادة حبيش في ثور رأين.",
-      "source_url": "https://www.thu-raein.com/index.php/ar/makhaleef-ar/hubaish-district-ar?id=17&view=category"
+      "source_url": "https://www.thu-raein.com/index.php/ar/makhaleef-ar/hubaish-district-ar?id=17&view=category",
+      "location_ar": "وحاظة – جبل حبيش، عزلة شباع، مديرية حبيش",
+      "subdistrict_ar": "شباع"
     },
     {
       "id": "zayd-al-faishi",
@@ -1159,7 +1163,9 @@
       "biography_ar": "ينسب إلى وحاظة، ويذكر كتاب «التهذيب» في الفقه. وتصفه رواية منقولة عن «العطايا السنية» بأنه صاحب خزانة تضم نحو 500 كتاب في الفقه؛ يصف الدليل هذه الخزانة بأنها منسوبة إليه ولا يجزم بأنها مكتبة عامة تابعة للهجرة أو المدرسة.",
       "biography_en": "Associated with Wuhaza and credited with al-Tahdhib on jurisprudence. A report citing al-Ataya al-Saniyya attributes a collection of about 500 legal books to him; this guide does not claim it was a public school library.",
       "source_text": "الأفضل العباس الرسولي، العطايا السنية والمواهب الهنية؛ الأكوع، هجر العلم ومعاقله؛ مادة حبيش في ثور رأين.",
-      "source_url": "https://www.thu-raein.com/index.php/ar/makhaleef-ar/hubaish-district-ar?id=17&view=category"
+      "source_url": "https://www.thu-raein.com/index.php/ar/makhaleef-ar/hubaish-district-ar?id=17&view=category",
+      "location_ar": "وحاظة – جبل حبيش، عزلة شباع، مديرية حبيش",
+      "subdistrict_ar": "شباع"
     },
     {
       "id": "muhammad-ayid-al-aqab",
@@ -1170,7 +1176,9 @@
       "biography_ar": "تذكر دراسة بلال الطيب أن الشيخ محمد عايض العقاب قاد انتفاضة حبيش ضد قوات الإمام يحيى حميد الدين سنة 1919م، وأنه كان من مشايخ المناطق الوسطى الذين رفضوا الدخول في طاعة الإمام. وينقل المقال عن حفيده أن وفاته كانت نحو 1925م في قرية الجراجز التابعة لعزلة نقيل العقاب؛ لذلك يعرض تاريخ الوفاة بوصفه رواية أسرية منقولة لا سجلاً مدنياً موثقاً.",
       "biography_en": "A 2022 historical study identifies Sheikh Muhammad Ayed al-Aqab as a leader of the 1919 Hubaish uprising against the forces of Imam Yahya Hamid al-Din. It relays a family account that he died around 1925 in al-Jarajiz, within Naqil al-Aqab; the reported death date is therefore presented as an attributed account.",
       "source_text": "بلال الطيب، «حبيش.. مفتتح المجد وذروته»، 21 مايو 2022.",
-      "source_url": "https://hekmahyemanya.com/آثار/حُبيش-مُفتتح-المجد-وذروته/"
+      "source_url": "https://hekmahyemanya.com/آثار/حُبيش-مُفتتح-المجد-وذروته/",
+      "location_ar": "دار الجأبيب وقرية الجراجز – عزلة نقيل العقاب، مديرية حبيش",
+      "subdistrict_ar": "نقيل العقاب"
     },
     {
       "id": "abdulaziz-al-haddad",
@@ -1181,7 +1189,9 @@
       "biography_ar": "يذكر مقال تاريخي عن انتفاضة حبيش أن الشيخ عبدالعزيز بن عبدالكريم الحداد ساند الشيخ محمد عايض العقاب، وأنه قاد مقاومة في إطار عزلة الناحية واستشهد فيها بحسب الرواية التي ينقلها المقال. لا تتوفر في هذه البطاقة تفاصيل إضافية عن تاريخ الميلاد أو الوفاة.",
       "biography_en": "A historical article on the Hubaish uprising names Sheikh Abdulaziz ibn Abdulkarim al-Haddad among the supporters of Muhammad Ayed al-Aqab and says he was killed during resistance in Al-Nahiyah. No birth or exact death dates are supplied here.",
       "source_text": "بلال الطيب، «حبيش.. مفتتح المجد وذروته»، 21 مايو 2022.",
-      "source_url": "https://hekmahyemanya.com/آثار/حُبيش-مُفتتح-المجد-وذروته/"
+      "source_url": "https://hekmahyemanya.com/آثار/حُبيش-مُفتتح-المجد-وذروته/",
+      "location_ar": "عزلة الناحية – مديرية حبيش",
+      "subdistrict_ar": "الناحية"
     },
     {
       "id": "asad-ibn-wa-il",
@@ -1192,7 +1202,9 @@
       "biography_ar": "يرتبط في الرواية التاريخية بإمارة بني وائل وبحصن يريس، وتذكر مادة حبيش دفنه في جامع الجعامي. لا يحدد السجل سنة ميلاد أو وفاة دقيقة؛ ولا يخلط بينه وبين أسماء أخرى متشابهة في المصادر.",
       "biography_en": "Historical accounts associate him with the Bani Wa'il emirate and Yaris Fort, and report his burial at Al-Jaami Mosque. No exact birth or death year is established here.",
       "source_text": "عمارة اليمني؛ الأكوع؛ الجندي، كما تنقلها مادة حبيش المحلية.",
-      "source_url": "https://www.thu-raein.com/index.php/ar/makhaleef-ar/hubaish-district-ar?id=17&view=category"
+      "source_url": "https://www.thu-raein.com/index.php/ar/makhaleef-ar/hubaish-district-ar?id=17&view=category",
+      "location_ar": "نطاق بني وائل وحصن يريس – مديرية حبيش؛ العزلة الحالية غير محسومة في المصدر",
+      "subdistrict_ar": "غير محسومة"
     },
     {
       "id": "qasim-ibn-humayr-al-waili",
@@ -1203,7 +1215,9 @@
       "biography_ar": "ينسب إليه الأكوع بناء مدرسة الزواحي وأوقافها في عزلة كومان. ويذكر الجندي في السلوك ص 431 أن المدرسة من إحداث بعض مشايخ بني وائل من غير تسمية شخص بعينه. لذلك تعرض البطاقة نسبة الأكوع كإفادة مستقلة ولا تدمجها مع عبارة الجندي.",
       "biography_en": "Al-Akwa'i attributes the building and endowment of Al-Zawahi School in Kuman to him. Al-Jundi, al-Suluk p. 431, instead says the school was established by some Bani Wa'il shaykhs without naming an individual. The accounts remain separate.",
       "source_text": "محمد علي الأكوع، المدارس الإسلامية في اليمن؛ هجر العلم ومعاقله؛ الجندي، السلوك، ص 431.",
-      "source_url": "https://ablibrary.net/book_content/b/13555/431?lang=ar"
+      "source_url": "https://ablibrary.net/book_content/b/13555/431?lang=ar",
+      "location_ar": "قرية الزواحي – عزلة كومان، مديرية حبيش",
+      "subdistrict_ar": "كومان"
     },
     {
       "id": "sadiq-mohammed-al-nahi",
@@ -1214,7 +1228,9 @@
       "biography_ar": "من أبناء قرية حضار في جبل عميقة بمديرية حبيش. يصفه الملف التعريفي المقدم بأنه مهندس بترول عمل في شركة شلمبرجر منذ عام 2000، ومؤسس مبادرة «مديرية حبيش الطبيعة والإنسان». ويشير تقرير الجغرافيا إلى خبر نشرته صحيفة عدن الغد في 23 أكتوبر 2020 عن المبادرة. لا يقدم المصدر شجرة نسب موثقة؛ لذلك لا يستنتج الدليل أصلاً نسبياً من اسم الأسرة.",
       "biography_en": "From Hadhar village in Jabal Amiqa, Hubaish. The supplied professional profile describes him as a petroleum engineer who has worked at Schlumberger since 2000 and as founder of the Hubaish Nature and People initiative. The geography report cites an Aden Al-Ghad article dated 23 October 2020 about the initiative. No documented family tree is supplied, so the guide makes no lineage inference from the surname.",
       "source_text": "الملف المهني المقدم ضمن تقرير الجغرافيا؛ شرف الكبسي، عدن الغد، 23 أكتوبر 2020.",
-      "source_url": "https://www.adngad.net/articles/499738"
+      "source_url": "https://www.adngad.net/articles/499738",
+      "location_ar": "قرية حضار – جبل عميقة، مديرية حبيش",
+      "subdistrict_ar": "جبل عميقة"
     },
     {
       "id": "muhammad-hifzullah-al-zom",
@@ -1225,7 +1241,9 @@
       "biography_ar": "يذكر مقال بلال الطيب أنه كان من أبرز من ساندوا الشيخ محمد عايض العقاب، وأن منزله في ربع ظلمة حوصر من قوات علي الوزير، ثم رفع راية الاستسلام بعد اشتداد المواجهة. لا يثبت المقال سلسلة نسب أو فروعاً عائلية؛ وتبقى صلته ببيت الزوم وصفاً محلياً يحتاج إلى وثائق الأسرة.",
       "biography_en": "The historical account identifies him as a prominent supporter of the Hubaish uprising and reports that forces surrounded his house in Rub' Dhulmah, after which he raised a surrender flag. No family tree or additional lineage is established.",
       "source_text": "بلال الطيب، «إب 100 عام مقاومة (3-3): انتفاضات حبيش والعدين وبعدان»، الساحل الغربي.",
-      "source_url": "https://www.alsahil.net/news23517.html"
+      "source_url": "https://www.alsahil.net/news23517.html",
+      "location_ar": "ربع ظلمة – مديرية حبيش",
+      "subdistrict_ar": "ربع ظلمة"
     }
   ],
   "communityLinks": [],
