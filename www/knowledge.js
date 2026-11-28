@@ -184,6 +184,8 @@
     bindForm('archiveSubmissionForm','archive');
     bindForm('marketListingForm','marketplace');
     window.addEventListener('online',refreshPublished);
+    window.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')refreshPublished()});
+    window.setInterval(()=>{if(document.visibilityState==='visible')refreshPublished()},15000);
     window.addEventListener('hubaish:languagechange',render);
   },{once:true});
 })();
