@@ -272,7 +272,10 @@ function fuzzyArabicMatch(haystack,query) {
   if(!h||!q)return false;
   if(h.includes(q))return true;
   const words=h.split(/\s+/).filter(Boolean);
-  return q.split(/\s+/).filter(Boolean).every(term=>words.some(word=>word.includes(term)||term.includes(word)||(Math.min(word.length,term.length)>=4&&editDistanceAtMostOne(word,term)<=1)));
+  return q.split(/\s+/).filter(Boolean).every(term=>words.some(word=>{
+    const minLength=Math.min(word.length,term.length);
+    return word===term || (minLength>=4 && (word.includes(term)||term.includes(word)||editDistanceAtMostOne(word,term)<=1));
+  }));
 }
 window.normalizeArabicText=normalizeArabic;
 window.HubaishSearch={normalize:normalizeArabic,query:normalizeSearchQuery,matches:fuzzyArabicMatch};
