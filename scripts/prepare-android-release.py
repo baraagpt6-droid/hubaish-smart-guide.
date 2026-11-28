@@ -16,8 +16,8 @@ settings_source = settings_gradle.read_text(encoding="utf-8")
 maven_mirror = "https://maven-central.storage-download.googleapis.com/maven2/"
 if maven_mirror not in settings_source:
     settings_source, mirror_count = re.subn(
-        r"(?<![A-Za-z0-9_])mavenCentral\\s*\\(\\s*\\)",
-        'maven { url "' + maven_mirror + '" }\\n        mavenCentral()',
+        r"(?<![A-Za-z0-9_])mavenCentral\s*\(\s*\)",
+        'maven { url "' + maven_mirror + '" }\n        mavenCentral()',
         settings_source,
     )
     if mirror_count < 1:

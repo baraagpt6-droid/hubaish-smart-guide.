@@ -27,6 +27,7 @@ const required = [
 ];
 for (const file of required) await access(resolve(root,file));
 const read = file => readFile(resolve(root,file),'utf8');
+const prepareAndroid = await read('scripts/prepare-android-release.py');
 const [html,css,app,catalog,features,cms,sw,worker,wrangler,workflow,readme,workerReadme,androidPatch,cloudflareDeployWorkflow,kvSetupScript,gallery,knowledgeJs,playMonitorWorkflow,playMonitorScript,runtimeAudit,workerHealthWorkflow,workerUrlResolver,serve] = await Promise.all([
   read('www/index.html'),read('www/styles.css'),read('www/app.js'),read('www/catalog.js'),
   read('www/features.js'),read('www/github-cms.js'),read('www/sw.js'),
