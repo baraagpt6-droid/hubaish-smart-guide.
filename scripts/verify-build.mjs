@@ -183,7 +183,7 @@ if(!sw.includes('hubaish-guide-v4.1.5')||!sw.includes("assets/heritage/1183-wood
 }
 if(!html.includes('data-query="حصن يريس"')||!html.includes('data-query="عزلة شباع"')||!html.includes('data-query="مسجد مروحة"')||!html.includes('data-query="مدرسة وحاظة"')||
    html.includes('data-query="صهبان"')||html.includes('data-query="وادي بناء"'))throw new Error('Home quick-search chips must stay within documented Hubaish localities.');
-if(!html.includes('id="hubaishGallery"')||!html.includes('id="galleryFromPlaces"')||
+if(!html.includes('<meta name="application-release" content="1.0.402">')||!html.includes('id="hubaishGallery"')||!html.includes('id="galleryFromPlaces"')||
    !html.includes('id="galleryHomeOpen"')||!html.includes('id="cloudImageFile"')||
    !html.includes('id="cloudImageVerified"')||!app.includes("window.HubaishGallery?.render?.()")||
    !app.includes("move('#hubaishGallery',pane('explore'))")||
