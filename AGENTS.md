@@ -81,7 +81,7 @@ Do not generate or rotate an upload key without an explicit migration plan. Vali
 - Worker 5xx responses must not reveal internal exception messages. Keep public submission state pending and require authenticated super_admin approval for publish/reject actions.
 - Production Worker CORS allowlist is limited to the GitHub Pages origin and Capacitor app origin. Never add loopback or local preview origins to production CORS; proxy read-only Worker checks through the Node Playwright harness instead.
 - Every `/review/*` route, including visitor-photo review, is super_admin-only. Public community submissions are capped at 6 per 24 hours per hashed source IP using KV; because KV is eventually consistent, this remains a best-effort limit rather than an atomic global rate limiter.
-- The generated Android `settings.gradle` must place the Google Cloud Storage Maven Central mirror before `mavenCentral()` for Play AAB builds, retaining Maven Central as fallback. Keep this in `scripts/prepare-android-release.py` because native Gradle files are generated in CI.
+- The generated Android Gradle files must place the Google Cloud Storage Maven Central mirror before every `mavenCentral()` declaration for Play AAB builds, retaining Maven Central as fallback. Apply this in `scripts/prepare-android-release.py` because native Gradle files are generated in CI.
 - Preserve provenance rules in README.md and app data.
 - App features include place search and filters, detail pages, favorites, a local assistant, itinerary tools, language selection, offline support, and estimated prayer times. Verify source before claiming any feature has shipped.
 - UI languages currently include Arabic, English, Turkish, and French.
