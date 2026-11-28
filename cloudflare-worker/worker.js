@@ -268,54 +268,8 @@ async function route(req,env){
   await env.ADMINS.delete(key);await log(env,{actor:actor.username,action:"approve_community_submission",target:id,type:record.type});
   return json({ok:true,status:"approved",id});
  }
- if(path.startsWith("/admin/")&&actor.role!=="super_admin")return json({error:"يتطلب هذا الإجراء صلاحية المشرف العام."},403);
- if(req.method==="GET"&&path==="/review/photo-submissions"){
-  const keys=await env.ADMINS.list({prefix:"photo-submission:",limit:100}),submissions=[];
-  for(const key of keys.keys){const value=await env.ADMINS.get(key.name,"json");if(value&&value.status==="pending")submissions.push(value)}
-  submissions.sort((a,b)=>String(b.submittedAt).localeCompare(String(a.submittedAt)));return json({submissions})
- }
- if((req.method==="PATCH"||req.method==="DELETE")&&path==="/review/photo-submissions"){
-  const b=await readJson(req,path==="/public/community-submissions"?480000:path==="/content"?700000:16384),id=String(b.id||"").trim(),key="photo-submission:"+id;
-  if(!/^[0-9a-f-]{20,40}$/i.test(id))return json({error:"Invalid submission id."},400);
-  const submission=await env.ADMINS.get(key,"json");if(!submission||submission.status!=="pending")return json({error:"Photo submission not found."},404);
-  if(req.method==="DELETE"){await env.ADMINS.delete(key);await log(env,{actor:actor.username,action:"reject_visitor_photo",target:id});return json({ok:true})}
-  if(b.action!=="approve")return json({error:"Unsupported review action."},400);
-  const doc=(await ghRead(env)).data;if(!doc||!Array.isArray(doc.landmarks))return json({error:"Live content unavailable."},503);
-  const rowId="visitor-photo-"+id.replace(/-/g,"").slice(0,18);if(doc.landmarks.some(item=>item.id===rowId))return json({error:"Photo already published."},409);
-  const category=submission.placeType==="fort"?"forts":submission.placeType==="mountain"||submission.placeType==="valley"?"valleys":"villages";
-  doc.landmarks.push({id:rowId,category:category==="forts"?"fort":category==="valleys"?"valley":"village",title_ar:submission.title,title_en:submission.title,title_tr:submission.title,title_fr:submission.title,
-   location_ar:submission.location+" – مديرية حبيش",location_en:submission.location+" – Hubaish District",location_tr:submission.location+" – Hubaish",location_fr:submission.location+" – Hubaish",
-   description_ar:"صورة زائر راجعها واعتمدها مشرف الدليل بعد التحقق من موقعها.",description_en:"Visitor photo reviewed and approved by a Hubaish Guide moderator.",description_tr:"Hubaish Rehberi yöneticisi tarafından incelenip onaylanan ziyaretçi fotoğrafı.",description_fr:"Photo de visiteur vérifiée et approuvée par un modérateur du guide Hubaish.",
-   source_text:"Visitor-submitted photo. Contributor confirmed ownership or permission and granted CC BY 4.0 publication permission.",source_url:"https://github.com/baraagpt6-droid/hubaish-smart-guide./blob/main/www/data/live-content.json",
-   image_url:submission.imageData,image_category:category,image_photographer:submission.photographer,image_credit:"Photo: "+submission.photographer,image_license:"CC BY 4.0",
-   image_source_url:"https://github.com/baraagpt6-droid/hubaish-smart-guide./blob/main/www/data/live-content.json",image_verified:true,image_alt_ar:submission.title,image_alt_en:submission.title,image_alt_tr:submission.title,image_alt_fr:submission.title,
-   image_caption_ar:"صورة زائر معتمدة من إدارة دليل حبيش.",image_caption_en:"Visitor photo approved by Hubaish Guide.",image_caption_tr:"Hubaish Rehberi tarafından onaylanan ziyaretçi fotoğrafı.",image_caption_fr:"Photo de visiteur approuvée par le guide Hubaish.",
-   image_district_ar:submission.location,image_district_en:submission.location,image_district_tr:submission.location,image_district_fr:submission.location});
-  if(JSON.stringify(doc).length>680000)return json({error:"Photo exceeds live content storage limit."},413);
-  doc.updatedAt=new Date().toISOString();doc.updatedBy={username:actor.username,displayName:actor.displayName,role:actor.role};
-  const result=await ghWrite(env,doc,actor);const liveFeedUpdated=await publishLiveContent(env,doc).catch(()=>false);await env.ADMINS.delete(key);await log(env,{actor:actor.username,action:"approve_visitor_photo",target:id,commit:result.commit?.sha||null,liveFeedUpdated});return json({ok:true,commit:result.commit?.sha||null,liveFeedUpdated})
- }
- if(req.method==="GET"&&path==="/auth/me")return json({user:actor});
- if(req.method==="PUT"&&path==="/content"){
-  const d=await readJson(req,path==="/public/community-submissions"?480000:path==="/content"?700000:16384),keys=["landmarks","historyEvents","subDistrictUpdates","subDistricts","historicalFigures","communityLinks"];
-  if(!keys.every(k=>Array.isArray(d?.[k]))||d.schemaVersion!==1)return json({error:"Invalid live-content schema."},400);
-  if(JSON.stringify(d).length>700000)return json({error:"Content exceeds 700 KB."},413);
-  const previous=(await ghRead(env)).data,changes=[];
-  for(const key of keys){
-   const before=new Map((previous[key]||[]).map(item=>[String(item.id||""),item]));
-   const after=new Map((d[key]||[]).map(item=>[String(item.id||""),item]));
-   for(const [id,item] of after){
-    const prior=before.get(id);
-    if(!prior)changes.push({collection:key,id,action:"add",title:String(item.title_ar||item.name_ar||item.district_name_ar||id).slice(0,120)});
-    else if(JSON.stringify(prior)!==JSON.stringify(item))changes.push({collection:key,id,action:"edit",title:String(item.title_ar||item.name_ar||item.district_name_ar||id).slice(0,120)});
-   }
-   for(const [id,item] of before)if(!after.has(id))changes.push({collection:key,id,action:"delete",title:String(item.title_ar||item.name_ar||item.district_name_ar||id).slice(0,120)});
-  }
-  d.updatedAt=new Date().toISOString();d.updatedBy={username:actor.username,displayName:actor.displayName,role:actor.role};
-  const result=await ghWrite(env,d,actor);const liveFeedUpdated=await publishLiveContent(env,d).catch(()=>false);await log(env,{actor:actor.username,displayName:actor.displayName,role:actor.role,action:"publish_content",changes:changes.slice(0,100),commit:result.commit?.sha||null,liveFeedUpdated});
-  return json({ok:true,updatedAt:d.updatedAt,updatedBy:d.updatedBy,commit:result.commit?.sha||null,liveFeedUpdated})
- }
  if(req.method==="POST"&&path==="/admin/quick-add"){
+  if(!["super_admin","editor"].includes(actor.role))return json({error:"لا تملك صلاحية إضافة المحتوى."},403);
   const b=await readJson(req,700000);
   const type=String(b.type||"").trim(),title=String(b.title||"").trim().slice(0,180),name=String(b.name||"").trim().slice(0,120),body=String(b.body||"").trim().slice(0,5000),location=String(b.location||"").trim().slice(0,120),source=String(b.source||"").trim().slice(0,1000);
   if(!["photo","archive","author","figure","work","family","marketplace"].includes(type)||!title||!body||!location||b.rightsConsent!==true)return json({error:"أكمل النوع والعنوان والوصف والعزلة وتأكيد حق النشر."},400);
@@ -367,6 +321,54 @@ async function route(req,env){
   await log(env,{actor:actor.username,action:"quick_add_"+type,target:id,location});
   return json({ok:true,id,type,updatedAt:now},201);
  }
+ if(path.startsWith("/admin/")&&actor.role!=="super_admin")return json({error:"يتطلب هذا الإجراء صلاحية المشرف العام."},403);
+ if(req.method==="GET"&&path==="/review/photo-submissions"){
+  const keys=await env.ADMINS.list({prefix:"photo-submission:",limit:100}),submissions=[];
+  for(const key of keys.keys){const value=await env.ADMINS.get(key.name,"json");if(value&&value.status==="pending")submissions.push(value)}
+  submissions.sort((a,b)=>String(b.submittedAt).localeCompare(String(a.submittedAt)));return json({submissions})
+ }
+ if((req.method==="PATCH"||req.method==="DELETE")&&path==="/review/photo-submissions"){
+  const b=await readJson(req,path==="/public/community-submissions"?480000:path==="/content"?700000:16384),id=String(b.id||"").trim(),key="photo-submission:"+id;
+  if(!/^[0-9a-f-]{20,40}$/i.test(id))return json({error:"Invalid submission id."},400);
+  const submission=await env.ADMINS.get(key,"json");if(!submission||submission.status!=="pending")return json({error:"Photo submission not found."},404);
+  if(req.method==="DELETE"){await env.ADMINS.delete(key);await log(env,{actor:actor.username,action:"reject_visitor_photo",target:id});return json({ok:true})}
+  if(b.action!=="approve")return json({error:"Unsupported review action."},400);
+  const doc=(await ghRead(env)).data;if(!doc||!Array.isArray(doc.landmarks))return json({error:"Live content unavailable."},503);
+  const rowId="visitor-photo-"+id.replace(/-/g,"").slice(0,18);if(doc.landmarks.some(item=>item.id===rowId))return json({error:"Photo already published."},409);
+  const category=submission.placeType==="fort"?"forts":submission.placeType==="mountain"||submission.placeType==="valley"?"valleys":"villages";
+  doc.landmarks.push({id:rowId,category:category==="forts"?"fort":category==="valleys"?"valley":"village",title_ar:submission.title,title_en:submission.title,title_tr:submission.title,title_fr:submission.title,
+   location_ar:submission.location+" – مديرية حبيش",location_en:submission.location+" – Hubaish District",location_tr:submission.location+" – Hubaish",location_fr:submission.location+" – Hubaish",
+   description_ar:"صورة زائر راجعها واعتمدها مشرف الدليل بعد التحقق من موقعها.",description_en:"Visitor photo reviewed and approved by a Hubaish Guide moderator.",description_tr:"Hubaish Rehberi yöneticisi tarafından incelenip onaylanan ziyaretçi fotoğrafı.",description_fr:"Photo de visiteur vérifiée et approuvée par un modérateur du guide Hubaish.",
+   source_text:"Visitor-submitted photo. Contributor confirmed ownership or permission and granted CC BY 4.0 publication permission.",source_url:"https://github.com/baraagpt6-droid/hubaish-smart-guide./blob/main/www/data/live-content.json",
+   image_url:submission.imageData,image_category:category,image_photographer:submission.photographer,image_credit:"Photo: "+submission.photographer,image_license:"CC BY 4.0",
+   image_source_url:"https://github.com/baraagpt6-droid/hubaish-smart-guide./blob/main/www/data/live-content.json",image_verified:true,image_alt_ar:submission.title,image_alt_en:submission.title,image_alt_tr:submission.title,image_alt_fr:submission.title,
+   image_caption_ar:"صورة زائر معتمدة من إدارة دليل حبيش.",image_caption_en:"Visitor photo approved by Hubaish Guide.",image_caption_tr:"Hubaish Rehberi tarafından onaylanan ziyaretçi fotoğrafı.",image_caption_fr:"Photo de visiteur approuvée par le guide Hubaish.",
+   image_district_ar:submission.location,image_district_en:submission.location,image_district_tr:submission.location,image_district_fr:submission.location});
+  if(JSON.stringify(doc).length>680000)return json({error:"Photo exceeds live content storage limit."},413);
+  doc.updatedAt=new Date().toISOString();doc.updatedBy={username:actor.username,displayName:actor.displayName,role:actor.role};
+  const result=await ghWrite(env,doc,actor);const liveFeedUpdated=await publishLiveContent(env,doc).catch(()=>false);await env.ADMINS.delete(key);await log(env,{actor:actor.username,action:"approve_visitor_photo",target:id,commit:result.commit?.sha||null,liveFeedUpdated});return json({ok:true,commit:result.commit?.sha||null,liveFeedUpdated})
+ }
+ if(req.method==="GET"&&path==="/auth/me")return json({user:actor});
+ if(req.method==="PUT"&&path==="/content"){
+  const d=await readJson(req,path==="/public/community-submissions"?480000:path==="/content"?700000:16384),keys=["landmarks","historyEvents","subDistrictUpdates","subDistricts","historicalFigures","communityLinks"];
+  if(!keys.every(k=>Array.isArray(d?.[k]))||d.schemaVersion!==1)return json({error:"Invalid live-content schema."},400);
+  if(JSON.stringify(d).length>700000)return json({error:"Content exceeds 700 KB."},413);
+  const previous=(await ghRead(env)).data,changes=[];
+  for(const key of keys){
+   const before=new Map((previous[key]||[]).map(item=>[String(item.id||""),item]));
+   const after=new Map((d[key]||[]).map(item=>[String(item.id||""),item]));
+   for(const [id,item] of after){
+    const prior=before.get(id);
+    if(!prior)changes.push({collection:key,id,action:"add",title:String(item.title_ar||item.name_ar||item.district_name_ar||id).slice(0,120)});
+    else if(JSON.stringify(prior)!==JSON.stringify(item))changes.push({collection:key,id,action:"edit",title:String(item.title_ar||item.name_ar||item.district_name_ar||id).slice(0,120)});
+   }
+   for(const [id,item] of before)if(!after.has(id))changes.push({collection:key,id,action:"delete",title:String(item.title_ar||item.name_ar||item.district_name_ar||id).slice(0,120)});
+  }
+  d.updatedAt=new Date().toISOString();d.updatedBy={username:actor.username,displayName:actor.displayName,role:actor.role};
+  const result=await ghWrite(env,d,actor);const liveFeedUpdated=await publishLiveContent(env,d).catch(()=>false);await log(env,{actor:actor.username,displayName:actor.displayName,role:actor.role,action:"publish_content",changes:changes.slice(0,100),commit:result.commit?.sha||null,liveFeedUpdated});
+  return json({ok:true,updatedAt:d.updatedAt,updatedBy:d.updatedBy,commit:result.commit?.sha||null,liveFeedUpdated})
+ }
+
  if(path==="/admin/users"&&actor.role==="super_admin"&&req.method==="GET"){
   const keys=await env.ADMINS.list({prefix:UP,limit:100}),users=[];for(const k of keys.keys){const x=await getUser(env,k.name.slice(UP.length));if(x)users.push({username:x.username,displayName:x.displayName,role:x.role,disabled:!!x.disabled,createdAt:x.createdAt})}return json({users})
  }
