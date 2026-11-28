@@ -181,6 +181,8 @@ if(!sw.includes('hubaish-guide-v4.1.5')||!sw.includes("assets/heritage/1183-wood
    !sw.includes("'github-cms.js'")||!sw.includes("'gallery.js'")||!sw.includes("'data/live-content.json'")) {
   throw new Error('The service-worker cache does not include the updated app shell.');
 }
+if(!html.includes('data-query="حصن يريس"')||!html.includes('data-query="عزلة شباع"')||!html.includes('data-query="مسجد مروحة"')||!html.includes('data-query="مدرسة وحاظة"')||
+   html.includes('data-query="صهبان"')||html.includes('data-query="وادي بناء"'))throw new Error('Home quick-search chips must stay within documented Hubaish localities.');
 if(!html.includes('id="hubaishGallery"')||!html.includes('id="galleryFromPlaces"')||
    !html.includes('id="galleryHomeOpen"')||!html.includes('id="cloudImageFile"')||
    !html.includes('id="cloudImageVerified"')||!app.includes("window.HubaishGallery?.render?.()")||
@@ -190,6 +192,11 @@ if(!html.includes('id="hubaishGallery"')||!html.includes('id="galleryFromPlaces"
   throw new Error('Hubaish heritage gallery, lightbox interactions or admin photo provenance form is incomplete.');
 }
 const verifiedPhotoRows=data.landmarks.filter(row=>row.image_url);
+const marwahaGalleryRow=data.landmarks.find(row=>row.id==='marwaha-mosque');
+if(!marwahaGalleryRow?.image_title_ar?.includes('نقيل العقاب')||!marwahaGalleryRow?.image_title_ar?.includes('١١٨٣ هـ')||
+   !marwahaGalleryRow?.image_caption_ar?.includes('811هـ')||!marwahaGalleryRow?.image_caption_ar?.includes('1183هـ')) {
+  throw new Error('Marwaha image must distinguish the reported 811 AH inscription date from the 1183 AH current-building date and use Naqil al-Aqab locality.');
+}
 if(verifiedPhotoRows.length!==5||verifiedPhotoRows.some(row=>row.image_verified!==true||!row.image_source_url||!row.image_photographer||!row.image_license)) {
   throw new Error('The published image catalogue must contain exactly five sourced and attributed Hubaish photo records.');
 }
@@ -320,6 +327,14 @@ if (!playWorkflow.includes('workflow_dispatch:') ||
     !playWorkflow.includes("PLAY_ALLOWED_EXISTING_DRAFT_VERSION_CODE") ||
     !playWorkflow.includes("scripts/retire-obsolete-play-draft.py") ||
     !playWorkflow.includes("Verify completed 418, zero pending drafts") ||
+    !playWorkflow.includes(".publish-419") ||
+    !playWorkflow.includes("publish_next_release") ||
+    !playWorkflow.includes("Verify completed 419, zero pending drafts and unchanged Production") ||
+    !playResolver.includes('release_mode == "publish_next_release"') ||
+    !playResolver.includes("version_code != 419") ||
+    !playResolver.includes("zero existing versioned drafts on Hubaish Closed Test") ||
+    !playPromoter.includes("prior_completed_codes != [418]") ||
+    !playWorkflow.includes("steps.publish-next-release.outputs.release_status") ||
     !playRetirer.includes("OBSOLETE_DRAFT_CODE = 417") ||
     !playRetirer.includes("EXPECTED_COMPLETED_CODE = 416") ||
     !playRetirer.includes("No testers resource, tester list, opt-in configuration, or other track was read or modified.") ||
@@ -421,7 +436,7 @@ if(!profile.population.find(x=>x.year===2025).type.includes('HNRP'))throw new Er
 if(profile.weekly_market?.day_ar!=='الجمعة'||!profile.weekly_market?.verification_note_ar)throw new Error('Weekly market day or local confirmation note is missing.');
 if(profile.subdistrict_count!==22||data.subDistricts.length!==22)throw new Error('Hubaish must retain exactly 22 administrative sub-districts.');
 if(profile.tribal_context||profile.geographic_disambiguation?.length!==1||profile.geographic_disambiguation[0]?.name_ar!=='مديرية حبيش'||profile.name_origin_hypotheses?.status!=='research_hypotheses')throw new Error('Hubaish-only geographic scope or name-origin caveat is missing.');
-const requiredHeritage=['khudad-fort','wuhaza-fortress','yaris-fortress','dahran-fort-bani-wail','al-udadi-fort','musaynia-fort','bayt-al-batul-fort','maghram-khair-fort','bayn-al-dur-dome','al-farawi-mosque-dome','marwaha-mosque','al-jami-mosque','dhulmah-grand-mosque','qubbat-al-zum'];
+const requiredHeritage=['khudad-fort','wuhaza-fortress','yaris-fortress','dahran-fort-bani-wail','jabal-khadra-terraces','al-udadi-fort','musaynia-fort','bayt-al-batul-fort','maghram-khair-fort','bayn-al-dur-dome','al-farawi-mosque-dome','marwaha-mosque','al-jami-mosque','dhulmah-grand-mosque','qubbat-al-zum'];
 for(const id of requiredHeritage)if(!data.landmarks.some(x=>x.id===id))throw new Error('A required historical landmark record is missing: '+id);
 for(const id of ['p1','p12','p15'])if(app.includes("id: '"+id+"'"))throw new Error('Excluded legacy landmark was reintroduced: '+id);
 if(app.includes("id: 'h3'"))throw new Error('Excluded legacy history event was reintroduced.');
