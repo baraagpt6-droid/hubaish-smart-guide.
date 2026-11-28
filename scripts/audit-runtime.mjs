@@ -186,9 +186,20 @@ try {
   if (!response?.ok()) throw new Error('App shell returned HTTP ' + (response?.status() ?? 'no response'));
   await page.locator('#view-home.active').waitFor({ state: 'visible', timeout: 15000 });
   await page.locator('#globalSearchInput').waitFor({ state: 'visible', timeout: 10000 });
-  await page.waitForFunction(() => window.HubaishKnowledge?.getData?.()?.landmarkRecords?.length === 16, { timeout: 15000 });
+  const heroShortcuts = page.locator('.hero-shortcuts .hero-shortcut');
+  if (await heroShortcuts.count() !== 5) throw new Error('The smart home hero must expose five direct section shortcuts.');
+  if (await page.locator('.quick-searches [data-query]').count() < 4) throw new Error('Hubaish local quick-search shortcuts are missing.');
+  const topbarState = await page.locator('.topbar').evaluate(node => ({
+    minHeight: getComputedStyle(node).minHeight,
+    overflow: getComputedStyle(node).overflow,
+    subtitle: node.querySelector('.brand-text small')?.textContent || ''
+  }));
+  if (!topbarState.subtitle.includes('دليل رقمي') || topbarState.overflow === 'hidden' || parseFloat(topbarState.minHeight) < 68) {
+    throw new Error('The mobile brand header is clipped or the digital heritage subtitle is missing: ' + JSON.stringify(topbarState));
+  }
+  await page.waitForFunction(() => window.HubaishKnowledge?.getData?.()?.landmarkRecords?.length === 15, { timeout: 15000 });
   const knowledgeCardCount = await page.locator('#knowledgeLandmarksList .knowledge-card').count();
-  if (knowledgeCardCount !== 16) throw new Error('Expected 16 core landmark cards; received ' + knowledgeCardCount + '.');
+  if (knowledgeCardCount !== 15) throw new Error('Expected 15 in-district core landmark cards; received ' + knowledgeCardCount + '.');
   const globalSearch = page.locator('#globalSearchInput');
   await globalSearch.fill('مصنعة وحاظة');
   await page.locator('#globalSearchResults .search-result-card').first().waitFor({ state: 'visible', timeout: 10000 });
@@ -266,6 +277,14 @@ try {
   await page.locator('#view-more [data-more-panel="tools"].active').waitFor({ state: 'visible', timeout: 10000 });
   await page.locator('#openAiBtn').click();
   await page.locator('#aiModal.open').waitFor({ state: 'visible', timeout: 10000 });
+  await page.evaluate(() => {
+    Object.defineProperty(window, 'SpeechRecognition', { configurable: true, value: undefined });
+    Object.defineProperty(window, 'webkitSpeechRecognition', { configurable: true, value: undefined });
+  });
+  await page.locator('#aiMicBtn').click();
+  if (!(await page.locator('#toast').innerText()).includes('غير متاح في WebView')) {
+    throw new Error('Unavailable speech recognition must show a helpful WebView message instead of failing.');
+  }
   await page.locator('#aiInput').fill('مدرسة الزواحي');
   await page.locator('#aiForm button[type="submit"]').click();
   const assistantReply = page.locator('#aiChatLog .chat-msg.assistant').last();
