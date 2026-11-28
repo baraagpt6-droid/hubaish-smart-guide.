@@ -21,8 +21,8 @@
     return fetch(url,{...options,signal:controller.signal}).finally(()=>window.clearTimeout(timeout));
   }
   let documentData=readCache();
-  const LEGACY_EXCLUDED_IDS=new Set(['p1','p12','p15','h3','\u006a\u0061\u0062\u0061\u006c-\u0064\u0068\u0069-\u0068\u0061\u0072\u0072\u0061\u006e']);
-  const LEGACY_EXCLUDED_TEXT=/\u0635\u0647\u0628\u0627\u0646|\u0073\u0061\u0068\u0062\u0061\u006e|\u0648\u0627\u062f\u064a\s*\u0628\u0646\u0627\u0621|\u0077\u0061\u0064\u0069\s*\u0062\u0069\u006e\u0061|\u062c\u0628\u0644(?:\s*\u0630\u064a)?\s*\u0647\u0631\u0651?\u0627\u0646|\u006a\u0061\u0062\u0061\u006c\s*(?:\u0064\u0068\u0069\s*)?\u0068\u0061\u0072\u0072\u0061\u006e/i;
+  const LEGACY_EXCLUDED_IDS=new Set(['p1','p12','p15','h3','al-dhuhrah-historic-settlement','\u006a\u0061\u0062\u0061\u006c-\u0064\u0068\u0069-\u0068\u0061\u0072\u0072\u0061\u006e']);
+  const LEGACY_EXCLUDED_TEXT=/\u0645\u062f\u064a\u0646\u0629\s*\u0627\u0644\u0638\u0627\u0647\u0631\u0629|\u0635\u0647\u0628\u0627\u0646|\u0073\u0061\u0068\u0062\u0061\u006e|\u0648\u0627\u062f\u064a\s*\u0628\u0646\u0627\u0621|\u0077\u0061\u0064\u0069\s*\u0062\u0069\u006e\u0061|\u062c\u0628\u0644(?:\s*\u0630\u064a)?\s*\u0647\u0631\u0651?\u0627\u0646|\u006a\u0061\u0062\u0061\u006c\s*(?:\u0064\u0068\u0069\s*)?\u0068\u0061\u0072\u0072\u0061\u006e/i;
   let workerToken=sessionStorage.getItem('hubaish_worker_session')||localStorage.getItem('hubaish_worker_session')||'';
   let workerUser=(()=>{try{return JSON.parse(sessionStorage.getItem('hubaish_worker_user')||localStorage.getItem('hubaish_worker_user')||'null')}catch{return null}})();
   const DEFAULT_WORKER_URL='https://hubaish-cms.baraagpt6.workers.dev';
