@@ -146,6 +146,26 @@ def discover_release():
             if any(str(release.get("status", "")).strip().casefold() == "inprogress"
                    for row in selected_rows for release in (row.get("releases") or [])):
                 fail("An in-progress Closed Test release exists. Refusing to overlap rollouts.")
+        elif release_mode == "publish_422_release":
+            if draft_records:
+                fail(
+                    "The one-shot 422 release requires zero versioned drafts on Hubaish Closed Test; "
+                    f"found {[codes_for_release([item]) for item in draft_records]}."
+                )
+            completed_records = [
+                release
+                for row in selected_rows
+                for release in (row.get("releases") or [])
+                if str(release.get("status", "")).strip().casefold() == "completed"
+            ]
+            if len(completed_records) != 1 or codes_for_release([completed_records[0]]) != [420]:
+                fail(
+                    "The one-shot 422 release may replace only the sole completed Hubaish Closed Test versionCode 420; "
+                    f"found {[codes_for_release([item]) for item in completed_records]}."
+                )
+            if any(str(release.get("status", "")).strip().casefold() == "inprogress"
+                   for row in selected_rows for release in (row.get("releases") or [])):
+                fail("An in-progress Closed Test release exists. Refusing to overlap rollouts.")
         elif draft_records:
             fail(
                 f"Closed-testing track '{selected_track}' already contains draft versionCode(s) "
@@ -184,6 +204,10 @@ def discover_release():
             if highest_code != allowed_highest or 420 in all_codes:
                 fail(f"The one-shot 420 release requires bundle history to end at 418, or at one exact 419 draft being retired, and code 420 unused; highest={highest_code}.")
             version_code = 420
+        elif release_mode == "publish_422_release":
+            if highest_code != 421 or 422 in all_codes:
+                fail(f"The one-shot 422 release requires bundle history to end at the already-consumed 421, with no existing 422 bundle; highest={highest_code}.")
+            version_code = 422
         else:
             version_code = highest_code + 1
         if version_code <= 0 or version_code > 2_100_000_000:
@@ -194,6 +218,10 @@ def discover_release():
             fail(f"The one-shot clean release is locked to versionCode 420; Play resolved {version_code}.")
         if release_mode == "publish_420_release" and production_codes:
             fail(f"Production must remain empty before the 420 release; found {production_codes}.")
+        if release_mode == "publish_422_release" and version_code != 422:
+            fail(f"The one-shot clean release is locked to versionCode 422; Play resolved {version_code}.")
+        if release_mode == "publish_422_release" and production_codes:
+            fail(f"Production must remain empty before the 422 release; found {production_codes}.")
 
         version_name = read_release_version()
         release_status = "draft"
