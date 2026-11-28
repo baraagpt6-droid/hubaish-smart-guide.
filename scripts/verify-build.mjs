@@ -347,7 +347,7 @@ if (!playWorkflow.includes('workflow_dispatch:') ||
     !playResolver.includes("allowed_highest = 419 if draft_records") ||
     !play420Retirer.includes("PREVIEW_CODE = 419") ||
     !play420Retirer.includes("ACTIVE_CODE = 418") ||
-    !play420Retirer.includes("No tester list, opt-in configuration, or other track was read or modified.") ||
+    !play420Retirer.includes("No tester list, opt-in configuration, or other track was modified.") ||
     !playResolver.includes('release_mode == "publish_420_release"') ||
     !playResolver.includes("version_code != 420") ||
     !playResolver.includes("may clean up only one exact 419 preview draft") ||
@@ -378,7 +378,7 @@ if (!playWorkflow.includes('workflow_dispatch:') ||
 }
 const pythonSyntax = spawnSync('python3', ['-m','py_compile','scripts/patch-android-config.py','scripts/resolve-play-release.py','scripts/promote-play-draft.py','scripts/retire-obsolete-play-draft.py','scripts/retire-preview-419-draft.py'], { encoding: 'utf8' });
 if(pythonSyntax.status!==0)throw new Error('Python release/native build script syntax error: '+(pythonSyntax.stderr||pythonSyntax.stdout));
-if(!playResolver.includes('version_code = 420')||!playResolver.includes('highest_code != 418')||!playPromoter.includes('expected == 420'))throw new Error('One-shot versionCode 420 must skip unused 419, require bundle history to end at 418, and replace only completed 418.');
+if(!playResolver.includes('version_code = 420')||!playResolver.includes('allowed_highest = 419 if draft_records')||!playPromoter.includes('expected == 420'))throw new Error('One-shot versionCode 420 must skip unused 419, require bundle history to end at 418, and replace only completed 418.');
 if (!playWorkflow.includes('status code 429') ||
     !playWorkflow.includes('Too Many Requests') ||
     !playWorkflow.includes('Gradle remained rate-limited after 4 attempts') ||
