@@ -244,9 +244,38 @@ function applyLang(lang) {
 
 function normalizeArabic(value) {
   return String(value ?? '').toLocaleLowerCase()
-    .replace(/[إأآا]/g, 'ا').replace(/ى/g, 'ي').replace(/ة/g, 'ه')
-    .replace(/[\u064B-\u065F\u0670]/g, '').replace(/[ـ]/g, '').trim();
+    .replace(/[إأآٱا]/g, 'ا').replace(/ى/g, 'ي').replace(/ة/g, 'ه')
+    .replace(/ؤ/g, 'و').replace(/ئ/g, 'ي')
+    .replace(/[\\u064B-\\u065F\\u0670\\u06D6-\\u06EDـ]/g, '')
+    .replace(/[^\\p{L}\\p{N}\\s]/gu, ' ').replace(/\\s+/g, ' ').trim();
 }
+const ARABIC_SEARCH_STOP_WORDS = new Set(['ابحث','اعطني','اعطيني','اعرض','وين','فين','ايش','ماذا','ما','هي','هو','عن','لي','من','في','هل','قصة','صورة','افتح','انتقل','اذهب','روح','اريد','اريدك','لو','سمحت','ممكن','فضلا','رجاء','اخبرني','عرفني','علمني','عزله']);
+function normalizeSearchQuery(value) {
+  const parts=normalizeArabic(value).split(/\\s+/).filter(Boolean);
+  const useful=parts.filter(x=>!ARABIC_SEARCH_STOP_WORDS.has(x));
+  return (useful.length?useful:parts).join(' ');
+}
+function editDistanceAtMostOne(a,b) {
+  if(a===b)return 0;
+  if(Math.abs(a.length-b.length)>1)return 2;
+  let i=0,j=0,edits=0;
+  while(i<a.length&&j<b.length){
+    if(a[i]===b[j]){i++;j++;continue;}
+    if(++edits>1)return 2;
+    if(a.length>b.length)i++;else if(b.length>a.length)j++;else{i++;j++;}
+  }
+  if(i<a.length||j<b.length)edits++;
+  return edits;
+}
+function fuzzyArabicMatch(haystack,query) {
+  const h=normalizeArabic(haystack),q=normalizeSearchQuery(query);
+  if(!h||!q)return false;
+  if(h.includes(q))return true;
+  const words=h.split(/\\s+/).filter(Boolean);
+  return q.split(/\\s+/).filter(Boolean).every(term=>words.some(word=>word.includes(term)||term.includes(word)||(Math.min(word.length,term.length)>=4&&editDistanceAtMostOne(word,term)<=1)));
+}
+window.normalizeArabicText=normalizeArabic;
+window.HubaishSearch={normalize:normalizeArabic,query:normalizeSearchQuery,matches:fuzzyArabicMatch};
 
 function element(tag, className, text) {
   const node = document.createElement(tag);
@@ -547,6 +576,40 @@ function closeModal(id) {
   }, 230);
 }
 
+function navigateByVoiceIntent(command) {
+  const q=normalizeArabic(command);
+  if(!/(افتح|انتقل|اذهب|روح|اعرض)/.test(q))return false;
+  let tab=null,target=null,label='';
+  if(/بوابه المشرفين|المشرفين|لوحه الاداره/.test(q)){tab='more';target='cloudAdminCard';label='بوابة المشرفين';}
+  else if(/المعرض|معرض الصور|الصور/.test(q)){tab='more';target='hubaishGallery';label='معرض الصور';}
+  else if(/المدارس|مدرسه|هجر العلم/.test(q)){tab='more';target='knowledgeSchoolsList';label='المدارس وهجر العلم';}
+  else if(/الاعلام|الشخصيات|السير/.test(q)){tab='more';target='knowledgePeopleList';label='الأعلام والسير';}
+  else if(/العزل|عزله/.test(q)){tab='uzal';label='العزل';}
+  else if(/المعالم|الحصون|القلاع|المساجد/.test(q)){tab='places';label='المعالم';}
+  if(!tab)return false;
+  if(document.getElementById('aiModal')?.classList.contains('open'))closeModal('aiModal');
+  switchTab(tab);
+  if(target)window.setTimeout(()=>{
+    const node=document.getElementById(target);
+    node?.scrollIntoView({behavior:'smooth',block:'center'});
+    if(target==='cloudAdminCard')document.getElementById('workerUsername')?.focus({preventScroll:true});
+  },120);
+  window.showToast?.('تم فتح '+label+'.');
+  return true;
+}
+function applyVoiceTranscript(input, transcript) {
+  const text=cleanText(transcript,500);
+  if(!text)return;
+  if(navigateByVoiceIntent(text)){
+    if(input.id==='aiInput'){appendChatMessage('user',text);appendChatMessage('assistant','فتحت لك القسم المطلوب.');}
+    if(input.id==='globalSearchInput'){input.value='';input.dispatchEvent(new Event('input',{bubbles:true}));}
+    return;
+  }
+  input.value=text;
+  input.dispatchEvent(new Event('input',{bubbles:true}));
+  input.focus({preventScroll:true});
+  if(input.id==='aiInput')window.setTimeout(sendAiMessage,140);
+}
 function bindVoiceMic(buttonId, inputId) {
   const button = document.getElementById(buttonId);
   const input = document.getElementById(inputId);
@@ -575,11 +638,8 @@ function bindVoiceMic(buttonId, inputId) {
           return;
         }
         const transcript = cleanText(result.transcript || '', 500);
-        if (transcript) {
-          input.value = transcript;
-          input.dispatchEvent(new Event('input', { bubbles: true }));
-          input.focus({ preventScroll: true });
-        } else showToast('لم تتضح الكلمات. حاول مرة أخرى.');
+        if (transcript) applyVoiceTranscript(input, transcript);
+        else showToast('لم تتضح الكلمات. حاول مرة أخرى.');
       };
       window.addEventListener('hubaish:native-speech', receive);
       button.classList.add('listening');
@@ -610,8 +670,8 @@ function bindVoiceMic(buttonId, inputId) {
     button.classList.add('listening');
     button.disabled = true;
     recognition.onresult = event => {
-      input.value = cleanText(event.results?.[0]?.[0]?.transcript, 500);
-      input.dispatchEvent(new Event('input', { bubbles: true }));
+      const transcript = cleanText(event.results?.[0]?.[0]?.transcript, 500);
+      if (transcript) applyVoiceTranscript(input, transcript);
     };
     recognition.onnomatch = () => showToast('لم تتضح الكلمات. حاول التحدث بوضوح وبالقرب من الميكروفون.');
     recognition.onerror = event => {
@@ -637,39 +697,72 @@ function bindVoiceMic(buttonId, inputId) {
   });
 }
 
-function renderGlobalSearch(query) {
-  const target = document.getElementById('globalSearchResults');
-  const needle = normalizeArabic(query);
-  target.replaceChildren();
-  if (!needle) return;
-  const matchedPlaces = state.places.filter(item => item.scope === 'hubaish_district' && normalizeArabic(`${item.title} ${item.loc} ${item.body}`).includes(needle));
-  const matchedHistory = state.history.filter(item => item.scope === 'hubaish_district' && normalizeArabic(`${item.title} ${item.period} ${item.body}`).includes(needle));
+function openKnowledgeRecord(id) {
+  const item=window.HubaishKnowledge?.getRecord?.(id);
+  if(!item)return false;
+  const title=document.getElementById('detailTitle'),content=document.getElementById('detailContent');
+  if(title)title.textContent=item.title;
+  if(content){
+    content.replaceChildren();
+    const body=element('p','item-body',item.body||item.meta||'تفاصيل السجل غير متاحة.');
+    body.dir='auto';content.append(body);
+    if(item.meta)content.append(element('p','small muted',item.meta));
+    if(item.source)content.append(element('p','small muted','المصدر: '+item.source));
+    if(item.status)content.append(element('p','small muted','حالة التوثيق: '+item.status));
+  }
+  openModal('detailModal');return true;
+}
+window.HubaishOpenKnowledgeRecord=openKnowledgeRecord;
 
-  const matchedUnverified = [...state.places, ...state.history].filter(item => item.scope === 'unverified_location' && normalizeArabic(`${item.title} ${item.loc || ''} ${item.period || ''} ${item.body}`).includes(needle));
-  const directoryNames = window.HubaishFeatures?.getUzal?.() || UZAL_22;
-  const matchedUzal = directoryNames.filter(name => normalizeArabic(name).includes(needle)).map((name, index) => ({ title: `عزلة ${name}`, body: 'إحدى العزل المدرجة ضمن قائمة مديرية حبيش. التفاصيل القروية بحاجة إلى توثيق ميداني.', id: `uzal-search-${index}` }));
-  const matchedKnowledge = (window.HubaishKnowledge?.search?.(query) || []).map(item => ({title:item.title,body:item.body,id:'knowledge-'+item.id}));
-  const matchedPeople = (window.HubaishFeatures?.getPeople?.() || []).filter(item => normalizeArabic(`${item.title} ${item.body}`).includes(needle)).map(item => ({title:item.title,body:item.body,id:`person-${normalizeArabic(item.title)}`}));
-  const refs = [{title:'التعداد السكاني 2004',body:'105,998 نسمة وفق المركز الوطني للمعلومات اليمني.'},{title:'مساحة المديرية',body:'228 كم² في بيانات OCHA/Local Governance، مع وجود مرجع محلي ينشر 330 كم².'},{title:'التقسيم الإداري',body:'مديرية حبيش تضم 22 عزلة وفق المركز الوطني للمعلومات.'}].filter(item=>normalizeArabic(`${item.title} ${item.body}`).includes(needle)).map((item,index)=>({...item,id:`ref-${index}`}));
-  const groups = [
+function renderGlobalSearch(query) {
+  const target=document.getElementById('globalSearchResults');
+  const needle=normalizeSearchQuery(query);
+  target.replaceChildren();
+  if(!needle)return;
+  const matchedPlaces=state.places.filter(item=>item.scope==='hubaish_district'&&fuzzyArabicMatch(`${item.title} ${item.loc} ${item.body}`,needle));
+  const matchedHistory=state.history.filter(item=>item.scope==='hubaish_district'&&fuzzyArabicMatch(`${item.title} ${item.period} ${item.body}`,needle));
+  const matchedUnverified=[...state.places,...state.history].filter(item=>item.scope==='unverified_location'&&fuzzyArabicMatch(`${item.title} ${item.loc||''} ${item.period||''} ${item.body}`,needle));
+  const directoryNames=window.HubaishFeatures?.getUzal?.()||UZAL_22;
+  const matchedUzal=directoryNames.filter(name=>fuzzyArabicMatch(name,needle)).map((name,index)=>({title:`عزلة ${name}`,body:'إحدى العزل الواردة في القائمة المرجعية لمديرية حبيش؛ لا تزال القائمة بانتظار اعتماد المديرية.',id:`uzal-search-${index}`}));
+  const matchedKnowledge=(window.HubaishKnowledge?.search?.(query)||[]).map(item=>({title:item.title,body:item.body,id:item.id,meta:item.meta,source:item.source,searchKind:item.category}));
+  const matchedPeople=(window.HubaishFeatures?.getPeople?.()||[]).filter(item=>fuzzyArabicMatch(`${item.title} ${item.body}`,needle)).map(item=>({title:item.title,body:item.body,id:`person-${normalizeArabic(item.title)}`}));
+  const refs=[
+    {title:'التعداد السكاني 2004',body:'105,998 نسمة وفق تعداد 2004 — المركز الوطني للمعلومات اليمني.'},
+    {title:'تقدير السكان 2025',body:'162,023 نسمة وفق تقدير HNRP/OCHA لعام 2025، ويشمل السكان المقيمين والنازحين داخلياً؛ ليس تعداداً جديداً.'},
+    {title:'مساحة المديرية',body:'228 كم² وفق المركز الوطني للمعلومات ومنصة الحكم المحلي/OCHA.'},
+    {title:'التقسيم الإداري',body:'قائمة مرجعية تضم 22 عزلة، بانتظار اعتماد مديرية حبيش وتصويبها.'}
+  ].filter(item=>fuzzyArabicMatch(`${item.title} ${item.body}`,needle)).map((item,index)=>({...item,id:`ref-${index}`}));
+  const groups=[
     {label:'المعالم',kind:'landmark',items:matchedPlaces},
     {label:'التاريخ',kind:'history',items:matchedHistory},
     {label:'العزل',kind:'district',items:matchedUzal},
     {label:'الشخصيات',kind:'person',items:matchedPeople},
-    {label:'الموسوعة الموسعة',kind:'knowledge',items:matchedKnowledge},
-
-    {label:'سجلات بنطاق جغرافي قيد التحقق',kind:'unverified-region',items:matchedUnverified},
-    {label:'المراجع',kind:'reference',items:refs}
+    {label:'الموسوعة والبيانات المنشورة',kind:'knowledge',items:matchedKnowledge},
+    {label:'سجلات جغرافية قيد التحقق',kind:'unverified-region',items:matchedUnverified},
+    {label:'المراجع والإحصاءات',kind:'reference',items:refs}
   ].filter(group=>group.items.length);
-  const all = groups.flatMap(group=>group.items.map(item=>({...item,searchKind:group.kind,searchLabel:group.label}))).slice(0, 24);
-  if (!all.length) { appendEmpty(target, 'لا توجد نتائج مطابقة.'); target.append(createAction('اسأل المساعد عن: ' + cleanText(query, 80), 'ask', query, 'btn-primary')); return; }
-  target.append(element('h2', 'section-title', `نتائج البحث المصنفة (${all.length})`));
-  all.forEach(item => {
-    const card = element('article', 'item-card search-result-card');
-    card.append(makeTag(item.searchLabel,true),element('h3', 'item-title', item.title), element('p', 'item-body', item.body));
-    card.append(createAction('اسأل المساعد', 'ask', item.title));
-
-    if (item.scope === 'unverified_location') card.append(element('p', 'small muted scope-note', 'النطاق الجغرافي لهذا السجل غير محسوم، وتحتاج مواضعه المذكورة إلى مطابقة مستقلة.'));
+  const all=groups.flatMap(group=>group.items.map(item=>({...item,searchKind:item.searchKind||group.kind,searchLabel:group.label}))).slice(0,24);
+  if(!all.length){
+    appendEmpty(target,'لا توجد نتائج مطابقة.');
+    target.append(createAction('اسأل المساعد عن: '+cleanText(query,80),'ask',query,'btn-primary'));
+    return;
+  }
+  target.append(element('h2','section-title',`نتائج البحث الفورية (${all.length})`));
+  all.forEach(item=>{
+    const card=element('article','item-card search-result-card');
+    card.append(makeTag(item.searchLabel,true),element('h3','item-title',item.title),element('p','item-body',item.body));
+    if(item.meta)card.append(element('p','small muted',item.meta));
+    const actions=element('div','search-result-actions');
+    actions.append(createAction('اسأل المساعد','ask',item.title,'btn-sm'));
+    if(['knowledge','schools','people','landmarkRecords','historyEvents'].includes(item.searchKind)){
+      const open=element('button','btn-sm','فتح البطاقة');open.type='button';open.addEventListener('click',()=>openKnowledgeRecord(item.id));actions.append(open);
+    }else if(item.searchKind==='district'){
+      const open=element('button','btn-sm','عرض العزلة');open.type='button';
+      open.addEventListener('click',()=>{switchTab('uzal');const input=document.getElementById('uzalSearchInput');if(input){input.value=item.title.replace('عزلة ','');input.dispatchEvent(new Event('input',{bubbles:true}));}});
+      actions.append(open);
+    }
+    card.append(actions);
+    if(item.searchKind==='unverified-region')card.append(element('p','small muted scope-note','سجل تاريخي محفوظ للمراجعة فقط، وليس معلماً حالياً أو نقطة زيارة معتمدة.'));
     target.append(card);
   });
 }
@@ -734,6 +827,15 @@ function sendAiMessage() {
   appendChatMessage('user', question);
   const answer = window.HubaishFeatures?.assistantAnswer?.(question) || localAssistantAnswer(question);
   appendChatMessage('assistant', answer);
+  const suggestions=(window.HubaishKnowledge?.search?.(question)||[]).slice(0,3);
+  if(suggestions.length){
+    const row=element('div','assistant-action-row');
+    suggestions.forEach(item=>{
+      const button=element('button','btn-sm','افتح: '+cleanText(item.title,48));
+      button.type='button';button.addEventListener('click',()=>openKnowledgeRecord(item.id));row.append(button);
+    });
+    document.getElementById('aiChatLog')?.append(row);
+  }
 }
 
 function getYemenDateParts(date = new Date()) {

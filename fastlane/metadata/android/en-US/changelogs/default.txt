@@ -1,2 +1,2 @@
-Enable native Android speech input and live content sync.
-Improve Quick Add Studio and admin publishing.
+Cinematic welcome intro and improved instant search.
+Expand Hubaish heritage index and voice assistant.

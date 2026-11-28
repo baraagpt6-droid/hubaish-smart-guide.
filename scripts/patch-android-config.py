@@ -27,12 +27,12 @@ style_files = list((ROOT / "res").glob("values*/styles.xml"))
 if not style_files:
     raise SystemExit("Android styles.xml files were not generated.")
 system_items = {
-    "android:statusBarColor": "#071711",
-    "android:navigationBarColor": "#071711",
+    "android:statusBarColor": "#081C15",
+    "android:navigationBarColor": "#081C15",
     "android:windowLightStatusBar": "false",
     "android:windowLightNavigationBar": "false",
-    "android:windowSplashScreenBackground": "#071711",
-    "android:windowBackground": "#071711",
+    "android:windowSplashScreenBackground": "#081C15",
+    "android:windowBackground": "#081C15",
 }
 for path in style_files:
     tree = ET.parse(path)
@@ -75,8 +75,8 @@ if "setDecorFitsSystemWindows" not in source:
         // Capacitor 8 targets API 36. Keep edge-to-edge enabled and let
         // Android WebView expose system-bar safe areas to CSS env() variables.
         WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
-        getWindow().setStatusBarColor(Color.parseColor("#071711"));
-        getWindow().setNavigationBarColor(Color.parseColor("#071711"));
+        getWindow().setStatusBarColor(Color.parseColor("#081C15"));
+        getWindow().setNavigationBarColor(Color.parseColor("#081C15"));
         WindowInsetsControllerCompat insetsController =
             new WindowInsetsControllerCompat(getWindow(), getWindow().getDecorView());
         insetsController.setAppearanceLightStatusBars(false);

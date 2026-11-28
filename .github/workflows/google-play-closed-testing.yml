@@ -41,7 +41,7 @@ jobs:
       version_name: ${{ steps.play-release.outputs.version_name }}
       version_code: ${{ steps.play-release.outputs.version_code || steps.approved-release.outputs.version_code }}
       track: ${{ steps.play-release.outputs.track || env.PLAY_TRACK }}
-      release_status: ${{ steps.publish-420-release.outputs.release_status || steps.publish-new-release.outputs.release_status || steps.approved-release.outputs.release_status || steps.play-release.outputs.release_status }}
+      release_status: ${{ steps.publish-422-release.outputs.release_status || steps.publish-420-release.outputs.release_status || steps.publish-new-release.outputs.release_status || steps.approved-release.outputs.release_status || steps.play-release.outputs.release_status }}
     steps:
       - name: Checkout pushed commit
         uses: actions/checkout@v7
@@ -101,6 +101,23 @@ jobs:
                   echo "New .publish-420 marker detected. Build and sign 420, upload as draft, then promote only 420 on Hubaish Closed Test."
                 fi
               fi
+              if [[ "$mode" == "preview_draft" && -f ".publish-422" ]]; then
+                before_sha="$(jq -r '.before // ""' "$GITHUB_EVENT_PATH")"
+                [[ "$before_sha" =~ ^[0-9a-f]{40}$ ]] || {
+                  echo "::error::Push event did not provide a valid parent commit for the 422 one-shot marker."
+                  exit 1
+                }
+                marker_value="$(tr -d '[:space:]' < .publish-422)"
+                [[ "$marker_value" == "422" ]] || {
+                  echo "::error::.publish-422 must contain exactly versionCode 422."
+                  exit 1
+                }
+                if ! git cat-file -e "${before_sha}:.publish-422" 2>/dev/null; then
+                  mode="publish_422_release"
+                  expected_code="422"
+                  echo "New .publish-422 marker detected. Require zero target-track drafts, sole completed 420, bundle history ending at 421 and empty Production; then build, sign, upload and immediately complete 422 only on Hubaish Closed Test."
+                fi
+              fi
               if [[ "$mode" == "preview_draft" && -f ".retire-421" ]]; then
                 before_sha="$(jq -r '.before // ""' "$GITHUB_EVENT_PATH")"
                 [[ "$before_sha" =~ ^[0-9a-f]{40}$ ]] || {
@@ -142,7 +159,7 @@ jobs:
               fi
             fi
           fi
-          if [[ "$mode" == "publish_approved_release" || "$mode" == "publish_new_release" || "$mode" == "publish_420_release" ]]; then
+          if [[ "$mode" == "publish_approved_release" || "$mode" == "publish_new_release" || "$mode" == "publish_420_release" || "$mode" == "publish_422_release" ]]; then
             [[ "$expected_code" =~ ^[1-9][0-9]*$ ]] || {
               echo "::error::An explicit positive expected_version_code is required."
               exit 1
@@ -154,6 +171,10 @@ jobs:
           fi
           if [[ "$mode" == "publish_420_release" && "$expected_code" != "420" ]]; then
             echo "::error::The one-shot next-release path is locked to versionCode 420."
+            exit 1
+          fi
+          if [[ "$mode" == "publish_422_release" && "$expected_code" != "422" ]]; then
+            echo "::error::The one-shot release path is locked to versionCode 422."
             exit 1
           fi
           if [[ "$mode" == "retire_421_preview_draft" && "$expected_code" != "421" ]]; then
@@ -243,7 +264,7 @@ jobs:
         run: node scripts/verify-play-store.mjs --require-screenshots
 
       - name: Confirm target and existing upload-signing setup
-        if: steps.release-mode.outputs.mode == 'preview_draft' || steps.release-mode.outputs.mode == 'publish_new_release' || steps.release-mode.outputs.mode == 'publish_420_release'
+        if: steps.release-mode.outputs.mode == 'preview_draft' || steps.release-mode.outputs.mode == 'publish_new_release' || steps.release-mode.outputs.mode == 'publish_420_release' || steps.release-mode.outputs.mode == 'publish_422_release'
         shell: bash
         env:
           KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
@@ -642,6 +663,31 @@ jobs:
 
 
 
+      - name: Promote the newly built 422 draft on the existing Hubaish Closed Test track
+        id: publish-422-release
+        if: steps.release-mode.outputs.mode == 'publish_422_release'
+        env:
+          PLAY_PACKAGE_NAME: ${{ env.PLAY_PACKAGE_NAME }}
+          PLAY_TRACK: ${{ steps.play-release.outputs.track }}
+          PLAY_EXPECTED_VERSION_CODE: ${{ steps.release-mode.outputs.expected_version_code }}
+        run: |
+          set -euo pipefail
+          [[ "${{ steps.play-release.outputs.version_code }}" == "422" ]] || {
+            echo "::error::Play resolver did not return the locked versionCode 422."
+            exit 1
+          }
+          python3 scripts/promote-play-draft.py
+
+      - name: Verify completed 422, zero pending drafts and unchanged Production
+        if: steps.release-mode.outputs.mode == 'publish_422_release'
+        env:
+          PLAY_PACKAGE_NAME: com.hubaish.guide
+          PLAY_TRACK: ${{ steps.play-release.outputs.track }}
+          PLAY_RELEASE_STATUS: completed
+          ANDROID_VERSION_CODE: ${{ steps.play-release.outputs.version_code }}
+          PLAY_PRODUCTION_VERSION_CODES: ${{ steps.play-release.outputs.production_version_codes }}
+        run: python3 scripts/resolve-play-release.py --verify-upload
+
       - name: Publish the result summary
         if: success()
         shell: bash
@@ -651,7 +697,7 @@ jobs:
           PLAY_TRACK: ${{ env.PLAY_TRACK }}
           PLAY_VERSION_NAME: ${{ steps.play-release.outputs.version_name }}
           PLAY_VERSION_CODE: ${{ steps.play-release.outputs.version_code || steps.approved-release.outputs.version_code }}
-          PLAY_RELEASE_STATUS: ${{ steps.publish-420-release.outputs.release_status || steps.publish-new-release.outputs.release_status || steps.approved-release.outputs.release_status || steps.play-release.outputs.release_status || 'draft' }}
+          PLAY_RELEASE_STATUS: ${{ steps.publish-422-release.outputs.release_status || steps.publish-420-release.outputs.release_status || steps.publish-new-release.outputs.release_status || steps.approved-release.outputs.release_status || steps.play-release.outputs.release_status || 'draft' }}
           AAB_SHA256: ${{ steps.signed-release.outputs.aab_sha256 || steps.verify-bundle.outputs.aab_sha256 }}
         run: |
           {
@@ -689,7 +735,18 @@ jobs:
               echo "- Pending versioned drafts after promotion: **0**"
               echo "- Production versionCodes: **0 — verified unchanged**"
               echo "- Tester list and tester configuration: **not accessed or modified**"
-            elif [[ "$PLAY_MODE" == "publish_approved_release" ]]; then
+            elif [[ "$PLAY_MODE" == "publish_422_release" ]]; then
+              echo "- Result: signed versionCode 422 uploaded and promoted to completed on the existing Closed Test track, then verified by a fresh Play API read-back."
+              echo "- Track: $PLAY_TRACK"
+              echo "- Version: $PLAY_VERSION_NAME"
+              echo "- versionCode: $PLAY_VERSION_CODE"
+              echo "- Release status: **$PLAY_RELEASE_STATUS**"
+              echo "- AAB SHA-256: $AAB_SHA256"
+              echo "- Previous completed Closed Test versionCode 420 replaced: **Yes**"
+              echo "- Pending versioned drafts after promotion: **0 — verified**"
+              echo "- Production versionCodes: **0 — verified unchanged**"
+              echo "- Tester list and tester configuration: **not accessed or modified**"
+                        elif [[ "$PLAY_MODE" == "publish_approved_release" ]]; then
               echo "- Result: requested Closed-testing draft promoted and verified by a fresh API read-back."
               echo "- Track: \`$PLAY_TRACK\`"
               echo "- versionCode: \`$PLAY_VERSION_CODE\`"

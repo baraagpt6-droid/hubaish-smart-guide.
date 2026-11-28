@@ -8,15 +8,15 @@
   },
   "plugins": {
     "SplashScreen": {
-      "launchShowDuration": 1100,
+      "launchShowDuration": 250,
       "launchAutoHide": true,
-      "backgroundColor": "#071711",
+      "backgroundColor": "#081C15",
       "showSpinner": false,
       "androidScaleType": "CENTER_INSIDE"
     },
     "StatusBar": {
       "style": "LIGHT",
-      "backgroundColor": "#071711"
+      "backgroundColor": "#081C15"
     }
   }
 }

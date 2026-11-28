@@ -3,10 +3,10 @@
   const DATA_URL='./data/heritage-knowledge.json';
   const CACHE_KEY='hubaish_knowledge_v1';
   const $=id=>document.getElementById(id);
-  let data=null, published=[];
+  let data=null, published=[],liveData=null,reviewData=null;
   const el=(tag,cls,text)=>{const n=document.createElement(tag);if(cls)n.className=cls;if(text!==undefined)n.textContent=String(text);return n};
   const safe=value=>String(value??'').trim();
-  const norm=value=>safe(value).toLocaleLowerCase().replace(/[إأآا]/g,'ا').replace(/ى/g,'ي').replace(/ة/g,'ه').replace(/[\u064B-\u065F\u0670ـ]/g,'');
+  const norm=value=>window.normalizeArabicText?window.normalizeArabicText(value):safe(value).toLocaleLowerCase().replace(/[إأآٱا]/g,'ا').replace(/ى/g,'ي').replace(/ة/g,'ه').replace(/ؤ/g,'و').replace(/ئ/g,'ي').replace(/[\u064B-\u065F\u0670\u06D6-\u06EDـ]/g,'').replace(/[^\p{L}\p{N}\s]/gu,' ').replace(/\s+/g,' ').trim();
   function card(title,body,meta,status){
     const node=el('article','knowledge-card');const head=el('h4','knowledge-card-title',title);node.append(head);
     if(meta)node.append(el('p','knowledge-meta',meta));
@@ -23,7 +23,7 @@
     if(!data)return;
     fill($('knowledgeLandmarksList'),data.landmarkRecords,x=>card(x.title,x.summary,x.location+' · '+x.source,x.status==='documented_reference'?'مرجع تاريخي':x.status==='location_needs_field_check'?'اختلاف في تعيين الموقع':x.status==='image_attached_literal_transcription_pending'?'صورة مرفقة · التفريغ قيد المراجعة':'بحاجة إلى مسح أو تحقق ميداني'),'لا توجد بطاقات معالم.');
     fill($('knowledgeAdditionalMosquesList'),data.additionalMosques,x=>card(x.title,x.summary,x.location+' · '+x.source,'أسماء مساجد وقباب تنتظر المسح الميداني'),'لا توجد سجلات إضافية.');
-    fill($('knowledgeSchoolsList'),data.schools,(x)=>card(x.title,x.summary,x.location+' · '+x.period,x.status==='documented_school_founder_conflict_curriculum_pending'?'المؤسس محل اختلاف في النقل؛ المقررات التفصيلية قيد المطابقة':'إحالة تاريخية'), 'لا توجد بيانات مدارس إضافية.');
+    fill($('knowledgeSchoolsList'),data.schools,(x)=>card(x.title,[x.summary||'',(x.subjects||[]).join('، '),(x.claimsPending||[]).length?'رواية مقررات محلية: '+x.claimsPending.join('، '):'',x.activity_ar||''].filter(Boolean).join('؛ '),[x.location,x.period,x.cuzla?'العزلة: '+x.cuzla:'',x.source].filter(Boolean).join(' · '),x.status==='documented_school_founder_conflict_curriculum_pending'?'المؤسس محل اختلاف في النقل؛ المقررات المحلية منسوبة وتحتاج مقابلة نصية':'إحالة تاريخية'),'لا توجد بيانات مدارس إضافية.');
     const workRows=[...data.works,...published.filter(x=>x.type==='work').map(x=>({title:x.title,description:x.body,author:x.name,source:x.source,period:x.location,status:'owner_submitted'}))];
     fill($('knowledgeWorksList'),workRows,x=>card(x.title,x.description,[x.author,x.period,x.source].filter(Boolean).join(' · '),x.status==='title_variant_needs_collation'?'عنوان العمل يحتاج مقابلة النسخة الأصلية':x.status==='owner_submitted'?'مادة مكتبية أضيفت من بوابة المشرف':'عمل تاريخي منسوب'), 'لا توجد أعمال مفهرسة.');
     const peopleRows=[...data.people,...published.filter(x=>x.type==='figure').map(x=>({name:x.title,bio:x.body,role:x.name,location:x.location,source:x.source,status:'self_supplied_profile_and_published_initiative'}))];
@@ -37,6 +37,7 @@
       if(x.source)n.append(el('p','knowledge-source',x.source));
       return n;
     }, 'لا توجد وثائق معتمدة إضافية.');
+    fill($('knowledgeResearchNotesList'),data.researchNotes||[],x=>card(x.title,x.body,x.source,x.status==='reference_context_only'?'إحالة مرجعية — لا تثبت نسباً أسرياً':x.status==='family_name_disambiguation'?'تمييز أسماء أسرية — لا استنتاج نسب':'ملاحظة لضبط النطاق الجغرافي'),'لا توجد ملاحظات بحثية إضافية.');
     const ag=$('knowledgeAgriculture');if(ag){ag.replaceChildren(el('h3','knowledge-section-title',data.agriculture.title),el('p','knowledge-body',data.agriculture.summary));data.agriculture.practices.forEach((p,i)=>ag.append(card('سجل زراعي '+(i+1),p,'التراث الزراعي', 'بحاجة إلى توثيق محلي')));ag.append(el('p','knowledge-source',data.agriculture.source))}
     const market=$('knowledgeMarketList');
     const marketRows=published.filter(x=>x.type==='marketplace');
@@ -48,6 +49,8 @@
     fill($('knowledgeAuthorsList'),published.filter(x=>x.type==='author').map(x=>({...x,title:x.title,body:x.body,source:x.source})),x=>card(x.title,x.body,x.name+' · '+(x.source||'مساهمة منشورة'),'مساهمة راجعها المشرف'),'لا توجد كتب أو أبحاث مقدمة ومعتمدة بعد. استخدم نموذج النشر لإضافة عملك.');
     const honors=$('knowledgeHonorRoll');fill(honors,data.honorRoll,x=>card(x.name,x.contribution,x.source||'إسناد مقترح من فريق المشروع',x.status==='attributed_in_report'?'إسناد في التقرير':'بانتظار تأكيد المساهمة وموافقة صاحب الاسم'),'لا توجد أسماء إسناد.');
     const friday=$('knowledgeFridayMarket');if(friday){friday.replaceChildren(el('strong','market-day',data.market.day),el('p','knowledge-body',data.market.summary),el('p','knowledge-source',data.market.source),el('p','knowledge-status','موقع السوق وساعات نشاطه تحتاج إلى تأكيد محلي.'))}
+    renderPublicPlaces();
+    renderReviewRecords();
   }
   function openArchiveViewer(item){
     const modal=el('div','archive-viewer');modal.setAttribute('role','dialog');modal.setAttribute('aria-modal','true');modal.setAttribute('aria-label',item.title);
@@ -85,36 +88,123 @@
     modal.addEventListener('contextmenu',e=>e.preventDefault());canvas.addEventListener('contextmenu',e=>e.preventDefault());canvas.addEventListener('dragstart',e=>e.preventDefault());
     document.addEventListener('keydown',function esc(e){if(e.key==='Escape'&&document.body.contains(modal)){dismiss();document.removeEventListener('keydown',esc)}});
   }
-  function search(query){
-    if(!data)return[];const q=norm(query);if(!q)return[];
+  const STOP_WORDS=new Set(['ابحث','اعطني','اعطيني','اعرض','وين','فين','ايش','ماذا','ما','هي','هو','عن','لي','من','في','هل','قصة','صورة','افتح','اريد','اريدك','لو','سمحت','ممكن','فضلا','رجاء','اخبرني','عرفني','علمني','هذا','هذه']);
+  function queryForSearch(value){
+    const raw=norm(value);if(!raw)return'';
+    const parts=raw.split(/\s+/).filter(Boolean),terms=parts.filter(x=>!STOP_WORDS.has(x));
+    return(terms.length?terms:parts).join(' ');
+  }
+  function matches(haystack,query){
+    const q=queryForSearch(query);if(!q)return false;
+    if(window.HubaishSearch?.matches)return window.HubaishSearch.matches(haystack,q);
+    const h=norm(haystack);return h.includes(q)||q.split(' ').every(term=>h.includes(term));
+  }
+  function allRecords(){
+    if(!data)return[];
     const rows=[];
-    for(const group of ['landmarkRecords','additionalMosques','schools','works','people','families','archives']){
+    const add=(id,title,body,category,meta,source,status,extra={})=>{
+      if(!safe(title))return;
+      rows.push({id:String(id||category+'-'+rows.length),title:String(title),body:safe(body),category,meta:safe(meta),source:safe(source),status:safe(status),...extra});
+    };
+    for(const group of ['landmarkRecords','additionalMosques','schools','works','people','families','archives','researchNotes']){
       for(const x of data[group]||[]){
-        const title=x.title||x.name||'';const body=[x.summary,x.bio,x.description,x.note,x.location,x.author,x.role,x.source,x.sourceUrl,x.relatedFamily,x.subdistrict,x.date,x.period,x.transcription].filter(Boolean).join(' ');
-        if(norm(title+' '+body).includes(q))rows.push({id:x.id||title,title,body:body.slice(0,520),category:group});
+        const title=x.title||x.name||'';
+        const body=[x.summary,x.bio,x.description,x.note,x.body,x.role,x.activity_ar,(x.subjects||[]).join(' '),(x.claimsPending||[]).join(' '),x.location,x.era_year_ar||x.period,x.source,x.lineage_caveat_ar].filter(Boolean).join(' ');
+        add(x.id||title,title,body,group,[x.location,x.cuzla,x.era_year_ar||x.period,x.source].filter(Boolean).join(' · '),x.source||x.source_text,x.status,{location:x.location||'',cuzla:x.cuzla||x.subdistrict||'',era:x.era_year_ar||x.period||''});
       }
     }
-    for(const x of published){
-      const body=[x.title,x.body,x.name,x.source].filter(Boolean).join(' ');
-      if(norm(body).includes(q))rows.push({id:x.id,title:x.title,body:body.slice(0,520),category:x.type});
+    for(const x of liveData?.landmarks||[])add(x.id,x.title_ar,x.description_ar||x.summary_ar,'landmarkRecords',[x.location_ar,x.cuzla||x.subdistrict_ar,x.era_year_ar].filter(Boolean).join(' · '),x.source_text,x.status,{location:x.location_ar||'',cuzla:x.cuzla||x.subdistrict_ar||'',era:x.era_year_ar||x.period_ar||'',image_url:x.image_url||''});
+    for(const x of liveData?.historicalFigures||[])add(x.id,x.name_ar,[x.role_ar,x.biography_ar].filter(Boolean).join('؛'),'people',[x.location_ar,x.cuzla||x.subdistrict_ar,x.era_year_ar].filter(Boolean).join(' · '),x.source_text,x.status,{location:x.location_ar||'',cuzla:x.cuzla||x.subdistrict_ar||''});
+    for(const x of liveData?.historyEvents||[])add(x.id,x.title_ar,x.body_ar,'historyEvents',[x.period_ar,x.location_ar].filter(Boolean).join(' · '),x.source_text,x.status,{location:x.location_ar||''});
+    for(const x of liveData?.educationalRecords||[])add(x.id,x.title_ar,[x.activity_ar,x.summary_ar,(x.subject_claims_pending_verification_ar||[]).join(' ')].filter(Boolean).join('؛'),'schools',[x.location_ar,x.era_year_ar||x.period_ar,x.cuzla].filter(Boolean).join(' · '),x.source_text,x.status);
+    for(const x of liveData?.subDistrictUpdates||[])add(x.id,x.title_ar||x.name_ar,x.description_ar||x.body_ar,'districtUpdates',[x.subdistrict_ar,x.location_ar].filter(Boolean).join(' · '),x.source_text,x.status);
+    for(const x of liveData?.subDistricts||[])add('district:'+x.district_name_ar,'عزلة '+x.district_name_ar,[x.profile_ar,x.summary_ar].filter(Boolean).join(' '),'district','مديرية حبيش','تقرير قائمة العزل المرجعية، 2026م','reference_list_pending_district_approval');
+    for(const x of published||[]){const body=[x.title,x.body,x.name,x.source,x.location,x.marketCategory].filter(Boolean).join(' ');add(x.id,x.title||x.name,body,x.type,[x.location,x.createdAt].filter(Boolean).join(' · '),x.source,x.status||'approved');}
+    const byId=new Map();
+    for(const row of rows){const key=row.id||norm(row.title),old=byId.get(key);if(!old||row.body.length>old.body.length)byId.set(key,row);}
+    const byTitle=new Map();
+    for(const row of byId.values()){const key=norm(row.title),old=byTitle.get(key);if(!old||(row.body.length+row.meta.length)>(old.body.length+old.meta.length))byTitle.set(key,row);}
+    return [...byTitle.values()];
+  }
+  function getRecord(id){return allRecords().find(x=>x.id===String(id))||null;}
+  function search(query){
+    if(!data)return[];
+    const q=queryForSearch(query);if(!q)return[];
+    return allRecords().filter(x=>matches([x.title,x.body,x.meta,x.source,x.location,x.cuzla,x.era].filter(Boolean).join(' '),q)).slice(0,16);
+  }
+  function heritageCategory(x){
+    const kind=safe(x.kind||x.category||x.title);
+    if(/حصن|قلعة|قلعه/.test(kind))return'fort';
+    if(/مسجد|قبة|قبه|جامع/.test(kind))return'mosque';
+    if(/جبل|وادي|مدرج|منظر/.test(kind))return'landform';
+    return'heritage';
+  }
+  function renderPublicPlaces(){
+    const root=$('knowledgePublicPlacesList'),filters=$('knowledgePublicPlaceFilters');
+    if(!root||!filters||!data)return;
+    const source=[...(data.landmarkRecords||[]),...(data.additionalMosques||[])],seen=new Set();
+    const rows=source.filter(x=>{const key=norm(x.title);if(!key||seen.has(key))return false;seen.add(key);return true;});
+    const labels={all:'الكل',fort:'الحصون والقلاع',mosque:'المساجد والقباب',landform:'الجبال والأودية',heritage:'معالم أخرى'};
+    const types=['all','fort','mosque','landform','heritage'];
+    filters.replaceChildren();
+    let active='all';
+    const draw=()=>{
+      const visible=active==='all'?rows:rows.filter(x=>heritageCategory(x)===active);
+      fill(root,visible,x=>{
+        const meta=[x.kind,x.location,x.cuzla?'العزلة: '+x.cuzla:'',x.era_year_ar,x.source].filter(Boolean).join(' · ');
+        const n=card(x.title,x.summary,meta,x.evidence||x.status||'إحالة تاريخية');
+        n.dataset.knowledgeCategory=heritageCategory(x);
+        const actions=el('div','card-actions');
+        const open=el('button','btn-sm','فتح البطاقة');open.type='button';
+        open.addEventListener('click',()=>window.HubaishOpenKnowledgeRecord?.(x.id));
+        const ask=el('button','btn-sm','اسأل المساعد');ask.type='button';ask.dataset.ask=x.title;
+        actions.append(open,ask);n.append(actions);return n;
+      },'لا توجد بطاقات في هذا التصنيف.');
+      filters.querySelectorAll('[data-heritage-filter]').forEach(b=>b.classList.toggle('active',b.dataset.heritageFilter===active));
+    };
+    types.forEach(type=>{
+      const b=el('button','filter-pill'+(type==='all'?' active':''),labels[type]);
+      b.type='button';b.dataset.heritageFilter=type;
+      b.addEventListener('click',()=>{active=type;draw();});filters.append(b);
+    });
+    draw();
+  }
+  function renderReviewRecords(){
+    const root=$('unverifiedHistoricalRecordsList');if(!root||!reviewData)return;
+    root.replaceChildren();
+    for(const x of reviewData.records||[]){
+      const n=card(x.title,x.body,[x.location_note,x.source_text].filter(Boolean).join(' · '),'سجل تاريخي — لا يُعرض ضمن معالم المديرية أو مسارات الزيارة');
+      n.dataset.reviewId=x.id;
+      if(x.source_url){const a=el('a','btn-sm','المصدر');a.href=x.source_url;a.target='_blank';a.rel='noopener noreferrer';n.append(a);}
+      root.append(n);
     }
-    return rows.slice(0,10);
   }
   function answer(question){
-    if(!data)return null;const q=norm(question);
+    if(!data)return null;
+    const q=norm(question);
+    if(/162023|162 023|تقدير 2025|سكان 2025|population 2025/.test(q))return'تقدير HNRP/OCHA لعام 2025 هو 162,023 نسمة، ويشمل المقيمين والنازحين داخلياً. هذا تقدير تخطيطي وليس تعداداً جديداً، ويُعرض منفصلاً عن تعداد 2004.';
+    if(/105998|105 998|تعداد 2004|سكان 2004/.test(q))return'بلغ عدد السكان 105,998 نسمة وفق تعداد 2004 المنقول عن المركز الوطني للمعلومات اليمني. لا يُجمع هذا الرقم مع تقدير 2025 لأن نوع القياس وسنته مختلفان.';
+    if(/سوق|الجمعة|جمعه|السوق الاسبوعي/.test(q))return'يسجل المركز الوطني للمعلومات يوم الجمعة لسوق مديرية حبيش الأسبوعي. يظل موقع السوق الحالي وساعات نشاطه بحاجة إلى تأكيد ميداني.';
+    if(/زراعه|زراعي|محاصيل|حبوب|بقول|بن|فواكه|حصاد مياه|مدرجات/.test(q))return'تسجل المراجع المحاصيل والأنشطة الزراعية التالية في حبيش: الحبوب والبقوليات والبن والفواكه والخضروات، إلى جانب المدرجات الزراعية ومشاريع حصاد مياه الأمطار. تختلف المواسم حسب الارتفاع والقرية؛ تحقّق محلياً قبل الزيارة.';
+    if(/الزوم|قبه الزوم/.test(q))return'تقع قبة الزوم في شرق ظُلمة السفلى. تصف دراسة علي يحيى الحبابي عمارتها وفناءها ومئذنتها وبركها وترميمها خلال 2004–2005م. عنوان المقال يذكر «حيس»، لكن متن الدراسة يحدد الموقع في ظُلمة/حبيش. لا يثبت المقال تاريخ تأسيس القبة.';
+    if(/همدان|خولان|الناهي|النسب|قبائل/.test(q)){
+      const n=(data.researchNotes||[]).find(x=>x.id==='al-hajri-tribal-reference-scope'||x.id==='al-nahi-family-disambiguation');
+      return n?n.title+'\n'+n.body+'\nالمصدر: '+n.source:'تُعرض إحالات الحجري بوصفها مادة مرجعية تاريخية لا إثباتاً لنسب أسرة معاصرة.';
+    }
     const rules=[
-      [/وحاظه|هجره وحاظه|wuhaza/,'هجرة وحاظة','كانت مركز ولاية وعلم في القرنين الخامس والسادس الهجريين، وترتبط باللغة وغريب الألفاظ والفقه والأدب. المصادر المذكورة: الأكوع، هجر العلم، ج4، ص2329–2331؛ الجندي؛ الأفضل العباس.'],
-      [/الزواحي|مدرسه الزواحي/,'مدرسة الزواحي','تقع في قرية الزواحي بعزلة كومان. يختلف النقل في اسم المؤسس؛ ينسب الأكوع البناء والوقف إلى قاسم بن حمير الوائلي، بينما يذكر الجندي بعض مشايخ بني وائل دون تسمية شخص. أسماء مقررات التنبيه وصحيح البخاري ونظام الغريب لا تزال بحاجة إلى مقابلة نصية.'],
-      [/نظام الغريب|عيسى بن ابراهيم|عيسى الربعي/,'نظام الغريب','كتاب في اللغة وغريب الألفاظ ينسب إلى عيسى بن إبراهيم الربعي الوحاظي، الذي عاش بحسب الترجمة بين 458 و528هـ.'],
-      [/زيد بن الحسن|التهذيب|الفائشي/,'زيد بن الحسن الفائشي','فقيه من وحاظة ينسب إليه كتاب التهذيب. وتُنسب إليه خزانة قيل إنها بلغت نحو 500 كتاب فقهي؛ لا يصح تحويل ذلك إلى مكتبة عامة للمدرسة دون دليل.'],
-      [/اسماعيل بن ابراهيم الوحاظي|الاوابد|قيد الاوابد/,'إسماعيل بن إبراهيم الوحاظي','لغوي وأديب، أخو عيسى. تنسب إليه قصيدة الأوابد وشرحها، مع اختلاف في عنوانها بين بعض النقول.'],
-      [/مروحه|النقش الخشبي|1183|811/,'مسجد مروحة','الموقع في عزلة نقيل العقاب. ينقل التقرير أن نقشاً خشبياً يؤرخ البناء إلى 811هـ / 1409م، وأن البناء الحالي يعود إلى 1183هـ / 1718م. التفريغ الحرفي للنقش يحتاج صورة أدق أو معاينة.'],
-      [/بين الدور|359/,'قبة مسجد بين الدور','تقع في قرية بين الدور بعزلة قحزة. ينقل التقرير تاريخ 359هـ / 963م من دراسة العروسي.'],
-      [/الذره|الدفان|مدافن الحبوب|المدافن/,'مدافن الحبوب والتراث الزراعي','تذكر المواد المرجعية زراعة الحبوب والبن والمدرجات وحصاد مياه الأمطار. أما تقدير أكثر من 150 مدفناً ودور الدفّان ودفاتر الذرة وبيت المال فهي إفادات محلية لم يرفق بها مسح أو نسخ وثائق حتى الآن.'],
-      [/سوق الجمعه|سوق حبيش|الجمعة/,'سوق حبيش الأسبوعي','يسجل المركز الوطني للمعلومات يوم الجمعة. يظل موقع السوق وساعات نشاطه بحاجة إلى تأكيد محلي.']
+      [/وحاظه|هجره وحاظه|wuhaza/,'هجرة وحاظة','كانت مركز ولاية وعلم في القرنين الخامس والسادس الهجريين، وترتبط باللغة وغريب الألفاظ والفقه والأدب. يذكر الأكوع تراجم لسبعة من علمائها، ويحيل إلى ج4، ص2329–2331. وتُنسب إلى زيد الفائشي خزانة قيل إنها بلغت نحو 500 كتاب فقهي، ولا تُعرض بوصفها مكتبة عامة للمدرسة.'],
+      [/الزواحي|مدرسه الزواحي/,'مدرسة الزواحي','تقع في قرية الزواحي بعزلة كومان. ينسب الأكوع البناء والوقف إلى قاسم بن حمير الوائلي، بينما يذكر الجندي في السلوك ص431 بعض مشايخ بني وائل دون تسمية شخص. وتنقل الرواية المحلية مواد «التنبيه» و«صحيح البخاري» و«نظام الغريب» على أنها مقررات منسوبة، وتحتاج إلى مقابلة نصية ولا تُعرض كمنهج محسوم.'],
+      [/نظام الغريب|عيسى بن ابراهيم|عيسى الربعي/,'نظام الغريب','كتاب في اللغة وغريب الألفاظ ينسب إلى عيسى بن إبراهيم الربعي الوحاظي (458–528هـ بحسب الترجمة المنقولة). ويذكر التقرير دفنه بجامع الجعامي، مع بقاء موضع الدفن بحاجة إلى تحقق ميداني.'],
+      [/زيد بن الحسن|التهذيب|الفائشي/,'زيد بن الحسن الفائشي','فقيه من وحاظة ينسب إليه كتاب «التهذيب». وتُنسب إليه خزانة قيل إنها بلغت نحو 500 كتاب فقهي؛ لا يصح تحويل ذلك إلى مكتبة عامة للمدرسة دون دليل.'],
+      [/اسماعيل بن ابراهيم الوحاظي|الاوابد|قيد الاوابد/,'إسماعيل بن إبراهيم الوحاظي','لغوي وأديب، أخو عيسى. تنسب إليه قصيدة «الأوابد» وشرحها، مع اختلاف في عنوان العمل بين بعض النقول.'],
+      [/مروحه|النقش الخشبي|1183|811/,'مسجد مروحة','يقع في عزلة نقيل العقاب. ينقل التقرير نقشاً خشبياً يؤرخ البناء إلى 811هـ / 1409م، ويذكر أن البناء الحالي يعود إلى 1183هـ / 1718م. التفريغ الحرفي للنقش يحتاج إلى صورة أدق أو معاينة.'],
+      [/بين الدور|359/,'قبة مسجد بين الدور','تقع في قرية بين الدور بعزلة قحزة. ينقل التقرير تاريخ 359هـ / 963م من دراسة منشورة؛ ينبغي مطابقة النقش الأصلي قبل اعتماد لوحة أثرية نهائية.'],
+      [/حصن خدد|قلعه خدد|خدد/,'حصن خدد','يُوصف بقصر وآبار وكروف منحوتة في الصخر الأسود وسدود حميرية، وتذكر المصادر أنه صار أطلالاً. يوجد اختلاف في تحديد موضعه بين روايات التقرير؛ لذلك لا تُعتمد إحداثيات قبل مسح ميداني.'],
+      [/حصن العضادي|العضادي/,'حصن العضادي','يورد التقرير حصناً وسداً ومسجداً في قرية العضادي، وينقل عن مصدر ثانوي تقديراً بين 400 و500 سنة ونقوشاً كوفية وثلثاً ورقعة. يحتاج التأريخ والوصف إلى الرجوع إلى الدراسة الميدانية الأصلية.'],
+      [/حصن يريس|شاحط|بني وائل/,'حصن يريس وقرية شاحط','يربط التقرير حصن يريس بإمارة بني وائل بن عيسى الحميريين ويذكر شاحط مدينةً لهم قبل القرن الخامس الهجري، نقلاً عن عمارة اليمني. لا تُعامل هذه الرواية اسماً إضافياً للعزل الـ22.']
     ];
     for(const [re,title,body] of rules)if(re.test(q))return title+'\n'+body;
-    const found=search(question)[0];return found?found.title+'\n'+found.body:null;
+    const found=search(question)[0];return found?found.title+'\n'+found.body+'\n'+found.meta+'\nالمصدر: '+found.source:null;
   }
   async function filePayload(form,type){
     const file=form.querySelector('input[type=file]')?.files?.[0];if(!file)return null;
@@ -175,10 +265,14 @@
   async function load(){
     try{const response=await fetch(DATA_URL,{cache:'no-cache'});if(!response.ok)throw new Error('knowledge data unavailable');data=await response.json();localStorage.setItem(CACHE_KEY+':base',JSON.stringify(data))}
     catch{try{data=JSON.parse(localStorage.getItem(CACHE_KEY+':base')||'null')}catch{data=null}}
+    try{const response=await fetch('./data/live-content.json',{cache:'no-cache'});if(!response.ok)throw new Error('live content unavailable');liveData=await response.json();localStorage.setItem(CACHE_KEY+':live',JSON.stringify(liveData))}
+    catch{try{liveData=JSON.parse(localStorage.getItem(CACHE_KEY+':live')||'null')}catch{liveData=null}}
+    try{const response=await fetch('./data/geography-review.json',{cache:'no-cache'});if(!response.ok)throw new Error('geography review unavailable');reviewData=await response.json();localStorage.setItem(CACHE_KEY+':review',JSON.stringify(reviewData))}
+    catch{try{reviewData=JSON.parse(localStorage.getItem(CACHE_KEY+':review')||'null')}catch{reviewData=null}}
     try{published=JSON.parse(localStorage.getItem(CACHE_KEY)||'[]')}catch{published=[]}
-    render();await refreshPublished();
+    render();await refreshPublished();window.dispatchEvent(new CustomEvent('hubaish:knowledge-ready'));
   }
-  window.HubaishKnowledge={search,answer,load,getData:()=>data};
+  window.HubaishKnowledge={search,answer,load,getData:()=>data,getLiveData:()=>liveData,getRecord,allRecords,getReviewRecords:()=>reviewData?.records||[]};
   document.addEventListener('DOMContentLoaded',()=>{
     load();
     bindForm('authorSubmissionForm','author');
