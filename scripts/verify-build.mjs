@@ -170,6 +170,7 @@ if(!css.includes('padding-top:max(9px,env(safe-area-inset-top')||
   throw new Error('Android 15/16 top and bottom safe-area padding is missing.');
 }
 if(app.includes('innerHTML'))throw new Error('The app must build DOM nodes with textContent instead of innerHTML.');
+if(!prepareAndroid.includes('maven-central.storage-download.googleapis.com/maven2/')||!prepareAndroid.includes('mavenCentral()')||!prepareAndroid.includes('android/settings.gradle'))throw new Error('Signed Android releases must prefer the GCS Maven Central mirror and retain Maven Central fallback.');
 if(!sw.includes('hubaish-guide-v4.1.4')||!sw.includes("assets/heritage/1183-wood-inscription.webp")||!sw.includes("'splash.js'")||
    !sw.includes("'github-cms.js'")||!sw.includes("'gallery.js'")||!sw.includes("'data/live-content.json'")) {
   throw new Error('The service-worker cache does not include the updated app shell.');

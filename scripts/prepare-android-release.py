@@ -7,6 +7,25 @@ gradle = Path("android/app/build.gradle")
 if not gradle.is_file():
     raise SystemExit("Generated android/app/build.gradle was not found.")
 
+# Maven Central can throttle CI builds with HTTP 429. Put Google's documented
+# Cloud Storage mirror first while retaining Maven Central as the fallback.
+settings_gradle = Path("android/settings.gradle")
+if not settings_gradle.is_file():
+    raise SystemExit("Generated android/settings.gradle was not found.")
+settings_source = settings_gradle.read_text(encoding="utf-8")
+maven_mirror = "https://maven-central.storage-download.googleapis.com/maven2/"
+if maven_mirror not in settings_source:
+    settings_source, mirror_count = re.subn(
+        r"(?<![A-Za-z0-9_])mavenCentral\\s*\\(\\s*\\)",
+        'maven { url "' + maven_mirror + '" }\\n        mavenCentral()',
+        settings_source,
+    )
+    if mirror_count < 1:
+        raise SystemExit("Could not locate mavenCentral() in generated settings.gradle.")
+    settings_gradle.write_text(settings_source, encoding="utf-8")
+elif "mavenCentral()" not in settings_source:
+    raise SystemExit("Maven mirror exists but Maven Central fallback is missing.")
+
 source = gradle.read_text(encoding="utf-8")
 version_code = os.environ.get("ANDROID_VERSION_CODE", "").strip()
 version_name = os.environ.get("ANDROID_VERSION_NAME", "").strip()
