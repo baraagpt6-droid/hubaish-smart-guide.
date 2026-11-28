@@ -21,7 +21,7 @@ const required = [
   'Gemfile','fastlane/Appfile','fastlane/Fastfile',
   'fastlane/metadata/android/ar/title.txt','fastlane/metadata/android/ar/short_description.txt','fastlane/metadata/android/ar/full_description.txt','fastlane/metadata/android/ar/changelogs/default.txt',
   'fastlane/metadata/android/en-US/title.txt','fastlane/metadata/android/en-US/short_description.txt','fastlane/metadata/android/en-US/full_description.txt','fastlane/metadata/android/en-US/changelogs/default.txt',
-  'play-store/feature-graphic.svg','scripts/render-play-feature-graphic.mjs','scripts/prepare-play-store-assets.py','scripts/normalize-play-screenshots.py','scripts/capture-play-screenshots.mjs','scripts/normalize-play-screenshots.py','scripts/verify-play-store.mjs','scripts/prepare-android-release.py','scripts/resolve-play-release.py','scripts/retire-obsolete-play-draft.py',
+  'play-store/feature-graphic.svg','scripts/render-play-feature-graphic.mjs','scripts/prepare-play-store-assets.py','scripts/normalize-play-screenshots.py','scripts/capture-play-screenshots.mjs','scripts/normalize-play-screenshots.py','scripts/verify-play-store.mjs','scripts/prepare-android-release.py','scripts/resolve-play-release.py','scripts/retire-obsolete-play-draft.py','scripts/retire-preview-419-draft.py',
   '.github/workflows/google-play-closed-testing.yml','.github/workflows/play-status-monitor.yml',
   'scripts/monitor-play-status.py','scripts/audit-runtime.mjs','docs/google-play-setup.md'
 ];
@@ -307,6 +307,7 @@ const playResolver = await read('scripts/resolve-play-release.py');
 const playStoreVerifier = await read('scripts/verify-play-store.mjs');
 const playPromoter = await read('scripts/promote-play-draft.py');
 const playRetirer = await read('scripts/retire-obsolete-play-draft.py');
+const play420Retirer = await read('scripts/retire-preview-419-draft.py');
 if (!playWorkflow.includes('workflow_dispatch:') ||
     playWorkflow.includes('pull_request:') ||
     !playWorkflow.includes('  push:') || !playWorkflow.includes('branches: [main]') ||
@@ -341,16 +342,22 @@ if (!playWorkflow.includes('workflow_dispatch:') ||
     !playWorkflow.includes("publish_420_release") ||
     !playWorkflow.includes("Verify completed 420, zero pending drafts and unchanged Production") ||
     !playWorkflow.includes("steps.publish-420-release.outputs.release_status") ||
+    !playWorkflow.includes("retire-preview-419-draft.py") ||
+    !playWorkflow.includes("Retire only an exact 419 preview draft after the clean 420 bundle is signed") ||
+    !playResolver.includes("allowed_highest = 419 if draft_records") ||
+    !play420Retirer.includes("PREVIEW_CODE = 419") ||
+    !play420Retirer.includes("ACTIVE_CODE = 418") ||
+    !play420Retirer.includes("No tester list, opt-in configuration, or other track was read or modified.") ||
     !playResolver.includes('release_mode == "publish_420_release"') ||
     !playResolver.includes("version_code != 420") ||
-    !playResolver.includes("zero existing versioned drafts on Hubaish Closed Test") ||
+    !playResolver.includes("may clean up only one exact 419 preview draft") ||
     !playPromoter.includes("prior_completed_codes != [418]") ||
     !playWorkflow.includes(".publish-420") ||
     !playWorkflow.includes("publish_420_release") ||
     !playWorkflow.includes("Verify completed 420, zero pending drafts and unchanged Production") ||
     !playResolver.includes('release_mode == "publish_420_release"') ||
     !playResolver.includes("version_code != 420") ||
-    !playResolver.includes("zero existing versioned drafts on Hubaish Closed Test") ||
+    !playResolver.includes("may clean up only one exact 419 preview draft") ||
     !playPromoter.includes("prior_completed_codes != [418]") ||
     !playWorkflow.includes("steps.publish-420-release.outputs.release_status") ||
     !playRetirer.includes("OBSOLETE_DRAFT_CODE = 417") ||
@@ -369,6 +376,8 @@ if (!playWorkflow.includes('workflow_dispatch:') ||
     playWorkflow.includes("approve_draft")) {
   throw new Error('Google Play workflow must upload draft previews on main pushes, require explicit manual approval, use WIF, verify signing and read back the release.');
 }
+const pythonSyntax = spawnSync('python3', ['-m','py_compile','scripts/patch-android-config.py','scripts/resolve-play-release.py','scripts/promote-play-draft.py','scripts/retire-obsolete-play-draft.py','scripts/retire-preview-419-draft.py'], { encoding: 'utf8' });
+if(pythonSyntax.status!==0)throw new Error('Python release/native build script syntax error: '+(pythonSyntax.stderr||pythonSyntax.stdout));
 if(!playResolver.includes('version_code = 420')||!playResolver.includes('highest_code != 418')||!playPromoter.includes('expected == 420'))throw new Error('One-shot versionCode 420 must skip unused 419, require bundle history to end at 418, and replace only completed 418.');
 if (!playWorkflow.includes('status code 429') ||
     !playWorkflow.includes('Too Many Requests') ||
