@@ -194,7 +194,7 @@ Successful preview build run 46038091477:
 
 ## Live content and native Android speech
 - Public endpoint `GET /api/live-content` reads the `live-content:published` snapshot from the existing Cloudflare `ADMINS` KV binding and uses GitHub live-content JSON for initial bootstrap. CMS writes update GitHub and KV; `github-cms.js` polls every 15 seconds while visible, stores the last copy in localStorage and retains offline fallback. Cloudflare KV is eventually consistent, so propagation is near-real-time rather than a guarantee of same-millisecond global delivery.
-- Authenticated `/admin/quick-add` creates gallery photos, archived image scans, author profiles, family cards and marketplace listings. Image scans receive bilingual watermarks before storage and archive images receive the in-app viewer watermark. Public family/profile records require consent.
+- Authenticated `/admin/quick-add` creates gallery photos, archived image scans, historical-figure/biography profiles, library works and author profiles, family cards and marketplace listings. Image scans receive bilingual watermarks before storage and archive images receive the in-app viewer watermark. Public family, biography, author and library records require the submitter's rights/consent assertion.
 - Android microphone handling uses generated `HubaishSpeechBridge.java`, `SpeechRecognizer`, runtime `RECORD_AUDIO` permission and JS callbacks used by the main search and local assistant.
 
 ## 28 November 2026 — versionCode 420 release preparation
