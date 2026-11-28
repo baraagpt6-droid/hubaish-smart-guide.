@@ -234,6 +234,7 @@ try {
     throw new Error('The mobile brand header is clipped or the digital heritage subtitle is missing: ' + JSON.stringify(topbarState));
   }
   await page.waitForFunction(() => window.HubaishKnowledge?.getData?.()?.landmarkRecords?.length === 15, { timeout: 15000 });
+  await page.waitForFunction(() => window.HubaishKnowledge?.getLiveData?.()?.landmarks?.some(item => item.id === 'qubbat-al-zum'), { timeout: 15000 });
   const knowledgeCardCount = await page.locator('#knowledgeLandmarksList .knowledge-card').count();
   if (knowledgeCardCount !== 15) throw new Error('Expected 15 in-district core landmark cards; received ' + knowledgeCardCount + '.');
   const globalSearch = page.locator('#globalSearchInput');
@@ -261,6 +262,19 @@ try {
   await page.waitForTimeout(150);
   if (await page.locator('#globalSearchResults .search-result-card').count()) {
     throw new Error('The excluded geographic region is still returned in search results.');
+  }
+  await page.evaluate(() => {
+    window.__mockSpeechText = 'ظلمه';
+    class MockGlobalSpeechRecognition {
+      start() { this.onresult?.({ results: [[{ transcript: window.__mockSpeechText }]] }); this.onend?.(); }
+    }
+    Object.defineProperty(window, 'SpeechRecognition', { configurable: true, value: MockGlobalSpeechRecognition });
+    Object.defineProperty(window, 'webkitSpeechRecognition', { configurable: true, value: undefined });
+  });
+  await page.locator('#globalMicBtn').click();
+  await page.locator('#globalSearchResults .search-result-card').first().waitFor({ state: 'visible', timeout: 10000 });
+  if (!(await page.locator('#globalSearchResults').innerText()).includes('ظلمة')) {
+    throw new Error('Voice search did not normalize ظلمه into the local ظُلمة spelling.');
   }
   await globalSearch.fill('');
 
